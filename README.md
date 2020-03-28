@@ -1,5 +1,5 @@
-# vf.js
-
+<p align="center"><a href="https://vipkid-edu.github.io/vf-docs/" target="_blank" rel="noopener noreferrer"><img width="200" src="https://vipkid-edu.github.io/vf-docs/logo_x3.png" alt="VF logo"></a></p>
+<h2 align="center">Welcome to vf.js</h2>
 ## 介绍
 
 VF 引擎是一套用于快速构建互动教学场景的解决方案中的图形交互引擎，引擎的设计并不是 **「重复发明轮子（*Reinventing the wheel*）」**，而是基于行业内比较成熟、优秀的方案做的改造与封装。
