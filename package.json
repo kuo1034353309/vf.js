@@ -1,0 +1,82 @@
+{
+  "name": "vf-player",
+  "version": "0.1.0",
+  "status": "beta",
+  "description": "vf engine",
+  "main": "./dist/vf.js",
+  "types": "./dist/vf.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development ENV_CONFIG=dev node config/build.js & node config/dev-server.js --mock",
+    "start": "npm run dev",
+    "lint": "eslint --ext .js,.ts src test",
+    "dts": "dts-generator --project  ./src  --out ./dist/vf.d.ts",
+    "prod": "node config/build.js & webpack --config config/webpack.prod.js --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vipkid-edu/vf.js.git"
+  },
+  "keywords": [
+    "vf",
+    "vf.js",
+    "vfengine",
+    "vf-player"
+  ],
+  "author": "VIPKID EDU XYZ",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.7.5",
+    "@babel/core": "^7.1.6",
+    "@babel/plugin-syntax-dynamic-import": "^7.7.4",
+    "@babel/plugin-transform-arrow-functions": "^7.7.4",
+    "@babel/plugin-transform-block-scoping": "^7.7.4",
+    "@babel/plugin-transform-classes": "^7.7.4",
+    "@babel/plugin-transform-modules-umd": "^7.7.4",
+    "@babel/plugin-transform-runtime": "^7.7.6",
+    "@babel/plugin-transform-typescript": "^7.7.4",
+    "@babel/polyfill": "^7.7.0",
+    "@babel/preset-env": "^7.7.6",
+    "@babel/preset-flow": "^7.7.4",
+    "@babel/preset-typescript": "^7.7.4",
+    "@babel/runtime": "^7.7.6",
+    "@babel/types": "^7.7.4",
+    "@typescript-eslint/eslint-plugin": "2.6.1",
+    "@typescript-eslint/parser": "2.6.1",
+    "babel-loader": "^8.0.6",
+    "clean-webpack-plugin": "3.0.0",
+    "copy-webpack-plugin": "5.0.5",
+    "cross-env": "^6.0.3",
+    "dts-gen": "0.5.7",
+    "dts-generator": "3.0.0",
+    "eslint": "6.6.0",
+    "file-loader": "^5.0.2",
+    "html-webpack-plugin": "3.2.0",
+    "pixi-sound": "3.0.4",
+    "pixi.js": "5.2.0",
+    "pixi.js-legacy": "5.2.0",
+    "ts-loader": "6.1.0",
+    "ts-node": "^8.5.4",
+    "typescript": "3.7.2",
+    "uglifyjs-webpack-plugin": "2.0.1",
+    "url-loader": "^3.0.0",
+    "vf-gui": "^0.7.3",
+    "webpack": "4.41.2",
+    "webpack-cli": "3.1.2",
+    "webpack-dev-server": "3.9.0",
+    "webpack-merge": "4.1.4"
+  },
+  "dependencies": {
+    "core-js": "^3.6.0",
+    "eventemitter3": "3.1.0"
+  },
+  "engines": {
+    "node": ">= 8.1.0",
+    "npm": ">= 5.6.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}

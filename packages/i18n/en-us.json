@@ -1,0 +1,77 @@
+{
+  "test": {
+    "message": "test"
+  },
+  "404": {
+    "message": "${0}"
+  },
+  "S0000": {
+    "message": "JSON parse failed:  ${0}"
+  },
+  "S0001": {
+    "message": "Request error，HTTP Status Code ${0}"
+  },
+  "S0002": {
+    "message": "Uncaught，${0}"
+  },
+  "S0003": {
+    "message": "Structural error,the current : (name:${0},value:${1})"
+  },
+  "S0004": {
+    "message": "Play with Native, ignore audio loading:${0}"
+  },
+  "E0000": {
+    "message": "Unknown exception, please refresh and try again!!"
+  },
+  "E0001": {
+    "message": "Asset -> cannot read property id(${0}).'url' or 'type' of undefined."
+  },
+  "E0002": {
+    "message": "Plugs -> cannot find line drawing canvas on 'slider' page dom = ${0}."
+  },
+  "E0003": {
+    "message": "Asset -> Unable to find resource for id(${0})."
+  },
+  "E0004": {
+    "message": "GUI -> Unable to create component with id(${0}) check type."
+  },
+  "E0005": {
+    "message": "数据 -> Local data cannot use a data converter. The same directory must contain a json file."
+  },
+  "E0006": {
+    "message": "component -> can not find: (${0})"
+  },
+  "E1001": {
+    "message": "vfx -> can not support this operation: (${0})"
+  },
+  "E1002": {
+    "message": "vfx -> can not find variable: (${0})"
+  },
+  "E1003": {
+    "message": "vfx -> can not find array index by variable: (${0})"
+  },
+  "E1004": {
+    "message": "vfx -> array has not function: (${0})"
+  },
+  "E1005": {
+    "message": "vfx -> variable is not array : (${0})"
+  },
+  "E1006": {
+    "message": "vfx -> caculate Express Value error"
+  },
+  "E1007": {
+    "message": "vfx -> can not find property: (${0})"
+  },
+  "E1008": {
+    "message": "vfx -> the left value can NOT be const: (${0})"
+  },
+  "E1010": {
+    "message": "vfx -> duplicate task"
+  },
+  "E1011": {
+    "message": "vfx -> task Argument Error"
+  },
+  "E1012": {
+    "message": "vfx -> no task"
+  }
+}

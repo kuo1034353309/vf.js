@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="true" />
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    <title>vf</title>
+    <style>
+        html,
+        body {
+            padding: 0;
+            border: 0;
+            margin: 0;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 播放器的容器，调整播放器大小，可以改变这里 -->
+    <div id="vf-container"
+        style="background:rgb(56, 56, 55);width: 100%; height: 100%;padding:0;margin:0;overflow: hidden; position: absolute;">
+    </div>
+
+    <button id="funcall" style="z-index: 999; position: absolute; left: 50px; top:50px;">执行方法</button>
+    <button id="sendevent" style="z-index: 999; position: absolute; left: 150px; top:50px;">派发事件</button>
+    
+    <script>
+
+        ///
+        if (location.href.indexOf("#path") === -1) {
+            location.hash = "path/test/" + 'data/gotoPlay.json';
+            location.reload();
+        }
+
+        // 对外所有接口与钩子，请查看 IVFEngine.ts
+
+        (function () {
+
+            //本地或发布版本
+            var isProd = false;
+            //错误计数
+            var errorLoadCount = 0;
+            var option = {
+                container: document.getElementById("vf-container"),
+                engineVersion: "0.1.0", //引擎使用的版本
+                bgcolor: '0xffffff',
+                src: location.hash.substr(5), //设置模板数据源地址
+                debug: true,
+                language: 'zh-CN',
+                // wmode : "transparent", /不填写，不会处理透明，默认白色背景
+                // scaleMode: 'showAll'//不填写，根据配置数据读取 'showAll', 'noScale','cover','contain'
+                vfvars: {
+                    useNativeAudio: false, //业务线动态设置,是否使用原生播放
+                    cdns:{
+                        default:[
+                            isProd? 'https://s.***.com/':"",
+                            isProd? 'https://s.***.com/':"",
+                        ],
+                        image:[
+                            isProd? 'https://img.***.com/':"",
+                            isProd? 'https://img.***.com/':"",
+                        ],
+                        media:[
+                            isProd? 'https://media.***.com/':"",
+                            isProd? 'https://media.***.com/':"",
+                        ],
+                        wx:[
+                            isProd? 'https://wx.***.com/':"",
+                            isProd? 'https://wx.***.com/':"",
+                        ],
+                    }
+                },
+                plugs: []
+            }
+
+            function createVF() {
+
+                var vf = new VF(option);
+
+                //详细的接口，可搜索：IVFEngine -> EngineAPI
+                vf.onReady = ()=>{
+                    //测试
+                    this.testCommond(vf);
+                }
+
+                vf.onSceneCreate = ()=>{
+
+                }
+
+                vf.onMessage = (msg)=>{
+                    console.log("onMessage ==>",msg);
+                }
+
+                vf.onError = (evt)=>{
+                    console.log("onError ==>",evt);
+                }
+
+                vf.onDispose = ()=>{
+
+                }
+
+                
+            }
+
+            function loadScript(index){
+                var cdn = option.vfvars.cdns.default;
+                var s = document.createElement('script');
+                s.async = false;
+                s.src = cdn[index] + '/vf/engine/vf-engine-v' + option.engineVersion + '/vf.js?v=' + option.fixVersion;
+                s.addEventListener('load', loadComplete, false);
+                s.addEventListener('error', loadError, false);
+                document.body.appendChild(s);
+            }
+
+            function loadComplete() {
+                removeEvent(this);
+                createVF();
+            }
+            function loadError() {
+                removeEvent(this);
+                if(errorLoadCount>3){
+                    throw ' [LOG VF] vf.js load error';
+                    return;
+                }
+                loadScript(1);
+                errorLoadCount++;
+            }
+            function removeEvent(thisObj){
+                thisObj.parentNode.removeChild(thisObj);
+                thisObj.removeEventListener('load', loadComplete, false);
+                thisObj.removeEventListener('error', loadError, false);
+            }
+
+            loadScript(0);
+
+        })();
+
+
+        var isAdd = false;
+        /** 向VF派发事件 */
+        function testCommond(vf) {
+            if(isAdd){
+                return;
+            }
+            isAdd = true;
+            var funcall = document.getElementById('funcall');
+            funcall.addEventListener("click", () => {
+                // 所有接口 IVFEngine -> IVFEngineAPI
+                //vf.dispose(); //卸载
+                vf.play('test/data/animTest.json');
+            });
+
+            var sendevent = document.getElementById('sendevent');
+            sendevent.addEventListener('click',()=>{
+                
+                vf.message({
+                    "type": "restore",
+                    "code": "restore",
+                    "level": "command",
+                    "data": {
+                        "name": "restore",
+                        "val": {
+                        }
+                    }
+                });
+                vf.reset();
+
+                //code = 模板json中的 {"type": 13,"system": true,"event": code}
+                //vf.message({"code": "nextPage","level": "command","data":null});
+            });
+        }
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,525 @@
+{
+    "name": "STA01",
+    "version": "0.2.9",
+    "width": 800,
+    "height": 640,
+    "fps": 30,
+    "scaleMode": "showAll",
+    "loadMode": "all",
+    "baseUrl": "/test/data/",
+    "assets": {
+        "0":{
+            "id": 0,
+            "name": "ta04",
+            "type": "image",
+            "url": "assets/dino.png"
+        }
+    },
+    "components": {
+        "0": {
+            "id": 0,
+            "name": "text",
+            "type": "Label",
+            "style": {
+                "color": "#000000",
+                "fontSize":20
+            }
+        },
+        "31": {
+            "id": 31,
+            "name": "image1",
+            "type": "Image",
+            "scaleX": 0.15,
+            "scaleY": 0.15,
+            "src": 0
+        },
+        "310": {
+            "id": 310,
+            "name": "deno0",
+            "type": "custom",
+            "children": [
+                {
+                    "id": 3100,
+                    "libId": 31,
+                    "name": "deno0",
+                    "visible": true,
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            "animations": [
+                {
+                    "name": "default",
+                    "autoPlay": false,
+                    "duration": 60,
+                    "loop": false,
+                    "children": {
+                        "3100": {
+                            "duration": 60,
+                            "loop": false,
+                            "timelines": [
+                                {
+                                    "type": "x",
+                                    "loop": false,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 0
+                                        },
+                                        {
+                                            "frame": 60,
+                                            "value": 100
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            ],
+            "actionList":[
+                {
+                    "type": 1,
+                    "execute":[
+                        {
+                            "type":31,
+                            "name": [0,"default"],
+                            "frame": [0,30]
+                        }
+                    ]
+                }
+            ]
+        },
+        "311": {
+            "id": 311,
+            "name": "deno0",
+            "type": "custom",
+            "children": [
+                {
+                    "id": 3110,
+                    "libId": 31,
+                    "name": "deno0",
+                    "visible": true,
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            "animations": [
+                {
+                    "name": "default",
+                    "autoPlay": false,
+                    "duration": 60,
+                    "loop": true,
+                    "children": {
+                        "3110": {
+                            "duration": 60,
+                            "loop": true,
+                            "timelines": [
+                                {
+                                    "type": "x",
+                                    "loop": true,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 0
+                                        },
+                                        {
+                                            "frame": 60,
+                                            "value": 100
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "alpha",
+                                    "loop": true,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 1
+                                        },
+                                        {
+                                            "frame": 60,
+                                            "value": 0.1
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            ],
+            "actionList":[
+                {
+                    "type": 1,
+                    "execute":[
+                        {
+                            "type":32,
+                            "name": "default",
+                            "frame": 30
+                        }
+                    ]
+                }
+            ]
+        },
+        "312": {
+            "id": 312,
+            "name": "deno0",
+            "type": "custom",
+            "children": [
+                {
+                    "id": 3120,
+                    "libId": 31,
+                    "name": "deno0",
+                    "visible": true,
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            "animations": [
+                {
+                    "name": "default",
+                    "autoPlay": false,
+                    "duration": 60,
+                    "loop": false,
+                    "children": {
+                        "3120": {
+                            "duration": 60,
+                            "loop": true,
+                            "timelines": [
+                                {
+                                    "type": "x",
+                                    "loop": false,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 0
+                                        },
+                                        {
+                                            "frame": 60,
+                                            "value": 100
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "alpha",
+                                    "loop": true,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 1
+                                        },
+                                        {
+                                            "frame": 60,
+                                            "value": 0.1
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "313": {
+            "id": 313,
+            "name": "deno0",
+            "type": "custom",
+            "children": [
+                {
+                    "id": 3130,
+                    "libId": 31,
+                    "name": "deno0",
+                    "visible": true,
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            "animations": [
+                {
+                    "name": "default",
+                    "autoPlay": true,
+                    "duration": 60,
+                    "loop": true,
+                    "children": {
+                        "3130": {
+                            "duration": 60,
+                            "loop": true,
+                            "timelines": [
+                                {
+                                    "type": "x",
+                                    "loop": false,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 0
+                                        },
+                                        {
+                                            "frame": 60,
+                                            "value": 100
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "alpha",
+                                    "loop": true,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 1
+                                        },
+                                        {
+                                            "frame": 30,
+                                            "value": 0.1
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "314": {
+            "id": 314,
+            "name": "deno0",
+            "type": "custom",
+            "children": [
+                {
+                    "id": 3140,
+                    "libId": 31,
+                    "name": "deno0",
+                    "visible": true,
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            "animations": [
+                {
+                    "name": "default",
+                    "autoPlay": true,
+                    "duration": 60,
+                    "loop": true,
+                    "children": {
+                        "3140": {
+                            "duration": 60,
+                            "loop": true,
+                            "timelines": [
+                                {
+                                    "type": "x",
+                                    "loop": false,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 0
+                                        },
+                                        {
+                                            "frame": 60,
+                                            "value": 100
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "alpha",
+                                    "loop": false,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 1
+                                        },
+                                        {
+                                            "frame": 30,
+                                            "value": 0.1
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "315": {
+            "id": 315,
+            "name": "deno0",
+            "type": "custom",
+            "children": [
+                {
+                    "id": 3150,
+                    "libId": 31,
+                    "name": "deno0",
+                    "visible": true,
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            "animations": [
+                {
+                    "name": "default",
+                    "autoPlay": true,
+                    "duration": 60,
+                    "loop": true,
+                    "children": {
+                        "3150": {
+                            "duration": 60,
+                            "loop": true,
+                            "timelines": [
+                                {
+                                    "type": "x",
+                                    "loop": true,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 0
+                                        },
+                                        {
+                                            "frame": 30,
+                                            "value": 100
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "alpha",
+                                    "loop": true,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 1
+                                        },
+                                        {
+                                            "frame": 30,
+                                            "value": 0.1
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "316": {
+            "id": 316,
+            "name": "deno0",
+            "type": "custom",
+            "children": [
+                {
+                    "id": 3160,
+                    "libId": 31,
+                    "name": "deno0",
+                    "visible": true,
+                    "x": 0,
+                    "y": 0
+                }
+            ],
+            "animations": [
+                {
+                    "name": "default",
+                    "autoPlay": true,
+                    "duration": 60,
+                    "loop": true,
+                    "children": {
+                        "3160": {
+                            "duration": 60,
+                            "loop": true,
+                            "timelines": [
+                                {
+                                    "type": "x",
+                                    "loop": false,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 0
+                                        },
+                                        {
+                                            "frame": 30,
+                                            "value": 100
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "alpha",
+                                    "loop": false,
+                                    "frames": [
+                                        {
+                                            "frame": 0,
+                                            "curve": [1],
+                                            "value": 1
+                                        },
+                                        {
+                                            "frame": 30,
+                                            "value": 0.1
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "37": {
+            "id": 37,
+            "name": "question1",
+            "type": "custom",
+            "children": [
+                {
+                    "id": 401,
+                    "libId": 310,
+                    "name": "deno",
+                    "visible": true,
+                    "x": 50,
+                    "y": 30
+                },
+                {
+                    "id": 402,
+                    "libId": "0",
+                    "name": "text",
+                    "visible": true,
+                    "x": 200,
+                    "y": 50,
+                    "text":"gotoPlay('default',30)"
+                },
+                {
+                    "id": 403,
+                    "libId": 311,
+                    "name": "deno",
+                    "visible": true,
+                    "x": 50,
+                    "y": 80
+                },
+                {
+                    "id": 404,
+                    "libId": "0",
+                    "name": "text",
+                    "visible": true,
+                    "x": 200,
+                    "y": 100,
+                    "text":"gotoStop('default',30)"
+                }
+            ]
+            
+        }
+    },
+    "scenes": [
+        {
+            "id": 80,
+            "libId": 37,
+            "transition": {
+                "type": "none",
+                "duration": 200
+            }
+        }
+    ]
+}
