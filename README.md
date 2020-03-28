@@ -1,5 +1,4 @@
 <p align="center"><a href="https://vipkid-edu.github.io/vf-docs/" target="_blank" rel="noopener noreferrer"><img src="https://vipkid-edu.github.io/vf-docs/logo_x3.png" alt="VF logo"></a></p>
-<h2 align="center">Welcome to vf.js</h2>
 
 ## 介绍
 
