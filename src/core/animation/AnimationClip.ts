@@ -90,11 +90,29 @@ export class AnimationClip {
                         }
                         break;
                     default:
-                        (targetDisplay as any)[timeline.type] = curValue;
+                        if (timeline.type.indexOf('filter') === 0) {
+                            this.applyFilter(targetDisplay, timeline.type, curValue);
+                        } else {
+                            (targetDisplay as any)[timeline.type] = curValue;
+                        }
                         break;
                     
                 }
             }
+        }
+        private applyFilter(display: gui.DisplayObject, filterKey: string, value: any): void {
+            const filterKeys = filterKey.split('.');
+            let target = display as any;
+            for (let i: number = 0, len: number = filterKeys.length; i < len - 1 ; i++) {
+                const curkey = filterKeys[i];
+                if (target && target[curkey]) {
+                    target = target[curkey];
+                }
+            }
+            if (target) {
+                target[filterKeys[filterKeys.length - 1]] = value;
+            }
+            
         }
     }
 

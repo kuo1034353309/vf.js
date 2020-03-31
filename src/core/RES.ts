@@ -69,59 +69,12 @@ export class RES extends PIXI.utils.EventEmitter {
     public async loadData(data: IVFDataV1) {
         this.data = data;
         if (this.data && this.data.assets) {
-            await this.loadAllScript(); //先加载脚本 loadAllAsset 非同步，后续单独提取assets同步加载，此处js并不算入进度
+            await this.loadAllScript(); // 先加载脚本 loadAllAsset 非同步，后续单独提取assets同步加载，此处js并不算入进度
             await this.loadAllAsset();
         } else {
             this.emit(SceneEvent.LoadComplete, null);
         }
 
-    }
-
-    private async loadAllScript() {
-        const assets = this.data.assets;
-        const cdns = this.stage.config.cdns;
-        let assetsItem: IAsset;
-        for (const id in assets) {
-            assetsItem = assets[id];
-            if (assetsItem && assetsItem.type === AssetType.JS && assetsItem.name) {
-                const cls = await importScript(assetsItem.url, cdns, assetsItem.name).catch((e: IEvent) => {
-                    this.stage.systemEvent.error(e);
-                });
-                if (cls) {
-                    if (cls.isFilter) {
-                        gui.Filter.list.set(assetsItem.name, cls);//添加到滤镜列表
-                    }
-                }
-            }
-        }
-    }
-
-    private async loadAllAsset() {
-        const assets = this.data.assets;
-        let assetsItem: IAsset;
-        for (const id in assets) {
-            if (assets[id]) {
-                assetsItem = assets[id];
-                if (assetsItem === undefined || assetsItem.type === undefined || assetsItem.url === undefined) {
-                    this.stage.systemEvent.emitError('E0001', [id]);
-                    continue;
-                }
-                if (assetsItem.url === '') {
-                    this.stage.systemEvent.emitError('E0003', [id], EventLevel.WARNING);
-                    continue;
-                }
-                if (assetsItem.type === AssetType.SOUND && this.stage.config.vfvars.useNativeAudio) {
-                    this.stage.systemEvent.emitError('S0004', [id], EventLevel.WARNING);
-                    continue;
-                }
-                if (assetsItem.type === AssetType.JS) {
-                    continue;
-                }
-                assetsItem.id = id;
-                this.addResource(assets[id]);
-            }
-        }
-        this.loadResources();
     }
 
     public createFirstScene(vfStage: VFStage): VFScene | null {
@@ -198,9 +151,9 @@ export class RES extends PIXI.utils.EventEmitter {
         if (id == undefined) {
             return undefined;
         }
-        //单独写组件ID为创建一个组件复制到显示对象，如果是从场景ID - ID - ID为查找
+        // 单独写组件ID为创建一个组件复制到显示对象，如果是从场景ID - ID - ID为查找
         if (id.toString().substr(0, 4) === 'this' && target && target.parent instanceof VFComponent) {
-            const childIds = id.split("#");
+            const childIds = id.split('#');
             childIds.shift();
             let child = target.parent as VFComponent;
             while (childIds.length > 0 && child) {
@@ -236,6 +189,53 @@ export class RES extends PIXI.utils.EventEmitter {
             return assetData.sound as PIXI.sound.Sound;
         }
         return undefined;
+    }
+
+    private async loadAllScript() {
+        const assets = this.data.assets;
+        const cdns = this.stage.config.cdns;
+        let assetsItem: IAsset;
+        for (const id in assets) {
+            assetsItem = assets[id];
+            if (assetsItem && assetsItem.type === AssetType.JS && assetsItem.name) {
+                const cls = await importScript(assetsItem.url, cdns, assetsItem.name).catch((e: IEvent) => {
+                    this.stage.systemEvent.error(e);
+                });
+                if (cls) {
+                    if (cls.isFilter) {
+                        gui.Filter.list.set(assetsItem.name, cls); // 添加到滤镜列表
+                    }
+                }
+            }
+        }
+    }
+
+    private async loadAllAsset() {
+        const assets = this.data.assets;
+        let assetsItem: IAsset;
+        for (const id in assets) {
+            if (assets[id]) {
+                assetsItem = assets[id];
+                if (assetsItem === undefined || assetsItem.type === undefined || assetsItem.url === undefined) {
+                    this.stage.systemEvent.emitError('E0001', [id]);
+                    continue;
+                }
+                if (assetsItem.url === '') {
+                    this.stage.systemEvent.emitError('E0003', [id], EventLevel.WARNING);
+                    continue;
+                }
+                if (assetsItem.type === AssetType.SOUND && this.stage.config.vfvars.useNativeAudio) {
+                    this.stage.systemEvent.emitError('S0004', [id], EventLevel.WARNING);
+                    continue;
+                }
+                if (assetsItem.type === AssetType.JS) {
+                    continue;
+                }
+                assetsItem.id = id;
+                this.addResource(assets[id]);
+            }
+        }
+        this.loadResources();
     }
 
     private initGlobalVariable(): void {
@@ -298,7 +298,7 @@ export class RES extends PIXI.utils.EventEmitter {
                 case ComponentType.CUSTOM:
                     component = this.createCustomComponent(libId, id);
                     if (componentData.interactabled !== undefined) {
-                        component.interactabled = componentData.interactabled; //性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
+                        component.interactabled = componentData.interactabled; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
                     }
                     break;
                 default:
@@ -415,10 +415,28 @@ export class RES extends PIXI.utils.EventEmitter {
                     case 'actions':
                         break;
                     default:
-                        (display as any)[key] = (data as any)[key];
+                        if (key.indexOf('filter') === 0) {
+                            this.applyFilter(display, key, (data as any)[key]);
+                        } else {
+                            (display as any)[key] = (data as any)[key];
+                        }
                         break;
                 }
             }
+        }
+    }
+
+    private applyFilter(display: gui.DisplayObject, filterKey: string, value: any): void {
+        const filterKeys = filterKey.split('.');
+        let target = display as any;
+        for (let i: number = 0, len: number = filterKeys.length; i < len - 1 ; i++) {
+            const curkey = filterKeys[i];
+            if (target && target[curkey]) {
+                target = target[curkey];
+            }
+        }
+        if (target) {
+            target[filterKeys[filterKeys.length - 1]] = value;
         }
     }
 
@@ -427,7 +445,7 @@ export class RES extends PIXI.utils.EventEmitter {
             this._loader = new PIXI.Loader();
         }
         const loader = this._loader;
-        const urls:any = {};
+        const urls: any = {};
         this._loadNum = 0;
         const binaryOptions = {
             loadType: PIXI.LoaderResource.LOAD_TYPE.XHR,
@@ -459,16 +477,18 @@ export class RES extends PIXI.utils.EventEmitter {
                 }
                 assetFail.count++;
             } else {
-                this._assetFails.set(loaderResource.name, { id: loaderResource.name, url: loaderResource.url, extension: loaderResource.extension, count: 1 });
+                this._assetFails.set(loaderResource.name, { id: loaderResource.name, 
+                                                            url: loaderResource.url, 
+                                                            extension: loaderResource.extension, count: 1 });
             }
 
         });
         loader.on('complete', (loader2: PIXI.Loader, resources: any) => {
             this.pixiResources = resources;
             if (!this.loadFailResources()) {
-                for(let key in urls){
-                    let id = urls[key].shift();
-                    while(urls[key].length>0){
+                for (const key in urls) {
+                    const id = urls[key].shift();
+                    while (urls[key].length > 0) {
                         this.pixiResources[urls[key].shift()] = resources[id];
                     }
                 }
@@ -491,7 +511,7 @@ export class RES extends PIXI.utils.EventEmitter {
         const loader = this._loader;
         const cdns = this.stage.config.cdns;
 
-        this._assetFails.forEach(res => {
+        this._assetFails.forEach((res) => {
             const type = getAssetType(res.extension);
             let cdn: any[];
             switch (type) {
@@ -503,7 +523,7 @@ export class RES extends PIXI.utils.EventEmitter {
                     cdn = cdns.media;
                     break;
                 default:
-                    cdn = cdns.default
+                    cdn = cdns.default;
             }
             let url = cdn[(res.count - 1) % cdn.length];
             if (res.url.indexOf('http') !== -1 || res.url.indexOf('//') === 0) {

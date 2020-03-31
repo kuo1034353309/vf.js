@@ -332,6 +332,10 @@ export class Animation {
                     timeline = new EventTimeline();
                     this.parseFrames(timeline, data.frames, EventFrame);
                     break;
+                default:
+                    timeline = new Timeline<number>();
+                    this.parseFrames(timeline, data.frames, NumberFrame);
+                    break;
             }
             if (timeline) {
                 timeline.type = data.type;
