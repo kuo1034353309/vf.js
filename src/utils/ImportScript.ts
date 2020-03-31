@@ -45,7 +45,6 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
     return new Promise((resolve, reject) => {
 
         let errorLoadCount = 0;
-        const exports = window.module.exports;
 
         const loadScript = function (index: number) {
             let s = document.createElement('script');
@@ -62,6 +61,7 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
                 loadCompleteCallBack();
             }
             if(moduleName){
+                const exports = window.module.exports;
                 if(exports.hasOwnProperty(moduleName)){
                     _namespace[moduleName] = exports[moduleName];
                     return resolve(_namespace[moduleName]);
