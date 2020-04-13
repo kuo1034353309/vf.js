@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /**
  * status: 状态变化
  * 

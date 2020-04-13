@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { VFStage } from './display/VFStage';
 import calculateUpdatePlayerSize from './utils/CalculatePlayerSize';
 import importScript from './utils/ImportScript';
@@ -11,7 +12,7 @@ import { EventLevel } from './event/EventLevel';
 import ErrorDisplay from './error/ErrorDisplay';
 import readFileSync from './utils/readFileSync';
 
-declare var VFBUILDDATE:any; //webpack全局变量，prod环境使用
+declare var VFBUILDDATE: any; //webpack全局变量，prod环境使用
 
 export class Engine implements EngineAPI {
 
@@ -64,7 +65,7 @@ export class Engine implements EngineAPI {
     private config: Config;
 
     constructor(options: IVFOptions) {
-        console.group('VF Engine: - v'+options.engineVersion);
+        console.group('VF Engine: - v' + options.engineVersion);
         // 1、启动后检查并初始化运行环境
         Engine.system = System.getInstance();
         // 影响卸载与垃圾回收
@@ -83,7 +84,7 @@ export class Engine implements EngineAPI {
         console.groupEnd();
         //  3、如果配了资源地址，则启动数据加载
         if (this.config.src) { this.play(this.config.src); }
-        
+
     }
 
     public async play(src?: any) {
@@ -293,7 +294,7 @@ export class Engine implements EngineAPI {
                     const conversionPath = src.substr(0, src.lastIndexOf('/')) + '/' + data.conversion + '?' + version;
                     await importScript(conversionPath).catch((e: IEvent) => {
                         this.onStatus(e);
-                    });;
+                    });
                     const vFConversion = await new (window as any).VFConversion();
                     await vFConversion.analysis(this.config.conversionData, this._data);
                 } else {
@@ -338,17 +339,17 @@ export class Engine implements EngineAPI {
             return;
         }
         switch (msg.code) {
-            case VFStateCode.INIT:
-                this.onInit();
-                break;
-            case VFStateCode.READY:
-                this.onReady();
-                break;
-            case VFStateCode.SCENE_CREATE:
-                this.onSceneCreate();
-                break;
-            default:
-                this.onMessage(msg);
+        case VFStateCode.INIT:
+            this.onInit();
+            break;
+        case VFStateCode.READY:
+            this.onReady();
+            break;
+        case VFStateCode.SCENE_CREATE:
+            this.onSceneCreate();
+            break;
+        default:
+            this.onMessage(msg);
         }
     }
 

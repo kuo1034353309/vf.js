@@ -8,6 +8,16 @@
     "loadMode": "all",
     "baseUrl": "/test/data/",
     "assets": {
+        "001":{
+            "name": "FilterAlpha",
+            "type": "js",
+            "url": "http://127.0.0.1:5500/FilterAlpha.js"
+        },
+        "002":{
+            "name": "FilterGlow",
+            "type": "js",
+            "url": "http://127.0.0.1:5500/FilterGlow.js"
+        },
         "0":{
             "id": 0,
             "name": "ta04",
