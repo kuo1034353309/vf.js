@@ -2,7 +2,7 @@ import { VFStage } from './VFStage';
 import { ITransitionData } from '../core/model/IVFData';
 import { VFComponent } from './VFComponent';
 
-export class VFScene extends gui.Container {
+export class VFScene extends vf.gui.Container {
 
         public vfStage: VFStage;
         public id: string = '-1';

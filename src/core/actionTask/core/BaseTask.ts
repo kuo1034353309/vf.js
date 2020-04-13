@@ -4,7 +4,7 @@ export enum TaskEvent {
     EVENT_BREAK = 'EVENT_BREAK',
     FUNCTION_RUN_COMPLETE = 'FUNCTION_RUN_COMPLETE',
 }
-export class BaseTask extends PIXI.utils.EventEmitter {
+export class BaseTask extends vf.utils.EventEmitter {
 
     protected _isRunning: boolean = false;
     protected _isPaused: boolean = false;

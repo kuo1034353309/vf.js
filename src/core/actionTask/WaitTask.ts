@@ -7,7 +7,7 @@ export class WaitTask extends BaseTask {
         
     public component: VFComponent;
     public data: IAction;
-    private timeoutHandler?: gui.Scheduler;
+    private timeoutHandler?: vf.gui.Scheduler;
 
     constructor(component: VFComponent, data: IAction) {
         super();
@@ -35,7 +35,7 @@ export class WaitTask extends BaseTask {
     public run(): void {
         super.run();
         const timeout = this.timeout;
-        this.timeoutHandler = gui.Scheduler.setTimeout(timeout, () => {
+        this.timeoutHandler = vf.gui.Scheduler.setTimeout(timeout, () => {
             if (this.timeoutHandler) {
                 this.timeoutHandler.stop();
                 this.timeoutHandler = undefined;

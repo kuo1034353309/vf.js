@@ -126,16 +126,16 @@ export interface IDisplayComponent extends IComponent {
 
 }
 
-export interface IImage extends gui.Image {
+export interface IImage extends vf.gui.Image {
 
 }
-export interface IText extends gui.Label {
+export interface IText extends vf.gui.Label {
 
 }
-export interface IRadio extends gui.CheckBox {
+export interface IRadio extends vf.gui.CheckBox {
 
 }
-export interface IRect extends gui.Rect {
+export interface IRect extends vf.gui.Rect {
 
 }
 export interface IAnimation {
@@ -260,8 +260,8 @@ export interface IScene {
 }
 export interface ISoundTrackMedia {
     id: string;
-    media: PIXI.sound.IMediaInstance;
-    sound: PIXI.sound.Sound;
+    media: vf.sound.IMediaInstance;
+    sound: vf.sound.Sound;
 }
 export type AllComponent = (IComponent | IDisplayComponent | ICustomComponent |
     IRadio | IImage | IText | IRect);

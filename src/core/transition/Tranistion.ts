@@ -20,9 +20,9 @@ import { EventLevel } from '../../event/EventLevel';
 export class Transition {
 
     private vfStage: VFStage;
-    private prevTexture: PIXI.RenderTexture;
+    private prevTexture: vf.RenderTexture;
     private data: ITransitionData;
-    constructor(vfStage: VFStage, prevTexture: PIXI.RenderTexture, data: ITransitionData) {
+    constructor(vfStage: VFStage, prevTexture: vf.RenderTexture, data: ITransitionData) {
         this.vfStage = vfStage;
         this.prevTexture = prevTexture;
         this.data = data;
@@ -37,7 +37,7 @@ export class Transition {
             transition.applyTranisition(this.vfStage.container);
             const tween = this.vfStage.tween;
             tween.setObject(transition);
-            tween.once(gui.Tween.Event.complete, () => {
+            tween.once(vf.gui.Tween.Event.complete, () => {
                 transition.dispose();
                 systemEvent.emit(EventType.STATUS, {
                     code: SceneEvent.TransitionEnd, level: EventLevel.STATUS, data: null,

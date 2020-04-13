@@ -2,17 +2,17 @@ import { AbstractFilter } from './AbstractFilter';
 
 
 export interface PageCurlFilterUniforms {
-        filterMatrix: PIXI.Matrix;
+        filterMatrix: vf.Matrix;
         resolution: number;
-        previousTexture: PIXI.RenderTexture;
+        previousTexture: vf.RenderTexture;
         progress: number;
     }
 
 export class PageCurlFilter extends AbstractFilter {
 
         private static readonly linearBlurUniforms = {
-            filterMatrix:    PIXI.Matrix.TEMP_MATRIX,
-            resolution:      PIXI.settings.RESOLUTION,
+            filterMatrix:    vf.Matrix.TEMP_MATRIX,
+            resolution:      vf.settings.RESOLUTION,
             previousTexture: null,
             progress:        0.0,
         };

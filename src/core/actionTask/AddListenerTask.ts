@@ -10,7 +10,7 @@ export class AddListenerTask extends ContainerTask {
         public data: IActionAddEventListener;
         public eventName: string;
         public component: VFComponent;
-        protected _component: gui.DisplayObject | undefined;
+        protected _component: vf.gui.DisplayObject | undefined;
         protected _loopComplete: boolean;
         protected system: boolean;
         protected global: boolean;

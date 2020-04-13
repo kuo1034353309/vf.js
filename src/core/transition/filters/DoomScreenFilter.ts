@@ -4,7 +4,7 @@ import { AbstractFilter } from './AbstractFilter';
 
 export interface DoomScreenFilterUniforms {
         resolution: number;
-        previousTexture: PIXI.RenderTexture;
+        previousTexture: vf.RenderTexture;
         progress: number;
         barWidth: number;
         amplitude: number;
@@ -12,10 +12,10 @@ export interface DoomScreenFilterUniforms {
         frequency: number;
     }
 
-export class DoomScreenFilter extends PIXI.Filter implements ITransition {
+export class DoomScreenFilter extends vf.Filter implements ITransition {
 
         private static readonly linearblurUniforms = {
-            resolution:      PIXI.settings.RESOLUTION,
+            resolution:      vf.settings.RESOLUTION,
             previousTexture: null,
             progress:        0.0,
             barWidth:        10,
@@ -73,23 +73,23 @@ export class DoomScreenFilter extends PIXI.Filter implements ITransition {
             }
         `;
 
-        private target?: PIXI.DisplayObject;
+        private target?: vf.DisplayObject;
         constructor() {
             super(AbstractFilter.vertexSrc, DoomScreenFilter.fragmentSrc, DoomScreenFilter.linearblurUniforms);
             this.padding = 0;
         }
 
         /**
-         * @param {PIXI.FilterManager} filterManager
-         * @param {PIXI.RenderTarget} input
-         * @param {PIXI.RenderTarget} output
+         * @param {vf.FilterManager} filterManager
+         * @param {vf.RenderTarget} input
+         * @param {vf.RenderTarget} output
          * @override
          */
-        public apply(filterManager: PIXI.systems.FilterSystem, input: PIXI.RenderTexture, output: PIXI.RenderTexture) {
-            const maskMatrix = new PIXI.Matrix();
+        public apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture) {
+            const maskMatrix = new vf.Matrix();
             // filterManager.calculateNormalizedScreenSpaceMatrix(maskMatrix);
             this.uniforms.filterMatrix = maskMatrix;
-            this.uniforms.resolution = PIXI.settings.RESOLUTION;
+            this.uniforms.resolution = vf.settings.RESOLUTION;
             super.apply(filterManager, input, output, false);
         }
 
@@ -119,7 +119,7 @@ export class DoomScreenFilter extends PIXI.Filter implements ITransition {
             return this.uniforms.progress;
         }
 
-        public applyTranisition(target: PIXI.DisplayObject): void {
+        public applyTranisition(target: vf.DisplayObject): void {
             this.target = target;
             this.target.filters = [this];
         }

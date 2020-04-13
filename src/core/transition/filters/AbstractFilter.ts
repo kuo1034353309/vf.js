@@ -2,13 +2,13 @@ import { ITransition } from '../ITransition';
 
 
 export interface AbstractFilterUniforms {
-        filterMatrix: PIXI.Matrix;
+        filterMatrix: vf.Matrix;
         resolution: number;
-        previousTexture: PIXI.RenderTexture;
+        previousTexture: vf.RenderTexture;
         progress: number;
     }
 
-export class AbstractFilter extends PIXI.Filter implements ITransition {
+export class AbstractFilter extends vf.Filter implements ITransition {
 
         public static readonly vertexSrc: string = `
             precision highp float;
@@ -36,13 +36,13 @@ export class AbstractFilter extends PIXI.Filter implements ITransition {
         `;
 
         private static readonly crossFadeUniforms = {
-            filterMatrix: PIXI.Matrix.TEMP_MATRIX,
-            resolution: PIXI.settings.RESOLUTION,
+            filterMatrix: vf.Matrix.TEMP_MATRIX,
+            resolution: vf.settings.RESOLUTION,
             previousTexture:  null,
             progress: 0.0,
         };
 
-        private target?: PIXI.DisplayObject;
+        private target?: vf.DisplayObject;
 
         constructor(vertexSrc?: string, fragmentSrc?: string, uniforms?: any) {
             super(
@@ -52,11 +52,11 @@ export class AbstractFilter extends PIXI.Filter implements ITransition {
             );
         }
 
-        public apply(filterManager: PIXI.systems.FilterSystem, input: PIXI.RenderTexture, output: PIXI.RenderTexture) {
-            const maskMatrix = new PIXI.Matrix();
+        public apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture) {
+            const maskMatrix = new vf.Matrix();
             (filterManager as any).calculateNormalizedScreenSpaceMatrix(maskMatrix);
             this.uniforms.filterMatrix = maskMatrix;
-            this.uniforms.resolution = PIXI.settings.RESOLUTION;
+            this.uniforms.resolution = vf.settings.RESOLUTION;
             // super.apply(filterManager, input, output, false); // 这样写ipad下会报错
             filterManager.applyFilter(this, input, output, false);
         }
@@ -74,7 +74,7 @@ export class AbstractFilter extends PIXI.Filter implements ITransition {
             return this.uniforms.progress;
         }
 
-        public applyTranisition(target: PIXI.DisplayObject): void {
+        public applyTranisition(target: vf.DisplayObject): void {
             this.target = target;
             this.target.filters = [this];
         }

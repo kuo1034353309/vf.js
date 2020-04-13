@@ -5,8 +5,8 @@ import { EventTimeline } from './EventTimeline';
 
 export class AnimationClip {
 
-        private get targetDisplay(): gui.DisplayObject {
-            return this.target as gui.DisplayObject;
+        private get targetDisplay(): vf.gui.DisplayObject {
+            return this.target as vf.gui.DisplayObject;
         }
 
         public set curTime(v: number) {
@@ -72,7 +72,7 @@ export class AnimationClip {
                         targetDisplay.alpha = curValue;
                         break;
                     case TimelineType.TEXT:
-                        (targetDisplay as gui.Label).text = curValue;
+                        (targetDisplay as vf.gui.Label).text = curValue;
                         break;
                     case TimelineType.ENABLED:
                         targetDisplay.enabled = curValue;
@@ -100,7 +100,7 @@ export class AnimationClip {
                 }
             }
         }
-        private applyFilter(display: gui.DisplayObject, filterKey: string, value: any): void {
+        private applyFilter(display: vf.gui.DisplayObject, filterKey: string, value: any): void {
             const filterKeys = filterKey.split('.');
             let target = display as any;
             for (let i: number = 0, len: number = filterKeys.length; i < len - 1 ; i++) {

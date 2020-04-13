@@ -1,5 +1,14 @@
-var vfgui =
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else {
+		var a = factory();
+		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
+	}
+})(window, function() {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -117,33 +126,30 @@ exports.Filter = Filter_1.Filter;
  *
  * 设置checkGroup后，进行分组。 分组后，可理解为复选框。
  *
- * @example let container = new gui.Container();
+ * @example let container = new vf.gui.Container();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestContainer
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestContainer
  */
 var Container_1 = __webpack_require__(/*! ./display/Container */ "./src/display/Container.ts");
 exports.Container = Container_1.Container;
 /**
  * 滚动容器
  *
- * @example let scrollingContainer = new gui.ScrollingContainer();
+ * @example let scrollingContainer = new vf.gui.ScrollingContainer();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestRect
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestRect
  */
 var ScrollingContainer_1 = __webpack_require__(/*! ./display/ScrollingContainer */ "./src/display/ScrollingContainer.ts");
 exports.ScrollingContainer = ScrollingContainer_1.ScrollingContainer;
 /**
  * 图片
  *
- * @example let image = new gui.Image();
+ * @example let image = new vf.gui.Image();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestImage
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestImage
  */
 var Image_1 = __webpack_require__(/*! ./display/Image */ "./src/display/Image.ts");
 exports.Image = Image_1.Image;
@@ -152,11 +158,10 @@ exports.Image = Image_1.Image;
  *
  * 支持使用texturepacker导出以及处理轴点
  *
- * @example let spriteAnimated = new gui.SpriteAnimated();
+ * @example let spriteAnimated = new vf.gui.SpriteAnimated();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSpriteAnimated
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestSpriteAnimated
  */
 var SpriteAnimated_1 = __webpack_require__(/*! ./display/SpriteAnimated */ "./src/display/SpriteAnimated.ts");
 exports.SpriteAnimated = SpriteAnimated_1.SpriteAnimated;
@@ -167,44 +172,40 @@ exports.SpriteAnimated = SpriteAnimated_1.SpriteAnimated;
  *
  * 文本没有宽高，自适应
  *
- * @example let label = new gui.Label();
+ * @example let label = new vf.gui.Label();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestLabel
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestLabel
  */
 var Label_1 = __webpack_require__(/*! ./display/Label */ "./src/display/Label.ts");
 exports.Label = Label_1.Label;
 /**
  * 文本输入
  *
- * @example let textInput = new gui.TextInput(true|false);//单行或多行
+ * @example let textInput = new vf.gui.TextInput(true|false);//单行或多行
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTextInput
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTextInput
  */
 var TextInput_1 = __webpack_require__(/*! ./display/TextInput */ "./src/display/TextInput.ts");
 exports.TextInput = TextInput_1.TextInput;
 /**
  * 滑动条/进度条
  *
- * @example let slider = new gui.Slider();
+ * @example let slider = new vf.gui.Slider();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSlider
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestSlider
  */
 var Slider_1 = __webpack_require__(/*! ./display/Slider */ "./src/display/Slider.ts");
 exports.Slider = Slider_1.Slider;
 /**
  * 按钮
  *
- * @example let button = new gui.Button();
+ * @example let button = new vf.gui.Button();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestButton
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestButton
  */
 var Button_1 = __webpack_require__(/*! ./display/Button */ "./src/display/Button.ts");
 exports.Button = Button_1.Button;
@@ -213,55 +214,50 @@ exports.Button = Button_1.Button;
  *
  * 设置checkGroup后，进行分组。 分组后，可理解为复选框。
  *
- * @example let checkBox = new gui.CheckBox();
+ * @example let checkBox = new vf.gui.CheckBox();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestCheckBox
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCheckBox
  */
 var CheckBox_1 = __webpack_require__(/*! ./display/CheckBox */ "./src/display/CheckBox.ts");
 exports.CheckBox = CheckBox_1.CheckBox;
 /**
  * 绘制矩形或圆角矩形
  *
- * @example let rect = new gui.Rect();
+ * @example let rect = new vf.gui.Rect();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestRect
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestRect
  */
 var Rect_1 = __webpack_require__(/*! ./display/Rect */ "./src/display/Rect.ts");
 exports.Rect = Rect_1.Rect;
 /**
  * 绘制矩形或圆角矩形
  *
- * @example let rect = new gui.Circle();
+ * @example let rect = new vf.gui.Circle();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestCircle
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCircle
  */
 var Circle_1 = __webpack_require__(/*! ./display/Circle */ "./src/display/Circle.ts");
 exports.Circle = Circle_1.Circle;
 /**
  * 矢量绘制
  *
- * @example let graphics = new gui.Graphics();
+ * @example let graphics = new vf.gui.Graphics();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var Graphics_1 = __webpack_require__(/*! ./display/Graphics */ "./src/display/Graphics.ts");
 exports.Graphics = Graphics_1.Graphics;
 /**
  * 跟随划线（鼠标或触摸按下时）
  *
- * @example let graphics = new gui.FollowLine();
+ * @example let graphics = new vf.gui.FollowLine();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var FollowLine_1 = __webpack_require__(/*! ./display/FollowLine */ "./src/display/FollowLine.ts");
 exports.FollowLine = FollowLine_1.FollowLine;
@@ -269,55 +265,40 @@ exports.FollowLine = FollowLine_1.FollowLine;
  * 连线组件
  *
  *
- * @example let connectLine = new gui.ConnectLine();
+ * @example let connectLine = new vf.gui.ConnectLine();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestConnectLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestConnectLine
  */
 var ConnectLine_1 = __webpack_require__(/*! ./display/ConnectLine */ "./src/display/ConnectLine.ts");
 exports.ConnectLine = ConnectLine_1.ConnectLine;
 /**
- * 音频播放组件
- *
- * @example let sound = new gui.Sound();
- *
- * @namespace gui
- *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSound
- */
-var Sound_1 = __webpack_require__(/*! ./display/Sound */ "./src/display/Sound.ts");
-exports.Sound = Sound_1.Sound;
-/**
  * 完整的缓动曲线列表
  *
- * @example gui.Easing.Linear.None;
+ * @example vf.gui.Easing.Linear.None;
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTween
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
  */
 var Easing_1 = __webpack_require__(/*! ./tween/Easing */ "./src/tween/Easing.ts");
 exports.Easing = Easing_1.Easing;
 /**
  * 缓动动画
  *
- * @example let tween = new gui.Tween(myObject).to({width:'300px'}, 2000).start()
+ * @example let tween = new vf.gui.Tween(myObject).to({width:'300px'}, 2000).start()
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTween
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
  */
 var Tween_1 = __webpack_require__(/*! ./tween/Tween */ "./src/tween/Tween.ts");
 exports.Tween = Tween_1.Tween;
 /**
  * 基于帧的时间轴控制类
  *
- * @example let timeline = new gui.Timeline();
+ * @example let timeline = new vf.gui.Timeline();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var Timeline_1 = __webpack_require__(/*! ./tween/Timeline */ "./src/tween/Timeline.ts");
 exports.Timeline = Timeline_1.Timeline;
@@ -380,7 +361,7 @@ var ContainerBase = /** @class */ (function (_super) {
         _super.prototype.render.call(this, renderer);
     };
     return ContainerBase;
-}(PIXI.Container));
+}(vf.Container));
 exports.ContainerBase = ContainerBase;
 
 
@@ -409,12 +390,13 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable @typescript-eslint/no-explicit-any */
 var UIKeys = __webpack_require__(/*! ./DisplayLayoutKeys */ "./src/core/DisplayLayoutKeys.ts");
 var DisplayLayoutValidator_1 = __webpack_require__(/*! ./DisplayLayoutValidator */ "./src/core/DisplayLayoutValidator.ts");
 var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction/Index.ts");
 var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
 var DisplayObjectAbstract_1 = __webpack_require__(/*! ./DisplayObjectAbstract */ "./src/core/DisplayObjectAbstract.ts");
-exports.$tempLocalBounds = new PIXI.Rectangle();
+exports.$tempLocalBounds = new vf.Rectangle();
 /**
  * UI 布局的基础属性类
  */
@@ -1941,7 +1923,7 @@ var UIValidator = /** @class */ (function (_super) {
         this.doPhasedInstantiation();
     };
     return UIValidator;
-}(PIXI.utils.EventEmitter));
+}(vf.utils.EventEmitter));
 var validatorShared = new UIValidator();
 exports.default = validatorShared;
 
@@ -2131,8 +2113,8 @@ var DisplayObject = /** @class */ (function (_super) {
             }
             this._blendMode = value;
             this.container.children.forEach(function (childrenItem) {
-                if (childrenItem instanceof PIXI.Sprite) {
-                    childrenItem.blendMode = value || PIXI.BLEND_MODES.NORMAL;
+                if (childrenItem instanceof vf.Sprite) {
+                    childrenItem.blendMode = value || vf.BLEND_MODES.NORMAL;
                 }
             });
         },
@@ -2188,7 +2170,7 @@ var DisplayObject = /** @class */ (function (_super) {
         set: function (value) {
             var container = this.container;
             if (this.blurFilter === undefined) {
-                this.blurFilter = new PIXI.filters.BlurFilter(8, 1, 1);
+                this.blurFilter = new vf.filters.BlurFilter(8, 1, 1);
                 container.filters = [this.blurFilter];
             }
             this.blurFilter.blur = value;
@@ -2203,7 +2185,7 @@ var DisplayObject = /** @class */ (function (_super) {
         set: function (value) {
             var container = this.container;
             if (this.grayscaleFilter === undefined) {
-                this.grayscaleFilter = new PIXI.filters.ColorMatrixFilter();
+                this.grayscaleFilter = new vf.filters.ColorMatrixFilter();
                 container.filters = [this.grayscaleFilter];
             }
             this.grayscaleFilterValue = value / 100;
@@ -2321,9 +2303,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var ContainerBase_1 = __webpack_require__(/*! ./ContainerBase */ "./src/core/ContainerBase.ts");
 var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction/Index.ts");
 var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
-/**
- *
- */
 var DisplayObjectAbstract = /** @class */ (function (_super) {
     __extends(DisplayObjectAbstract, _super);
     function DisplayObjectAbstract() {
@@ -2519,6 +2498,7 @@ var DisplayObjectAbstract = /** @class */ (function (_super) {
         configurable: true
     });
     DisplayObjectAbstract.prototype.checkInvalidateFlag = function () {
+        //
     };
     DisplayObjectAbstract.prototype.load = function () {
         this.$onLoad();
@@ -2533,8 +2513,12 @@ var DisplayObjectAbstract = /** @class */ (function (_super) {
     DisplayObjectAbstract.prototype.$onInit = function () {
         this.emit(Index_1.ComponentEvent.CREATION_COMPLETE, this);
     };
-    DisplayObjectAbstract.prototype.$onLoad = function () { };
-    DisplayObjectAbstract.prototype.$onRelease = function () { };
+    DisplayObjectAbstract.prototype.$onLoad = function () {
+        //
+    };
+    DisplayObjectAbstract.prototype.$onRelease = function () {
+        //
+    };
     DisplayObjectAbstract.prototype.$onAddStage = function () {
         this.checkInvalidateFlag();
         this.emit(Index_1.ComponentEvent.ADDED, this);
@@ -2545,7 +2529,7 @@ var DisplayObjectAbstract = /** @class */ (function (_super) {
         this.emit(Index_1.ComponentEvent.REMOVEED, this);
     };
     return DisplayObjectAbstract;
-}(PIXI.utils.EventEmitter));
+}(vf.utils.EventEmitter));
 exports.DisplayObjectAbstract = DisplayObjectAbstract;
 
 
@@ -2580,10 +2564,10 @@ var Filter = /** @class */ (function (_super) {
         return _super.call(this, vertexSrc, fragmentSrc, uniforms) || this;
     }
     Filter.isFilter = true;
-    Filter.defaultFilterVertex = PIXI.defaultFilterVertex;
+    Filter.defaultFilterVertex = vf.defaultFilterVertex;
     Filter.list = new Map();
     return Filter;
-}(PIXI.Filter));
+}(vf.Filter));
 exports.Filter = Filter;
 
 
@@ -2734,7 +2718,7 @@ var Scheduler = /** @class */ (function (_super) {
     Scheduler.clock = Date.now;
     Scheduler.ticker = UI_1.TickerShared;
     return Scheduler;
-}(PIXI.utils.EventEmitter));
+}(vf.utils.EventEmitter));
 exports.Scheduler = Scheduler;
 
 
@@ -2785,7 +2769,7 @@ var Stage = /** @class */ (function (_super) {
         _this._stageWidth = height;
         _this.setActualSize(width, height);
         _this.container.name = "Stage";
-        _this.container.hitArea = new PIXI.Rectangle(0, 0, width, height);
+        _this.container.hitArea = new vf.Rectangle(0, 0, width, height);
         _this.container.interactive = true;
         _this.container.interactiveChildren = true;
         _this.initialized = true;
@@ -2854,7 +2838,7 @@ var Stage = /** @class */ (function (_super) {
         DisplayLayoutValidator_1.default.removeDepthQueueAll();
     };
     Stage.prototype.resize = function () {
-        this.container.hitArea = new PIXI.Rectangle(0, 0, this.width, this.height);
+        this.container.hitArea = new vf.Rectangle(0, 0, this.width, this.height);
         //this.updateChildren();
     };
     /**
@@ -2950,7 +2934,7 @@ var Ticker = /** @class */ (function (_super) {
         return this.removeListener("update", fn, context);
     };
     return Ticker;
-}(PIXI.utils.EventEmitter));
+}(vf.utils.EventEmitter));
 /**
  * Ticker 的实例
  */
@@ -2977,7 +2961,7 @@ var Utils_1 = __webpack_require__(/*! ../../utils/Utils */ "./src/utils/Utils.ts
 /**
  *  组件的拖拽操作
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestDrop
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestDrop
  */
 var UIBaseDrag = /** @class */ (function () {
     /**
@@ -2998,7 +2982,7 @@ var UIBaseDrag = /** @class */ (function () {
          * 位置
          *
          */
-        this._dragPosition = new PIXI.Point();
+        this._dragPosition = new vf.Point();
         /**
          * 是否拖动中
          * @default
@@ -3118,8 +3102,8 @@ var UIBaseDrag = /** @class */ (function () {
         }
         if (!this.dragInitialized) {
             this.dragInitialized = true;
-            var containerStart_1 = new PIXI.Point();
-            var stageOffset_1 = new PIXI.Point();
+            var containerStart_1 = new vf.Point();
+            var stageOffset_1 = new vf.Point();
             this._containerStart = containerStart_1;
             this._dragPosition.set(0, 0);
             this.drag = new Index_1.DragEvent(this.target);
@@ -3409,11 +3393,10 @@ var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction
 /**
  * 按钮
  *
- * @example let button = new gui.Button();
+ * @example let button = new vf.gui.Button();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestButton
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestButton
  */
 var Button = /** @class */ (function (_super) {
     __extends(Button, _super);
@@ -3451,7 +3434,7 @@ var Button = /** @class */ (function (_super) {
     });
     Button.prototype.updateDisplayList = function (unscaledWidth, unscaledHeight) {
         _super.prototype.updateDisplayList.call(this, unscaledWidth, unscaledHeight);
-        this.container.hitArea = new PIXI.Rectangle(0, 0, unscaledWidth, unscaledHeight);
+        this.container.hitArea = new vf.Rectangle(0, 0, unscaledWidth, unscaledHeight);
         var img = this.img;
         img.width = unscaledWidth;
         img.height = unscaledHeight;
@@ -3514,11 +3497,10 @@ var Button_1 = __webpack_require__(/*! ./Button */ "./src/display/Button.ts");
  *
  * 设置checkGroup后，进行分组。 分组后，可理解为复选框。
  *
- * @example let checkBox = new gui.CheckBox();
+ * @example let checkBox = new vf.gui.CheckBox();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestCheckBox
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCheckBox
  */
 var CheckBox = /** @class */ (function (_super) {
     __extends(CheckBox, _super);
@@ -3656,11 +3638,11 @@ var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/co
  *
  * 不设置 lineWidth 或 color 圆形不可见
  *
- * @example let circle = new gui.Circle();
+ * @example let circle = new vf.gui.Circle();
  *
- * @namespace gui
+
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestCircle
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCircle
  */
 var Circle = /** @class */ (function (_super) {
     __extends(Circle, _super);
@@ -3678,7 +3660,7 @@ var Circle = /** @class */ (function (_super) {
          * 线条粗细
          */
         _this._lineWidth = 0;
-        _this.graphics = new PIXI.Graphics();
+        _this.graphics = new vf.Graphics();
         _this.container.addChild(_this.graphics);
         return _this;
     }
@@ -3810,11 +3792,10 @@ exports.play = Symbol("play");
  * 连线组件
  *
  *
- * @example let connectLine = new gui.ConnectLine();
+ * @example let connectLine = new vf.gui.ConnectLine();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestConnectLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestConnectLine
  */
 var ConnectLine = /** @class */ (function (_super) {
     __extends(ConnectLine, _super);
@@ -3835,7 +3816,7 @@ var ConnectLine = /** @class */ (function (_super) {
          */
         _this._lineWidth = 1;
         _this._isAnimation = false;
-        _this.line = new PIXI.Graphics();
+        _this.line = new vf.Graphics();
         _this.container.addChild(_this.line);
         return _this;
     }
@@ -4114,7 +4095,7 @@ var ConnectLine = /** @class */ (function (_super) {
         if (line.parent) {
             line.parent.removeChild(line).destroy();
         }
-        this.offAll(Index_1.ComponentEvent.CHANGE);
+        this.offAll(Index_1.ComponentEvent.COMPLETE);
     };
     return ConnectLine;
 }(DisplayObject_1.DisplayObject));
@@ -4152,11 +4133,10 @@ var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/co
  *
  * 设置checkGroup后，进行分组。 分组后，可理解为复选框。
  *
- * @example let container = new gui.Container();
+ * @example let container = new vf.gui.Container();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestContainer
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestContainer
  */
 var Container = /** @class */ (function (_super) {
     __extends(Container, _super);
@@ -4216,7 +4196,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/core/DisplayObject.ts");
 var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction/Index.ts");
 var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
-var tempLocalBounds = new PIXI.Rectangle();
+var tempLocalBounds = new vf.Rectangle();
 /** 验证是否触发的距离 */
 var POS_DISTANCE = 7;
 /** 优化曲率，小于这个弧度视为直线，把当前点优化掉 */
@@ -4268,11 +4248,10 @@ function getVecListFromStr(str, from, to) {
 /**
  * 跟随鼠标或触摸绘制线条
  *
- * @example let graphics = new gui.FollowLine();
+ * @example let graphics = new vf.gui.FollowLine();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var FollowLine = /** @class */ (function (_super) {
     __extends(FollowLine, _super);
@@ -4285,7 +4264,7 @@ var FollowLine = /** @class */ (function (_super) {
         /** 保存已画线的key */
         _this._lineKeys = [];
         /** 开始偏移量 */
-        _this.startOffset = new PIXI.Point();
+        _this.startOffset = new vf.Point();
         /**
          * 由老师触发的划线索引
          */
@@ -4306,8 +4285,8 @@ var FollowLine = /** @class */ (function (_super) {
         _this._isErasing = false;
         /** 角色状态 */
         _this._role = "T" /* teacher */;
-        _this._lastPos = new PIXI.Point();
-        _this._mouseOffset = new PIXI.Point();
+        _this._lastPos = new vf.Point();
+        _this._mouseOffset = new vf.Point();
         _this._lines = new Map();
         _this.container.interactiveChildren = false;
         if (bindDisplay) {
@@ -4387,7 +4366,7 @@ var FollowLine = /** @class */ (function (_super) {
      */
     FollowLine.prototype.updateDisplayList = function (unscaledWidth, unscaledHeight) {
         _super.prototype.updateDisplayList.call(this, unscaledWidth, unscaledHeight);
-        this.container.hitArea = new PIXI.Rectangle(0, 0, this.width, this.height);
+        this.container.hitArea = new vf.Rectangle(0, 0, this.width, this.height);
     };
     FollowLine.prototype.$onInit = function () {
         //由于绑定的可能非当前显示对象，所以此处不可以使用this.on("xxxx")
@@ -4515,7 +4494,7 @@ var FollowLine = /** @class */ (function (_super) {
         if (this._lines.size > MAX_LINES) {
             this.removeLine(this._lineKeys.shift());
         }
-        var graphics = new PIXI.Graphics();
+        var graphics = new vf.Graphics();
         graphics.interactive = false;
         graphics.interactiveChildren = false;
         graphics.name = key;
@@ -4653,6 +4632,13 @@ var FollowLine = /** @class */ (function (_super) {
         }
         this.invalidateProperties();
     };
+    Object.defineProperty(FollowLine.prototype, "source", {
+        set: function (data) {
+            this.setData(data);
+        },
+        enumerable: true,
+        configurable: true
+    });
     FollowLine.prototype.reset = function () {
         this.emitMsg("3" /* clear */, this.role, "");
         this.clear();
@@ -4691,17 +4677,16 @@ var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/co
 /**
  * 矢量绘制
  *
- * @example let graphics = new gui.Graphics();
+ * @example let graphics = new vf.gui.Graphics();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var Graphics = /** @class */ (function (_super) {
     __extends(Graphics, _super);
     function Graphics(geometry) {
         var _this = _super.call(this) || this;
-        _this.graphics = new PIXI.Graphics(geometry);
+        _this.graphics = new vf.Graphics(geometry);
         _this.container.addChild(_this.graphics);
         return _this;
     }
@@ -4741,11 +4726,10 @@ var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction
 /**
  * 图片
  *
- * @example let image = new gui.Image();
+ * @example let image = new vf.gui.Image();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestImage
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestImage
  */
 var Image = /** @class */ (function (_super) {
     __extends(Image, _super);
@@ -4830,6 +4814,7 @@ var Image = /** @class */ (function (_super) {
      * 测量组件尺寸
      */
     Image.prototype.measure = function () {
+        //
     };
     Image.prototype.updateDisplayList = function (unscaledWidth, unscaledHeight) {
         if (unscaledWidth === 0 && unscaledHeight === 0) {
@@ -4872,32 +4857,32 @@ var Image = /** @class */ (function (_super) {
             var sprite = this._sprite;
             try {
                 if (this.fillMode === "no-repeat") {
-                    if (sprite instanceof PIXI.Sprite) {
+                    if (sprite instanceof vf.Sprite) {
                         sprite.texture = texture_1;
                     }
                     else {
-                        sprite = new PIXI.Sprite(texture_1);
+                        sprite = new vf.Sprite(texture_1);
                     }
                 }
                 else if (this.fillMode === "repeat") {
-                    if (sprite instanceof PIXI.TilingSprite) {
+                    if (sprite instanceof vf.TilingSprite) {
                         sprite.texture = texture_1;
                     }
                     else {
-                        sprite = new PIXI.TilingSprite(texture_1);
+                        sprite = new vf.TilingSprite(texture_1);
                     }
                 }
                 else if (this.fillMode === "scale") {
-                    if (sprite instanceof PIXI.NineSlicePlane) {
+                    if (sprite instanceof vf.NineSlicePlane) {
                         sprite.texture = texture_1;
                     }
                     else {
-                        sprite = new PIXI.NineSlicePlane(texture_1);
+                        sprite = new vf.NineSlicePlane(texture_1);
                     }
                 }
             }
             catch (e) {
-                sprite = PIXI.Sprite.from(texture_1);
+                sprite = vf.Sprite.from(texture_1);
             }
             if (sprite && sprite.parent == undefined) {
                 this._sprite = container.addChild(sprite);
@@ -4914,11 +4899,11 @@ var Image = /** @class */ (function (_super) {
         }
         var sprite = this._sprite;
         var scale9Grid = this.scale9Grid;
-        if (sprite instanceof PIXI.TilingSprite) {
+        if (sprite instanceof vf.TilingSprite) {
             sprite.tileScale.set(scale9Grid[0], scale9Grid[1]);
             sprite.tilePosition.set(scale9Grid[2], scale9Grid[3]);
         }
-        else if (sprite instanceof PIXI.NineSlicePlane) {
+        else if (sprite instanceof vf.NineSlicePlane) {
             if (scale9Grid[0] !== undefined) {
                 sprite.leftWidth = scale9Grid[0];
             }
@@ -4987,18 +4972,17 @@ var UIKeys = __webpack_require__(/*! ../core/DisplayLayoutKeys */ "./src/core/Di
  *
  * 当文本容器设置宽高后，可通过 style.textAlign 进行文字位置调整
  *
- * @example let label = new gui.Label();
+ * @example let label = new vf.gui.Label();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestLabel
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestLabel
  */
 var Label = /** @class */ (function (_super) {
     __extends(Label, _super);
     function Label(text) {
         if (text === void 0) { text = ""; }
         var _this = _super.call(this) || this;
-        _this.sprite = new PIXI.Text(text, { breakWords: true, fill: "#ffffff" });
+        _this.sprite = new vf.Text(text, { breakWords: true, fill: "#ffffff" });
         _this.container.addChild(_this.sprite);
         return _this;
     }
@@ -5108,11 +5092,10 @@ var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/co
  *
  * 不设置 lineWidth 或 color 矩形不可见
  *
- * @example let rect = new gui.Rect();
+ * @example let rect = new vf.gui.Rect();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestRect
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestRect
  */
 var Rect = /** @class */ (function (_super) {
     __extends(Rect, _super);
@@ -5130,7 +5113,7 @@ var Rect = /** @class */ (function (_super) {
          * 线条粗细
          */
         _this._lineWidth = 0;
-        _this.graphics = new PIXI.Graphics();
+        _this.graphics = new vf.Graphics();
         _this.container.addChild(_this.graphics);
         return _this;
     }
@@ -5269,11 +5252,10 @@ var ContainerBase_1 = __webpack_require__(/*! ../core/ContainerBase */ "./src/co
 /**
  * 可滚动的容器
  *
- * @example let scrollingContainer = new gui.ScrollingContainer();
+ * @example let scrollingContainer = new vf.gui.ScrollingContainer();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestRect
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestRect
  */
 var ScrollingContainer = /** @class */ (function (_super) {
     __extends(ScrollingContainer, _super);
@@ -5320,7 +5302,7 @@ var ScrollingContainer = /** @class */ (function (_super) {
         /**
          * 内容的宽高
          */
-        _this.innerBounds = new PIXI.Rectangle();
+        _this.innerBounds = new vf.Rectangle();
         /**
          * 拖动处理类
          */
@@ -5340,16 +5322,16 @@ var ScrollingContainer = /** @class */ (function (_super) {
         _this._lastWidth = 0;
         _this._lastHeight = 0;
         _this._isInitScrolling = false;
-        _this._containerStart = new PIXI.Point();
-        _this._targetPosition = new PIXI.Point();
-        _this._lastPosition = new PIXI.Point();
-        _this._Position = new PIXI.Point();
-        _this._Speed = new PIXI.Point();
+        _this._containerStart = new vf.Point();
+        _this._targetPosition = new vf.Point();
+        _this._lastPosition = new vf.Point();
+        _this._Position = new vf.Point();
+        _this._Speed = new vf.Point();
         _this._stop = false;
         _this.container.addChild(_this._innerContainer);
         _this.container.name = "ScrollingContainer";
         _this._innerContainer.name = "innerContainer";
-        var _graphics = new PIXI.Graphics();
+        var _graphics = new vf.Graphics();
         _graphics.clear();
         _graphics.beginFill(0xffcc00);
         _graphics.drawRoundedRect(0, 0, 200, 200, 0);
@@ -5376,7 +5358,7 @@ var ScrollingContainer = /** @class */ (function (_super) {
                 Ticker.shared.removeUpdateEvent(_this.updateScrollPosition, _this);
             }
         };
-        var scrollSpeed = new PIXI.Point();
+        var scrollSpeed = new vf.Point();
         _this.mouseScrollEvent.onMouseScroll = function (e, delta) {
             scrollSpeed.set(-delta.x * 0.2, -delta.y * 0.2);
             _this.setScrollPosition(scrollSpeed);
@@ -5508,9 +5490,9 @@ var ScrollingContainer = /** @class */ (function (_super) {
             this.updateDirection("x", delta);
         if (this.scrollY)
             this.updateDirection("y", delta);
-        if (stop) {
-            this.animating = false;
-        }
+        //if (this._stop) {
+        this.animating = false;
+        //}
     };
     ScrollingContainer.prototype.updateDirection = function (direction, delta) {
         delta = delta * 0.001;
@@ -5595,11 +5577,10 @@ var Easing_1 = __webpack_require__(/*! ../tween/Easing */ "./src/tween/Easing.ts
 /**
  * 滑动条/进度条
  *
- * @example let slider = new gui.Slider();
+ * @example let slider = new vf.gui.Slider();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSlider
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestSlider
  */
 var Slider = /** @class */ (function (_super) {
     __extends(Slider, _super);
@@ -5616,7 +5597,7 @@ var Slider = /** @class */ (function (_super) {
         _this._decimals = 0;
         _this._startValue = 0;
         _this._maxPosition = 0;
-        _this._localMousePosition = new PIXI.Point();
+        _this._localMousePosition = new vf.Point();
         _this._lastChange = 0;
         _this._lastChanging = 0;
         _this._thumbDrag = new Index_1.DragEvent(_this);
@@ -5888,397 +5869,6 @@ exports.Slider = Slider;
 
 /***/ }),
 
-/***/ "./src/display/Sound.ts":
-/*!******************************!*\
-  !*** ./src/display/Sound.ts ***!
-  \******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
-var SpriteAnimated_1 = __webpack_require__(/*! ./SpriteAnimated */ "./src/display/SpriteAnimated.ts");
-var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction/Index.ts");
-var InputBase_1 = __webpack_require__(/*! ./private/InputBase */ "./src/display/private/InputBase.ts");
-exports.$sounds = new Map();
-/**
- * 音频播放组件
- *
- * @example let sound = new gui.Sound();
- *
- * @namespace gui
- *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSound
- */
-var Sound = /** @class */ (function (_super) {
-    __extends(Sound, _super);
-    function Sound() {
-        var _this = _super.call(this) || this;
-        /**
-         * 状态展示
-         */
-        _this.spriteAnimated = new SpriteAnimated_1.SpriteAnimated();
-        /**
-         * 是否自动播放
-         * @default false
-         */
-        _this._autoPlay = false;
-        _this._speed = 1;
-        _this._volume = 100;
-        _this._loop = false;
-        _this._curProgress = 0;
-        _this._playing = false;
-        var sp = _this.spriteAnimated;
-        sp.loop = true;
-        _this.addChild(sp);
-        _this.container.buttonMode = true;
-        return _this;
-    }
-    Object.defineProperty(Sound.prototype, "autoPlay", {
-        get: function () {
-            return this._autoPlay;
-        },
-        set: function (value) {
-            this._autoPlay = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sound.prototype, "sheetSkin", {
-        get: function () {
-            return this._sheetSkin;
-        },
-        set: function (value) {
-            this._sheetSkin = value;
-            this.spriteAnimated.src = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sound.prototype, "duration", {
-        get: function () {
-            if (this._sound) {
-                return this._sound.duration;
-            }
-            return 0;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sound.prototype, "src", {
-        /**
-         * 音频源
-         */
-        get: function () {
-            return this._src;
-        },
-        set: function (src) {
-            if (src === this.src) {
-                return;
-            }
-            this._src = src;
-            this.invalidateProperties();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sound.prototype, "animationSpeed", {
-        /**
-         * 动画速度
-         */
-        get: function () {
-            return this.spriteAnimated.animationSpeed;
-        },
-        set: function (value) {
-            this.spriteAnimated.animationSpeed = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sound.prototype, "speed", {
-        /**
-         * 设置播放速度
-         */
-        get: function () {
-            return this._speed;
-        },
-        set: function (value) {
-            this._speed = value;
-            if (this._sound) {
-                this._sound.speed = value;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sound.prototype, "volume", {
-        /**
-         * 音量
-         * @default 100
-         */
-        get: function () {
-            return this._volume;
-        },
-        set: function (value) {
-            this._volume = value;
-            if (this._sound) {
-                this._sound.volume = value;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sound.prototype, "loop", {
-        /**
-         * 是否循环
-         * @default false
-         */
-        get: function () {
-            return this._loop;
-        },
-        set: function (value) {
-            this._loop = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sound.prototype, "isPlaying", {
-        get: function () {
-            if (this._sound) {
-                return this._sound.isPlaying;
-            }
-            return false;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sound.prototype, "startTime", {
-        get: function () {
-            return this._startTime;
-        },
-        set: function (value) {
-            this._startTime = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sound.prototype, "endTime", {
-        get: function () {
-            return this._endTime;
-        },
-        set: function (value) {
-            this._endTime = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Sound.prototype, "isPlay", {
-        get: function () {
-            return this.isPlaying;
-        },
-        set: function (value) {
-            if (this._sound == undefined) {
-                console.warn("curent sound initialization not complete;");
-                return;
-            }
-            if (value) {
-                this.play();
-            }
-            else {
-                this.stop();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Sound.prototype.commitProperties = function () {
-        this.releaseSound();
-        if (this.src) {
-            var sound = this._sound = Utils_1.getSound(this.src);
-            sound.volume = this.volume;
-            sound.speed = this.speed;
-            if (this.autoPlay) {
-                this.play();
-            }
-            else {
-                this.stop();
-            }
-            this.container.hitArea = new PIXI.Rectangle(0, 0, this.width / this.scaleX, this.height / this.scaleY);
-        }
-    };
-    Sound.prototype.play = function (start, end) {
-        if (start === void 0) { start = 0; }
-        return __awaiter(this, void 0, void 0, function () {
-            var uiObjects, key, sound, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        if (this.startTime) {
-                            start = this.startTime;
-                        }
-                        if (this.endTime) {
-                            end = this.endTime;
-                        }
-                        if (this._sound && this._sound.isPlaying) {
-                            return [2 /*return*/];
-                        }
-                        uiObjects = Index_1.GroupController.getGroup(this.groupName);
-                        if (uiObjects) {
-                            for (key in uiObjects) {
-                                if (uiObjects[key] instanceof Sound) {
-                                    uiObjects[key].stop();
-                                }
-                            }
-                        }
-                        if (this._mediaInstance) {
-                            this._mediaInstance.off('progress', this.onProgress, this);
-                            this._mediaInstance.off('end', this.onEnd, this);
-                        }
-                        if (!this._sound) return [3 /*break*/, 2];
-                        _a = this;
-                        return [4 /*yield*/, this._sound.play({
-                                start: start,
-                                end: end
-                            })];
-                    case 1:
-                        sound = _a._mediaInstance = _b.sent();
-                        sound.on('progress', this.onProgress, this);
-                        sound.on('end', this.onEnd, this);
-                        _b.label = 2;
-                    case 2:
-                        this._playing = true;
-                        if (this._sheetSkin) {
-                            this.spriteAnimated.animationName = "play";
-                            this.spriteAnimated.play();
-                        }
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    Sound.prototype.stop = function () {
-        if (this._sound) {
-            this._sound.stop();
-        }
-        this._playing = false;
-        if (this._sheetSkin) {
-            this.spriteAnimated.animationName = "stop";
-            this.spriteAnimated.stop();
-        }
-    };
-    /**
-     * 恢复播放
-     */
-    Sound.prototype.resume = function () {
-        this.play(this._curProgress);
-    };
-    /**
-     * 暂停播放
-     */
-    Sound.prototype.pause = function () {
-        if (this._mediaInstance && this._sound) {
-            this._curProgress = this._mediaInstance.progress * this._sound.duration;
-        }
-        this.stop();
-    };
-    Sound.prototype.release = function () {
-        _super.prototype.release.call(this);
-        this.releaseSound();
-        this.offAll();
-        this.spriteAnimated.release();
-    };
-    Sound.prototype.releaseSound = function () {
-        if (this._mediaInstance) {
-            this._mediaInstance.off('progress', this.onProgress, this);
-            this._mediaInstance.off('end', this.onEnd, this);
-        }
-        if (this._sound) {
-            this._sound.stop();
-            this._sound.destroy();
-            this._sound = undefined;
-        }
-    };
-    Sound.prototype.onProgress = function (progress, duration) {
-        this._curProgress = progress * duration;
-        if (this.listenerCount(Index_1.ComponentEvent.CHANGEING) > 0) {
-            this.emit(Index_1.ComponentEvent.CHANGEING, this, this._curProgress);
-        }
-    };
-    Sound.prototype.onEnd = function () {
-        if (this.loop) {
-            this.play();
-            this.emit(Index_1.ComponentEvent.LOOP, this);
-        }
-        else {
-            this.stop();
-            this.emit(Index_1.ComponentEvent.COMPLETE, this);
-        }
-    };
-    Sound.prototype.onClick = function () {
-        if (this.isPlaying) {
-            this.stop();
-        }
-        else {
-            this.play();
-        }
-    };
-    return Sound;
-}(InputBase_1.InputBase));
-exports.Sound = Sound;
-
-
-/***/ }),
-
 /***/ "./src/display/SpriteAnimated.ts":
 /*!***************************************!*\
   !*** ./src/display/SpriteAnimated.ts ***!
@@ -6310,11 +5900,10 @@ var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction
  *
  * 支持使用texturepacker导出以及处理轴点
  *
- * @example let spriteAnimated = new gui.SpriteAnimated();
+ * @example let spriteAnimated = new vf.gui.SpriteAnimated();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSpriteAnimated
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestSpriteAnimated
  */
 var SpriteAnimated = /** @class */ (function (_super) {
     __extends(SpriteAnimated, _super);
@@ -6505,7 +6094,7 @@ var SpriteAnimated = /** @class */ (function (_super) {
             sp.removeAllListeners();
             sp.destroy();
         }
-        this._animatedSprites.set(animationName, new PIXI.AnimatedSprite(textures));
+        this._animatedSprites.set(animationName, new vf.AnimatedSprite(textures));
     };
     SpriteAnimated.prototype.release = function () {
         if (this._setTimeoutId) {
@@ -6642,11 +6231,10 @@ var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction
 /**
  * 文本输入
  *
- * @example let textInput = new gui.TextInput(true|false);//单行或多行
+ * @example let textInput = new vf.gui.TextInput(true|false);//单行或多行
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTextInput
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTextInput
  */
 var TextInput = /** @class */ (function (_super) {
     __extends(TextInput, _super);
@@ -6695,17 +6283,17 @@ var TextInput = /** @class */ (function (_super) {
         _this.img.fillMode = "scale";
         _this.img.scale9Grid = [3, 3, 3, 3];
         _this.addChild(_this.img);
-        _this._textHitbox = new PIXI.Graphics();
+        _this._textHitbox = new vf.Graphics();
         _this._textHitbox.name = "_textHitbox";
         _this._textHitbox.alpha = 0;
         _this._textHitbox.interactive = true;
         _this._textHitbox.cursor = 'text';
         _this._textHitbox.on('pointerdown', _this._ontextFocus, _this);
         _this.container.addChild(_this._textHitbox);
-        _this._textMask = new PIXI.Graphics();
+        _this._textMask = new vf.Graphics();
         _this._textMask.name = "_textMask";
         _this.container.addChild(_this._textMask);
-        _this._text = new PIXI.Text('', {});
+        _this._text = new vf.Text('', {});
         _this._text.name = "_text";
         _this._text.visible = false;
         _this.container.addChild(_this._text);
@@ -6848,7 +6436,7 @@ var TextInput = /** @class */ (function (_super) {
         this._updatetext();
     };
     // RENDER & UPDATE
-    // for pixi v5
+    // for VF v5
     TextInput.prototype.render = function (renderer) {
         this._renderInternal(renderer);
     };
@@ -6864,7 +6452,7 @@ var TextInput = /** @class */ (function (_super) {
         if (!this._canvasBounds)
             return;
         var cb = this._canvasBounds;
-        var transform = this._pixiMatrixToCSS(this._getDOMRelativeWorldTransform());
+        var transform = this._vfMatrixToCSS(this._getDOMRelativeWorldTransform());
         this.htmlInputShared.updatePostion(cb.top, cb.left, transform, this.container.worldAlpha);
         this.htmlInputShared.visible = this.container.worldVisible && this._domVisible;
         this._previous.canvasBounds = this._canvasBounds;
@@ -6874,7 +6462,7 @@ var TextInput = /** @class */ (function (_super) {
     };
     // STATE COMPAIRSON (FOR PERFORMANCE BENEFITS)
     TextInput.prototype._needsUpdate = function () {
-        return (!this._comparePixiMatrices(this.container.worldTransform, this._previous.worldTransform)
+        return (!this._comparevfMatrices(this.container.worldTransform, this._previous.worldTransform)
             || !this._compareClientRects(this._canvasBounds, this._previous.canvasBounds)
             || this.container.worldAlpha != this._previous.worldAlpha
             || this.container.worldVisible != this._previous.worldVisible);
@@ -6914,7 +6502,7 @@ var TextInput = /** @class */ (function (_super) {
             this.focus();
     };
     TextInput.prototype._derivetextStyle = function () {
-        var style = new PIXI.TextStyle();
+        var style = new vf.TextStyle();
         for (var key in this._inputStyle) {
             switch (key) {
                 case 'color':
@@ -6970,7 +6558,7 @@ var TextInput = /** @class */ (function (_super) {
     // private _updateFontMetrics() {
     //     const style = this._derivetextStyle();
     //     const font = style.toFontString();
-    //     this._fontMetrics = PIXI.TextMetrics.measureFont(font);
+    //     this._fontMetrics = vf.TextMetrics.measureFont(font);
     // }
     // HELPER FUNCTIONS
     TextInput.prototype._hasFocus = function () {
@@ -6995,10 +6583,10 @@ var TextInput = /** @class */ (function (_super) {
             return matrix;
         }
     };
-    TextInput.prototype._pixiMatrixToCSS = function (m) {
+    TextInput.prototype._vfMatrixToCSS = function (m) {
         return 'matrix(' + [m.a, m.b, m.c, m.d, m.tx, m.ty].join(',') + ')';
     };
-    TextInput.prototype._comparePixiMatrices = function (m1, m2) {
+    TextInput.prototype._comparevfMatrices = function (m1, m2) {
         if (!m1 || !m2)
             return false;
         return (m1.a == m2.a
@@ -7058,14 +6646,14 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 私有的，由于PIXIJS不支持文本输入，这里以HTML方式实现
+ * 私有的，由于VFJS不支持文本输入，这里以HTML方式实现
  */
 var HtmlInput = /** @class */ (function (_super) {
     __extends(HtmlInput, _super);
     function HtmlInput(multiline) {
         var _this = _super.call(this) || this;
         _this._selection = [0, 0];
-        _this._restrict_value = '';
+        _this._restrictValue = '';
         console.log("创建HtmlInput");
         _this._domInput = _this.addDom(multiline);
         _this.visible = false;
@@ -7164,13 +6752,13 @@ var HtmlInput = /** @class */ (function (_super) {
     };
     /** 测量，需要对象添加到body中 */
     HtmlInput.prototype.getDOMInputBounds = function () {
-        var org_transform = this._domInput.style.transform;
-        var org_display = this._domInput.style.display;
+        var orgTransform = this._domInput.style.transform;
+        var orgDisplay = this._domInput.style.display;
         this._domInput.style.transform = '';
         this._domInput.style.display = 'block';
         var bounds = this._domInput.getBoundingClientRect();
-        this._domInput.style.transform = org_transform;
-        this._domInput.style.display = org_display;
+        this._domInput.style.transform = orgTransform;
+        this._domInput.style.display = orgDisplay;
         return bounds;
     };
     HtmlInput.prototype.updatePostion = function (top, left, transform, opacity) {
@@ -7235,10 +6823,10 @@ var HtmlInput = /** @class */ (function (_super) {
     HtmlInput.prototype._applyRestriction = function () {
         if (this._restrictRegex) {
             if (this._restrictRegex.test(this.value)) {
-                this._restrict_value = this.value;
+                this._restrictValue = this.value;
             }
             else {
-                this.value = this._restrict_value;
+                this.value = this._restrictValue;
                 this._domInput.setSelectionRange(this._selection[0], this._selection[1]);
             }
         }
@@ -7280,7 +6868,7 @@ var HtmlInput = /** @class */ (function (_super) {
         this._domInput.blur();
     };
     return HtmlInput;
-}(PIXI.utils.EventEmitter));
+}(vf.utils.EventEmitter));
 exports.default = HtmlInput;
 
 
@@ -7658,7 +7246,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var tempLocal = new PIXI.Point(0, 0);
+var tempLocal = new vf.Point(0, 0);
 /**
  * 事件的基础类
  *
@@ -7674,7 +7262,7 @@ var InteractionEvent = /** @class */ (function (_super) {
         return _this;
     }
     return InteractionEvent;
-}(PIXI.interaction.InteractionEvent));
+}(vf.interaction.InteractionEvent));
 exports.InteractionEvent = InteractionEvent;
 
 
@@ -7837,16 +7425,16 @@ var ClickEvent = /** @class */ (function () {
      */
     function ClickEvent(obj, isOpenEmitEvent, includeHover, rightMouseButton, doubleClick) {
         this.id = 0;
-        /** 是否基于事件派发，开启后，可以侦听相关的事件 InteractionEvent.TouchEvent | gui.Interaction.TouchEvent */
+        /** 是否基于事件派发，开启后，可以侦听相关的事件 InteractionEvent.TouchEvent | vf.gui.Interaction.TouchEvent */
         this.isOpenEmitEvent = false;
         /** 是否开启本地坐标转换，开启后，事件InteractionEvent中的localX localY为本地坐标，false情况下为0 */
         this.isOpenLocalPoint = false;
-        this.localOffset = new PIXI.Point();
-        this.offset = new PIXI.Point();
+        this.localOffset = new vf.Point();
+        this.offset = new vf.Point();
         this.movementX = 0;
         this.movementY = 0;
         this.ishover = false;
-        this.mouse = new PIXI.Point();
+        this.mouse = new vf.Point();
         this.bound = false;
         this.right = false;
         this.hover = true;
@@ -8154,7 +7742,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * ```
  * onPress: ((e: InteractionEvent, isPressed: boolean,dragObj?: DragEvent) => void) | undefined;
  * onDragEnd: ((e: InteractionEvent,dragObj?: DragEvent) => void) | undefined
- * onDragMove: ((e: InteractionEvent, offset: PIXI.Point,dragObj?: DragEvent) => void) | undefined
+ * onDragMove: ((e: InteractionEvent, offset: vf.Point,dragObj?: DragEvent) => void) | undefined
  * onDragStart: ((e: InteractionEvent,dragObj?: DragEvent) => void) | undefined
  * ```
  *
@@ -8165,12 +7753,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var DragEvent = /** @class */ (function () {
     function DragEvent(obj) {
         this.id = 0;
-        this.offset = new PIXI.Point();
+        this.offset = new vf.Point();
         this.movementX = 0;
         this.movementY = 0;
         this.bound = false;
-        this.start = new PIXI.Point();
-        this.mouse = new PIXI.Point();
+        this.start = new vf.Point();
+        this.mouse = new vf.Point();
         this.cancel = false;
         this.dragging = false;
         this.isStop = true;
@@ -8585,7 +8173,7 @@ var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
  * ```
  *  可赋值方法:
  * ```
- * oonMouseScroll: ((e: WheelEvent,delta: PIXI.Point) => void) | undefined
+ * oonMouseScroll: ((e: WheelEvent,delta: vf.Point) => void) | undefined
  * ```
  *
  * @example 可查看 `Slider` 源码
@@ -8600,7 +8188,7 @@ var MouseScrollEvent = /** @class */ (function () {
      */
     function MouseScrollEvent(obj, preventDefault) {
         this.id = 0;
-        this.delta = new PIXI.Point();
+        this.delta = new vf.Point();
         this.isStop = true;
         this.obj = obj;
         this.preventDefault = preventDefault;
@@ -8673,7 +8261,7 @@ exports.MouseScrollEvent = MouseScrollEvent;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var UIKeys = __webpack_require__(/*! ../core/DisplayLayoutKeys */ "./src/core/DisplayLayoutKeys.ts");
-exports.$tempRectangle = new PIXI.Rectangle();
+exports.$tempRectangle = new vf.Rectangle();
 /**
  * 布局尺寸>外部显式设置尺寸>测量尺寸 的优先级顺序返回尺寸
  */
@@ -8894,7 +8482,7 @@ exports.updateGridLayout = updateGridLayout;
 Object.defineProperty(exports, "__esModule", { value: true });
 var CSSGridLayout_1 = __webpack_require__(/*! ./CSSGridLayout */ "./src/layout/CSSGridLayout.ts");
 var CSSBasicLayout_1 = __webpack_require__(/*! ./CSSBasicLayout */ "./src/layout/CSSBasicLayout.ts");
-exports.$TempRectangle = new PIXI.Rectangle();
+exports.$TempRectangle = new vf.Rectangle();
 function updateDisplayAlign(target, parentWidth, parentHeight, marginTop, marginLeft) {
     if (marginTop === void 0) { marginTop = 0; }
     if (marginLeft === void 0) { marginLeft = 0; }
@@ -8997,7 +8585,7 @@ function backgroundColor(target) {
         return;
     }
     if (target.$background === undefined) {
-        target.$background = new PIXI.Graphics();
+        target.$background = new vf.Graphics();
         target.$background.name = "background";
         target.container.addChildAt(target.$background, 0);
     }
@@ -9010,7 +8598,7 @@ function backgroundPositionSize(target) {
     if (target.$background && target.$background.children.length > 0) {
         var sprite = target.$background.getChildAt(0);
         var style = target.style;
-        if (sprite instanceof PIXI.TilingSprite) {
+        if (sprite instanceof vf.TilingSprite) {
             sprite.tilePosition.set(style.backgroundPositionX || 0, style.backgroundPositionY || 0);
         }
         else {
@@ -9031,7 +8619,7 @@ function backgroundRepeat(target) {
     if (style.backgroundImage && target.$background) {
         target.$background.removeChildren();
         var backgroundImage_1;
-        if (style.backgroundImage instanceof PIXI.Texture) {
+        if (style.backgroundImage instanceof vf.Texture) {
             backgroundImage_1 = style.backgroundImage;
         }
         else if (typeof style.backgroundImage === "string") {
@@ -9043,13 +8631,13 @@ function backgroundRepeat(target) {
                 style.backgroundRepeat = "no-repeat";
             }
             if (style.backgroundRepeat === "repeat") {
-                sprite = new PIXI.TilingSprite(backgroundImage_1);
+                sprite = new vf.TilingSprite(backgroundImage_1);
             }
             else {
-                sprite = new PIXI.Sprite(backgroundImage_1);
+                sprite = new vf.Sprite(backgroundImage_1);
             }
             target.$background.addChild(sprite);
-            var maskGraphics = new PIXI.Graphics();
+            var maskGraphics = new vf.Graphics();
             target.$background.addChild(maskGraphics);
             target.$background.mask = maskGraphics;
         }
@@ -9058,7 +8646,7 @@ function backgroundRepeat(target) {
 exports.backgroundRepeat = backgroundRepeat;
 function backgroundImage(target) {
     if (target.$background === undefined) {
-        target.$background = new PIXI.Graphics();
+        target.$background = new vf.Graphics();
         target.$background.name = "background";
         target.container.addChildAt(target.$background, 0);
     }
@@ -9097,7 +8685,7 @@ function maskSize(target) {
         }
         target.$mask.width = style.maskSize[0];
         target.$mask.height = style.maskSize[1];
-        if (target.$mask instanceof PIXI.Graphics) {
+        if (target.$mask instanceof vf.Graphics) {
             //target.$mask.clone
         }
         if (!(target.$mask instanceof DisplayObject_1.DisplayObject))
@@ -9131,7 +8719,7 @@ function maskImage(target) {
     if (maskdisplay == null || maskdisplay === '') {
         return;
     }
-    if (maskdisplay instanceof PIXI.Graphics) {
+    if (maskdisplay instanceof vf.Graphics) {
         target.$mask = maskdisplay;
         container.mask = target.$mask;
         container.addChild(target.$mask);
@@ -9140,14 +8728,14 @@ function maskImage(target) {
         if (maskdisplay.maskSprite) {
             target.$mask = maskdisplay; //gui组件
             target.$mask.name = "maskImage";
-            container.mask = maskdisplay.maskSprite() || null; //pixi组件
+            container.mask = maskdisplay.maskSprite() || null; //vf组件
             if (maskdisplay.parent == undefined) {
                 target.addChild(maskdisplay);
             }
         }
     }
     else {
-        target.$mask = PIXI.Sprite.from(Utils_1.getTexture(style.maskImage));
+        target.$mask = vf.Sprite.from(Utils_1.getTexture(style.maskImage));
         container.mask = target.$mask;
         container.addChild(target.$mask);
     }
@@ -10345,11 +9933,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 完整的缓动曲线列表
  *
- * @example gui.Easing.Linear.None;
+ * @example vf.gui.Easing.Linear.None;
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTween
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
  */
 exports.Easing = {
     Linear: {
@@ -10593,18 +10180,21 @@ var Node = /** @class */ (function () {
         this.endFrame = 0;
         this.prevTime = 0;
     };
-    Node.prototype.load = function () { };
-    Node.prototype.destroy = function () { };
+    Node.prototype.load = function () {
+        //
+    };
+    Node.prototype.destroy = function () {
+        //
+    };
     return Node;
 }());
 /**
  * 基于帧的时间轴控制类
  *
- * @example let timeline = new gui.Timeline();
+ * @example let timeline = new vf.gui.Timeline();
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var Timeline = /** @class */ (function (_super) {
     __extends(Timeline, _super);
@@ -10812,7 +10402,7 @@ var Timeline = /** @class */ (function (_super) {
         this._lastNode.clear();
     };
     return Timeline;
-}(PIXI.utils.EventEmitter));
+}(vf.utils.EventEmitter));
 exports.Timeline = Timeline;
 
 
@@ -10851,11 +10441,10 @@ var defaultEasing = Easing_1.Easing.Linear.None;
 /**
  * 缓动动画
  *
- * @example let tween = new gui.Tween(myObject).to({width:'300px'}, 2000).start()
+ * @example let tween = new vf.gui.Tween(myObject).to({width:'300px'}, 2000).start()
  *
- * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTween
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
  */
 var Tween = /** @class */ (function (_super) {
     __extends(Tween, _super);
@@ -10891,7 +10480,7 @@ var Tween = /** @class */ (function (_super) {
      * @param {object} to - Target value
      * @param {object} params - Options of tweens
      * @example Tween.fromTo(myObject, {x:0}, {x:200},1000)
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      * @static
      */
     Tween.fromTo = function (object, to, duration) {
@@ -10900,11 +10489,11 @@ var Tween = /** @class */ (function (_super) {
     };
     /**
      * Easier way calling constructor only applies the `to` value, useful for CSS Animation
-     * @param {TAny} object object
+     * @param {any} object object
      * @param {object} to - Target value
      * @param {object} params - Options of tweens
      * @example Tween.to(myObject, {x:200}, 1000)
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      * @static
      */
     Tween.to = function (object, to, duration) {
@@ -10912,11 +10501,11 @@ var Tween = /** @class */ (function (_super) {
     };
     /**
      * Easier way calling constructor only applies the `from` value, useful for CSS Animation
-     * @param {TAny} object object
+     * @param {any} object object
      * @param {object} from - Initial value
      * @param {object} params - Options of tweens
      * @example Tween.from(myObject, {x:200}, 1000)
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      * @static
      */
     Tween.from = function (object, from, duration) {
@@ -10931,7 +10520,7 @@ var Tween = /** @class */ (function (_super) {
          * 是否在播放中
          * @return {boolean}
          * @example tween.isPlaying()
-         * @memberof gui.Tween
+         * @memberof vf.gui.Tween
          */
         get: function () {
             return this._isPlaying;
@@ -10944,7 +10533,7 @@ var Tween = /** @class */ (function (_super) {
          * 是否开始播放
          * @return {boolean}
          * @example tween.isStarted()
-         * @memberof gui.Tween
+         * @memberof vf.gui.Tween
          */
         get: function () {
             return this._onStartCallbackFired;
@@ -10976,7 +10565,7 @@ var Tween = /** @class */ (function (_super) {
          * 设置缓动时长
          * @param {number} amount 持续的毫秒值
          * @example tween.duration(2000)
-         * @memberof gui.Tween
+         * @memberof vf.gui.Tween
          * @deprecated 不推荐使用这个方法，内部使用
          * @private
          */
@@ -10990,7 +10579,7 @@ var Tween = /** @class */ (function (_super) {
      * 逆向缓动
      * @example tween.reverse()
      * @param {boolean=} state 是否逆向
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.reverse = function (state) {
         var _reversed = this._reversed;
@@ -11001,7 +10590,7 @@ var Tween = /** @class */ (function (_super) {
      * 当前动画是否逆转
      * @return {boolean}
      * @example tween.reversed() true逆向中
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.reversed = function () {
         return this._reversed;
@@ -11009,7 +10598,7 @@ var Tween = /** @class */ (function (_super) {
     /**
      * 暂停缓动
      * @example tween.pause()
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.pause = function () {
         if (!this._isPlaying) {
@@ -11022,7 +10611,7 @@ var Tween = /** @class */ (function (_super) {
     /**
      * 播放或恢复播放
      * @example tween.play()
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.play = function () {
         if (this._isPlaying) {
@@ -11037,8 +10626,8 @@ var Tween = /** @class */ (function (_super) {
      * 设置要缓动的目标属性与持续时间
      * @param {object} properties 目标属性值
      * @param {number|Object=} [duration=1000] 持续时间
-     * @example let tween = new gui.Tween({x:0}).to({x:100}, 2000)
-     * @memberof gui.Tween
+     * @example let tween = new vf.gui.Tween({x:0}).to({x:100}, 2000)
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.to = function (properties, duration) {
         if (duration === void 0) { duration = 1000; }
@@ -11066,7 +10655,7 @@ var Tween = /** @class */ (function (_super) {
      * 开始执行缓动
      * @param {number|string} time 要开始的时间，延迟值
      * @example tween.start()
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.start = function (time) {
         this._startTime = time !== undefined ? time : 0;
@@ -11081,7 +10670,7 @@ var Tween = /** @class */ (function (_super) {
     /**
      * 停止缓动
      * @example tween.stop()
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.stop = function () {
         var _a = this, _isPlaying = _a._isPlaying, _isFinite = _a._isFinite, object = _a.object, _duration = _a._duration, _initRepeat = _a._initRepeat, _yoyo = _a._yoyo, _reversed = _a._reversed;
@@ -11105,7 +10694,7 @@ var Tween = /** @class */ (function (_super) {
      * 设置延迟执行时间
      * @param {number} amount 延迟等待的时间，毫秒
      * @example tween.delay(500)
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.delay = function (amount) {
         this._delayTime = amount;
@@ -11115,7 +10704,7 @@ var Tween = /** @class */ (function (_super) {
      * 设置重复执行的次数
      * @param {number} amount 重复次数
      * @example tween.repeat(5)
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.repeat = function (amount) {
         this._repeat = !this._duration ? 0 : amount;
@@ -11127,7 +10716,7 @@ var Tween = /** @class */ (function (_super) {
      * 设置每个重复执行过程的延迟时间，毫秒
      * @param {number} amount 延迟值
      * @example tween.reverseDelay(500)
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.reverseDelay = function (amount) {
         this._reverseDelayTime = amount;
@@ -11138,7 +10727,7 @@ var Tween = /** @class */ (function (_super) {
      * @param {boolean} state true启动
      * @param {Function=} _easingReverse 反向时的Easing function
      * @example tween.yoyo(true)
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.yoyo = function (state, _easingReverse) {
         this._yoyo = typeof state === 'function' ? state(this._yoyo) : state === null ? this._yoyo : state;
@@ -11157,7 +10746,7 @@ var Tween = /** @class */ (function (_super) {
      * 设置缓动函数
      * @param {Function} _easingFunction 缓动函数的公式，如果设置yoyo的第二个值会应用于逆向缓动
      * @example tween.easing(Easing.Elastic.InOut)
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.easing = function (_easingFunction) {
         this._easingFunction = _easingFunction;
@@ -11167,7 +10756,7 @@ var Tween = /** @class */ (function (_super) {
      * 设置差值
      * @param {Function} _interpolationFunction 差值的函数
      * @example tween.interpolation(Interpolation.Bezier)
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.interpolation = function (_interpolationFunction) {
         if (typeof _interpolationFunction === 'function') {
@@ -11206,7 +10795,7 @@ var Tween = /** @class */ (function (_super) {
     * @param {Boolean=} preserve 完成后，防止删除动画对象
      * @param {boolean=} forceTime 强制进行更新渲染，不关心时间是否匹配
      * @example tween.update(100)
-     * @memberof gui.Tween
+     * @memberof vf.gui.Tween
      */
     Tween.prototype.update = function (elapsedMS, preserve, forceTime) {
         var _a = this, _onStartCallbackFired = _a._onStartCallbackFired, _easingFunction = _a._easingFunction, _easingReverse = _a._easingReverse, _delayTime = _a._delayTime, _reverseDelayTime = _a._reverseDelayTime, _yoyo = _a._yoyo, _reversed = _a._reversed, _startTime = _a._startTime, _duration = _a._duration, _valuesStart = _a._valuesStart, _valuesEnd = _a._valuesEnd, object = _a.object, _isFinite = _a._isFinite, _isPlaying = _a._isPlaying;
@@ -11254,7 +10843,7 @@ var Tween = /** @class */ (function (_super) {
             else { //颜色
                 constants_1.recompose(property, object, _valuesStart, _valuesEnd, value, elapsed);
             }
-            // else if (Array.isArray(end) && !(end as TAny).isString && !Array.isArray(start)) {
+            // else if (Array.isArray(end) && !(end as any).isString && !Array.isArray(start)) {
             //     const _interpolationFunctionCall = _interpolationFunction[property]
             //     ? _interpolationFunction[property] : typeof _interpolationFunction === 'function' ? _interpolationFunction : Interpolation.Linear;
             //     object[property] = _interpolationFunctionCall(end, value, object[property]);
@@ -11298,7 +10887,7 @@ var Tween = /** @class */ (function (_super) {
     Tween.core = { add: core_1.add, get: core_1.get, getAll: core_1.getAll, remove: core_1.remove, removeAll: core_1.removeAll, removeDisplay: core_1.removeDisplay, update: core_1.update };
     Tween.Event = TweenEvent_1.TweenEvent;
     return Tween;
-}(PIXI.utils.EventEmitter));
+}(vf.utils.EventEmitter));
 exports.Tween = Tween;
 
 
@@ -11317,12 +10906,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var constants_1 = __webpack_require__(/*! ./constants */ "./src/tween/private/constants.ts");
 /**
  * 差值计算列表
- * @namespace TWEEN.Interpolation
  * @example
  *
- * let bezier = gui.tween.Interpolation.Bezier
- * new gui.tween.Tween({x:0}).to({x:[0, 4, 8, 12, 15, 20, 30, 40, 20, 40, 10, 50]}, 1000).interpolation(bezier).start()
- * @memberof gui.tween
+ * let bezier = vf.gui.tween.Interpolation.Bezier
+ * new vf.gui.tween.Tween({x:0}).to({x:[0, 4, 8, 12, 15, 20, 30, 40, 20, 40, 10, 50]}, 1000).interpolation(bezier).start()
+ * @memberof vf.gui.tween
  */
 exports.Interpolation = {
     Linear: function (v, k, value) {
@@ -11853,8 +11441,7 @@ var powerModeThrottle = 120;
 var handleLag = true;
 /**
  * 插件存储器
- * @namespace tween.Plugins
- * @memberof gui.tween
+ * @memberof vf.gui.tween
  * @example
  * let num = Plugins.num = function (node, start, end) {
   * return t => start + (end - start) * t
@@ -11866,11 +11453,11 @@ exports.Plugins = {};
 /**
  * 添加对象到缓动列表
  * @param {Tween} tween Tween 实例
- * @memberof gui.tween
+ * @memberof vf.gui.tween
  * @example
- * let tween = new gui.tween.Tween({x:0})
+ * let tween = new vf.gui.tween.Tween({x:0})
  * tween.to({x:200}, 1000)
- * gui.tween.add(tween)
+ * vf.gui.tween.add(tween)
  */
 function add(tween) {
     var i = _tweens.indexOf(tween);
@@ -11885,9 +11472,9 @@ exports.add = add;
 /**
  * 没有缓动后，设置运行多少帧后，停止
  * @param {number} frameCount=120 删除所有动画后，要运行的剩余帧
- * @memberof gui.tween
+ * @memberof vf.gui.tween
  * @example
- * gui.tween.FrameThrottle(60)
+ * vf.gui.tween.FrameThrottle(60)
  */
 function FrameThrottle(frameCount) {
     if (frameCount === void 0) { frameCount = 120; }
@@ -11897,9 +11484,9 @@ exports.FrameThrottle = FrameThrottle;
 /**
  * 延时处理，针对插件、canvas、dom
  * @param {number} state=true 是否平滑处理
- * @memberof gui.tween
+ * @memberof vf.gui.tween
  * @example
- * gui.tween.ToggleLagSmoothing(false)
+ * vf.gui.tween.ToggleLagSmoothing(false)
  */
 function ToggleLagSmoothing(_state) {
     if (_state === void 0) { _state = true; }
@@ -11908,8 +11495,8 @@ function ToggleLagSmoothing(_state) {
 exports.ToggleLagSmoothing = ToggleLagSmoothing;
 /**
  * 获得所有缓动对象
- * @memberof gui.tween
- * gui.tween.getAll()
+ * @memberof vf.gui.tween
+ * vf.gui.tween.getAll()
  */
 function getAll() {
     return _tweens;
@@ -11917,8 +11504,8 @@ function getAll() {
 exports.getAll = getAll;
 /**
  * 移除所有动画对象
- * @example  gui.tween.removeAll()
- * @memberof gui.tween
+ * @example  vf.gui.tween.removeAll()
+ * @memberof vf.gui.tween
  */
 function removeAll() {
     _tweens.length = 0;
@@ -11929,9 +11516,9 @@ exports.removeAll = removeAll;
  * 获取对象
  * @param {Tween} tween 缓动对象实例
  * @return {Tween} 返回对象或null
- * @memberof gui.tween
+ * @memberof vf.gui.tween
  * @example
- * gui.tween.get(tween)
+ * vf.gui.tween.get(tween)
  */
 function get(tween) {
     for (var i = 0; i < _tweens.length; i++) {
@@ -11942,6 +11529,23 @@ function get(tween) {
     return null;
 }
 exports.get = get;
+/**
+ * 从缓动列表移除对象
+ * @param {Tween} tween Tween instance
+ * @memberof vf.gui.tween
+ * @example
+ * vf.gui.tween.remove(tween)
+ */
+function remove(tween) {
+    var i = _tweens.indexOf(tween);
+    if (i !== -1) {
+        _tweens.splice(i, 1);
+    }
+    if (_tweens.length === 0) {
+        isStarted = false;
+    }
+}
+exports.remove = remove;
 function removeDisplay(uuid) {
     for (var i = 0; i < _tweens.length; i++) {
         if (_tweens[i].object.uuid && uuid === _tweens[i].object.uuid) {
@@ -11954,29 +11558,12 @@ function removeDisplay(uuid) {
 }
 exports.removeDisplay = removeDisplay;
 /**
- * 从缓动列表移除对象
- * @param {Tween} tween Tween instance
- * @memberof gui.tween
- * @example
- * gui.tween.remove(tween)
- */
-function remove(tween) {
-    var i = _tweens.indexOf(tween);
-    if (i !== -1) {
-        _tweens.splice(i, 1);
-    }
-    if (_tweens.length === 0) {
-        isStarted = false;
-    }
-}
-exports.remove = remove;
-/**
  * 按给定时间更新缓动
  * @param {number=} time 时间戳
  * @param {Boolean=} preserve 完成后，防止删除动画对象
- * @memberof gui.tween
+ * @memberof vf.gui.tween
  * @example
- * gui.tween.update(500)
+ * vf.gui.tween.update(500)
  */
 function update(time, preserve) {
     if (preserve === void 0) { preserve = false; }
@@ -12008,8 +11595,8 @@ exports.update = update;
 /**
  * 是否正在运行中
  * @return {Boolean} 只要还有缓动在运行，返回true
- * @memberof gui.tween
- * @example gui.tween.isRunning()
+ * @memberof vf.gui.tween
+ * @example vf.gui.tween.isRunning()
  */
 function isRunning() {
     return isStarted;
@@ -12018,8 +11605,8 @@ exports.isRunning = isRunning;
 /**
  * 返回是否开启延迟平滑状态
  * @return {Boolean}
- * @memberof gui.tween
- * @example gui.tween.isRunning()
+ * @memberof vf.gui.tween
+ * @example vf.gui.tween.isRunning()
  */
 function isLagSmoothing() {
     return handleLag;
@@ -12080,6 +11667,7 @@ var ObjectPool = /** @class */ (function () {
          * 作为对象池的词典dict
          */
         this.objPoolDict = new Map();
+        //
     }
     /**
      * 向对象池中放入对象，以便重复利用
@@ -12155,7 +11743,7 @@ function getTexture(src) {
     if (exports.$getSourcePath) {
         src = exports.$getSourcePath(src);
     }
-    if (src instanceof PIXI.Texture) {
+    if (src instanceof vf.Texture) {
         return src;
     }
     if (src == null) {
@@ -12166,7 +11754,7 @@ function getTexture(src) {
         src = undefined;
         return src;
     }
-    return PIXI.Texture.from(src);
+    return vf.Texture.from(src);
 }
 exports.getTexture = getTexture;
 function getSheet(src) {
@@ -12180,10 +11768,7 @@ function getSound(src) {
     if (exports.$getSourcePath) {
         src = exports.$getSourcePath(src);
     }
-    if (src instanceof PIXI.sound.Sound) {
-        return src;
-    }
-    return PIXI.sound.Sound.from(src);
+    return src;
 }
 exports.getSound = getSound;
 function getDisplayObject(src, target) {
@@ -12394,7 +11979,7 @@ function Round(num, decimals) {
 exports.Round = Round;
 /** 获取全局唯一数 */
 function uid() {
-    return PIXI.utils.uid();
+    return vf.utils.uid();
 }
 exports.uid = uid;
 /** 获取URL参数 */
@@ -12469,6 +12054,18 @@ function pointSignAngle(pointA, pointB) {
     return Math.atan2(num1, num2) * (360 / (Math.PI * 2));
 }
 exports.pointSignAngle = pointSignAngle;
+/**
+ *  根据类型获得具体的类定义
+ * @param type
+ */
+function getGuiClass(type) {
+    return vf.gui[type];
+}
+exports.getGuiClass = getGuiClass;
+function sayHello() {
+    vf.utils.versionPrint('gui' + vf.gui.version, 'https://vipkid-edu.github.io/vf-gui');
+}
+exports.sayHello = sayHello;
 
 
 /***/ }),
@@ -12483,7 +12080,9 @@ exports.pointSignAngle = pointSignAngle;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var vfgui = __webpack_require__(/*! ./UI */ "./src/UI.ts");
+/* eslint-disable @typescript-eslint/no-namespace */
+var gui = __webpack_require__(/*! ./UI */ "./src/UI.ts");
+exports.gui = gui;
 // //注入常规兼容方法
 // if(!Array.from){
 //     Array.from = function (el: unknown[]) {
@@ -12491,17 +12090,17 @@ var vfgui = __webpack_require__(/*! ./UI */ "./src/UI.ts");
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.1.17.1.1.17.1.1.17) ==1.1.17.1.1.17.1.1.17;
+//     return this.lastIndexOf(word, pos1.2.4.1.2.4.1.2.4) ==1.2.4.1.2.4.1.2.4;
 // });
-window.gui = vfgui;
-window.gui.version = "1.1.17";
-exports.default = vfgui;
-// declare namespace gui{
-//     export * from "src/UI";
-// }
+if (window.vf === undefined) {
+    window.vf = {};
+}
+window.vf.gui = gui;
+window.vf.gui.version = "1.2.4";
 
 
 /***/ })
 
 /******/ });
-//# sourceMappingURL=vf-gui.js.map
+});
+//# sourceMappingURL=gui.js.map

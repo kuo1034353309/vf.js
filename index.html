@@ -49,7 +49,7 @@
             var errorLoadCount = 0;
             var option = {
                 container: document.getElementById("vf-container"),
-                engineVersion: "0.1.0", //引擎使用的版本
+                engineVersion: "0.1.1", //引擎使用的版本
                 bgcolor: '0xffffff',
                 src: location.hash.substr(5), //设置模板数据源地址
                 debug: true,
@@ -82,27 +82,27 @@
 
             function createVF() {
 
-                var vf = new VF(option);
+                var player = new vf.Launcher(option);
 
                 //详细的接口，可搜索：IVFEngine -> EngineAPI
-                vf.onReady = ()=>{
+                player.onReady = ()=>{
                     //测试
                     this.testCommond(vf);
                 }
 
-                vf.onSceneCreate = ()=>{
+                player.onSceneCreate = ()=>{
 
                 }
 
-                vf.onMessage = (msg)=>{
+                player.onMessage = (msg)=>{
                     console.log("onMessage ==>",msg);
                 }
 
-                vf.onError = (evt)=>{
+                player.onError = (evt)=>{
                     console.log("onError ==>",evt);
                 }
 
-                vf.onDispose = ()=>{
+                player.onDispose = ()=>{
 
                 }
 
@@ -113,7 +113,7 @@
                 var cdn = option.vfvars.cdns.default;
                 var s = document.createElement('script');
                 s.async = false;
-                s.src = cdn[index] + '/vf/engine/vf-engine-v' + option.engineVersion + '/vf.js?v=' + option.fixVersion;
+                s.src = cdn[index] + '/vf/engine/vf-engine-v' + option.engineVersion + '/launcher.js?v=' + option.fixVersion;
                 s.addEventListener('load', loadComplete, false);
                 s.addEventListener('error', loadError, false);
                 document.body.appendChild(s);
@@ -121,7 +121,10 @@
 
             function loadComplete() {
                 removeEvent(this);
-                createVF();
+                setTimeout(() => {
+                    createVF();
+                }, 1000);
+                
             }
             function loadError() {
                 removeEvent(this);

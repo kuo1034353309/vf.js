@@ -111,7 +111,7 @@ export class Animation {
             this.lastTime = this.startTime;
             this.startTime -= this.curPlayTime;
             this._curPlayTimes = 0;
-            PIXI.Ticker.shared.add(this.tick, this);
+            vf.Ticker.shared.add(this.tick, this);
         }
         public gotoStop(name: string, frameIndex: number): void {
             if (this.status === AnimationStatus.PLAYING) {
@@ -148,7 +148,7 @@ export class Animation {
         }
 
         public stop(): void {
-            PIXI.Ticker.shared.remove(this.tick, this);
+            vf.Ticker.shared.remove(this.tick, this);
             this.status = AnimationStatus.STOP;
             this.skipNextEvent();
         }
@@ -262,7 +262,7 @@ export class Animation {
         private parseAnimationClip(componentId: string, animName: string, 
                                    subAnimation: ISubAnimation): AnimationClip | undefined {
             const childId = componentId;
-            let component: gui.DisplayObject;
+            let component: vf.gui.DisplayObject;
             if (childId === TimelineType.EVENT) {
                 component = this.component;
             } else {

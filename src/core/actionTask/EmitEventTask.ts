@@ -11,7 +11,7 @@ export class EmitEventTask extends BaseTask {
         public eventName: string;
         public eventData: any;
 
-        protected target: PIXI.utils.EventEmitter | undefined;
+        protected target: vf.utils.EventEmitter | undefined;
         protected component: VFComponent;
         protected system: boolean;
         protected global: boolean;

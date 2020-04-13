@@ -14,7 +14,7 @@ export class AddListenerCallTask extends ContainerTask {
     public component: VFComponent;
     public eventName: string;
     public funName: string | undefined;
-    protected _component: gui.DisplayObject | undefined;
+    protected _component: vf.gui.DisplayObject | undefined;
     protected _loopComplete: boolean;
     protected system: boolean;
     protected global: boolean;

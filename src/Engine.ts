@@ -23,9 +23,9 @@ export class Engine implements EngineAPI {
     public static system: System;
     /**
      * @private
-     * @type {PIXI.Application}
+     * @type {vf.Application}
      */
-    private app?: PIXI.Application;
+    private app?: vf.Application;
 
     /**
      * @private
@@ -144,8 +144,8 @@ export class Engine implements EngineAPI {
         if (this.readyState === VFStateCode.DISABLED) {
             return;
         }
-        if (PIXI.sound) {
-            PIXI.sound.close();
+        if (vf.sound) {
+            vf.sound.close();
         }
 
         this.config.systemEvent.removeAllListeners();
@@ -242,7 +242,7 @@ export class Engine implements EngineAPI {
         }
 
         // 1、关闭PX的sayHello();
-        PIXI.utils.skipHello();
+        vf.utils.skipHello();
 
         // 2、初始化渲染引擎，并将渲染器的画布添加到容器（目前是PIXI）
         const options = {
@@ -252,7 +252,7 @@ export class Engine implements EngineAPI {
             transparent: this.config.wmode === 'transparent' ? true : false,
             antialias: true,
         };
-        this.app = new PIXI.Application(options);
+        this.app = new vf.Application(options);
         this.app.view.style.zIndex = '0';
         this.config.container.appendChild(this.app.view);
 

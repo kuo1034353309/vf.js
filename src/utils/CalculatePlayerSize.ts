@@ -71,7 +71,7 @@ export default function calculateUpdatePlayerSize(canvas: HTMLCanvasElement, sta
         canvasScaleY = Math.ceil(canvasScaleY);
     }
 
-    const m = new PIXI.Matrix();
+    const m = new vf.Matrix();
     m.identity();
     m.scale(scalex / canvasScaleX, scaley / canvasScaleY);
     m.rotate(rotation * Math.PI / 180);

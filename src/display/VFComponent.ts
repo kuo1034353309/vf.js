@@ -4,7 +4,7 @@ import { VFStage } from './VFStage';
 import { IVariableData, ComponentEvent } from '../core/model/IVFData';
 import { DisplayObjectAbstract } from 'core/DisplayObjectAbstract';
 
-export class VFComponent extends gui.Container {
+export class VFComponent extends vf.gui.Container {
 
         public static maxHashCode: number = 10000;
         public hashCode: number = ++VFComponent.maxHashCode;
@@ -105,8 +105,8 @@ export class VFComponent extends gui.Container {
             }
         }
 
-        public getChildById(id: string): gui.DisplayObject {
-            return this.childrenMap[id] as gui.DisplayObject;
+        public getChildById(id: string): vf.gui.DisplayObject {
+            return this.childrenMap[id] as vf.gui.DisplayObject;
         }
 
         public getVariable(id: string): IVariableData | undefined {

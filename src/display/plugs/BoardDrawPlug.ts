@@ -9,7 +9,7 @@ import { EventType } from '../../event/EventType';
  */
 export class BoardDrawPlug extends Plug {
 
-    private followLine?: gui.FollowLine;
+    private followLine?: vf.gui.FollowLine;
 
     constructor(className: string, parent: VFStage) {
         super(className, parent);
@@ -17,16 +17,16 @@ export class BoardDrawPlug extends Plug {
 
     public onLoad(data: any) {
         const { parent } = this;
-        this.followLine = new gui.FollowLine(parent as any);
+        this.followLine = new vf.gui.FollowLine(parent as any);
         const followLine = this.followLine;
         followLine.role =  data.role === 1 ? 
-        gui.Enum.FollowLineEnum.Role.teacher : 
-        gui.Enum.FollowLineEnum.Role.student;
+        vf.gui.Enum.FollowLineEnum.Role.teacher : 
+        vf.gui.Enum.FollowLineEnum.Role.student;
         followLine.width = parent.width;
         followLine.height = parent.height;
         parent.addChild(followLine);
 
-        followLine.on(gui.Interaction.ComponentEvent.COMPLETE, this.onComplete, this);
+        followLine.on(vf.gui.Interaction.ComponentEvent.COMPLETE, this.onComplete, this);
 
         parent.config.systemEvent.on(EventType.MESSAGE, this.onReceipt, this);
         return  this;
@@ -34,12 +34,12 @@ export class BoardDrawPlug extends Plug {
 
     public onRelease() {
         this.parent.config.systemEvent.off(EventType.MESSAGE, this.onReceipt, this);
-        this.followLine?.off(gui.Interaction.ComponentEvent.COMPLETE, this.onComplete, this);
+        this.followLine?.off(vf.gui.Interaction.ComponentEvent.COMPLETE, this.onComplete, this);
         this.followLine?.offAll();
         this.followLine?.release(); 
     }
 
-    private onComplete(display: gui.FollowLine, data: string) {
+    private onComplete(display: vf.gui.FollowLine, data: string) {
         this.parent.config.systemEvent.emit(EventType.MESSAGE, 
             { 
                 type: 'sendSignal', 

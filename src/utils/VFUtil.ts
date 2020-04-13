@@ -19,7 +19,7 @@ import { Transition } from '../core/transition/Tranistion';
  * 获取从父级开始的对象
  */
 function getParentByTargetComponent(component: VFComponent, targets: string[]) {
-    let com: gui.DisplayObject = component as any;
+    let com: vf.gui.DisplayObject = component as any;
     while (targets.length > 0) {
         const childId = targets.shift();
         if (com && com instanceof VFComponent && childId) {
@@ -61,7 +61,7 @@ function getRootByTargetComponent(component: VFComponent, targets: string[]) {
 
 
 export function getTargetComponent(component: VFComponent,
-                                   targetData: any[] | undefined): gui.DisplayObject | undefined {
+                                   targetData: any[] | undefined): vf.gui.DisplayObject | undefined {
     // 支持从变量，属性，数组，参数中获取 组件
     if (component && Array.isArray(targetData) && targetData.length > 1) {
         if (targetData[0] === ExpressItemType.VARIABLE || 
@@ -74,7 +74,7 @@ export function getTargetComponent(component: VFComponent,
             if (vfStage && vfStage.variableManager) {
                 const variableManager = vfStage.variableManager;
                 const comp = variableManager.getExpressItemValue(component, targetData);
-                if (comp && comp instanceof gui.DisplayObject) {
+                if (comp && comp instanceof vf.gui.DisplayObject) {
                     return comp;
                 }
             }
@@ -84,7 +84,7 @@ export function getTargetComponent(component: VFComponent,
 }
 
 export function getComponentOrChild(component: VFComponent,
-                                    targetData: string[] | undefined): gui.DisplayObject | undefined {
+                                    targetData: string[] | undefined): vf.gui.DisplayObject | undefined {
     if (!targetData) {
         return component as any;
     } else if (targetData.length <= 0) {
@@ -260,28 +260,28 @@ export function getCurveProgress(type: CurveType, pos: number): number {
     }
 }
 
-export function applyTransition(vfStage: VFStage, prevTexture: PIXI.RenderTexture, data: ITransitionData): void {
+export function applyTransition(vfStage: VFStage, prevTexture: vf.RenderTexture, data: ITransitionData): void {
     const transition = new Transition(vfStage, prevTexture, data);
     transition.run();
 }
 
-export function renderTexture(app: PIXI.Application,
-    container: PIXI.Container,
+export function renderTexture(app: vf.Application,
+    container: vf.Container,
     width: number,
-    height: number): PIXI.RenderTexture {
+    height: number): vf.RenderTexture {
 
     const w: number = width || app.view.width;
     const h: number = height || app.view.height;
 
-    const texture = PIXI.RenderTexture.create({
+    const texture = vf.RenderTexture.create({
         width: w,
         height: h,
-        scaleMode: PIXI.SCALE_MODES.LINEAR,
+        scaleMode: vf.SCALE_MODES.LINEAR,
     });
     app.renderer.render(container, texture);
     return texture;
 }
-export function getCanvasColor(app: PIXI.Application, container: PIXI.Container,
+export function getCanvasColor(app: vf.Application, container: vf.Container,
     x: number, y: number): Uint8Array {
     // const canvas = app.view;
     // console.log('canvas', canvas)
@@ -289,17 +289,17 @@ export function getCanvasColor(app: PIXI.Application, container: PIXI.Container,
     // console.log('2d', ctx)
     // const c = ctx.getImageData(x, y, 1, 1).data;
     // return c;
-    const texture = PIXI.RenderTexture.create({
+    const texture = vf.RenderTexture.create({
         width: 1,
         height: 1,
-        scaleMode: PIXI.SCALE_MODES.LINEAR,
+        scaleMode: vf.SCALE_MODES.LINEAR,
     });
     app.renderer.render(container, texture);
     const pixels = app.renderer.extract.pixels(texture);
     return pixels;
 
 }
-export function webglDebug(app: PIXI.Application, container: PIXI.Container): void {
+export function webglDebug(app: vf.Application, container: vf.Container): void {
     const c = getCanvasColor(app, container, 0, 0);
     // tslint:disable-next-line: no-console
     console.log(' canvas 0,0, color:', 'r:', c[0] / 255, 'g:', c[1], 'b:', c[2], c);

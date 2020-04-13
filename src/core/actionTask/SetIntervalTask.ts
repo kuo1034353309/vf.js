@@ -8,7 +8,7 @@ export class SetIntervalTask extends ContainerTask {
         
         public component: VFComponent;
         public data: IActionInterval;
-        private timeoutHandler?: gui.Scheduler;
+        private timeoutHandler?: vf.gui.Scheduler;
         private lastTimes: number = 0;
         private loopTaskComplete: boolean = true;
         private intervalComplete: boolean = true;
@@ -105,7 +105,7 @@ export class SetIntervalTask extends ContainerTask {
         private runOnce(timeout: number, times: number): void {  
             this.intervalComplete = false;
             if (this.timeoutHandler === undefined) {
-                this.timeoutHandler = gui.Scheduler.setTimeout(timeout, () => {
+                this.timeoutHandler = vf.gui.Scheduler.setTimeout(timeout, () => {
                     this.intervalComplete = true;
                     if (this.timeoutHandler) {
                         this.timeoutHandler.stop();

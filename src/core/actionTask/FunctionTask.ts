@@ -15,11 +15,11 @@ import { injectParamsToQueueTask } from './core/ActionListUtils';
 export class FunctionTask extends ContainerTask {
         public funName: string;
 
-        protected _component: gui.DisplayObject;
+        protected _component: vf.gui.DisplayObject;
         protected _loopComplete: boolean;
         protected callTargets: number[] = [];
 
-        constructor(compontent: gui.DisplayObject, funName: string) {
+        constructor(compontent: vf.gui.DisplayObject, funName: string) {
             super();
             this._loopComplete = false;
             this._component = compontent;

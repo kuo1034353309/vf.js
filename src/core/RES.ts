@@ -8,7 +8,6 @@ import { VariableManager } from './VariableManager';
 import { VFComponent } from '../display/VFComponent';
 import { ActionList } from './actionTask/ActionList';
 import { Animation } from './animation/Animation';
-import { DisplayObject } from 'UI';
 import { EventLevel } from '../event/EventLevel';
 import { getAssetType } from '../../packages/assets/Assets';
 import { AssetsType } from '../../packages/assets/IAssets';
@@ -16,9 +15,9 @@ import importScript from '../utils/ImportScript';
 import IEvent from '../event/IEvent';
 import { getUrl } from '../utils/getUrl';
 
-export class RES extends PIXI.utils.EventEmitter {
+export class RES extends vf.utils.EventEmitter {
 
-    public pixiResources: { [id: string]: PIXI.LoaderResource } = {};
+    public pixiResources: { [id: string]: vf.LoaderResource } = {};
 
     public data: IVFDataV1 = null as any;
     public vfActions: IAction[] = [];
@@ -27,13 +26,13 @@ export class RES extends PIXI.utils.EventEmitter {
     private _resources: IAsset[] = [];
     private _sceneMap: { [id: string]: VFScene } = {};
     private _loadNum: number = 0;
-    private _loader?: PIXI.Loader;
+    private _loader?: vf.Loader;
     private _assetFails = new Map<string, IAssetFail>();
 
     constructor(stage: VFStage) {
         super();
-        gui.Utils.setSourcePath(this.getImageAsset.bind(this) as any);
-        gui.Utils.setDisplayObjectPath(this.getDisplayObject.bind(this) as any);
+        vf.gui.Utils.setSourcePath(this.getImageAsset.bind(this) as any);
+        vf.gui.Utils.setDisplayObjectPath(this.getDisplayObject.bind(this) as any);
         this.stage = stage;
     }
 
@@ -54,8 +53,8 @@ export class RES extends PIXI.utils.EventEmitter {
                 }
             }
         }
-        PIXI.utils.destroyTextureCache();
-        PIXI.utils.clearTextureCache();
+        vf.utils.destroyTextureCache();
+        vf.utils.clearTextureCache();
         if (this._loader) {
             this._loader.destroy();
         }
@@ -125,7 +124,7 @@ export class RES extends PIXI.utils.EventEmitter {
         return null;
     }
 
-    public getImageAsset(index: number | string): PIXI.Texture | string | undefined {
+    public getImageAsset(index: number | string): vf.Texture | string | undefined {
 
         // base64
         if (index.toString().substr(0, 4) === 'data') {
@@ -137,7 +136,7 @@ export class RES extends PIXI.utils.EventEmitter {
             const assetData = this.data.assets[index];
             switch (assetData.type) {
                 case AssetType.IMAGE:
-                    return resource.texture as PIXI.Texture;
+                    return resource.texture as vf.Texture;
                 case AssetType.SHEET:
                     return resource.spritesheet;
                 default:
@@ -147,7 +146,7 @@ export class RES extends PIXI.utils.EventEmitter {
         return;
     }
 
-    public getDisplayObject(id: string, target?: DisplayObject) {
+    public getDisplayObject(id: string, target?: vf.gui.DisplayObject) {
         if (id == undefined) {
             return undefined;
         }
@@ -183,10 +182,10 @@ export class RES extends PIXI.utils.EventEmitter {
         return this.pixiResources[assetData.id.toString()];
     }
 
-    public getSoundAsset(index: number): PIXI.sound.Sound | undefined {
+    public getSoundAsset(index: number): vf.sound.Sound | undefined {
         const assetData = this.getAsset(index);
         if (assetData) {
-            return assetData.sound as PIXI.sound.Sound;
+            return assetData.sound as vf.sound.Sound;
         }
         return undefined;
     }
@@ -203,7 +202,7 @@ export class RES extends PIXI.utils.EventEmitter {
                 });
                 if (cls) {
                     if (cls.isFilter) {
-                        gui.Filter.list.set(assetsItem.name, cls); // 添加到滤镜列表
+                        vf.gui.Filter.list.set(assetsItem.name, cls); // 添加到滤镜列表
                     }
                 }
             }
@@ -290,9 +289,9 @@ export class RES extends PIXI.utils.EventEmitter {
         return null;
     }
 
-    private createComponent(libId: string, id: string): gui.DisplayObject | null {
+    private createComponent(libId: string, id: string): vf.gui.DisplayObject | null {
         const componentData = this.data.components[libId] as ICustomComponent;
-        let component: gui.DisplayObject | null = null;
+        let component: vf.gui.DisplayObject | null = null;
         if (componentData) {
             switch (componentData.type) {
                 case ComponentType.CUSTOM:
@@ -309,7 +308,7 @@ export class RES extends PIXI.utils.EventEmitter {
         return component;
     }
 
-    private creategui(id: string): gui.DisplayObject | null {
+    private creategui(id: string): vf.gui.DisplayObject | null {
         const componentData = this.data.components[id] as ICustomComponent;
         if (!componentData) {
             return null;
@@ -353,7 +352,7 @@ export class RES extends PIXI.utils.EventEmitter {
         return ui;
 
     }
-    private createCustomComponent(libId: string, id: string): gui.Container {
+    private createCustomComponent(libId: string, id: string): vf.gui.Container {
         const componentData = this.data.components[libId];
         const customData = componentData as ICustomComponent;
         const vfComponent: VFComponent = new VFComponent();
@@ -375,7 +374,7 @@ export class RES extends PIXI.utils.EventEmitter {
                     if (child) {
                         switch (childComponentData.type) {
                             default:
-                                const displayC = child as gui.DisplayObject;
+                                const displayC = child as vf.gui.DisplayObject;
                                 const diaplyCData = childData as IDisplayComponent;
                                 this.applyDisplayComponentProperty(displayC, diaplyCData);
                                 break;
@@ -402,7 +401,7 @@ export class RES extends PIXI.utils.EventEmitter {
         return vfComponent;
     }
 
-    private applyDisplayComponentProperty(display: gui.DisplayObject, data: IDisplayComponent): void {
+    private applyDisplayComponentProperty(display: vf.gui.DisplayObject, data: IDisplayComponent): void {
         for (const key in data) {
             if (data.hasOwnProperty(key)) {
                 switch (key) {
@@ -426,7 +425,7 @@ export class RES extends PIXI.utils.EventEmitter {
         }
     }
 
-    private applyFilter(display: gui.DisplayObject, filterKey: string, value: any): void {
+    private applyFilter(display: vf.gui.DisplayObject, filterKey: string, value: any): void {
         const filterKeys = filterKey.split('.');
         let target = display as any;
         for (let i: number = 0, len: number = filterKeys.length; i < len - 1 ; i++) {
@@ -442,14 +441,14 @@ export class RES extends PIXI.utils.EventEmitter {
 
     private loadResources(): void {
         if (this._loader == null) {
-            this._loader = new PIXI.Loader();
+            this._loader = new vf.Loader();
         }
         const loader = this._loader;
         const urls: any = {};
         this._loadNum = 0;
         const binaryOptions = {
-            loadType: PIXI.LoaderResource.LOAD_TYPE.XHR,
-            xhrType: PIXI.LoaderResource.XHR_RESPONSE_TYPE.BUFFER,
+            loadType: vf.LoaderResource.LOAD_TYPE.XHR,
+            xhrType: vf.LoaderResource.XHR_RESPONSE_TYPE.BUFFER,
         };
 
         for (let i: number = 0, len: number = this._resources.length; i < len; i++) {
@@ -468,7 +467,7 @@ export class RES extends PIXI.utils.EventEmitter {
             this._loadNum++;
             this.emit(SceneEvent.LoadProgress, [this._loadNum / (this._resources.length), this._resources.length]);
         });
-        loader.on('error', (error: Error, loader2: PIXI.Loader, loaderResource: PIXI.LoaderResource) => {
+        loader.on('error', (error: Error, loader2: vf.Loader, loaderResource: vf.LoaderResource) => {
             const assetFail = this._assetFails.get(loaderResource.name);
             if (assetFail) {
                 if (assetFail.count >= 4) {
@@ -483,7 +482,7 @@ export class RES extends PIXI.utils.EventEmitter {
             }
 
         });
-        loader.on('complete', (loader2: PIXI.Loader, resources: any) => {
+        loader.on('complete', (loader2: vf.Loader, resources: any) => {
             this.pixiResources = resources;
             if (!this.loadFailResources()) {
                 for (const key in urls) {

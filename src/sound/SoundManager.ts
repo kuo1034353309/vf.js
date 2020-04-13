@@ -18,7 +18,7 @@ export class SoundManager {
             return; // 如果使用了native播放，不要加载和设置PIXI.sound， 在互动课件中会有问题，教室中使用audioContext会出错。
         }
         // webAudio 在ipad下有时播放会有杂音， 该用Audio 模式
-        PIXI.sound.useLegacy = true; 
+        vf.sound.useLegacy = true; 
         /*
         TODO:
             1、使用空音频文件探测容器环境是否支持音频自动播放，如果支持就不用管了。
@@ -158,7 +158,7 @@ export class SoundManager {
         // }
     }
 
-    public async createSoundTrackMedia(audio: PIXI.sound.Sound, trackId: string): Promise<ISoundTrackMedia> {
+    public async createSoundTrackMedia(audio: vf.sound.Sound, trackId: string): Promise<ISoundTrackMedia> {
         audio.autoPlay = false;
         const audioM = await audio.play();
         this.vfStage.systemEvent.emitExt(SoundEvent.SoundStart, trackId);

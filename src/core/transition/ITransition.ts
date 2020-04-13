@@ -2,7 +2,7 @@
     export interface ITransition {
         progress: number;
         setPreviousTexture(value: any): void;
-        applyTranisition(target: PIXI.DisplayObject): void;
+        applyTranisition(target: vf.DisplayObject): void;
         dispose(): void;
     }
 

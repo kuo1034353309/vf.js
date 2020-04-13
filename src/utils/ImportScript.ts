@@ -27,7 +27,7 @@ function checkModule() {
  * 
  * @example 
  * let Cls = await importScript('http://127.0.0.1:5501/dist/test2.js',"Test");
- * let text = new Cls(); //或 let text = new gui.Test();
+ * let text = new Cls(); //或 let text = new vf.gui.Test();
  * 
  */
 export default async function importScript(url: string, cdns?: CDN, moduleName?: string, loadCompleteCallBack?: Function): Promise<boolean | any> {
@@ -35,7 +35,7 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
 
     checkModule();
 
-    const _namespace = gui as any;
+    const _namespace = vf.gui as any;
     if (moduleName && _namespace[moduleName]) {
         return _namespace[moduleName];
     }

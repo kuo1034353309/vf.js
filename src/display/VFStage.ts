@@ -21,11 +21,11 @@ enum STAGE_STATUS {
     STOP,
 }
 
-export class VFStage extends gui.Stage {
+export class VFStage extends vf.gui.Stage {
 
     public variableManager: VariableManager;
     public soundManager: SoundManager;
-    public tween: gui.Tween;
+    public tween: vf.gui.Tween;
     public fps: number = 30;
     public readonly config: Config;
     public readonly engine:Engine;
@@ -48,12 +48,12 @@ export class VFStage extends gui.Stage {
         this.height = config.height;
         this.config = config; 
         this.engine = engine;
-        gui.Utils.debug = config.debug;
+        vf.gui.Utils.debug = config.debug;
         // 配置数据后，创建各种管理器
         this.res = new RES(this);
         this.variableManager = new VariableManager();
         this.soundManager = new SoundManager(this.res, this);
-        this.tween = new gui.Tween();
+        this.tween = new vf.gui.Tween();
         // tslint:disable-next-line: no-unused-expression
         new Plugs.PlugIndex();
     }
@@ -182,7 +182,7 @@ export class VFStage extends gui.Stage {
     private switchToScene(scene: VFScene, transition?: ITransitionData): void {
         if (scene && this.app) {
             let transitionData = transition;
-            let prevTexture: PIXI.RenderTexture | undefined;
+            let prevTexture: vf.RenderTexture | undefined;
             if (this.curScene) {
                 if (this.curScene.transition || transitionData) {
                     if (transitionData == null) {
@@ -249,7 +249,7 @@ export class VFStage extends gui.Stage {
 
     private onGUITickerUpdata(deltaTime: number) {
         if (this.app) {
-            gui.TickerShared.update(deltaTime, 
+            vf.gui.TickerShared.update(deltaTime, 
                 this.app.ticker.lastTime,
                 this.app.ticker.elapsedMS);
         }

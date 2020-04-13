@@ -2,9 +2,9 @@ import { ITransition } from '../ITransition';
 
 export class FadeoutTran implements ITransition {
 
-    private prevTexture?: PIXI.RenderTexture;
-    private target?: PIXI.DisplayObject;
-    private prevSprite?: PIXI.Sprite;
+    private prevTexture?: vf.RenderTexture;
+    private target?: vf.DisplayObject;
+    private prevSprite?: vf.Sprite;
     private _progress: number = 0;
 
     public set progress(v: number) {
@@ -19,10 +19,10 @@ export class FadeoutTran implements ITransition {
     public setPreviousTexture(value: any): void {
         this.prevTexture = value;
         if (this.prevTexture) {
-            this.prevSprite = PIXI.Sprite.from(this.prevTexture);
+            this.prevSprite = vf.Sprite.from(this.prevTexture);
         }
     }
-    public applyTranisition(target: PIXI.DisplayObject): void {
+    public applyTranisition(target: vf.DisplayObject): void {
         this.target = target;
         if (this.target && this.target.parent && this.prevSprite) {
             this.prevSprite.x = this.target.x;

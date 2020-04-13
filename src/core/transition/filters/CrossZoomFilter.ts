@@ -2,9 +2,9 @@ import { AbstractFilter } from './AbstractFilter';
 
 
 export interface CrossZoomFilterUniforms {
-        filterMatrix: PIXI.Matrix;
+        filterMatrix: vf.Matrix;
         resolution: number;
-        previousTexture: PIXI.RenderTexture;
+        previousTexture: vf.RenderTexture;
         progress: number;
         strength: number;
     }
@@ -12,8 +12,8 @@ export interface CrossZoomFilterUniforms {
 export class CrossZoomFilter extends AbstractFilter {
 
         private static readonly linearBlurUniforms = {
-            filterMatrix:    PIXI.Matrix.TEMP_MATRIX,
-            resolution:      PIXI.settings.RESOLUTION,
+            filterMatrix:    vf.Matrix.TEMP_MATRIX,
+            resolution:      vf.settings.RESOLUTION,
             previousTexture: null,
             progress:        0.0,
             strength:        0.4,
