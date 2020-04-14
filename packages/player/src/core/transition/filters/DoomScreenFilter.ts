@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { ITransition } from '../ITransition';
 import { AbstractFilter } from './AbstractFilter';
 
@@ -90,7 +91,7 @@ export class DoomScreenFilter extends vf.Filter implements ITransition {
             // filterManager.calculateNormalizedScreenSpaceMatrix(maskMatrix);
             this.uniforms.filterMatrix = maskMatrix;
             this.uniforms.resolution = vf.settings.RESOLUTION;
-            super.apply(filterManager, input, output, false);
+            super.apply(filterManager, input, output, vf.CLEAR_MODES.NO);
         }
 
         /**
@@ -128,6 +129,6 @@ export class DoomScreenFilter extends vf.Filter implements ITransition {
                 this.target.filters = [];
             }
         }
-    }
+}
     
 

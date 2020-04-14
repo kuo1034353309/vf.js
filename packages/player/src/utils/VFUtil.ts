@@ -296,7 +296,7 @@ export function getCanvasColor(app: vf.Application, container: vf.Container,
     });
     app.renderer.render(container, texture);
     const pixels = app.renderer.extract.pixels(texture);
-    return pixels;
+    return pixels as any;
 
 }
 export function webglDebug(app: vf.Application, container: vf.Container): void {

@@ -58,7 +58,7 @@ export class AbstractFilter extends vf.Filter implements ITransition {
             this.uniforms.filterMatrix = maskMatrix;
             this.uniforms.resolution = vf.settings.RESOLUTION;
             // super.apply(filterManager, input, output, false); // 这样写ipad下会报错
-            filterManager.applyFilter(this, input, output, false);
+            filterManager.applyFilter(this, input, output, undefined);
         }
 
         public setPreviousTexture(value: any): void {

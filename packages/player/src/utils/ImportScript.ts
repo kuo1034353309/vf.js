@@ -1,19 +1,23 @@
-import { EventLevel } from "../event/EventLevel";
-import { getUrl } from "./getUrl";
-import { CDN } from "../core/model/IVFData";
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-prototype-builtins */
+import { EventLevel } from '../event/EventLevel';
+import { getUrl } from './getUrl';
+import { CDN } from '../core/model/IVFData';
 
 function checkModule() {
-    if(window.require === undefined){
-        window.require = function(){};
+
+    const w = window as any;
+    if(w.require === undefined){
+        w.require = function(){};
     }
-    if(window.exports === undefined){
-        window.exports = {};
+    if(w.exports === undefined){
+        w.exports = {};
     }
-    if(window.module === undefined){
-        window.module = {};
+    if(w.module === undefined){
+        w.module = {};
     }
-    if(window.module.exports === undefined){
-        window.module.exports = {};
+    if(w.module.exports === undefined){
+        w.module.exports = {};
     }
 }
 
@@ -53,7 +57,7 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
             s.addEventListener('load', loadComplete, false);
             s.addEventListener('error', loadError, false);
             document.body.appendChild(s);
-        }
+        };
 
         const loadComplete = function (this: HTMLScriptElement, e: Event) {
             removeEvent(this);
@@ -61,7 +65,8 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
                 loadCompleteCallBack();
             }
             if(moduleName){
-                const exports = window.module.exports;
+                const w = window as any;
+                const exports = w.module.exports;
                 if(exports.hasOwnProperty(moduleName)){
                     _namespace[moduleName] = exports[moduleName];
                     return resolve(_namespace[moduleName]);
@@ -69,7 +74,7 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
                 return resolve(false);
             }
             resolve(true);
-        }
+        };
         const loadError = function (this: HTMLScriptElement, e: Event) {
             removeEvent(this);
             if (errorLoadCount > 3) {
@@ -81,12 +86,12 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
                 loadScript(1);
                 errorLoadCount++;
             }
-        }
+        };
         const removeEvent = function (thisObj: any) {
             thisObj.parentNode.removeChild(thisObj);
             thisObj.removeEventListener('load', loadComplete, false);
             thisObj.removeEventListener('error', loadError, false);
-        }
+        };
 
         loadScript(0);
     });

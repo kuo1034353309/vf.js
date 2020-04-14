@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {VFStage} from '../../display/VFStage';
 import { ITransitionData, TransitionType, SceneEvent } from '../model/IVFData';
 import { ITransition } from './ITransition';
@@ -53,7 +54,7 @@ export class Transition {
     private getTransition(type: TransitionType): ITransition | null {
         if (this.vfStage && (
             this.vfStage.scaleX !== 1 || this.vfStage.scaleY !== 1 ||
-            !this.vfStage.app?.renderer.context.webGLVersion)) {
+            !(this.vfStage.app?.renderer.context as any).webGLVersion)) {
             return new FadeoutTran();
         }
         switch (type) {

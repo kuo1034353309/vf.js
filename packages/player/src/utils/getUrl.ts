@@ -1,7 +1,7 @@
 import { getFileExtension } from "./getFileExtension";
-import { getAssetType } from "../../packages/assets/Assets";
+import { getAssetType } from "../../../assets/Assets";
 import { CDN } from "../core/model/IVFData";
-import { AssetsType } from "../../packages/assets/IAssets";
+import { AssetsType } from "../../../assets/IAssets";
 
 export function getUrl(url: string, baseUrl = '', cdns?: CDN, index = 0) {
 

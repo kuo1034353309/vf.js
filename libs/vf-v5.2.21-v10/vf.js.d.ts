@@ -24674,3 +24674,21 @@ export interface ISystemInfo {
 
 
     }
+
+declare namespace vf{
+    module sound{
+        let useLegacy = true;
+        class IMediaInstance{
+
+        }
+        class Sound{
+            pause():void;
+            paused = false;
+            isPlaying = false; 
+            autoPlay = true;
+            resume();
+            stop();
+            play();
+        }
+    }
+}

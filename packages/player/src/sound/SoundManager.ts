@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 import { RES } from '../core/RES';
 import { VFStage } from '../display/VFStage';
 import { ISoundTrackMedia, SoundEvent, IActionPlaySound } from '../core/model/IVFData';
-import EmptyAudio from '../assets/empty-audio.mp3';
+import EmptyAudio from '../../../../assets/empty-audio.mp3';
 import { EventLevel } from '../event/EventLevel';
 import { EventType } from '../event/EventType';
 
@@ -17,8 +18,9 @@ export class SoundManager {
         if(vfStage.config.vfvars.useNativeAudio){
             return; // 如果使用了native播放，不要加载和设置PIXI.sound， 在互动课件中会有问题，教室中使用audioContext会出错。
         }
+        
         // webAudio 在ipad下有时播放会有杂音， 该用Audio 模式
-        vf.sound.useLegacy = true; 
+        // vf.sound.useLegacy = true; 
         /*
         TODO:
             1、使用空音频文件探测容器环境是否支持音频自动播放，如果支持就不用管了。
@@ -76,7 +78,7 @@ export class SoundManager {
             return;
         }
 
-        if (this.weixinEmit(assetId, 'pauseAudio', data)) {
+        if (this.weixinEmit()) {
             return;
         }
 
@@ -103,7 +105,7 @@ export class SoundManager {
             return;
         }
 
-        if (this.weixinEmit(assetId, 'resumeAudio', data)) {
+        if (this.weixinEmit()) {
             return;
         }
         
@@ -134,7 +136,7 @@ export class SoundManager {
             return;
         }
 
-        if (this.weixinEmit(assetId, 'playAudio', data)) {
+        if (this.weixinEmit()) {
             return;
         }
 
@@ -187,7 +189,7 @@ export class SoundManager {
                 autoplay = true;
                 audio.remove();
                 resolve(autoplay);
-            }).catch((err) => {
+            }).catch(() => {
                 autoplay = false;
                 audio.remove();
                 resolve(autoplay);
@@ -201,7 +203,7 @@ export class SoundManager {
         });
     }
 
-    private weixinEmit(assetId: number, typeTag: string, data: IActionPlaySound = {} as any) {
+    private weixinEmit() {
         return false;
         if (this.isWeixin()) {
             // document.addEventListener('WeixinJSBridgeReady', () => {audio.play(); }, false);

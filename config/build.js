@@ -109,7 +109,7 @@ async function buildEngineConfig() {
     engineConfig.push({
         packageName: 'vf.player',
         loadIndex: 99,
-        path: `vf-engine-v${package.version}/player.js`,
+        path: `player-v${package.version}/player.js`,
     });
 
     engineConfig.sort((a, b) => {

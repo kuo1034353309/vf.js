@@ -12,7 +12,6 @@ import IEvent from '../event/IEvent';
 import { VFStateCode } from './model/IVFData';
 import { stringFormat } from '../utils/VFUtil';
 export default class I18N extends BaseInfo {
-
     private readonly lang: string = '';
 
     private _data: any;
@@ -24,12 +23,13 @@ export default class I18N extends BaseInfo {
         this.lang = language.toLocaleLowerCase();
         if (this.lang.indexOf('en') !== -1) {
             this.lang = 'en-us';
-        } else {
+        }
+        else {
             this.lang = 'zh-cn';
         }
     }
 
-    public get readyState() {
+    public get readyState(): VFStateCode {
         return this._readyState;
     }
     public set readyState(value) {
@@ -42,27 +42,34 @@ export default class I18N extends BaseInfo {
 
     public t(key: string, param?: string[]): string {
         const data = this._data;
+
         if (data && data[key]) {
             return stringFormat(data[key].message.toString(), param);
-        } else {
-            return 'This message code[' + key + '] is not defined. \n JSON = ' + JSON.stringify(param);
         }
+
+        return `This message code[${key}] is not defined. \n JSON = ${JSON.stringify(param)}`;
     }
 
-    public async load(cdns: string[], onError: (err: any) => void) {
-        if (this.lang && this._readyState != VFStateCode.READY) {
+    public async load(cdns: string[], onError: (err: any) => void): Promise<boolean> {
+        if (this.lang && this._readyState !== VFStateCode.READY) {
+            let url = '';
 
-            const url = 'vf/engine/i18n/' + this.lang + '.json?v=2';
+            if (process.env.NODE_ENV === 'production') {
+                url = `vf/engine/i18n/${this.lang}.json?v=2`;
+            }
+            else {
+                url = `packages/i18n/${this.lang}.json`;
+            }
             this._data = await readFileSyncExt(url, cdns, { responseType: 'json' }).catch((value: IEvent) => {
                 onError(value);
             });
             if (this._data) {
                 this._readyState = VFStateCode.READY;
+
                 return true;
             }
         }
+
         return false;
     }
-
-
 }

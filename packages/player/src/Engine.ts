@@ -144,9 +144,9 @@ export class Engine implements EngineAPI {
         if (this.readyState === VFStateCode.DISABLED) {
             return;
         }
-        if (vf.sound) {
-            vf.sound.close();
-        }
+        // if (vf.sound) {
+        //     vf.sound.close();
+        // }
 
         this.config.systemEvent.removeAllListeners();
 

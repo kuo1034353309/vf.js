@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
 import { ActionList } from '../core/actionTask/ActionList';
 import { Animation } from '../core/animation/Animation';
 import { VFStage } from './VFStage';
 import { IVariableData, ComponentEvent } from '../core/model/IVFData';
-import { DisplayObjectAbstract } from 'core/DisplayObjectAbstract';
+import { DisplayObjectAbstract } from 'src/core/DisplayObjectAbstract';
 
 export class VFComponent extends vf.gui.Container {
 
@@ -247,5 +248,5 @@ export class VFComponent extends vf.gui.Container {
             this.off(ComponentEvent.Remove);
         }
         
-    }
+}
 

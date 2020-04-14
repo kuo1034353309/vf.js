@@ -11,12 +11,12 @@
         "001":{
             "name": "FilterAlpha",
             "type": "js",
-            "url": "http://127.0.0.1:5500/FilterAlpha.js"
+            "url": "/test/data/assets/FilterAlpha.js"
         },
         "002":{
             "name": "FilterGlow",
             "type": "js",
-            "url": "http://127.0.0.1:5500/FilterGlow.js"
+            "url": "/test/data/assets/FilterGlow.js"
         },
         "0":{
             "id": 0,

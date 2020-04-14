@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
     IVFDataV1, IAsset, IAssetFail, IScene, ComponentType, ICustomComponent, IDisplayComponent,
     AssetType, SceneEvent, IAction, ActionType, IActionDefineVariable, AllAction,
@@ -9,8 +10,8 @@ import { VFComponent } from '../display/VFComponent';
 import { ActionList } from './actionTask/ActionList';
 import { Animation } from './animation/Animation';
 import { EventLevel } from '../event/EventLevel';
-import { getAssetType } from '../../packages/assets/Assets';
-import { AssetsType } from '../../packages/assets/IAssets';
+import { getAssetType } from '../../../assets/Assets';
+import { AssetsType } from '../../../assets/IAssets';
 import importScript from '../utils/ImportScript';
 import IEvent from '../event/IEvent';
 import { getUrl } from '../utils/getUrl';
@@ -44,9 +45,9 @@ export class RES extends vf.utils.EventEmitter {
                     if (resource.texture) {
                         resource.texture.destroy(true);
                         delete this.pixiResources[id];
-                    } else if (resource.sound) {
-                        if (resource.sound.media) {
-                            resource.sound.destroy();
+                    } else if ((resource as any) .sound) {
+                        if ((resource as any).sound.media) {
+                            (resource as any).sound.destroy();
                         }
                         delete this.pixiResources[id];
                     }
@@ -314,11 +315,11 @@ export class RES extends vf.utils.EventEmitter {
             return null;
         }
         const type: any = componentData.type;
-        const guiNamespace = gui as any;
         // tslint:disable-next-line: new-parens
         let ui: any;
         try {
-            ui = new guiNamespace[type]();
+            const cls = vf.gui.Utils.getGuiClass(type);
+            ui = new cls();
         } catch (e) {
             this.stage.systemEvent.emitError('E0004', [id]);
             throw new Error(`guiNamespace['${type}'] === undefined`);
@@ -443,7 +444,7 @@ export class RES extends vf.utils.EventEmitter {
         if (this._loader == null) {
             this._loader = new vf.Loader();
         }
-        const loader = this._loader;
+        const loader = this._loader as any;
         const urls: any = {};
         this._loadNum = 0;
         const binaryOptions = {
