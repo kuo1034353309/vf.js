@@ -642,7 +642,7 @@ var Engine = /** @class */ (function () {
         this._errpanel = new ErrorDisplay_1.default(this.config);
         this.initSystemEvent();
         this._readyState = "init" /* INIT */;
-        console.log('Build Date - ' + "2020-4-14 6:03:44 PM");
+        console.log('Build Date - ' + "2020-4-15 10:42:06 AM");
         console.groupEnd();
         //  3、如果配了资源地址，则启动数据加载
         if (this.config.src) {
@@ -1078,7 +1078,7 @@ var Config = /** @class */ (function (_super) {
         _this._menu = options.menu === undefined ? true : Boolean(options.menu);
         _this._scaleMode = options.scaleMode || undefined;
         _this._align = options.align || 'tl';
-        _this._wmode = options.wmode || 'auto';
+        _this._wmode = options.wmode || 'transparent';
         _this._bgcolor = options.bgcolor;
         _this._vfvars = options.vfvars || {};
         _this._frameRate = options.frameRate || 30;
@@ -1815,7 +1815,7 @@ var RES = /** @class */ (function (_super) {
                     return resource;
             }
         }
-        return;
+        return undefined;
     };
     RES.prototype.getDisplayObject = function (id, target) {
         if (id == undefined) {
@@ -1833,14 +1833,10 @@ var RES = /** @class */ (function (_super) {
             if (child) {
                 return child;
             }
-            else {
-                this.stage.systemEvent.emitError('E0006', [id], "warning" /* WARNING */);
-                return undefined;
-            }
+            this.stage.systemEvent.emitError('E0006', [id], "warning" /* WARNING */);
+            return undefined;
         }
-        else {
-            return this.creategui(id);
-        }
+        return this.creategui(id);
     };
     RES.prototype.getAsset = function (index) {
         var assetData = this.data.assets[index];
@@ -2012,15 +2008,15 @@ var RES = /** @class */ (function (_super) {
         }
         if (ui) {
             for (var key in componentData) {
-                if (componentData.hasOwnProperty(key)) {
+                if (key in componentData) {
                     switch (key) {
                         case 'id':
                             // tslint:disable-next-line: no-string-literal
-                            ui['libId'] = componentData[key];
+                            ui.libId = componentData[key];
                             break;
                         case 'name':
                             // tslint:disable-next-line: no-string-literal
-                            ui['libName'] = componentData[key];
+                            ui.libName = componentData[key];
                             break;
                         case 'type':
                         case 'children':
@@ -2051,15 +2047,13 @@ var RES = /** @class */ (function (_super) {
         if (customData.children) {
             for (var i = 0, len = customData.children.length; i < len; i++) {
                 var childData = customData.children[i];
-                if (childData.hasOwnProperty('libId')) {
+                if ('libId' in childData) {
                     var childComponentData = this.data.components[childData.libId];
                     var child = this.createComponent(childData.libId, childData.id);
                     if (child) {
                         switch (childComponentData.type) {
                             default:
-                                var displayC = child;
-                                var diaplyCData = childData;
-                                this.applyDisplayComponentProperty(displayC, diaplyCData);
+                                this.applyDisplayComponentProperty(child, childData);
                                 break;
                         }
                         vfComponent.addChild(child);
@@ -2086,7 +2080,7 @@ var RES = /** @class */ (function (_super) {
     };
     RES.prototype.applyDisplayComponentProperty = function (display, data) {
         for (var key in data) {
-            if (data.hasOwnProperty(key)) {
+            if (key in data) {
                 switch (key) {
                     // case 'id':
                     // case 'name':
@@ -2123,16 +2117,12 @@ var RES = /** @class */ (function (_super) {
     };
     RES.prototype.loadResources = function () {
         var _this = this;
-        if (this._loader == null) {
+        if (this._loader === undefined) {
             this._loader = new vf.Loader();
         }
         var loader = this._loader;
         var urls = {};
         this._loadNum = 0;
-        var binaryOptions = {
-            loadType: vf.LoaderResource.LOAD_TYPE.XHR,
-            xhrType: vf.LoaderResource.XHR_RESPONSE_TYPE.BUFFER,
-        };
         for (var i = 0, len = this._resources.length; i < len; i++) {
             var res = this._resources[i];
             var id = res.id === undefined ? 'undefined' : res.id.toString();
@@ -2143,11 +2133,29 @@ var RES = /** @class */ (function (_super) {
             loader.add(id, getUrl_1.getUrl(res.url, this.data.baseUrl));
             urls[res.url] = [id];
         }
-        loader.onProgress.add(function (e) {
+        var progressId = 0;
+        var completeId = 0;
+        var errorId = 0;
+        progressId = loader.onProgress.add(function () {
             _this._loadNum++;
             _this.emit("LoadProgress" /* LoadProgress */, [_this._loadNum / (_this._resources.length), _this._resources.length]);
         });
-        loader.on('error', function (error, loader2, loaderResource) {
+        completeId = loader.onComplete.add(function (loader2, resources) {
+            _this.pixiResources = resources;
+            if (!_this.loadFailResources()) {
+                for (var key in urls) {
+                    var id = urls[key].shift();
+                    while (urls[key].length > 0) {
+                        _this.pixiResources[urls[key].shift()] = resources[id];
+                    }
+                }
+                loader.onComplete.detach(progressId);
+                loader.onComplete.detach(completeId);
+                loader.onComplete.detach(errorId);
+                _this.emit("LoadComplete" /* LoadComplete */, null);
+            }
+        });
+        errorId = loader.onError.add(function (error, loader2, loaderResource) {
             var assetFail = _this._assetFails.get(loaderResource.name);
             if (assetFail) {
                 if (assetFail.count >= 4) {
@@ -2160,19 +2168,6 @@ var RES = /** @class */ (function (_super) {
                 _this._assetFails.set(loaderResource.name, { id: loaderResource.name,
                     url: loaderResource.url,
                     extension: loaderResource.extension, count: 1 });
-            }
-        });
-        loader.on('complete', function (loader2, resources) {
-            _this.pixiResources = resources;
-            if (!_this.loadFailResources()) {
-                for (var key in urls) {
-                    var id = urls[key].shift();
-                    while (urls[key].length > 0) {
-                        _this.pixiResources[urls[key].shift()] = resources[id];
-                    }
-                }
-                loader.removeAllListeners();
-                _this.emit("LoadComplete" /* LoadComplete */, null);
             }
         });
         loader.load();
@@ -2222,6 +2217,7 @@ var RES = /** @class */ (function (_super) {
                 }
             }
         }
+        return undefined;
     };
     return RES;
 }(vf.utils.EventEmitter));

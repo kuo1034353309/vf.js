@@ -214,7 +214,6 @@ class VIPKIDLauncher {
     }
 
     private onJsError(evt: Event) {
-        console.log(this._errorLoadCount);
         if (this._errorLoadCount > this._errorLoadMaxCount) {
             const script = evt.target as HTMLScriptElement;
             const event = { code: '404', level: EventLevel.ERROR, data: null, message: `${script.src} #404` };
@@ -222,6 +221,7 @@ class VIPKIDLauncher {
             if (this.errorCall) {
                 this.errorCall(event);
             }
+            this.removeJsLoadEvent(evt);
 
             return;
         }

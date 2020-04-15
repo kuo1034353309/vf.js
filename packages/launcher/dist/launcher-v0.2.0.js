@@ -287,13 +287,13 @@ var VIPKIDLauncher = /** @class */ (function () {
         this.loadJs();
     };
     VIPKIDLauncher.prototype.onJsError = function (evt) {
-        console.log(this._errorLoadCount);
         if (this._errorLoadCount > this._errorLoadMaxCount) {
             var script = evt.target;
             var event_1 = { code: '404', level: "error" /* ERROR */, data: null, message: script.src + " #404" };
             if (this.errorCall) {
                 this.errorCall(event_1);
             }
+            this.removeJsLoadEvent(evt);
             return;
         }
         this._cdnsIndex++;

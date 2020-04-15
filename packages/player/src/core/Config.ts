@@ -77,7 +77,7 @@ export default class Config extends BaseInfo {
         this._menu = options.menu === undefined ? true : Boolean(options.menu);
         this._scaleMode = options.scaleMode || undefined;
         this._align = options.align || 'tl';
-        this._wmode = options.wmode || 'auto';
+        this._wmode = options.wmode || 'transparent';
         this._bgcolor = options.bgcolor;
         this._vfvars = options.vfvars || {};
         this._frameRate = options.frameRate || 30;
