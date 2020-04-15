@@ -642,7 +642,7 @@ var Engine = /** @class */ (function () {
         this._errpanel = new ErrorDisplay_1.default(this.config);
         this.initSystemEvent();
         this._readyState = "init" /* INIT */;
-        console.log('Build Date - ' + "2020-4-15 10:42:06 AM");
+        console.log('Build Date - ' + "2020-4-15 11:16:05 AM");
         console.groupEnd();
         //  3、如果配了资源地址，则启动数据加载
         if (this.config.src) {

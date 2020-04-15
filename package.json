@@ -10,7 +10,8 @@
     "dev": "node config/build.js & webpack --config config/webpack.dev.js --watch",
     "start": "npm run dev",
     "prod": "node config/build.js & webpack --config config/webpack.prod.js --verbose",
-    "lint": "eslint --ext .js,.ts src test"
+    "lint": "eslint --ext .js,.ts src test",
+    "types:launcher": "dts-generator --project  ./packages/launcher/  --out ./packages/launcher/dist/launcher.d.ts"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "@typescript-eslint/parser": "2.6.1",
     "copy-webpack-plugin": "5.0.5",
     "cross-env": "^6.0.3",
+    "dts-generator": "^3.0.0",
     "eslint": "6.6.0",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "3.2.0",

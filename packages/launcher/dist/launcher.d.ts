@@ -1,11 +1,4 @@
 /**
- * 引擎对外的钩子以及初始化配置参数
- */
-
-import { ITransitionData, ScaleMode } from './core/model/IVFData';
-import IEvent from './event/IEvent';
-
-/**
  * 外部钩子
  */
 export interface APIHook {
@@ -72,17 +65,17 @@ export interface APICommand {
      * 切换场景
      * @param transition
      */
-    switchToNextScene(transition?: ITransitionData): void;
+    switchToNextScene(transition?: any): void;
     /**
      * 切换场景
      * @param transition
      */
-    switchToPrevScene(transition?: ITransitionData): void;
+    switchToPrevScene(transition?: any): void;
     /**
      * 切换场景
      * @param transition
      */
-    switchToSceneId(sceneId: string, transition?: ITransitionData): void;
+    switchToSceneId(sceneId: string, transition?: any): void;
 }
 
 export interface EngineAPI extends APIHook, APICommand {
@@ -137,3 +130,5 @@ export interface IVFOptions {
      */
     fadeInTime?: number;
 }
+
+export declare function createVF(options: IVFOptions, completeCall: (player: EngineAPI) => {}, errorCall?: (e: IEvent) => {}): void;

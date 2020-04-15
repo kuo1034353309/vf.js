@@ -132,7 +132,6 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
-        this.intervalId = -1;
         if (completeCall === undefined) {
             // eslint-disable-next-line no-throw-literal
             throw 'completeCall === undefined';
@@ -146,7 +145,6 @@ var VIPKIDLauncher = /** @class */ (function () {
         if (options.vfvars.cdns === undefined) {
             options.vfvars.cdns = this.getDefaultCDN();
         }
-        options.container.style.display = 'none';
         this._config = options;
         this.completeCall = completeCall;
         this.errorCall = errorCall;
@@ -268,12 +266,13 @@ var VIPKIDLauncher = /** @class */ (function () {
         return { w: w, h: h };
     };
     VIPKIDLauncher.prototype.loadJs = function () {
-        if (this.getLibs().length === 0) {
+        var libs = this.getEnvConfig(this._cdnsIndex);
+        if (libs.length === 0) {
             this.createEngine();
             return;
         }
         this.showLoading();
-        var item = this.getLibs().shift();
+        var item = libs.shift();
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.async = false;
@@ -314,12 +313,6 @@ var VIPKIDLauncher = /** @class */ (function () {
         }
     };
     /**
-     * 检查前置库
-     */
-    VIPKIDLauncher.prototype.getLibs = function () {
-        return this.getEnvConfig(this._cdnsIndex);
-    };
-    /**
      * 创建引擎
      */
     VIPKIDLauncher.prototype.createEngine = function () {
@@ -328,28 +321,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             this.completeCall = undefined;
             this.errorCall = undefined;
         }
-        this.fadeOut();
-    };
-    VIPKIDLauncher.prototype.fadeOut = function () {
-        var _this = this;
-        var canvas = this._config.container;
-        canvas.style.opacity = '0';
-        canvas.style.display = 'block';
-        var speed = this._config.fadeInTime || 30;
-        if (speed !== 0) {
-            var num_1 = 0;
-            var intervalId_1 = this.intervalId = window.setInterval(function () {
-                num_1++;
-                canvas.style.opacity = (num_1 / 10).toString();
-                if (num_1 >= 30) {
-                    clearInterval(intervalId_1);
-                    _this.hideLoading();
-                }
-            }, speed);
-        }
-        else {
-            this.hideLoading();
-        }
+        this.hideLoading();
     };
     return VIPKIDLauncher;
 }());

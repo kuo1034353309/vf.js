@@ -35,7 +35,6 @@
 
         import './packages/launcher/dist/launcher-v0.2.0.js';
 
-        console.log();
         ///
         if (location.href.indexOf("#path") === -1) {
             location.hash = "path/test/" + 'data/gotoPlay.json';
@@ -61,6 +60,7 @@
             player.onReady = ()=>{
                 //测试
                 //this.testCommond(vf);
+                console.log("初始化完成");
             }
 
             player.onSceneCreate = ()=>{
