@@ -121,7 +121,7 @@ exports.Filter = Filter_1.Filter;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestContainer
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestContainer
  */
 var Container_1 = __webpack_require__(/*! ./display/Container */ "./src/display/Container.ts");
 exports.Container = Container_1.Container;
@@ -132,7 +132,7 @@ exports.Container = Container_1.Container;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestRect
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestRect
  */
 var ScrollingContainer_1 = __webpack_require__(/*! ./display/ScrollingContainer */ "./src/display/ScrollingContainer.ts");
 exports.ScrollingContainer = ScrollingContainer_1.ScrollingContainer;
@@ -143,7 +143,7 @@ exports.ScrollingContainer = ScrollingContainer_1.ScrollingContainer;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestImage
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestImage
  */
 var Image_1 = __webpack_require__(/*! ./display/Image */ "./src/display/Image.ts");
 exports.Image = Image_1.Image;
@@ -156,7 +156,7 @@ exports.Image = Image_1.Image;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSpriteAnimated
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestSpriteAnimated
  */
 var SpriteAnimated_1 = __webpack_require__(/*! ./display/SpriteAnimated */ "./src/display/SpriteAnimated.ts");
 exports.SpriteAnimated = SpriteAnimated_1.SpriteAnimated;
@@ -171,7 +171,7 @@ exports.SpriteAnimated = SpriteAnimated_1.SpriteAnimated;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestLabel
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestLabel
  */
 var Label_1 = __webpack_require__(/*! ./display/Label */ "./src/display/Label.ts");
 exports.Label = Label_1.Label;
@@ -182,7 +182,7 @@ exports.Label = Label_1.Label;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTextInput
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTextInput
  */
 var TextInput_1 = __webpack_require__(/*! ./display/TextInput */ "./src/display/TextInput.ts");
 exports.TextInput = TextInput_1.TextInput;
@@ -193,7 +193,7 @@ exports.TextInput = TextInput_1.TextInput;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSlider
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestSlider
  */
 var Slider_1 = __webpack_require__(/*! ./display/Slider */ "./src/display/Slider.ts");
 exports.Slider = Slider_1.Slider;
@@ -204,7 +204,7 @@ exports.Slider = Slider_1.Slider;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestButton
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestButton
  */
 var Button_1 = __webpack_require__(/*! ./display/Button */ "./src/display/Button.ts");
 exports.Button = Button_1.Button;
@@ -217,7 +217,7 @@ exports.Button = Button_1.Button;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestCheckBox
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCheckBox
  */
 var CheckBox_1 = __webpack_require__(/*! ./display/CheckBox */ "./src/display/CheckBox.ts");
 exports.CheckBox = CheckBox_1.CheckBox;
@@ -228,7 +228,7 @@ exports.CheckBox = CheckBox_1.CheckBox;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestRect
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestRect
  */
 var Rect_1 = __webpack_require__(/*! ./display/Rect */ "./src/display/Rect.ts");
 exports.Rect = Rect_1.Rect;
@@ -239,7 +239,7 @@ exports.Rect = Rect_1.Rect;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestCircle
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCircle
  */
 var Circle_1 = __webpack_require__(/*! ./display/Circle */ "./src/display/Circle.ts");
 exports.Circle = Circle_1.Circle;
@@ -250,7 +250,7 @@ exports.Circle = Circle_1.Circle;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var Graphics_1 = __webpack_require__(/*! ./display/Graphics */ "./src/display/Graphics.ts");
 exports.Graphics = Graphics_1.Graphics;
@@ -261,7 +261,7 @@ exports.Graphics = Graphics_1.Graphics;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var FollowLine_1 = __webpack_require__(/*! ./display/FollowLine */ "./src/display/FollowLine.ts");
 exports.FollowLine = FollowLine_1.FollowLine;
@@ -273,7 +273,7 @@ exports.FollowLine = FollowLine_1.FollowLine;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestConnectLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestConnectLine
  */
 var ConnectLine_1 = __webpack_require__(/*! ./display/ConnectLine */ "./src/display/ConnectLine.ts");
 exports.ConnectLine = ConnectLine_1.ConnectLine;
@@ -284,7 +284,7 @@ exports.ConnectLine = ConnectLine_1.ConnectLine;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSound
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestSound
  */
 var Sound_1 = __webpack_require__(/*! ./display/Sound */ "./src/display/Sound.ts");
 exports.Sound = Sound_1.Sound;
@@ -295,7 +295,7 @@ exports.Sound = Sound_1.Sound;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTween
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
  */
 var Easing_1 = __webpack_require__(/*! ./tween/Easing */ "./src/tween/Easing.ts");
 exports.Easing = Easing_1.Easing;
@@ -306,7 +306,7 @@ exports.Easing = Easing_1.Easing;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTween
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
  */
 var Tween_1 = __webpack_require__(/*! ./tween/Tween */ "./src/tween/Tween.ts");
 exports.Tween = Tween_1.Tween;
@@ -317,7 +317,7 @@ exports.Tween = Tween_1.Tween;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var Timeline_1 = __webpack_require__(/*! ./tween/Timeline */ "./src/tween/Timeline.ts");
 exports.Timeline = Timeline_1.Timeline;
@@ -2387,6 +2387,27 @@ var DisplayObjectAbstract = /** @class */ (function (_super) {
     DisplayObjectAbstract.prototype.getChildAt = function (index) {
         return this.uiChildren[index] || undefined;
     };
+    DisplayObjectAbstract.prototype.getChildUUID = function (uuid) {
+        var uiChildren = this.uiChildren;
+        var len = uiChildren.length;
+        for (var i = 0; i < len; i++) {
+            if (uiChildren[i].uuid == uuid) {
+                return uiChildren[i];
+            }
+        }
+        return undefined;
+    };
+    DisplayObjectAbstract.prototype.pathToDisplayObject = function (uuid) {
+        var display = this;
+        var len = uuid.length - 1;
+        for (var i = len; i >= 0; i--) {
+            if (display)
+                display = display.getChildUUID(uuid[i]);
+            else
+                display = undefined;
+        }
+        return display;
+    };
     /**
      * 移除已添加的UI组件
      * @param UIObject 要移除的UI组件
@@ -2977,7 +2998,7 @@ var Utils_1 = __webpack_require__(/*! ../../utils/Utils */ "./src/utils/Utils.ts
 /**
  *  组件的拖拽操作
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestDrop
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestDrop
  */
 var UIBaseDrag = /** @class */ (function () {
     /**
@@ -3105,6 +3126,33 @@ var UIBaseDrag = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(UIBaseDrag.prototype, "actionData", {
+        /**
+         * 获取当前的操作数据
+         */
+        get: function () {
+            return JSON.stringify(this._actionData);
+        },
+        set: function (data) {
+            var drag = this.drag;
+            var value = JSON.parse(data);
+            var e = new Index_1.InteractionEvent();
+            e.type = value.type;
+            e.data = value.data;
+            e.data.identifier = value.data.identifier * 1000;
+            e.signalling = true;
+            if (drag) {
+                if (value.type === Index_1.ComponentEvent.DRAG_TARGET) {
+                    this.executeDrop(e, value.path);
+                }
+                else {
+                    drag.executeAction(e);
+                }
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     UIBaseDrag.prototype.clearDraggable = function () {
         if (this.dragInitialized) {
             this.dragInitialized = false;
@@ -3124,6 +3172,13 @@ var UIBaseDrag = /** @class */ (function () {
             this._dragPosition.set(0, 0);
             this.drag = new Index_1.DragEvent(this.target);
             this.drag.dragRestrictAxis = this._dragRestrictAxis;
+            // this.drag.onDragPress = (e: InteractionEvent,isPress: boolean) => {
+            //     if(isPress){
+            //         this._actionData = {type:ComponentEvent.DRAG_START,data: e.data};
+            //     }else{
+            //         this._actionData = {type:ComponentEvent.DRAG_START,data: e.data};
+            //     }
+            // }
             this.drag.onDragStart = function (e) {
                 if (_this.target == undefined) {
                     return;
@@ -3166,6 +3221,7 @@ var UIBaseDrag = /** @class */ (function () {
                             });
                         }
                     }
+                    _this._actionData = { type: Index_1.ComponentEvent.DRAG_START, data: e.data };
                     target.emit(Index_1.ComponentEvent.DRAG_START, target, e);
                 }
             };
@@ -3207,6 +3263,7 @@ var UIBaseDrag = /** @class */ (function () {
                         }
                     }
                     target.setPosition(_this._dragPosition.x, _this._dragPosition.y);
+                    _this._actionData = { type: Index_1.ComponentEvent.DRAG_MOVE, data: e.data, offset: offset };
                     target.emit(Index_1.ComponentEvent.DRAG_MOVE, target, e);
                 }
             };
@@ -3249,6 +3306,7 @@ var UIBaseDrag = /** @class */ (function () {
                                 });
                             }
                         }
+                        _this._actionData = { type: Index_1.ComponentEvent.DRAG_END, data: e.data };
                         target.emit(Index_1.ComponentEvent.DRAG_END, target, e);
                     }, 0);
                 }
@@ -3313,7 +3371,28 @@ var UIBaseDrag = /** @class */ (function () {
                     });
                 }
             }
+            item.dragOption._actionData = { type: Index_1.ComponentEvent.DRAG_TARGET, data: e.data, path: Utils_1.getDisplayPathUUID(parent_1) };
             item.emit(Index_1.ComponentEvent.DRAG_TARGET, item, e);
+        }
+    };
+    /**
+     * 同步数据临时的方法
+     */
+    UIBaseDrag.prototype.executeDrop = function (e, parsentPath) {
+        if (this.target && this.target.stage && parsentPath) {
+            var parent_2 = this.target.stage.pathToDisplayObject(parsentPath);
+            var item = this.target;
+            if (parent_2) {
+                parent_2.container.toLocal(item.container.position, item.container.parent, this._dragPosition);
+                item.x = this._dragPosition.x;
+                item.y = this._dragPosition.y;
+                if (parent_2 != item.parent) {
+                    parent_2.addChild(item);
+                    parent_2.emit(Index_1.ComponentEvent.DROP_TARGET, parent_2, item, e);
+                }
+                this.$targetParent = parent_2;
+                item.emit(Index_1.ComponentEvent.DRAG_TARGET, item, e);
+            }
         }
     };
     UIBaseDrag.prototype.load = function () {
@@ -3413,7 +3492,7 @@ var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestButton
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestButton
  */
 var Button = /** @class */ (function (_super) {
     __extends(Button, _super);
@@ -3518,7 +3597,7 @@ var Button_1 = __webpack_require__(/*! ./Button */ "./src/display/Button.ts");
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestCheckBox
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCheckBox
  */
 var CheckBox = /** @class */ (function (_super) {
     __extends(CheckBox, _super);
@@ -3660,7 +3739,7 @@ var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/co
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestCircle
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCircle
  */
 var Circle = /** @class */ (function (_super) {
     __extends(Circle, _super);
@@ -3814,7 +3893,7 @@ exports.play = Symbol("play");
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestConnectLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestConnectLine
  */
 var ConnectLine = /** @class */ (function (_super) {
     __extends(ConnectLine, _super);
@@ -4114,7 +4193,7 @@ var ConnectLine = /** @class */ (function (_super) {
         if (line.parent) {
             line.parent.removeChild(line).destroy();
         }
-        this.offAll(Index_1.ComponentEvent.CHANGE);
+        this.offAll(Index_1.ComponentEvent.COMPLETE);
     };
     return ConnectLine;
 }(DisplayObject_1.DisplayObject));
@@ -4156,7 +4235,7 @@ var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/co
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestContainer
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestContainer
  */
 var Container = /** @class */ (function (_super) {
     __extends(Container, _super);
@@ -4272,7 +4351,7 @@ function getVecListFromStr(str, from, to) {
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var FollowLine = /** @class */ (function (_super) {
     __extends(FollowLine, _super);
@@ -4653,6 +4732,13 @@ var FollowLine = /** @class */ (function (_super) {
         }
         this.invalidateProperties();
     };
+    Object.defineProperty(FollowLine.prototype, "source", {
+        set: function (data) {
+            this.setData(data);
+        },
+        enumerable: true,
+        configurable: true
+    });
     FollowLine.prototype.reset = function () {
         this.emitMsg("3" /* clear */, this.role, "");
         this.clear();
@@ -4695,7 +4781,7 @@ var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/co
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var Graphics = /** @class */ (function (_super) {
     __extends(Graphics, _super);
@@ -4745,7 +4831,7 @@ var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestImage
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestImage
  */
 var Image = /** @class */ (function (_super) {
     __extends(Image, _super);
@@ -4991,7 +5077,7 @@ var UIKeys = __webpack_require__(/*! ../core/DisplayLayoutKeys */ "./src/core/Di
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestLabel
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestLabel
  */
 var Label = /** @class */ (function (_super) {
     __extends(Label, _super);
@@ -5112,7 +5198,7 @@ var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/co
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestRect
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestRect
  */
 var Rect = /** @class */ (function (_super) {
     __extends(Rect, _super);
@@ -5273,7 +5359,7 @@ var ContainerBase_1 = __webpack_require__(/*! ../core/ContainerBase */ "./src/co
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestRect
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestRect
  */
 var ScrollingContainer = /** @class */ (function (_super) {
     __extends(ScrollingContainer, _super);
@@ -5508,9 +5594,9 @@ var ScrollingContainer = /** @class */ (function (_super) {
             this.updateDirection("x", delta);
         if (this.scrollY)
             this.updateDirection("y", delta);
-        if (stop) {
-            this.animating = false;
-        }
+        //if (this._stop) {
+        this.animating = false;
+        //}
     };
     ScrollingContainer.prototype.updateDirection = function (direction, delta) {
         delta = delta * 0.001;
@@ -5599,7 +5685,7 @@ var Easing_1 = __webpack_require__(/*! ../tween/Easing */ "./src/tween/Easing.ts
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSlider
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestSlider
  */
 var Slider = /** @class */ (function (_super) {
     __extends(Slider, _super);
@@ -5958,7 +6044,7 @@ exports.$sounds = new Map();
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSound
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestSound
  */
 var Sound = /** @class */ (function (_super) {
     __extends(Sound, _super);
@@ -6314,7 +6400,7 @@ var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestSpriteAnimated
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestSpriteAnimated
  */
 var SpriteAnimated = /** @class */ (function (_super) {
     __extends(SpriteAnimated, _super);
@@ -6646,7 +6732,7 @@ var Index_1 = __webpack_require__(/*! ../interaction/Index */ "./src/interaction
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTextInput
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTextInput
  */
 var TextInput = /** @class */ (function (_super) {
     __extends(TextInput, _super);
@@ -7670,6 +7756,7 @@ var InteractionEvent = /** @class */ (function (_super) {
     __extends(InteractionEvent, _super);
     function InteractionEvent() {
         var _this = _super.call(this) || this;
+        _this.signalling = false;
         _this.local = tempLocal;
         return _this;
     }
@@ -8140,6 +8227,7 @@ exports.getEventItem = getEventItem;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var Index_1 = __webpack_require__(/*! ./Index */ "./src/interaction/Index.ts");
 /**
  * 多拽相关的事件处理类
  *
@@ -8185,8 +8273,21 @@ var DragEvent = /** @class */ (function () {
             this.isStop = false;
         }
     };
+    DragEvent.prototype.executeAction = function (e) {
+        switch (e.type) {
+            case Index_1.ComponentEvent.DRAG_START:
+                this._onDragStart(e);
+                break;
+            case Index_1.ComponentEvent.DRAG_MOVE:
+                this._onDragMove(e);
+                break;
+            case Index_1.ComponentEvent.DRAG_END:
+                this._onDragEnd(e);
+                break;
+        }
+    };
     DragEvent.prototype._onDragStart = function (e) {
-        if (this.obj.dragStopPropagation)
+        if (this.obj.dragStopPropagation && e.stopPropagation)
             e.stopPropagation();
         this.id = e.data.identifier;
         this.onDragPress && this.onDragPress.call(this.obj, e, true, this);
@@ -8202,7 +8303,9 @@ var DragEvent = /** @class */ (function () {
             stage.on("touchcancel" /* touchcancel */, this._onDragEnd, this);
             this.bound = true;
         }
-        e.data.originalEvent.preventDefault();
+        if (e.data.originalEvent.preventDefault) {
+            e.data.originalEvent.preventDefault();
+        }
     };
     DragEvent.prototype._onDragMove = function (e) {
         if (e.data.identifier !== this.id)
@@ -10349,7 +10452,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTween
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
  */
 exports.Easing = {
     Linear: {
@@ -10604,7 +10707,7 @@ var Node = /** @class */ (function () {
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTimeLine
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
  */
 var Timeline = /** @class */ (function (_super) {
     __extends(Timeline, _super);
@@ -10855,7 +10958,7 @@ var defaultEasing = Easing_1.Easing.Linear.None;
  *
  * @namespace gui
  *
- * @link https://vipkid-edu.github.io/vf-gui-docs/play/#example/TestTween
+ * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
  */
 var Tween = /** @class */ (function (_super) {
     __extends(Tween, _super);
@@ -12211,6 +12314,23 @@ function getStage(target) {
 }
 exports.getStage = getStage;
 /**
+ * 获取显示对象的路径
+ * @param target
+ * @param ids
+ */
+function getDisplayPathUUID(target, ids) {
+    if (ids === void 0) { ids = []; }
+    ids.push(target.uuid);
+    if (target.parent) {
+        if (target.parent instanceof Stage_1.Stage) {
+            return ids;
+        }
+        return getDisplayPathUUID(target.parent, ids);
+    }
+    return ids;
+}
+exports.getDisplayPathUUID = getDisplayPathUUID;
+/**
  * 快速设置矩形
  * @param sourcr
  * @param x
@@ -12491,10 +12611,10 @@ var vfgui = __webpack_require__(/*! ./UI */ "./src/UI.ts");
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.1.17.1.1.17.1.1.17) ==1.1.17.1.1.17.1.1.17;
+//     return this.lastIndexOf(word, pos1.1.21.1.1.21.1.1.21) ==1.1.21.1.1.21.1.1.21;
 // });
 window.gui = vfgui;
-window.gui.version = "1.1.17";
+window.gui.version = "1.1.21";
 exports.default = vfgui;
 // declare namespace gui{
 //     export * from "src/UI";
