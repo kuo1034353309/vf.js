@@ -10,7 +10,7 @@
     <meta name="screen-orientation" content="portrait" />
     <meta name="x5-fullscreen" content="true" />
     <meta name="360-fullscreen" content="true" />
-    <title>vf</title>
+    <title>vf - player</title>
     <style>
         html,
         body {
@@ -27,15 +27,22 @@
     <div id="vf-container"
         style="background:rgb(56, 56, 55);width: 100%; height: 100%;padding:0;margin:0;overflow: hidden; position: absolute;">
     </div>
-
-    <button id="funcall" style="z-index: 999; position: absolute; left: 50px; top:50px;">执行方法</button>
-    <button id="sendevent" style="z-index: 999; position: absolute; left: 150px; top:50px;">派发事件</button>
-    
+    <div style="z-index: 999; position: absolute; left: 10px; top:10px;" id="buttons">
+        <button param='test/data/animTest.json'>play</button>
+        <button>reset</button>
+        <button>pause</button>
+        <button>resume</button>
+        <button>dispose</button>
+        <button param-type="object" param='{"code": "restore","level": "command","data": {"name": "restore","val": {}}}'>message</button>
+        <button>switchToNextScene</button>
+        <button>switchToPrevScene</button>
+        <button param='2'>switchToSceneId</button>
+    </div>
+    <!-- <script src='./packages/launcher/dist/launcher-v0.2.0.js'></script> -->
     <script type="module">
 
         import './packages/launcher/dist/launcher-v0.2.0.js';
 
-        ///
         if (location.href.indexOf("#path") === -1) {
             location.hash = "path/test/" + 'data/gotoPlay.json';
             //location.reload();
@@ -55,175 +62,59 @@
 
             ]
         */
-        createVF({container: document.getElementById("vf-container")},function(player){
-            //详细的接口，可搜索：IVFEngine -> EngineAPI
-            player.onReady = ()=>{
-                //测试
-                //this.testCommond(vf);
-                console.log("初始化完成");
+        createVF({ container: document.getElementById("vf-container") , debug: true}, function (player) {
+
+            player.onReady = () => {
+                console.log("onReady"); //初始化完成
             }
 
-            player.onSceneCreate = ()=>{
-                console.log("onSceneCreate");
+            player.onSceneCreate = () => {
+                console.log("onSceneCreate"); //资源加载完成
             }
 
-            player.onMessage = (msg)=>{
-                console.log("onMessage ==>",msg);
+            player.onMessage = (msg) => {
+                console.log("onMessage ==>", msg);
             }
 
-            player.onError = (evt)=>{
-                console.log("onError ==>",evt);
+            player.onError = (evt) => {
+                console.log("onError ==>", evt);
             }
 
-            player.onDispose = ()=>{
+            player.onDispose = () => {
                 console.log("onDispose");
             }
 
             player.play(location.hash.substr(5));
+
+            // ========  测试代码 ==============
+            test(player);
         });
 
-        // // 对外所有接口与钩子，请查看 IVFEngine.ts
 
-        // (function () {
+    </script>
 
-        //     //本地或发布版本
-        //     var isProd = false;
-        //     //错误计数
-        //     var errorLoadCount = 0;
-        //     var option = {
-        //         container: document.getElementById("vf-container"),
-        //         engineVersion: "0.1.1", //引擎使用的版本
-        //         bgcolor: '0xffffff',
-        //         src: location.hash.substr(5), //设置模板数据源地址
-        //         debug: true,
-        //         language: 'zh-CN',
-        //         // wmode : "transparent", /不填写，不会处理透明，默认白色背景
-        //         // scaleMode: 'showAll'//不填写，根据配置数据读取 'showAll', 'noScale','cover','contain'
-        //         vfvars: {
-        //             useNativeAudio: false, //业务线动态设置,是否使用原生播放
-        //             cdns:{
-        //                 default:[
-        //                     isProd? 'https://s.***.com/':"",
-        //                     isProd? 'https://s.***.com/':"",
-        //                 ],
-        //                 image:[
-        //                     isProd? 'https://img.***.com/':"",
-        //                     isProd? 'https://img.***.com/':"",
-        //                 ],
-        //                 media:[
-        //                     isProd? 'https://media.***.com/':"",
-        //                     isProd? 'https://media.***.com/':"",
-        //                 ],
-        //                 wx:[
-        //                     isProd? 'https://wx.***.com/':"",
-        //                     isProd? 'https://wx.***.com/':"",
-        //                 ],
-        //             }
-        //         },
-        //         plugs: []
-        //     }
+    <script>
+        function test(player){
+            // ========  测试代码 ==============
+            const buttons = document.getElementById('buttons').children;
+            for (let i = 0; i < buttons.length; i++) {
+                let button = buttons[i];
+                let name = button.innerHTML;
+                let paramType = button.getAttribute('param-type') || "string";
+                let param = paramType === "string" ? button.getAttribute('param') : JSON.parse(button.getAttribute('param'));
+                button.addEventListener("click", () => {
+                    console.clear();
+                    if(param){
+                        console.log(`执行方法:${name}(${param})`);
+                        player[name](param);
+                    }else{
+                        console.log(`执行方法:${name}()`);
+                        player[name]();
+                    }
 
-        //     function createVF() {
-
-        //         var player = new vf.Launcher(option);
-
-                // //详细的接口，可搜索：IVFEngine -> EngineAPI
-                // player.onReady = ()=>{
-                //     //测试
-                //     this.testCommond(vf);
-                // }
-
-                // player.onSceneCreate = ()=>{
-
-                // }
-
-                // player.onMessage = (msg)=>{
-                //     console.log("onMessage ==>",msg);
-                // }
-
-                // player.onError = (evt)=>{
-                //     console.log("onError ==>",evt);
-                // }
-
-                // player.onDispose = ()=>{
-
-                // }
-
-                
-        //     }
-
-        //     function loadScript(index){
-        //         var cdn = option.vfvars.cdns.default;
-        //         var s = document.createElement('script');
-        //         s.async = false;
-        //         s.src = cdn[index] + '/vf/engine/vf-engine-v' + option.engineVersion + '/launcher.js?v=' + option.fixVersion;
-        //         s.addEventListener('load', loadComplete, false);
-        //         s.addEventListener('error', loadError, false);
-        //         document.body.appendChild(s);
-        //     }
-
-        //     function loadComplete() {
-        //         removeEvent(this);
-        //         setTimeout(() => {
-        //             createVF();
-        //         }, 1000);
-                
-        //     }
-        //     function loadError() {
-        //         removeEvent(this);
-        //         if(errorLoadCount>3){
-        //             throw ' [LOG VF] vf.js load error';
-        //             return;
-        //         }
-        //         loadScript(1);
-        //         errorLoadCount++;
-        //     }
-        //     function removeEvent(thisObj){
-        //         thisObj.parentNode.removeChild(thisObj);
-        //         thisObj.removeEventListener('load', loadComplete, false);
-        //         thisObj.removeEventListener('error', loadError, false);
-        //     }
-
-        //     loadScript(0);
-
-        // })();
-
-
-        // var isAdd = false;
-        // /** 向VF派发事件 */
-        // function testCommond(vf) {
-        //     if(isAdd){
-        //         return;
-        //     }
-        //     isAdd = true;
-        //     var funcall = document.getElementById('funcall');
-        //     funcall.addEventListener("click", () => {
-        //         // 所有接口 IVFEngine -> IVFEngineAPI
-        //         //vf.dispose(); //卸载
-        //         vf.play('test/data/animTest.json');
-        //     });
-
-        //     var sendevent = document.getElementById('sendevent');
-        //     sendevent.addEventListener('click',()=>{
-                
-        //         vf.message({
-        //             "type": "restore",
-        //             "code": "restore",
-        //             "level": "command",
-        //             "data": {
-        //                 "name": "restore",
-        //                 "val": {
-        //                 }
-        //             }
-        //         });
-        //         vf.reset();
-
-        //         //code = 模板json中的 {"type": 13,"system": true,"event": code}
-        //         //vf.message({"code": "nextPage","level": "command","data":null});
-        //     });
-        // }
-
-
+                });
+            }
+        }
     </script>
 </body>
 

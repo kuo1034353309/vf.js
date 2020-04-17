@@ -14,7 +14,7 @@ import readFileSync from './utils/readFileSync';
 
 declare var VFBUILDDATE: any; //webpack全局变量，prod环境使用
 
-export class Engine implements EngineAPI {
+export class Player implements EngineAPI {
 
     /**
      * 系统环境
@@ -65,9 +65,9 @@ export class Engine implements EngineAPI {
     private config: Config;
 
     constructor(options: IVFOptions) {
-        console.group('VF Engine: - v' + options.engineVersion);
+        console.group('VF Player: - v' + options.engineVersion);
         // 1、启动后检查并初始化运行环境
-        Engine.system = System.getInstance();
+        Player.system = System.getInstance();
         // 影响卸载与垃圾回收
         // Engine.system.systemEvent.on(EventType.STATE, this.onSystemCheck, this);
 
@@ -355,5 +355,3 @@ export class Engine implements EngineAPI {
 
 
 }
-(window as any).vfengine = Engine;
-(window as any).vfengine.buildDate = new Date().toLocaleString();

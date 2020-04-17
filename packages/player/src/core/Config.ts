@@ -12,7 +12,7 @@
 import BaseInfo from './BaseInfo';
 import {CDN, ScaleMode} from './model/IVFData';
 import {IVFOptions} from '../IVFEngine';
-import {Engine} from '../Engine';
+import {Player} from '../Player';
 import I18N from './I18N';
 
 export default class Config extends BaseInfo {
@@ -101,7 +101,7 @@ export default class Config extends BaseInfo {
         if(this.cdns.wx === undefined){
             this.cdns.wx = this.cdns.default.concat();
         }
-        this._language = options.language || Engine.system.language;
+        this._language = options.language || Player.system.language;
         this._i18n = new I18N(this._language);
         this.output('Config Info：', this.info);
     }

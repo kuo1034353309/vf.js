@@ -642,7 +642,7 @@ var Player = /** @class */ (function () {
         this._errpanel = new ErrorDisplay_1.default(this.config);
         this.initSystemEvent();
         this._readyState = "init" /* INIT */;
-        console.log('Build Date - ' + "2020-4-16 7:56:18 PM");
+        console.log('Build Date - ' + "2020-4-16 7:52:40 PM");
         console.groupEnd();
         //  3、如果配了资源地址，则启动数据加载
         if (this.config.src) {
@@ -10906,4 +10906,4 @@ exports.default = readFileSync;
 
 /******/ });
 });
-//# sourceMappingURL=player-v0.1.2.js.map
+//# sourceMappingURL=player.js.map

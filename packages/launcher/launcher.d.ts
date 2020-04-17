@@ -6,7 +6,7 @@ export interface APIHook {
      * 日志与错误时的回调
      * @param err
      */
-    onError(evt: IEvent): void;
+    onError(evt: any): void;
     /**
      * 初始化完成时回调
      * @param err
@@ -23,7 +23,7 @@ export interface APIHook {
     /**
      * 信令或其他消息回调
      */
-    onMessage(msg: IEvent): void;
+    onMessage(msg: any): void;
     /**
      * 卸载时触发
      */
@@ -60,7 +60,7 @@ export interface APICommand {
      * 设置消息
      * @param msg
      */
-    message(msg: IEvent): void;
+    message(msg: any): void;
     /**
      * 切换场景
      * @param transition
@@ -90,7 +90,7 @@ export interface IVFOptions {
     loop?: boolean;
     menu?: boolean;
     quality?: string;
-    scaleMode?: ScaleMode;
+    scaleMode?: any;
     align?: string;
     wmode?: string;
     bgcolor?: string;
@@ -124,6 +124,7 @@ export interface IVFOptions {
     /**
      * loading动画位置
      */
+    // eslint-disable-next-line max-len
     loadingPostion?: 'leftTop' | 'centerTop' | 'rightTop' | 'leftCenter' | 'center' | 'rightCenter' | 'leftBottom' | 'centerBottom' | 'rightBottom' | number[];
     /**
      * 淡入持续时长
@@ -131,4 +132,8 @@ export interface IVFOptions {
     fadeInTime?: number;
 }
 
-export declare function createVF(options: IVFOptions, completeCall: (player: EngineAPI) => {}, errorCall?: (e: IEvent) => {}): void;
+declare module '@vf.js/launcher'{
+    // eslint-disable-next-line max-len
+    export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) => {}, errorCall?: (e: any) => {}): void;
+}
+

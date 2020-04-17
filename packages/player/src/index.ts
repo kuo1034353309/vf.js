@@ -1,4 +1,4 @@
-export * from './Engine';
+export * from './Player';
 
 const w = (window as any);
 

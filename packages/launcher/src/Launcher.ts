@@ -7,10 +7,15 @@ import IEvent from '@player/event/IEvent';
 import { EventLevel } from '@player/event/EventLevel';
 import LoadingAsset from '../../../assets/loading2.svg';
 
+declare let VFBUILDDATE: any; // webpack全局变量，prod环境使用
+
+declare let LAUNCHERVERION: any;
+
 /**
  * vf集成方案加载器
  *
  */
+
 class VIPKIDLauncher {
     private readonly _config: IVFOptions;
 
@@ -22,6 +27,10 @@ class VIPKIDLauncher {
 
     private completeCall?: Function;
     private errorCall?: Function;
+
+    private version = LAUNCHERVERION;
+    // eslint-disable-next-line no-undef
+    private buildInfo = VFBUILDDATE;
 
     /**
      * 对外接口 IVFEngineAPI
@@ -250,7 +259,7 @@ class VIPKIDLauncher {
      */
     private createEngine() {
         if (this.completeCall) {
-            this.completeCall(new (window as any)['vf']['player']['Engine'](this._config));
+            this.completeCall(new (window as any)['vf']['player']['Player'](this._config));
             this.completeCall = undefined;
             this.errorCall = undefined;
         }

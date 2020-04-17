@@ -19,6 +19,7 @@ module.exports = {
                 test: /\.ts(x?)$/,
                 loader: 'ts-loader',
                 exclude: /node_modules/,
+
             },
         ],
     },
@@ -46,6 +47,7 @@ module.exports = {
         ]),
         new webpack.DefinePlugin({
             VFBUILDDATE: JSON.stringify(new Date().toLocaleString()),
+            LAUNCHERVERION: JSON.stringify(launcherPackage.version),
         }),
         // dev 添加
         // new CopyWebpackPlugin([
@@ -58,6 +60,6 @@ module.exports = {
 };
 
 module.exports.entry[`../packages/player/dist/player-v${playerPackage.version}`] = './packages/player/src/index.ts';
-module.exports.entry[`../packages/launcher/dist/launcher-v${launcherPackage.version}`] = './packages/launcher/src/index.ts';
+module.exports.entry[`../packages/launcher/dist/launcher`] = './packages/launcher/src/index.ts';
 
 // global

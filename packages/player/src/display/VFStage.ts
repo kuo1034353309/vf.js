@@ -9,7 +9,7 @@ import * as Plugs from './plugs/PlugIndex';
 import { IPlug } from './plugs/IPlug';
 import { EventLevel } from '../event/EventLevel';
 import { EventType } from '../event/EventType';
-import { Engine } from '../Engine';
+import { Player } from '../Player';
 import IEvent from '../event/IEvent';
 
 enum STAGE_STATUS {
@@ -28,7 +28,7 @@ export class VFStage extends vf.gui.Stage {
     public tween: vf.gui.Tween;
     public fps: number = 30;
     public readonly config: Config;
-    public readonly engine:Engine;
+    public readonly player:Player;
     /**
      * 插件列表 
      */
@@ -41,13 +41,13 @@ export class VFStage extends vf.gui.Stage {
     private res: RES;
 
 
-    constructor(data: IVFDataV1, config: Config, engine:Engine) {
+    constructor(data: IVFDataV1, config: Config, player:Player) {
         super(config.width, config.height);
         this.data = data;
         this.width = config.width;
         this.height = config.height;
         this.config = config; 
-        this.engine = engine;
+        this.player = player;
         vf.gui.Utils.debug = config.debug;
         // 配置数据后，创建各种管理器
         this.res = new RES(this);
@@ -73,7 +73,7 @@ export class VFStage extends vf.gui.Stage {
         if(msg.target && msg.target['libId']){
             msg.message +=  `, id = ${ msg.target['id']} , libId = ${ msg.target['libId']}`;
         }
-        this.engine.runtimeLog(msg);
+        this.player.runtimeLog(msg);
     }
 
     public start(): void {

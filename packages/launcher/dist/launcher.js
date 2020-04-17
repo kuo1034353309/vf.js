@@ -132,6 +132,9 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
+        this.version = "0.2.0";
+        // eslint-disable-next-line no-undef
+        this.buildInfo = "2020-4-16 7:56:18 PM";
         if (completeCall === undefined) {
             // eslint-disable-next-line no-throw-literal
             throw 'completeCall === undefined';
@@ -317,7 +320,7 @@ var VIPKIDLauncher = /** @class */ (function () {
      */
     VIPKIDLauncher.prototype.createEngine = function () {
         if (this.completeCall) {
-            this.completeCall(new window['vf']['player']['Engine'](this._config));
+            this.completeCall(new window['vf']['player']['Player'](this._config));
             this.completeCall = undefined;
             this.errorCall = undefined;
         }
@@ -354,4 +357,4 @@ __export(__webpack_require__(/*! ./Launcher */ "./packages/launcher/src/Launcher
 
 /******/ });
 });
-//# sourceMappingURL=launcher-v0.2.0.js.map
+//# sourceMappingURL=launcher.js.map

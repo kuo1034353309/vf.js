@@ -10,8 +10,7 @@
     "dev": "node config/build.js & webpack --config config/webpack.dev.js --watch",
     "start": "npm run dev",
     "prod": "node config/build.js & webpack --config config/webpack.prod.js --verbose",
-    "lint": "eslint --ext .js,.ts src test",
-    "types:launcher": "dts-generator --project  ./packages/launcher/  --out ./packages/launcher/dist/launcher.d.ts"
+    "lint": "eslint --ext .js,.ts src test"
   },
   "repository": {
     "type": "git",

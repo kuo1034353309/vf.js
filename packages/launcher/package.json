@@ -2,7 +2,7 @@
   "name": "@vf.js/launcher",
   "version": "0.2.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/launcher.js",
   "types": "launcher.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
