@@ -1,0 +1,128 @@
+{
+    "name": "STA01",
+    "version": "0.2.9",
+    "width": 800,
+    "height": 640,
+    "fps": 24,
+    "scaleMode": "showAll",
+    "loadMode": "all",
+    "baseUrl": "/test/data/",
+    "assets": {
+        "0":{
+            "id": 0,
+            "name": "ta04",
+            "type": "image",
+            "url": "assets/dino.png"
+        },
+        "FilterGlow":{
+            "name": "FilterGlow",
+            "type": "js",
+            "url": "/test/data/js/FilterGlow.js"
+        },
+        "FilterAlpha":{
+            "name": "FilterAlpha",
+            "type": "js",
+            "url": "/test/data/js/FilterAlpha.js"
+        }
+    },
+    "global": {},
+    "components": {
+        "0": {
+            "id": 0,
+            "name": "text",
+            "type": "Label",
+            "style": {
+                "color": "#000000",
+                "fontSize":30
+            }
+        },
+        "31": {
+            "id": 31,
+            "name": "image1",
+            "type": "Image",
+            "src": 0
+        },
+        "37": {
+            "id": 37,
+            "name": "question1",
+            "type": "custom",
+            "children": [
+                {
+                    "id": 401,
+                    "libId": 31,
+                    "name": "questionPic",
+                    "visible": true,
+                    "filter.FilterAlpha.alpha": 1,
+                    "filter.FilterGlow.color": "0xff0000",
+                    "x": 50,
+                    "y": 100
+                },
+                {
+                    "id": 402,
+                    "libId": "0",
+                    "name": "text",
+                    "visible": true,
+                    "x": 200,
+                    "y": 100,
+                    "text":"数组1初始化"
+                }
+            ],
+            "animations": [{
+                "name": "default",
+                "autoPlay": true,
+                "duration": 60,
+                "loop": true,
+                "children": {
+                    "401": {
+                        "duration": 60,
+                        "loop": true,
+                        "timelines": [
+                            {
+                                "type": "x",
+                                "loop": false,
+                                "frames": [
+                                    {
+                                        "frame": 0,
+                                        "curve": [1],
+                                        "value": 0
+                                    },
+                                    {
+                                        "frame": 30,
+                                        "value": 100
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "filter.FilterAlpha.alpha",
+                                "loop": false,
+                                "frames": [
+                                    {
+                                        "frame": 0,
+                                        "curve": [1],
+                                        "value": 0
+                                    },
+                                    {
+                                        "frame": 30,
+                                        "value": 1
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }],
+            
+            "actionList":[]
+        }
+    },
+    "scenes": [
+        {
+            "id": 80,
+            "libId": 37,
+            "transition": {
+                "type": "none",
+                "duration": 200
+            }
+        }
+    ]
+}

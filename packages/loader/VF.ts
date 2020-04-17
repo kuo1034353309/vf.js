@@ -35,7 +35,7 @@ export class VF implements EngineAPI {
             return [(window as any)['Promise'], `vf-engine-v1.0.0/vf-polyfills.js`];
         },
         'vfgui': () => {
-            return [(window as any)['gui'], './vf-gui-v1.1.17/vf-gui.min.js?v=' + this.fixVersion];
+            return [(window as any)['gui'], './vf-gui-v1.1.22/vf-gui.min.js?v=' + this.fixVersion];
         },
         'vfengine': () => {
             return [(window as any)['vfengine'], `vf-engine-v${this._config.engineVersion}/vf-engine.js?v=` + this.fixVersion];
