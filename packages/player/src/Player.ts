@@ -6,7 +6,6 @@ import IEvent from './event/IEvent';
 import { IVFOptions, EngineAPI } from './IVFEngine';
 import { IVFDataV1, ScaleMode, VFStateCode, ITransitionData } from './core/model/IVFData';
 import Config from './core/Config';
-import System from './core/System';
 import { EventType } from './event/EventType';
 import { EventLevel } from './event/EventLevel';
 import ErrorDisplay from './error/ErrorDisplay';
@@ -17,15 +16,10 @@ declare var VFBUILDDATE: any; //webpack全局变量，prod环境使用
 export class Player implements EngineAPI {
 
     /**
-     * 系统环境
-     * @type {System}
-     */
-    public static system: System;
-    /**
      * @private
      * @type {vf.Application}
      */
-    private app?: vf.Application;
+    private app: vf.Application;
 
     /**
      * @private
@@ -65,14 +59,26 @@ export class Player implements EngineAPI {
     private config: Config;
 
     constructor(options: IVFOptions) {
-        console.group('VF Player: - v' + options.engineVersion);
+
+        //  1. 初始化配置
+        this.config = new Config(options);
+        const config = this.config;
+        console.groupEnd();
+        
+        // 2. 初始化引擎
+        this.app = new vf.Application({
+            backgroundColor: parseInt(config.bgcolor || '0', 16),
+            transparent: config.wmode === 'transparent',
+            antialias: true,
+        });
+
+        // console.group('VF Player: - v' + options.engineVersion);
         // 1、启动后检查并初始化运行环境
-        Player.system = System.getInstance();
+        // Player.system = System.getInstance();
         // 影响卸载与垃圾回收
         // Engine.system.systemEvent.on(EventType.STATE, this.onSystemCheck, this);
 
-        //  2、解析外部配置参数并初始化
-        this.config = new Config(options);
+
         // 影响卸载与垃圾回收
         // this.config.systemEvent.on(EventType.STATE, this.onConfigCheck, this);
         this._errpanel = new ErrorDisplay(this.config);
@@ -80,10 +86,12 @@ export class Player implements EngineAPI {
         this.initSystemEvent();
 
         this._readyState = VFStateCode.INIT;
-        console.log('Build Date - ' + VFBUILDDATE);
-        console.groupEnd();
+        
         //  3、如果配了资源地址，则启动数据加载
-        if (this.config.src) { this.play(this.config.src); }
+        setTimeout(() => {
+            // 延迟一帧执行
+            if (this.config.src) { this.play(this.config.src); }
+        }, 10);
 
     }
 
@@ -234,26 +242,22 @@ export class Player implements EngineAPI {
      */
     private async start() {
         if (!this._data) { return; }
+        const config = this.config;
+        const data = this._data;
         // 0、更新配置
-        this.config.width = this._data.width; // 设计尺寸
-        this.config.height = this._data.height; // 设计尺寸
-        if (this.config.scaleMode === undefined) {
-            this.config.scaleMode = this._data.scaleMode || ScaleMode.NO_SCALE;
+
+        config.width = data.width; // 设计尺寸
+        config.height = data.height; // 设计尺寸
+        if (config.scaleMode === undefined) {
+            config.scaleMode = this._data.scaleMode || ScaleMode.NO_SCALE;
         }
-
-        // 1、关闭PX的sayHello();
-        vf.utils.skipHello();
-
+        config.output('Config Info：', config.info);
         // 2、初始化渲染引擎，并将渲染器的画布添加到容器（目前是PIXI）
-        const options = {
-            width: this.config.width,
-            height: this.config.height,
-            backgroundColor: parseInt(this.config.bgcolor || '0', 16),
-            transparent: this.config.wmode === 'transparent' ? true : false,
-            antialias: true,
-        };
-        this.app = new vf.Application(options);
-        this.app.view.style.zIndex = '0';
+        const view = this.app.view;
+
+        view.width = config.width;
+        view.height = config.height;
+        view.style.zIndex = '0';
         this.config.container.appendChild(this.app.view);
 
         // 3、初始化基于PX容器的VF场景
@@ -262,7 +266,7 @@ export class Player implements EngineAPI {
         this.app.stage.addChild(this.stage.container);
 
         // 4、 适配处理
-        calculateUpdatePlayerSize(this.app.view, this.stage, this.config.scaleMode);
+        calculateUpdatePlayerSize(this.app.view, this.stage, this.config.scaleMode as any);
 
         // 5、初始化API模块，并通知外部'vf[hashid] api is ready'
         this.readyState = VFStateCode.READY;
@@ -355,3 +359,10 @@ export class Player implements EngineAPI {
 
 
 }
+const w = (window as any);
+
+if (w.vf === undefined) {
+    w.vf = {};
+}
+
+w.vf.player = { Player };

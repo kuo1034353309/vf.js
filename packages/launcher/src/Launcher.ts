@@ -32,6 +32,12 @@ class VIPKIDLauncher {
     // eslint-disable-next-line no-undef
     private buildInfo = VFBUILDDATE;
 
+    private _extendsLibsUrl?: string[];
+    private _loadedLibs: string[] = [];
+
+    private _loadcount = 0;
+    private _loadMaxCount = 40;
+
     /**
      * 对外接口 IVFEngineAPI
      */
@@ -49,6 +55,9 @@ class VIPKIDLauncher {
         }
         if (options.vfvars.cdns === undefined) {
             options.vfvars.cdns = this.getDefaultCDN();
+        }
+        if (options.libs) {
+            this._extendsLibsUrl = options.libs.concat();
         }
 
         this._config = options;
@@ -89,6 +98,7 @@ class VIPKIDLauncher {
         const w = (window as any);
         const cdn = this._config.vfvars.cdns.default[index];
         const libs: string[] = [];
+        const extendsLibsUrl = this._extendsLibsUrl;
 
         if (w['vf']['CanvasRenderer'] === undefined) {
             const v = 'vf-v5.2.21-v10';
@@ -100,8 +110,18 @@ class VIPKIDLauncher {
                 libs.push(`./libs/${v}/vf.js`);
             }
         }
+
+        if (extendsLibsUrl && extendsLibsUrl.length > 0) {
+            if (this._loadedLibs.indexOf(extendsLibsUrl[0]) !== -1) {
+                extendsLibsUrl.shift();
+            }
+            if (extendsLibsUrl[0]) {
+                libs.push(extendsLibsUrl[0]);
+            }
+        }
+
         if (w['vf']['gui'] === undefined) {
-            const v = 'gui-v1.2.4';
+            const v = 'gui-v1.3.1';
 
             if (process.env.NODE_ENV === 'production') {
                 libs.push(`${cdn}vf/engine/${v}/gui.min.js`);
@@ -110,14 +130,15 @@ class VIPKIDLauncher {
                 libs.push(`./libs/${v}/gui.js`);
             }
         }
+
         if (w['vf']['player'] === undefined) {
-            const v = 'player-v0.1.2';
+            const v = 'player-v0.3.0';
 
             if (process.env.NODE_ENV === 'production') {
                 libs.push(`${cdn}vf/engine/${v}/player.min.js`);
             }
             else {
-                libs.push(`./packages/player/dist/${v}.js`);
+                libs.push(`./packages/player/dist/player.js`);
             }
         }
 
@@ -195,6 +216,13 @@ class VIPKIDLauncher {
     }
 
     private loadJs() {
+
+        if (this._loadcount >= this._loadMaxCount) {
+            this.createEngine();
+
+            return;
+        }
+
         const libs = this.getEnvConfig(this._cdnsIndex);
 
         if (libs.length === 0) {
@@ -204,6 +232,8 @@ class VIPKIDLauncher {
         }
 
         this.showLoading();
+
+        this._loadcount++;
 
         const item = libs.shift() as string;
 
@@ -218,6 +248,9 @@ class VIPKIDLauncher {
     }
 
     private onJsComplete(evt: Event) {
+        const script = evt.target as HTMLScriptElement;
+
+        this._loadedLibs.push(script.src);
         this.removeJsLoadEvent(evt);
         this.loadJs();
     }
@@ -259,7 +292,13 @@ class VIPKIDLauncher {
      */
     private createEngine() {
         if (this.completeCall) {
-            this.completeCall(new (window as any)['vf']['player']['Player'](this._config));
+            // eslint-disable-next-line no-undef
+            vf.utils.skipHello();
+            const player = new (window as any)['vf']['player']['Player'](this._config);
+
+            // eslint-disable-next-line no-undef
+            vf.utils.versionPrint(this.version);
+            this.completeCall(player);
             this.completeCall = undefined;
             this.errorCall = undefined;
         }

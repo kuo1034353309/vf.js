@@ -38,10 +38,10 @@
         <button>switchToPrevScene</button>
         <button param='2'>switchToSceneId</button>
     </div>
-    <!-- <script src='./packages/launcher/dist/launcher-v0.2.0.js'></script> -->
+    <!-- <script src='./packages/launcher/dist/launcher.js'></script> -->
     <script type="module">
-
-        import './packages/launcher/dist/launcher-v0.2.0.js';
+        
+        import './packages/launcher/dist/launcher.js';
 
         if (location.href.indexOf("#path") === -1) {
             location.hash = "path/test/" + 'data/gotoPlay.json';
@@ -59,6 +59,9 @@
                 useNativeAudio: false, //业务线动态设置,是否使用原生播放
             }
             plugs: [
+
+            ]
+            libs: [
 
             ]
         */

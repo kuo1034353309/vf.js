@@ -121,19 +121,12 @@ export interface IVFOptions {
      */
     plugs?: any[];
     /**
-     * 引擎的版本号
+     * 外部库,由于
      */
-    engineVersion?: string;
-    /**
-     * 修正版本
-     */
-    fixVersion?: string;
+    libs: string[];
     /**
      * loading动画位置
      */
+    // eslint-disable-next-line max-len
     loadingPostion?: 'leftTop' | 'centerTop' | 'rightTop' | 'leftCenter' | 'center' | 'rightCenter' | 'leftBottom' | 'centerBottom' | 'rightBottom' | number[];
-    /**
-     * 淡入持续时长
-     */
-    fadeInTime?: number;
 }

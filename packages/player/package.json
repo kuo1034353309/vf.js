@@ -1,11 +1,8 @@
 {
   "name": "@vf/player",
-  "version": "0.1.2",
+  "version": "0.3.0",
   "description": "",
   "main": "dist/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "files": [
     "lib",
     "dist"

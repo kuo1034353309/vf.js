@@ -113,13 +113,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************!*\
   !*** ./packages/launcher/src/Launcher.ts ***!
   \*******************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: createVF */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createVF", function() { return createVF; });
+/* harmony import */ var _assets_loading2_svg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../assets/loading2.svg */ "./assets/loading2.svg");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-var loading2_svg_1 = __webpack_require__(/*! ../../../assets/loading2.svg */ "./assets/loading2.svg");
 /**
  * vf集成方案加载器
  *
@@ -132,9 +133,12 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
-        this.version = "0.2.0";
+        this.version = "0.3.0";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "2020-4-16 7:56:18 PM";
+        this.buildInfo = "2020-4-21 2:07:21 PM";
+        this._loadedLibs = [];
+        this._loadcount = 0;
+        this._loadMaxCount = 40;
         if (completeCall === undefined) {
             // eslint-disable-next-line no-throw-literal
             throw 'completeCall === undefined';
@@ -147,6 +151,9 @@ var VIPKIDLauncher = /** @class */ (function () {
         }
         if (options.vfvars.cdns === undefined) {
             options.vfvars.cdns = this.getDefaultCDN();
+        }
+        if (options.libs) {
+            this._extendsLibsUrl = options.libs.concat();
         }
         this._config = options;
         this.completeCall = completeCall;
@@ -184,6 +191,7 @@ var VIPKIDLauncher = /** @class */ (function () {
         var w = window;
         var cdn = this._config.vfvars.cdns.default[index];
         var libs = [];
+        var extendsLibsUrl = this._extendsLibsUrl;
         if (w['vf']['CanvasRenderer'] === undefined) {
             var v = 'vf-v5.2.21-v10';
             if (false) {}
@@ -191,18 +199,26 @@ var VIPKIDLauncher = /** @class */ (function () {
                 libs.push("./libs/" + v + "/vf.js");
             }
         }
+        if (extendsLibsUrl && extendsLibsUrl.length > 0) {
+            if (this._loadedLibs.indexOf(extendsLibsUrl[0]) !== -1) {
+                extendsLibsUrl.shift();
+            }
+            if (extendsLibsUrl[0]) {
+                libs.push(extendsLibsUrl[0]);
+            }
+        }
         if (w['vf']['gui'] === undefined) {
-            var v = 'gui-v1.2.4';
+            var v = 'gui-v1.3.1';
             if (false) {}
             else {
                 libs.push("./libs/" + v + "/gui.js");
             }
         }
         if (w['vf']['player'] === undefined) {
-            var v = 'player-v0.1.2';
+            var v = 'player-v0.3.0';
             if (false) {}
             else {
-                libs.push("./packages/player/dist/" + v + ".js");
+                libs.push("./packages/player/dist/player.js");
             }
         }
         return libs;
@@ -219,7 +235,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             var img_1 = this._background = new Image();
             img_1.name = 'loading';
             img_1.style.position = 'absolute';
-            img_1.src = loading2_svg_1.default;
+            img_1.src = _assets_loading2_svg__WEBPACK_IMPORTED_MODULE_0__["default"];
             var bound_1 = this.getInnerBound(_container);
             var loadingPostion_1 = this._config.loadingPostion || '';
             img_1.onload = function () {
@@ -269,12 +285,17 @@ var VIPKIDLauncher = /** @class */ (function () {
         return { w: w, h: h };
     };
     VIPKIDLauncher.prototype.loadJs = function () {
+        if (this._loadcount >= this._loadMaxCount) {
+            this.createEngine();
+            return;
+        }
         var libs = this.getEnvConfig(this._cdnsIndex);
         if (libs.length === 0) {
             this.createEngine();
             return;
         }
         this.showLoading();
+        this._loadcount++;
         var item = libs.shift();
         var script = document.createElement('script');
         script.type = 'text/javascript';
@@ -285,6 +306,8 @@ var VIPKIDLauncher = /** @class */ (function () {
         document.body.appendChild(script);
     };
     VIPKIDLauncher.prototype.onJsComplete = function (evt) {
+        var script = evt.target;
+        this._loadedLibs.push(script.src);
         this.removeJsLoadEvent(evt);
         this.loadJs();
     };
@@ -320,7 +343,12 @@ var VIPKIDLauncher = /** @class */ (function () {
      */
     VIPKIDLauncher.prototype.createEngine = function () {
         if (this.completeCall) {
-            this.completeCall(new window['vf']['player']['Player'](this._config));
+            // eslint-disable-next-line no-undef
+            vf.utils.skipHello();
+            var player = new window['vf']['player']['Player'](this._config);
+            // eslint-disable-next-line no-undef
+            vf.utils.versionPrint(this.version);
+            this.completeCall(player);
             this.completeCall = undefined;
             this.errorCall = undefined;
         }
@@ -332,7 +360,6 @@ function createVF(options, completeCall, errorCall) {
     // eslint-disable-next-line no-new
     new VIPKIDLauncher(options, completeCall, errorCall);
 }
-exports.createVF = createVF;
 
 
 /***/ }),
@@ -341,16 +368,15 @@ exports.createVF = createVF;
 /*!****************************************!*\
   !*** ./packages/launcher/src/index.ts ***!
   \****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: createVF */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Launcher__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Launcher */ "./packages/launcher/src/Launcher.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createVF", function() { return _Launcher__WEBPACK_IMPORTED_MODULE_0__["createVF"]; });
 
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./Launcher */ "./packages/launcher/src/Launcher.ts"));
+
 
 
 /***/ })

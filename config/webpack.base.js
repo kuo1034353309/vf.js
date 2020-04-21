@@ -2,7 +2,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const playerPackage = require('../packages/player/package.json');
 const launcherPackage = require('../packages/launcher/package.json');
 const engineOutPath = '../dist/vf/engine';
 
@@ -39,12 +38,6 @@ module.exports = {
         new CopyWebpackPlugin([
             { from: path.join(__dirname, '../libs/'), to:  path.join(__dirname, `${engineOutPath}/`) },
         ]),
-        new CopyWebpackPlugin([
-            { from: path.join(__dirname, '../favicon.ico'), to:  path.join(__dirname, '../dist/') },
-        ]),
-        new CopyWebpackPlugin([
-            { from: path.join(__dirname, '../index.html'), to:  path.join(__dirname, '../dist/') },
-        ]),
         new webpack.DefinePlugin({
             VFBUILDDATE: JSON.stringify(new Date().toLocaleString()),
             LAUNCHERVERION: JSON.stringify(launcherPackage.version),
@@ -59,7 +52,7 @@ module.exports = {
     ],
 };
 
-module.exports.entry[`../packages/player/dist/player-v${playerPackage.version}`] = './packages/player/src/index.ts';
+module.exports.entry[`../packages/player/dist/player`] = './packages/player/src/index.ts';
 module.exports.entry[`../packages/launcher/dist/launcher`] = './packages/launcher/src/index.ts';
 
 // global

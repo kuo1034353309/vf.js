@@ -461,12 +461,12 @@ if (true) {
 /*!***********************************!*\
   !*** ./packages/assets/Assets.ts ***!
   \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: getAssetType */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAssetType", function() { return getAssetType; });
 // import * as IRES from './IRES';
 // import readFileSync from '../../src/utils/readFileSync';
 function getAssetType(extensionName) {
@@ -497,7 +497,6 @@ function getAssetType(extensionName) {
             return 0 /* Unknown */;
     }
 }
-exports.getAssetType = getAssetType;
 // export class RES{
 //     private _defaultCdn:string[] = [];
 //     private _tempAnchor: HTMLAnchorElement | null = null;
@@ -542,12 +541,19 @@ exports.getAssetType = getAssetType;
 /*!***************************************!*\
   !*** ./packages/player/src/Player.ts ***!
   \***************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: Player */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Player", function() { return Player; });
+/* harmony import */ var _display_VFStage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./display/VFStage */ "./packages/player/src/display/VFStage.ts");
+/* harmony import */ var _utils_CalculatePlayerSize__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/CalculatePlayerSize */ "./packages/player/src/utils/CalculatePlayerSize.ts");
+/* harmony import */ var _utils_ImportScript__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/ImportScript */ "./packages/player/src/utils/ImportScript.ts");
+/* harmony import */ var _core_Config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./core/Config */ "./packages/player/src/core/Config.ts");
+/* harmony import */ var _error_ErrorDisplay__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./error/ErrorDisplay */ "./packages/player/src/error/ErrorDisplay.ts");
+/* harmony import */ var _utils_readFileSync__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/readFileSync */ "./packages/player/src/utils/readFileSync.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -556,7 +562,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
     return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
@@ -583,17 +589,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 /* eslint-disable no-unused-vars */
-var VFStage_1 = __webpack_require__(/*! ./display/VFStage */ "./packages/player/src/display/VFStage.ts");
-var CalculatePlayerSize_1 = __webpack_require__(/*! ./utils/CalculatePlayerSize */ "./packages/player/src/utils/CalculatePlayerSize.ts");
-var ImportScript_1 = __webpack_require__(/*! ./utils/ImportScript */ "./packages/player/src/utils/ImportScript.ts");
-var Config_1 = __webpack_require__(/*! ./core/Config */ "./packages/player/src/core/Config.ts");
-var System_1 = __webpack_require__(/*! ./core/System */ "./packages/player/src/core/System.ts");
-var ErrorDisplay_1 = __webpack_require__(/*! ./error/ErrorDisplay */ "./packages/player/src/error/ErrorDisplay.ts");
-var readFileSync_1 = __webpack_require__(/*! ./utils/readFileSync */ "./packages/player/src/utils/readFileSync.ts");
+
+
+
+
+
+
 var Player = /** @class */ (function () {
     function Player(options) {
+        var _this = this;
         /**
          * 接口，避免写入逻辑
          */
@@ -630,24 +635,33 @@ var Player = /** @class */ (function () {
         this.onDispose = function () {
             //
         };
-        console.group('VF Player: - v' + options.engineVersion);
+        //  1. 初始化配置
+        this.config = new _core_Config__WEBPACK_IMPORTED_MODULE_3__["default"](options);
+        var config = this.config;
+        console.groupEnd();
+        // 2. 初始化引擎
+        this.app = new vf.Application({
+            backgroundColor: parseInt(config.bgcolor || '0', 16),
+            transparent: config.wmode === 'transparent',
+            antialias: true,
+        });
+        // console.group('VF Player: - v' + options.engineVersion);
         // 1、启动后检查并初始化运行环境
-        Player.system = System_1.default.getInstance();
+        // Player.system = System.getInstance();
         // 影响卸载与垃圾回收
         // Engine.system.systemEvent.on(EventType.STATE, this.onSystemCheck, this);
-        //  2、解析外部配置参数并初始化
-        this.config = new Config_1.default(options);
         // 影响卸载与垃圾回收
         // this.config.systemEvent.on(EventType.STATE, this.onConfigCheck, this);
-        this._errpanel = new ErrorDisplay_1.default(this.config);
+        this._errpanel = new _error_ErrorDisplay__WEBPACK_IMPORTED_MODULE_4__["default"](this.config);
         this.initSystemEvent();
         this._readyState = "init" /* INIT */;
-        console.log('Build Date - ' + "2020-4-16 7:52:40 PM");
-        console.groupEnd();
         //  3、如果配了资源地址，则启动数据加载
-        if (this.config.src) {
-            this.play(this.config.src);
-        }
+        setTimeout(function () {
+            // 延迟一帧执行
+            if (_this.config.src) {
+                _this.play(_this.config.src);
+            }
+        }, 10);
     }
     Object.defineProperty(Player.prototype, "readyState", {
         get: function () {
@@ -750,35 +764,31 @@ var Player = /** @class */ (function () {
      */
     Player.prototype.start = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var options;
+            var config, data, view;
             return __generator(this, function (_a) {
                 if (!this._data) {
                     return [2 /*return*/];
                 }
+                config = this.config;
+                data = this._data;
                 // 0、更新配置
-                this.config.width = this._data.width; // 设计尺寸
-                this.config.height = this._data.height; // 设计尺寸
-                if (this.config.scaleMode === undefined) {
-                    this.config.scaleMode = this._data.scaleMode || "noScale" /* NO_SCALE */;
+                config.width = data.width; // 设计尺寸
+                config.height = data.height; // 设计尺寸
+                if (config.scaleMode === undefined) {
+                    config.scaleMode = this._data.scaleMode || "noScale" /* NO_SCALE */;
                 }
-                // 1、关闭PX的sayHello();
-                vf.utils.skipHello();
-                options = {
-                    width: this.config.width,
-                    height: this.config.height,
-                    backgroundColor: parseInt(this.config.bgcolor || '0', 16),
-                    transparent: this.config.wmode === 'transparent' ? true : false,
-                    antialias: true,
-                };
-                this.app = new vf.Application(options);
-                this.app.view.style.zIndex = '0';
+                config.output('Config Info：', config.info);
+                view = this.app.view;
+                view.width = config.width;
+                view.height = config.height;
+                view.style.zIndex = '0';
                 this.config.container.appendChild(this.app.view);
                 // 3、初始化基于PX容器的VF场景
-                this.stage = new VFStage_1.VFStage(this._data, this.config, this);
+                this.stage = new _display_VFStage__WEBPACK_IMPORTED_MODULE_0__["VFStage"](this._data, this.config, this);
                 this.stage.app = this.app;
                 this.app.stage.addChild(this.stage.container);
                 // 4、 适配处理
-                CalculatePlayerSize_1.default(this.app.view, this.stage, this.config.scaleMode);
+                Object(_utils_CalculatePlayerSize__WEBPACK_IMPORTED_MODULE_1__["default"])(this.app.view, this.stage, this.config.scaleMode);
                 // 5、初始化API模块，并通知外部'vf[hashid] api is ready'
                 this.readyState = "ready" /* READY */;
                 // 6、加载场景资源
@@ -801,7 +811,7 @@ var Player = /** @class */ (function () {
                         _b.sent();
                         if (!(typeof src === 'string')) return [3 /*break*/, 3];
                         _a = this;
-                        return [4 /*yield*/, readFileSync_1.default(src, { responseType: 'json' }).catch(function (value) { onStatus(value); })];
+                        return [4 /*yield*/, Object(_utils_readFileSync__WEBPACK_IMPORTED_MODULE_5__["default"])(src, { responseType: 'json' }).catch(function (value) { onStatus(value); })];
                     case 2:
                         _a._data = _b.sent();
                         return [3 /*break*/, 4];
@@ -817,7 +827,7 @@ var Player = /** @class */ (function () {
                         if (!(typeof src === 'string')) return [3 /*break*/, 8];
                         version = src.split('?')[1] || 'v=0';
                         conversionPath = src.substr(0, src.lastIndexOf('/')) + '/' + data.conversion + '?' + version;
-                        return [4 /*yield*/, ImportScript_1.default(conversionPath).catch(function (e) {
+                        return [4 /*yield*/, Object(_utils_ImportScript__WEBPACK_IMPORTED_MODULE_2__["default"])(conversionPath).catch(function (e) {
                                 _this.onStatus(e);
                             })];
                     case 5:
@@ -888,7 +898,12 @@ var Player = /** @class */ (function () {
     };
     return Player;
 }());
-exports.Player = Player;
+
+var w = window;
+if (w.vf === undefined) {
+    w.vf = {};
+}
+w.vf.player = { Player: Player };
 
 
 /***/ }),
@@ -897,22 +912,22 @@ exports.Player = Player;
 /*!**********************************************!*\
   !*** ./packages/player/src/core/BaseInfo.ts ***!
   \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _event_StateEvent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../event/StateEvent */ "./packages/player/src/event/StateEvent.ts");
 /**
  * 信息、参数、配置对象基类
  *
  * @author 8088
  */
-var StateEvent_1 = __webpack_require__(/*! ../event/StateEvent */ "./packages/player/src/event/StateEvent.ts");
+
 var BaseInfo = /** @class */ (function () {
     function BaseInfo() {
         /** 系统与对外事件 */
-        this.systemEvent = new StateEvent_1.default();
+        this.systemEvent = new _event_StateEvent__WEBPACK_IMPORTED_MODULE_0__["default"]();
         this.PROPERTY_CHANGE = '.Property.Changed';
         this.PROPERTY_SET_ERROR = '.Property.SetError';
     }
@@ -1020,7 +1035,7 @@ var BaseInfo = /** @class */ (function () {
     };
     return BaseInfo;
 }());
-exports.default = BaseInfo;
+/* harmony default export */ __webpack_exports__["default"] = (BaseInfo);
 
 
 /***/ }),
@@ -1029,12 +1044,14 @@ exports.default = BaseInfo;
 /*!********************************************!*\
   !*** ./packages/player/src/core/Config.ts ***!
   \********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _BaseInfo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseInfo */ "./packages/player/src/core/BaseInfo.ts");
+/* harmony import */ var _I18N__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./I18N */ "./packages/player/src/core/I18N.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1047,7 +1064,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 外部配置信息
  * - TODO:
@@ -1059,9 +1075,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 如需抛出更改之前的属性值，需要将事件改为先发 并带上老属性值和设置的value.
  * @author 8088
  */
-var BaseInfo_1 = __webpack_require__(/*! ./BaseInfo */ "./packages/player/src/core/BaseInfo.ts");
-var Player_1 = __webpack_require__(/*! ../Player */ "./packages/player/src/Player.ts");
-var I18N_1 = __webpack_require__(/*! ./I18N */ "./packages/player/src/core/I18N.ts");
+
+
 var Config = /** @class */ (function (_super) {
     __extends(Config, _super);
     function Config(options) {
@@ -1100,9 +1115,8 @@ var Config = /** @class */ (function (_super) {
         if (_this.cdns.wx === undefined) {
             _this.cdns.wx = _this.cdns.default.concat();
         }
-        _this._language = options.language || Player_1.Player.system.language;
-        _this._i18n = new I18N_1.default(_this._language);
-        _this.output('Config Info：', _this.info);
+        _this._language = options.language || vf.utils.getSystemInfo().language;
+        _this._i18n = new _I18N__WEBPACK_IMPORTED_MODULE_1__["default"](_this._language);
         return _this;
     }
     Object.defineProperty(Config.prototype, "container", {
@@ -1469,8 +1483,8 @@ var Config = /** @class */ (function (_super) {
         configurable: true
     });
     return Config;
-}(BaseInfo_1.default));
-exports.default = Config;
+}(_BaseInfo__WEBPACK_IMPORTED_MODULE_0__["default"]));
+/* harmony default export */ __webpack_exports__["default"] = (Config);
 
 
 /***/ }),
@@ -1479,12 +1493,15 @@ exports.default = Config;
 /*!******************************************!*\
   !*** ./packages/player/src/core/I18N.ts ***!
   \******************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _BaseInfo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseInfo */ "./packages/player/src/core/BaseInfo.ts");
+/* harmony import */ var _utils_readFileSync__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/readFileSync */ "./packages/player/src/utils/readFileSync.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1497,7 +1514,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1506,7 +1523,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
     return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
@@ -1533,7 +1550,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 国际化
  * - TODO:
@@ -1542,9 +1558,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 3、支持语言切换
  * @author 8088
  */
-var BaseInfo_1 = __webpack_require__(/*! ./BaseInfo */ "./packages/player/src/core/BaseInfo.ts");
-var readFileSync_1 = __webpack_require__(/*! ../utils/readFileSync */ "./packages/player/src/utils/readFileSync.ts");
-var VFUtil_1 = __webpack_require__(/*! ../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
+
 var I18N = /** @class */ (function (_super) {
     __extends(I18N, _super);
     function I18N(language) {
@@ -1580,7 +1596,7 @@ var I18N = /** @class */ (function (_super) {
     I18N.prototype.t = function (key, param) {
         var data = this._data;
         if (data && data[key]) {
-            return VFUtil_1.stringFormat(data[key].message.toString(), param);
+            return Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_2__["stringFormat"])(data[key].message.toString(), param);
         }
         return "This message code[" + key + "] is not defined. \n JSON = " + JSON.stringify(param);
     };
@@ -1597,7 +1613,7 @@ var I18N = /** @class */ (function (_super) {
                             url = "packages/i18n/" + this.lang + ".json";
                         }
                         _a = this;
-                        return [4 /*yield*/, readFileSync_1.readFileSyncExt(url, cdns, { responseType: 'json' }).catch(function (value) {
+                        return [4 /*yield*/, Object(_utils_readFileSync__WEBPACK_IMPORTED_MODULE_1__["readFileSyncExt"])(url, cdns, { responseType: 'json' }).catch(function (value) {
                                 onError(value);
                             })];
                     case 1:
@@ -1613,8 +1629,8 @@ var I18N = /** @class */ (function (_super) {
         });
     };
     return I18N;
-}(BaseInfo_1.default));
-exports.default = I18N;
+}(_BaseInfo__WEBPACK_IMPORTED_MODULE_0__["default"]));
+/* harmony default export */ __webpack_exports__["default"] = (I18N);
 
 
 /***/ }),
@@ -1623,12 +1639,21 @@ exports.default = I18N;
 /*!*****************************************!*\
   !*** ./packages/player/src/core/RES.ts ***!
   \*****************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: RES */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RES", function() { return RES; });
+/* harmony import */ var _display_VFScene__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../display/VFScene */ "./packages/player/src/display/VFScene.ts");
+/* harmony import */ var _VariableManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./VariableManager */ "./packages/player/src/core/VariableManager.ts");
+/* harmony import */ var _display_VFComponent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../display/VFComponent */ "./packages/player/src/display/VFComponent.ts");
+/* harmony import */ var _actionTask_ActionList__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./actionTask/ActionList */ "./packages/player/src/core/actionTask/ActionList.ts");
+/* harmony import */ var _animation_Animation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./animation/Animation */ "./packages/player/src/core/animation/Animation.ts");
+/* harmony import */ var _assets_Assets__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../assets/Assets */ "./packages/assets/Assets.ts");
+/* harmony import */ var _utils_ImportScript__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/ImportScript */ "./packages/player/src/utils/ImportScript.ts");
+/* harmony import */ var _utils_getUrl__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/getUrl */ "./packages/player/src/utils/getUrl.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1641,7 +1666,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -1650,7 +1675,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
     return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
@@ -1677,15 +1702,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-var VFScene_1 = __webpack_require__(/*! ../display/VFScene */ "./packages/player/src/display/VFScene.ts");
-var VariableManager_1 = __webpack_require__(/*! ./VariableManager */ "./packages/player/src/core/VariableManager.ts");
-var VFComponent_1 = __webpack_require__(/*! ../display/VFComponent */ "./packages/player/src/display/VFComponent.ts");
-var ActionList_1 = __webpack_require__(/*! ./actionTask/ActionList */ "./packages/player/src/core/actionTask/ActionList.ts");
-var Animation_1 = __webpack_require__(/*! ./animation/Animation */ "./packages/player/src/core/animation/Animation.ts");
-var Assets_1 = __webpack_require__(/*! ../../../assets/Assets */ "./packages/assets/Assets.ts");
-var ImportScript_1 = __webpack_require__(/*! ../utils/ImportScript */ "./packages/player/src/utils/ImportScript.ts");
-var getUrl_1 = __webpack_require__(/*! ../utils/getUrl */ "./packages/player/src/utils/getUrl.ts");
+
+
+
+
+
+
+
+
 var RES = /** @class */ (function (_super) {
     __extends(RES, _super);
     function RES(stage) {
@@ -1779,7 +1803,7 @@ var RES = /** @class */ (function (_super) {
         if (sceneData) {
             var vfScene = this._sceneMap[id];
             if (vfScene == null) {
-                vfScene = new VFScene_1.VFScene(vfStage);
+                vfScene = new _display_VFScene__WEBPACK_IMPORTED_MODULE_0__["VFScene"](vfStage);
                 vfScene.transition = sceneData.transition;
             }
             vfScene.id = id;
@@ -1820,7 +1844,7 @@ var RES = /** @class */ (function (_super) {
             return undefined;
         }
         // 单独写组件ID为创建一个组件复制到显示对象，如果是从场景ID - ID - ID为查找
-        if (id.toString().substr(0, 4) === 'this' && target && target.parent instanceof VFComponent_1.VFComponent) {
+        if (id.toString().substr(0, 4) === 'this' && target && target.parent instanceof _display_VFComponent__WEBPACK_IMPORTED_MODULE_2__["VFComponent"]) {
             var childIds = id.split('#');
             childIds.shift();
             var child = target.parent;
@@ -1870,7 +1894,7 @@ var RES = /** @class */ (function (_super) {
                         id = _a[_i];
                         assetsItem = assets[id];
                         if (!(assetsItem && assetsItem.type === "js" /* JS */ && assetsItem.name)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, ImportScript_1.default(assetsItem.url, cdns, assetsItem.name).catch(function (e) {
+                        return [4 /*yield*/, Object(_utils_ImportScript__WEBPACK_IMPORTED_MODULE_6__["default"])(assetsItem.url, cdns, assetsItem.name).catch(function (e) {
                                 _this.stage.systemEvent.error(e);
                             })];
                     case 2:
@@ -1923,7 +1947,7 @@ var RES = /** @class */ (function (_super) {
     };
     RES.prototype.initGlobalVariable = function () {
         if (this.data.global) {
-            this.stage.variableManager.addVariableConfig(VariableManager_1.VariableManager.GLOBAL_ID, this.data.global);
+            this.stage.variableManager.addVariableConfig(_VariableManager__WEBPACK_IMPORTED_MODULE_1__["VariableManager"].GLOBAL_ID, this.data.global);
             this.stage.variableManager.addVariableToGlobal(this.data.global);
         }
         if (this.vfActions) {
@@ -2034,7 +2058,7 @@ var RES = /** @class */ (function (_super) {
     RES.prototype.createCustomComponent = function (libId, id) {
         var componentData = this.data.components[libId];
         var customData = componentData;
-        var vfComponent = new VFComponent_1.VFComponent();
+        var vfComponent = new _display_VFComponent__WEBPACK_IMPORTED_MODULE_2__["VFComponent"]();
         vfComponent.name = customData.name;
         vfComponent.libId = libId;
         vfComponent.id = id;
@@ -2060,18 +2084,18 @@ var RES = /** @class */ (function (_super) {
             }
         }
         if (customData.actionList && customData.actionList !== '') {
-            var actionList = new ActionList_1.ActionList(vfComponent, customData.actionList);
+            var actionList = new _actionTask_ActionList__WEBPACK_IMPORTED_MODULE_3__["ActionList"](vfComponent, customData.actionList);
             vfComponent.actionList = actionList;
         }
         else if (libId !== undefined) {
             var actions = this.getVfsByComponentId(libId.toString());
             if (actions) {
-                var actionList = new ActionList_1.ActionList(vfComponent, actions);
+                var actionList = new _actionTask_ActionList__WEBPACK_IMPORTED_MODULE_3__["ActionList"](vfComponent, actions);
                 vfComponent.actionList = actionList;
             }
         }
         if (customData.animations) {
-            var animation = new Animation_1.Animation(vfComponent, customData.animations, this.data.fps);
+            var animation = new _animation_Animation__WEBPACK_IMPORTED_MODULE_4__["Animation"](vfComponent, customData.animations, this.data.fps);
             vfComponent.animation = animation;
         }
         return vfComponent;
@@ -2128,7 +2152,7 @@ var RES = /** @class */ (function (_super) {
                 urls[res.url].push(res.id);
                 continue;
             }
-            loader.add(id, getUrl_1.getUrl(res.url, this.data.baseUrl));
+            loader.add(id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl));
             urls[res.url] = [id];
         }
         var progressId = 0;
@@ -2181,7 +2205,7 @@ var RES = /** @class */ (function (_super) {
         var loader = this._loader;
         var cdns = this.stage.config.cdns;
         this._assetFails.forEach(function (res) {
-            var type = Assets_1.getAssetType(res.extension);
+            var type = Object(_assets_Assets__WEBPACK_IMPORTED_MODULE_5__["getAssetType"])(res.extension);
             var cdn;
             switch (type) {
                 case 4 /* Image */:
@@ -2219,369 +2243,7 @@ var RES = /** @class */ (function (_super) {
     };
     return RES;
 }(vf.utils.EventEmitter));
-exports.RES = RES;
 
-
-/***/ }),
-
-/***/ "./packages/player/src/core/System.ts":
-/*!********************************************!*\
-  !*** ./packages/player/src/core/System.ts ***!
-  \********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * 承载VF的（运行）系统环境
- *
- * @author 8088
- */
-var BaseInfo_1 = __webpack_require__(/*! ./BaseInfo */ "./packages/player/src/core/BaseInfo.ts");
-var System = /** @class */ (function (_super) {
-    __extends(System, _super);
-    function System(lock) {
-        var _this = _super.call(this) || this;
-        _this._pageUrl = '';
-        _this._pageReferrer = '';
-        _this._language = '';
-        _this._resolution = '';
-        _this._ua = '';
-        _this._device = {};
-        _this._os = {};
-        _this._browser = {};
-        if (lock !== ConstructorLock) {
-            throw new SyntaxError("禁止实例化 System !");
-        }
-        _this.initialize();
-        return _this;
-    }
-    System.getInstance = function () {
-        if (!System.instance) {
-            System.instance = new System(ConstructorLock);
-        }
-        return System.instance;
-    };
-    Object.defineProperty(System.prototype, "ua", {
-        /**
-         * userAgent
-         * @returns {string}
-         */
-        get: function () {
-            return this._ua;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(System.prototype, "device", {
-        /**
-         * 设备
-         * @returns {Object}
-         */
-        get: function () {
-            return this._device;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(System.prototype, "os", {
-        /**
-         * 系统
-         * @returns {Object}
-         */
-        get: function () {
-            return this._os;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(System.prototype, "browser", {
-        /**
-         * 浏览器
-         * @returns {Object}
-         */
-        get: function () {
-            return this._browser;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(System.prototype, "pageUrl", {
-        /**
-         * 承载VF的页面地址
-         * @returns {string}
-         */
-        get: function () {
-            return this._pageUrl;
-        },
-        set: function (value) {
-            if (value && this._pageUrl != value) {
-                this._pageUrl = decodeURIComponent(value);
-                this.propertyChange('pageUrl');
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(System.prototype, "pageReferrer", {
-        /**
-         * 载入当前页面的URL
-         * @returns {string}
-         */
-        get: function () {
-            return this._pageReferrer;
-        },
-        set: function (value) {
-            if (value && this._pageReferrer != value) {
-                this._pageReferrer = decodeURIComponent(value);
-                this.propertyChange('pageReferrer');
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(System.prototype, "resolution", {
-        /**
-         * 获取屏幕分辨率
-         * @returns {string}
-         */
-        get: function () {
-            return this._resolution;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(System.prototype, "language", {
-        /**
-         * 获取系统语言
-         * @returns {string}
-         */
-        get: function () {
-            return this._language;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(System.prototype, "info", {
-        get: function () {
-            return {
-                pageUrl: this.pageUrl,
-                pageReferrer: this.pageReferrer,
-                language: this.language,
-                resolution: this.resolution,
-                ua: this.ua,
-                device: this.device,
-                os: this.os,
-                browser: this.browser,
-            };
-        },
-        enumerable: true,
-        configurable: true
-    });
-    // Internals..
-    //
-    System.prototype.initialize = function () {
-        if (screen) {
-            this._resolution = screen.width + 'x' + screen.height;
-        }
-        if (navigator) {
-            this._ua = navigator.userAgent;
-            this._language = navigator.language;
-        }
-        if (this._ua) {
-            this.checkDevice();
-            this.checkBrowser();
-        }
-        this.pageUrl = document.location.href;
-        this.pageReferrer = document.referrer;
-        this.output('System Environment：', this.info);
-    };
-    System.prototype.checkDevice = function () {
-        this._os.name = navigator.platform;
-        if (this._ua.match('Unix'))
-            this._os.name = 'Unix';
-        if (this._ua.match('Linux'))
-            this._os.name = 'Linux';
-        var match;
-        // Apple
-        if (this._ua.match('iPhone( Simulator)?;') || this._ua.match('iPad;') || this._ua.match('iPod;') || this._ua.match(/iPhone\s*\d*s?[cp]?;/i)) {
-            this._os.name = 'iOS';
-            if (match = /OS (.*) like Mac OS X/.exec(this._ua)) {
-                this._os.version = match[1].replace(/_/g, '.');
-            }
-            if (this._ua.match('iPhone Simulator;')) {
-                this._device.name = 'iPhone';
-                this._device.type = 'emulator';
-            }
-            else if (this._ua.match('iPod;')) {
-                this._device.name = 'iPod Touch';
-                this._device.type = 'media';
-            }
-            else if (this._ua.match('iPhone;') || this._ua.match(/iPhone\s*\d*s?[cp]?;/i)) {
-                this._device.name = 'iPhone';
-                this._device.type = 'mobile';
-            }
-            else {
-                this._device.name = 'iPad';
-                this._device.type = 'tablet';
-            }
-        }
-        else if (this._ua.match('Mac OS X')) {
-            this._os.name = 'Mac OS X';
-            if (match = /Mac OS X (10[0-9\._]*)/.exec(this._ua)) {
-                this._os.version = match[1].replace(/_/g, '.');
-            }
-            this._device.name = 'Apple Computer';
-            this._device.type = 'pc';
-        }
-        // Microsoft
-        if (this._ua.match('Windows')) {
-            this._os.name = 'Windows';
-            if (match = /Windows NT ([0-9]\.[0-9])/.exec(this._ua)) {
-                this._os.version = match[1];
-                switch (match[1]) {
-                    case '6.2':
-                        this._os.version = '8';
-                        break;
-                    case '6.1':
-                        this._os.version = '7';
-                        break;
-                    case '6.0':
-                        this._os.version = 'Vista';
-                        break;
-                    case '5.2':
-                        this._os.version = 'Server 2003';
-                        break;
-                    case '5.1':
-                        this._os.version = 'XP';
-                        break;
-                    case '5.0':
-                        this._os.version = '2000';
-                        break;
-                    default:
-                        this._os.version = 'NT ' + this._os.version;
-                }
-            }
-            this._device.name = 'Windows Computer';
-            this._device.type = 'pc';
-            if (this._ua.match('WindowsMobile') || this._ua.match('Windows Phone')) {
-                this._device.name = 'Windows Phone';
-                this._device.type = 'mobile';
-                this._os.name = 'Windows Mobile';
-                this._os.version = 'x';
-            }
-            //...
-        }
-        // Google
-        if (this._ua.match('Android')) {
-            this._os.name = 'Android';
-            if (match = /Android(?: )?(?:AllPhone_|CyanogenMod_)?(?:\/)?v?([0-9.]+)/.exec(this._ua.replace('-update', '.'))) {
-                this._os.version = match[1];
-            }
-            this._device.name = 'Android Device';
-            this._device.type = 'mobile';
-            if (this._os.version >= 3)
-                this._device.type = 'tablet';
-            if (this._os.version >= 4 && this._ua.match('Mobile'))
-                this._device.type = 'mobile';
-            //...
-        }
-        // ..ignore others..
-    };
-    System.prototype.checkBrowser = function () {
-        var match;
-        if (match = /WebKit\/([0-9.]*)/i.exec(this._ua)) {
-            this._browser.name = 'Webkit';
-            this._browser.version = match[1];
-        }
-        if (match = /Browser\/AppleWebKit([0-9.]*)/i.exec(this._ua)) {
-            this._browser.name = 'Webkit';
-            this._browser.version = match[1];
-        }
-        if (this._ua.match('Safari')) {
-            this._browser.name = 'Safari';
-            if (match = /Version\/([0-9\.]+)/.exec(this._ua)) {
-                this._browser.version = match[1];
-            }
-        }
-        if (this._ua.match('MSIE')) {
-            this._browser.name = 'Internet Explorer';
-            if (match = /MSIE ([0-9.]*)/.exec(this._ua)) {
-                this._browser.version = match[1];
-            }
-        }
-        if (this._ua.match('Edge')) {
-            this._browser.name = 'Edge';
-            this._browser.version = 'x';
-        }
-        if (this._ua.match(/Opera/i)) {
-            this._browser.name = 'Opera';
-            if (match = /Opera[\/| ]([0-9.]*)/.exec(this._ua)) {
-                this._browser.version = match[1];
-            }
-        }
-        if (this._ua.match('Firefox')) {
-            this._browser.name = 'Firefox';
-            if (match = /Firefox\/([0-9ab.]*)/.exec(this._ua)) {
-                this._browser.version = match[1];
-            }
-        }
-        if (match = /(?:Chrome|CrMo|CriOS)\/([0-9.]*)/.exec(this._ua)) {
-            this._browser.name = 'Chrome';
-            this._browser.version = match[1];
-        }
-        if (this._ua.match('Chromium')) {
-            this._browser.name = 'Chromium';
-            if (match = /Chromium\/([0-9.]*)/.exec(this._ua)) {
-                this._browser.version = match[1];
-            }
-        }
-        if (this._ua.match('UCWEB')) {
-            this._browser.name = 'UC';
-            if (match = /UCWEB([0-9]*[.][0-9]*)/.exec(this._ua)) {
-                this._browser.version = match[1];
-            }
-        }
-        if (match = /UCBrowser\/([0-9.]*)/.exec(this._ua)) {
-            this._browser.name = 'UC';
-            this._browser.version = match[1];
-        }
-        if (match = /(M?QQBrowser)\/([0-9.]*)/.exec(this._ua)) {
-            this._browser.name = 'QQ';
-            var version = match[2];
-            if (version.match(/^[0-9][0-9]$/))
-                version = version[0] + '.' + version[1];
-            this._browser.version = version;
-            /*if (!this._os.name && match[1] === 'QQBrowser') {
-                this._os.name = 'Windows';
-            }*/
-        }
-        // ..ignore others..
-    };
-    return System;
-}(BaseInfo_1.default));
-exports.default = System;
-var ConstructorLock = /** @class */ (function () {
-    function ConstructorLock() {
-    }
-    return ConstructorLock;
-}());
-;
 
 
 /***/ }),
@@ -2590,14 +2252,16 @@ var ConstructorLock = /** @class */ (function () {
 /*!*****************************************************!*\
   !*** ./packages/player/src/core/VariableManager.ts ***!
   \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: VariableManager */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VariableManager", function() { return VariableManager; });
+/* harmony import */ var _model_IVFData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./model/IVFData */ "./packages/player/src/core/model/IVFData.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-var IVFData_1 = __webpack_require__(/*! ./model/IVFData */ "./packages/player/src/core/model/IVFData.ts");
-var VFUtil_1 = __webpack_require__(/*! ../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
 var VariableManager = /** @class */ (function () {
     function VariableManager() {
         this.variableConfig = {};
@@ -2713,10 +2377,10 @@ var VariableManager = /** @class */ (function () {
         }
     };
     VariableManager.prototype.getVariableByData = function (component, expressItem) {
-        if (expressItem[0] === IVFData_1.ExpressItemType.PARAM_VALUE) {
+        if (expressItem[0] === _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARAM_VALUE) {
             return this.getVariable(VariableManager.GLOBAL_ID, expressItem[2]);
         }
-        var varComponent = VFUtil_1.getTargetComponent(component, expressItem[1]);
+        var varComponent = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(component, expressItem[1]);
         var hashCode = varComponent ? varComponent.id.toString() : VariableManager.GLOBAL_ID;
         var varItem = this.getVariable(hashCode, expressItem[2]);
         return varItem;
@@ -2727,20 +2391,20 @@ var VariableManager = /** @class */ (function () {
         for (var i = 0, len = express.length; i < len; i++) {
             var expressItem = express[i];
             switch (expressItem[0]) {
-                case IVFData_1.ExpressItemType.CONST:
-                case IVFData_1.ExpressItemType.VARIABLE:
-                case IVFData_1.ExpressItemType.STSTEN:
-                case IVFData_1.ExpressItemType.RANDOM:
-                case IVFData_1.ExpressItemType.PROPERTY:
-                case IVFData_1.ExpressItemType.ARRAY_LEN:
-                case IVFData_1.ExpressItemType.ARRAY_VALUE:
-                case IVFData_1.ExpressItemType.OBJECT_VALUE:
-                case IVFData_1.ExpressItemType.PARAM_VALUE:
-                case IVFData_1.ExpressItemType.ARRAY_FUNCTION:
-                case IVFData_1.ExpressItemType.COMPONENT:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].CONST:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].VARIABLE:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].STSTEN:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].RANDOM:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PROPERTY:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_LEN:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_VALUE:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].OBJECT_VALUE:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARAM_VALUE:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_FUNCTION:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].COMPONENT:
                     stackOut.push(expressItem);
                     break;
-                case IVFData_1.ExpressItemType.OPERATION:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].OPERATION:
                     switch (expressItem[1]) {
                         case '(':
                             stackOperate.push(expressItem);
@@ -2808,10 +2472,10 @@ var VariableManager = /** @class */ (function () {
     VariableManager.prototype.getExpressItemValue = function (component, expressItem) {
         var result;
         switch (expressItem[0]) {
-            case IVFData_1.ExpressItemType.CONST:
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].CONST:
                 result = (expressItem[1]);
                 break;
-            case IVFData_1.ExpressItemType.VARIABLE:
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].VARIABLE:
                 var varItem = this.getVariableByData(component, expressItem);
                 if (varItem) {
                     result = (varItem.value);
@@ -2821,23 +2485,23 @@ var VariableManager = /** @class */ (function () {
                     // can not find variable:
                 }
                 break;
-            case IVFData_1.ExpressItemType.STSTEN:
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].STSTEN:
                 var curDate = new Date();
                 var systemValue = 0;
                 switch (expressItem[1]) {
-                    case IVFData_1.SystemValueType.TIME:
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].TIME:
                         systemValue = curDate.getTime();
                         break;
-                    case IVFData_1.SystemValueType.YEAR:
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].YEAR:
                         systemValue = curDate.getFullYear();
                         break;
-                    case IVFData_1.SystemValueType.MONTH:
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].MONTH:
                         systemValue = curDate.getMonth();
                         break;
-                    case IVFData_1.SystemValueType.DAY:
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].DAY:
                         systemValue = curDate.getDay();
                         break;
-                    case IVFData_1.SystemValueType.DATE:
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].DATE:
                         systemValue = curDate.getDate();
                         break;
                     default:
@@ -2845,7 +2509,7 @@ var VariableManager = /** @class */ (function () {
                 }
                 result = (systemValue);
                 break;
-            case IVFData_1.ExpressItemType.RANDOM:
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].RANDOM:
                 var randomValue = 0;
                 if (expressItem.length >= 3) {
                     var min = expressItem[1];
@@ -2857,20 +2521,20 @@ var VariableManager = /** @class */ (function () {
                 }
                 result = (randomValue);
                 break;
-            case IVFData_1.ExpressItemType.COMPONENT:
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].COMPONENT:
                 var targetArr0 = expressItem[1];
-                var targetComponent0 = VFUtil_1.getTargetComponent(component, targetArr0);
+                var targetComponent0 = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(component, targetArr0);
                 result = targetComponent0;
                 break;
-            case IVFData_1.ExpressItemType.PROPERTY:
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PROPERTY:
                 var targetArr = expressItem[1];
                 var targetProperty = expressItem[2];
-                var targetComponent = VFUtil_1.getTargetComponent(component, targetArr);
+                var targetComponent = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(component, targetArr);
                 if (targetComponent) {
                     result = targetComponent[targetProperty];
                 }
                 break;
-            case IVFData_1.ExpressItemType.ARRAY_LEN:
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_LEN:
                 var arrItem = this.getVariableByData(component, expressItem);
                 if (arrItem) {
                     result = (arrItem.value.length);
@@ -2880,7 +2544,7 @@ var VariableManager = /** @class */ (function () {
                     // can not find variable:
                 }
                 break;
-            case IVFData_1.ExpressItemType.ARRAY_VALUE:
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_VALUE:
                 // expressItem 0:type, 1:componentId, 2: variableId, 3: index, 4?: property
                 var arrItem1 = this.getVariableByData(component, expressItem);
                 if (arrItem1) {
@@ -2888,7 +2552,7 @@ var VariableManager = /** @class */ (function () {
                     var index = expressItem[3];
                     if (Array.isArray(index)) {
                         var indexVar = this.getExpressItemValue(component, index);
-                        if (VFUtil_1.isNumber(indexVar)) {
+                        if (Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(indexVar)) {
                             index = indexVar;
                         }
                         else {
@@ -2907,7 +2571,7 @@ var VariableManager = /** @class */ (function () {
                     // can not find variable:
                 }
                 break;
-            case IVFData_1.ExpressItemType.ARRAY_FUNCTION:
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_FUNCTION:
                 var arrItem2 = this.getVariableByData(component, expressItem);
                 if (arrItem2) {
                     if (Array.isArray(arrItem2.value)) {
@@ -2975,8 +2639,8 @@ var VariableManager = /** @class */ (function () {
                     // can not find variable:
                 }
                 break;
-            case IVFData_1.ExpressItemType.OBJECT_VALUE:
-            case IVFData_1.ExpressItemType.PARAM_VALUE:
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].OBJECT_VALUE:
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARAM_VALUE:
                 // expressItem 0:type, 1:componentId, 2: variableId, 3: property, 4?: property
                 var objItem = this.getVariableByData(component, expressItem);
                 if (objItem) {
@@ -3003,7 +2667,7 @@ var VariableManager = /** @class */ (function () {
         for (var i = 0, len = stackExpress.length; i < len; i++) {
             var expres = stackExpress[i];
             switch (expres[0]) {
-                case IVFData_1.ExpressItemType.OPERATION:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].OPERATION:
                     var expItem0 = void 0;
                     var expItem1 = void 0;
                     if (expres[1] === '!') {
@@ -3031,7 +2695,7 @@ var VariableManager = /** @class */ (function () {
         }
     };
     VariableManager.prototype.caculateOneExpress = function (component, operateStr, expItem0, expItem1) {
-        var resultItem = [IVFData_1.ExpressItemType.CONST, 0];
+        var resultItem = [_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].CONST, 0];
         var result0;
         var result1;
         var result;
@@ -3095,7 +2759,7 @@ var VariableManager = /** @class */ (function () {
                 result = result1;
                 if (expItem0) {
                     switch (expItem0[0]) {
-                        case IVFData_1.ExpressItemType.VARIABLE:
+                        case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].VARIABLE:
                             var varItem = this.getVariableByData(component, expItem0);
                             if (varItem) {
                                 varItem.value = result;
@@ -3105,10 +2769,10 @@ var VariableManager = /** @class */ (function () {
                                 // can not find variable:
                             }
                             break;
-                        case IVFData_1.ExpressItemType.PROPERTY:
+                        case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PROPERTY:
                             var targetArr = expItem0[1];
                             var targetProperty = expItem0[2];
-                            var targetComponent = VFUtil_1.getTargetComponent(component, targetArr);
+                            var targetComponent = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(component, targetArr);
                             if (targetComponent) {
                                 if (expItem0.length >= 3) {
                                     var targetProp = targetComponent;
@@ -3138,7 +2802,7 @@ var VariableManager = /** @class */ (function () {
                                 }
                             }
                             break;
-                        case IVFData_1.ExpressItemType.ARRAY_LEN:
+                        case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_LEN:
                             var arrItem = this.getVariableByData(component, expItem0);
                             if (arrItem) {
                                 arrItem.value.length = result;
@@ -3148,7 +2812,7 @@ var VariableManager = /** @class */ (function () {
                                 // can not find variable:
                             }
                             break;
-                        case IVFData_1.ExpressItemType.ARRAY_VALUE:
+                        case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_VALUE:
                             // expItem0 0:type, 1:componentId, 2: variableId, 3: index, 4?: property
                             var arrItem1 = this.getVariableByData(component, expItem0);
                             if (arrItem1) {
@@ -3156,7 +2820,7 @@ var VariableManager = /** @class */ (function () {
                                 var index = expItem0[3] || 0;
                                 if (Array.isArray(index)) {
                                     var indexVar = this.getExpressItemValue(component, index);
-                                    if (VFUtil_1.isNumber(indexVar)) {
+                                    if (Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(indexVar)) {
                                         index = indexVar;
                                     }
                                     else {
@@ -3187,8 +2851,8 @@ var VariableManager = /** @class */ (function () {
                                 // can not find variable:
                             }
                             break;
-                        case IVFData_1.ExpressItemType.OBJECT_VALUE:
-                        case IVFData_1.ExpressItemType.PARAM_VALUE:
+                        case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].OBJECT_VALUE:
+                        case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARAM_VALUE:
                             // expressItem 0:type, 1:componentId, 2: variableId, 3: property, 4?: property
                             var objItem = this.getVariableByData(component, expItem0);
                             if (objItem) {
@@ -3209,7 +2873,7 @@ var VariableManager = /** @class */ (function () {
                                 }
                             }
                             break;
-                        case IVFData_1.ExpressItemType.CONST:
+                        case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].CONST:
                             // the left value can NOT be const:
                             this.emitError(component, 'E1008', [expItem0.join(',')], "warning" /* WARNING */);
                             break;
@@ -3232,7 +2896,7 @@ var VariableManager = /** @class */ (function () {
         return newVariableData;
     };
     VariableManager.prototype.isIVariableData = function (v) {
-        if (VFUtil_1.isObject(v) &&
+        if (Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["isObject"])(v) &&
             v.hasOwnProperty('type') &&
             v.hasOwnProperty('value') &&
             (v.type === "array" /* ARRAY */ ||
@@ -3251,16 +2915,16 @@ var VariableManager = /** @class */ (function () {
                 type: "object" /* OBJECT */,
                 value: v,
             };
-            if (VFUtil_1.isBoolean(v)) {
+            if (Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["isBoolean"])(v)) {
                 varData.type = "boolean" /* BOOLEAN */;
             }
-            else if (VFUtil_1.isString(v)) {
+            else if (Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["isString"])(v)) {
                 varData.type = "string" /* STRING */;
             }
-            else if (VFUtil_1.isNumber(v)) {
+            else if (Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(v)) {
                 varData.type = "string" /* STRING */;
             }
-            else if (VFUtil_1.isArray(v)) {
+            else if (Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["isArray"])(v)) {
                 varData.type = "array" /* ARRAY */;
             }
             else {
@@ -3305,7 +2969,7 @@ var VariableManager = /** @class */ (function () {
     };
     return VariableManager;
 }());
-exports.VariableManager = VariableManager;
+
 
 
 /***/ }),
@@ -3314,47 +2978,82 @@ exports.VariableManager = VariableManager;
 /*!***********************************************************!*\
   !*** ./packages/player/src/core/actionTask/ActionList.ts ***!
   \***********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ActionList */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActionList", function() { return ActionList; });
+/* harmony import */ var _AddListenerTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AddListenerTask */ "./packages/player/src/core/actionTask/AddListenerTask.ts");
+/* harmony import */ var _SetPropertyTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SetPropertyTask */ "./packages/player/src/core/actionTask/SetPropertyTask.ts");
+/* harmony import */ var _ExpressTask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ExpressTask */ "./packages/player/src/core/actionTask/ExpressTask.ts");
+/* harmony import */ var _IfTask__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./IfTask */ "./packages/player/src/core/actionTask/IfTask.ts");
+/* harmony import */ var _core_QueueTask__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./core/QueueTask */ "./packages/player/src/core/actionTask/core/QueueTask.ts");
+/* harmony import */ var _DefineFunctionTask__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./DefineFunctionTask */ "./packages/player/src/core/actionTask/DefineFunctionTask.ts");
+/* harmony import */ var _FunctionTask__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./FunctionTask */ "./packages/player/src/core/actionTask/FunctionTask.ts");
+/* harmony import */ var _CallFunctionTask__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./CallFunctionTask */ "./packages/player/src/core/actionTask/CallFunctionTask.ts");
+/* harmony import */ var _PrintTask__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./PrintTask */ "./packages/player/src/core/actionTask/PrintTask.ts");
+/* harmony import */ var _PlaySoundTask__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./PlaySoundTask */ "./packages/player/src/core/actionTask/PlaySoundTask.ts");
+/* harmony import */ var _PlayAnimationTask__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./PlayAnimationTask */ "./packages/player/src/core/actionTask/PlayAnimationTask.ts");
+/* harmony import */ var _JumpToNextSceneTask__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./JumpToNextSceneTask */ "./packages/player/src/core/actionTask/JumpToNextSceneTask.ts");
+/* harmony import */ var _JumpToPrevSceneTask__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./JumpToPrevSceneTask */ "./packages/player/src/core/actionTask/JumpToPrevSceneTask.ts");
+/* harmony import */ var _JumpToSceneTask__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./JumpToSceneTask */ "./packages/player/src/core/actionTask/JumpToSceneTask.ts");
+/* harmony import */ var _ArrayPopTask__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./ArrayPopTask */ "./packages/player/src/core/actionTask/ArrayPopTask.ts");
+/* harmony import */ var _ArrayPushTask__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./ArrayPushTask */ "./packages/player/src/core/actionTask/ArrayPushTask.ts");
+/* harmony import */ var _ArraySpliceTask__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./ArraySpliceTask */ "./packages/player/src/core/actionTask/ArraySpliceTask.ts");
+/* harmony import */ var _ArrayRandomTask__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./ArrayRandomTask */ "./packages/player/src/core/actionTask/ArrayRandomTask.ts");
+/* harmony import */ var _ArrayInitTask__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./ArrayInitTask */ "./packages/player/src/core/actionTask/ArrayInitTask.ts");
+/* harmony import */ var _ArrayConcatTask__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./ArrayConcatTask */ "./packages/player/src/core/actionTask/ArrayConcatTask.ts");
+/* harmony import */ var _ArrayShiftTask__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./ArrayShiftTask */ "./packages/player/src/core/actionTask/ArrayShiftTask.ts");
+/* harmony import */ var _ArrayUnshiftTask__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./ArrayUnshiftTask */ "./packages/player/src/core/actionTask/ArrayUnshiftTask.ts");
+/* harmony import */ var _AddListenerCallTask__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./AddListenerCallTask */ "./packages/player/src/core/actionTask/AddListenerCallTask.ts");
+/* harmony import */ var _EmitEventTask__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./EmitEventTask */ "./packages/player/src/core/actionTask/EmitEventTask.ts");
+/* harmony import */ var _DefineVariableTask__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./DefineVariableTask */ "./packages/player/src/core/actionTask/DefineVariableTask.ts");
+/* harmony import */ var _CallProtoFunctionTask__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./CallProtoFunctionTask */ "./packages/player/src/core/actionTask/CallProtoFunctionTask.ts");
+/* harmony import */ var _PauseSoundTask__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./PauseSoundTask */ "./packages/player/src/core/actionTask/PauseSoundTask.ts");
+/* harmony import */ var _ResumeSoundTask__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./ResumeSoundTask */ "./packages/player/src/core/actionTask/ResumeSoundTask.ts");
+/* harmony import */ var _RemoveListenerTask__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./RemoveListenerTask */ "./packages/player/src/core/actionTask/RemoveListenerTask.ts");
+/* harmony import */ var _ForTask__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./ForTask */ "./packages/player/src/core/actionTask/ForTask.ts");
+/* harmony import */ var _BreakTask__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./BreakTask */ "./packages/player/src/core/actionTask/BreakTask.ts");
+/* harmony import */ var _WaitTask__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./WaitTask */ "./packages/player/src/core/actionTask/WaitTask.ts");
+/* harmony import */ var _SetTimeoutTask__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./SetTimeoutTask */ "./packages/player/src/core/actionTask/SetTimeoutTask.ts");
+/* harmony import */ var _SetIntervalTask__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./SetIntervalTask */ "./packages/player/src/core/actionTask/SetIntervalTask.ts");
+/* harmony import */ var _EnterFrameTask__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./EnterFrameTask */ "./packages/player/src/core/actionTask/EnterFrameTask.ts");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-var AddListenerTask_1 = __webpack_require__(/*! ./AddListenerTask */ "./packages/player/src/core/actionTask/AddListenerTask.ts");
-var SetPropertyTask_1 = __webpack_require__(/*! ./SetPropertyTask */ "./packages/player/src/core/actionTask/SetPropertyTask.ts");
-var ExpressTask_1 = __webpack_require__(/*! ./ExpressTask */ "./packages/player/src/core/actionTask/ExpressTask.ts");
-var IfTask_1 = __webpack_require__(/*! ./IfTask */ "./packages/player/src/core/actionTask/IfTask.ts");
-var QueueTask_1 = __webpack_require__(/*! ./core/QueueTask */ "./packages/player/src/core/actionTask/core/QueueTask.ts");
-var DefineFunctionTask_1 = __webpack_require__(/*! ./DefineFunctionTask */ "./packages/player/src/core/actionTask/DefineFunctionTask.ts");
-var FunctionTask_1 = __webpack_require__(/*! ./FunctionTask */ "./packages/player/src/core/actionTask/FunctionTask.ts");
-var CallFunctionTask_1 = __webpack_require__(/*! ./CallFunctionTask */ "./packages/player/src/core/actionTask/CallFunctionTask.ts");
-var PrintTask_1 = __webpack_require__(/*! ./PrintTask */ "./packages/player/src/core/actionTask/PrintTask.ts");
-var PlaySoundTask_1 = __webpack_require__(/*! ./PlaySoundTask */ "./packages/player/src/core/actionTask/PlaySoundTask.ts");
-var PlayAnimationTask_1 = __webpack_require__(/*! ./PlayAnimationTask */ "./packages/player/src/core/actionTask/PlayAnimationTask.ts");
-var JumpToNextSceneTask_1 = __webpack_require__(/*! ./JumpToNextSceneTask */ "./packages/player/src/core/actionTask/JumpToNextSceneTask.ts");
-var JumpToPrevSceneTask_1 = __webpack_require__(/*! ./JumpToPrevSceneTask */ "./packages/player/src/core/actionTask/JumpToPrevSceneTask.ts");
-var JumpToSceneTask_1 = __webpack_require__(/*! ./JumpToSceneTask */ "./packages/player/src/core/actionTask/JumpToSceneTask.ts");
-var ArrayPopTask_1 = __webpack_require__(/*! ./ArrayPopTask */ "./packages/player/src/core/actionTask/ArrayPopTask.ts");
-var ArrayPushTask_1 = __webpack_require__(/*! ./ArrayPushTask */ "./packages/player/src/core/actionTask/ArrayPushTask.ts");
-var ArraySpliceTask_1 = __webpack_require__(/*! ./ArraySpliceTask */ "./packages/player/src/core/actionTask/ArraySpliceTask.ts");
-var ArrayRandomTask_1 = __webpack_require__(/*! ./ArrayRandomTask */ "./packages/player/src/core/actionTask/ArrayRandomTask.ts");
-var ArrayInitTask_1 = __webpack_require__(/*! ./ArrayInitTask */ "./packages/player/src/core/actionTask/ArrayInitTask.ts");
-var ArrayConcatTask_1 = __webpack_require__(/*! ./ArrayConcatTask */ "./packages/player/src/core/actionTask/ArrayConcatTask.ts");
-var ArrayShiftTask_1 = __webpack_require__(/*! ./ArrayShiftTask */ "./packages/player/src/core/actionTask/ArrayShiftTask.ts");
-var ArrayUnshiftTask_1 = __webpack_require__(/*! ./ArrayUnshiftTask */ "./packages/player/src/core/actionTask/ArrayUnshiftTask.ts");
-var AddListenerCallTask_1 = __webpack_require__(/*! ./AddListenerCallTask */ "./packages/player/src/core/actionTask/AddListenerCallTask.ts");
-var EmitEventTask_1 = __webpack_require__(/*! ./EmitEventTask */ "./packages/player/src/core/actionTask/EmitEventTask.ts");
-var DefineVariableTask_1 = __webpack_require__(/*! ./DefineVariableTask */ "./packages/player/src/core/actionTask/DefineVariableTask.ts");
-var CallProtoFunctionTask_1 = __webpack_require__(/*! ./CallProtoFunctionTask */ "./packages/player/src/core/actionTask/CallProtoFunctionTask.ts");
-var PauseSoundTask_1 = __webpack_require__(/*! ./PauseSoundTask */ "./packages/player/src/core/actionTask/PauseSoundTask.ts");
-var ResumeSoundTask_1 = __webpack_require__(/*! ./ResumeSoundTask */ "./packages/player/src/core/actionTask/ResumeSoundTask.ts");
-var RemoveListenerTask_1 = __webpack_require__(/*! ./RemoveListenerTask */ "./packages/player/src/core/actionTask/RemoveListenerTask.ts");
-var ForTask_1 = __webpack_require__(/*! ./ForTask */ "./packages/player/src/core/actionTask/ForTask.ts");
-var BreakTask_1 = __webpack_require__(/*! ./BreakTask */ "./packages/player/src/core/actionTask/BreakTask.ts");
-var WaitTask_1 = __webpack_require__(/*! ./WaitTask */ "./packages/player/src/core/actionTask/WaitTask.ts");
-var SetTimeoutTask_1 = __webpack_require__(/*! ./SetTimeoutTask */ "./packages/player/src/core/actionTask/SetTimeoutTask.ts");
-var SetIntervalTask_1 = __webpack_require__(/*! ./SetIntervalTask */ "./packages/player/src/core/actionTask/SetIntervalTask.ts");
-var EnterFrameTask_1 = __webpack_require__(/*! ./EnterFrameTask */ "./packages/player/src/core/actionTask/EnterFrameTask.ts");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var ActionList = /** @class */ (function () {
     function ActionList(component, data) {
         this._actionList = [];
@@ -3478,37 +3177,37 @@ var ActionList = /** @class */ (function () {
                 task = this.parseJumpToScene(data);
                 break;
             case 21 /* ArrayInit */:
-                task = new ArrayInitTask_1.ArrayInitTask(this.component, data);
+                task = new _ArrayInitTask__WEBPACK_IMPORTED_MODULE_18__["ArrayInitTask"](this.component, data);
                 break;
             case 22 /* ArrayPop */:
-                task = new ArrayPopTask_1.ArrayPopTask(this.component, data);
+                task = new _ArrayPopTask__WEBPACK_IMPORTED_MODULE_14__["ArrayPopTask"](this.component, data);
                 break;
             case 23 /* ArrayPush */:
-                task = new ArrayPushTask_1.ArrayPushTask(this.component, data);
+                task = new _ArrayPushTask__WEBPACK_IMPORTED_MODULE_15__["ArrayPushTask"](this.component, data);
                 break;
             case 24 /* ArraySplice */:
-                task = new ArraySpliceTask_1.ArraySpliceTask(this.component, data);
+                task = new _ArraySpliceTask__WEBPACK_IMPORTED_MODULE_16__["ArraySpliceTask"](this.component, data);
                 break;
             case 25 /* ArrayRandom */:
-                task = new ArrayRandomTask_1.ArrayRandomTask(this.component, data);
+                task = new _ArrayRandomTask__WEBPACK_IMPORTED_MODULE_17__["ArrayRandomTask"](this.component, data);
                 break;
             case 26 /* ArrayConcat */:
-                task = new ArrayConcatTask_1.ArrayConcatTask(this.component, data);
+                task = new _ArrayConcatTask__WEBPACK_IMPORTED_MODULE_19__["ArrayConcatTask"](this.component, data);
                 break;
             case 27 /* ArrayShift */:
-                task = new ArrayShiftTask_1.ArrayShiftTask(this.component, data);
+                task = new _ArrayShiftTask__WEBPACK_IMPORTED_MODULE_20__["ArrayShiftTask"](this.component, data);
                 break;
             case 28 /* ArrayUnshift */:
-                task = new ArrayUnshiftTask_1.ArrayUnshiftTask(this.component, data);
+                task = new _ArrayUnshiftTask__WEBPACK_IMPORTED_MODULE_21__["ArrayUnshiftTask"](this.component, data);
                 break;
             case 29 /* AddEventListenerCall */:
                 task = this.parseAddEventListenerCall(data);
                 break;
             case 37 /* DefineVariable */:
-                task = new DefineVariableTask_1.DefineVariableTask(this.component, data);
+                task = new _DefineVariableTask__WEBPACK_IMPORTED_MODULE_24__["DefineVariableTask"](this.component, data);
                 break;
             case 30 /* CallProtoFunction */:
-                task = new CallProtoFunctionTask_1.CallProtoFunctionTask(this.component, data);
+                task = new _CallProtoFunctionTask__WEBPACK_IMPORTED_MODULE_25__["CallProtoFunctionTask"](this.component, data);
                 break;
             case 31 /* GotoPlay */:
                 var gotoData0 = data;
@@ -3536,7 +3235,7 @@ var ActionList = /** @class */ (function () {
                 else {
                     gotoPlayData.params.push([0, gotoData0.times]);
                 }
-                task = new CallProtoFunctionTask_1.CallProtoFunctionTask(this.component, gotoPlayData);
+                task = new _CallProtoFunctionTask__WEBPACK_IMPORTED_MODULE_25__["CallProtoFunctionTask"](this.component, gotoPlayData);
                 break;
             case 32 /* GotoStop */:
                 var gotoData1 = data;
@@ -3558,16 +3257,16 @@ var ActionList = /** @class */ (function () {
                 else {
                     gotoStopData.params.push([0, gotoData1.frame]);
                 }
-                task = new CallProtoFunctionTask_1.CallProtoFunctionTask(this.component, gotoStopData);
+                task = new _CallProtoFunctionTask__WEBPACK_IMPORTED_MODULE_25__["CallProtoFunctionTask"](this.component, gotoStopData);
                 break;
             case 38 /* For */:
                 task = this.parseFor(data);
                 break;
             case 39 /* Break */:
-                task = new BreakTask_1.BreakTask();
+                task = new _BreakTask__WEBPACK_IMPORTED_MODULE_30__["BreakTask"]();
                 break;
             case 40 /* Wait */:
-                task = new WaitTask_1.WaitTask(this.component, data);
+                task = new _WaitTask__WEBPACK_IMPORTED_MODULE_31__["WaitTask"](this.component, data);
                 break;
             case 41 /* SetTimeout */:
                 task = this.parseSetTimeout(data);
@@ -3600,7 +3299,7 @@ var ActionList = /** @class */ (function () {
             event: "Add" /* Add */,
             target: [],
         };
-        var task = new AddListenerTask_1.AddListenerTask(this.component, addAction);
+        var task = new _AddListenerTask__WEBPACK_IMPORTED_MODULE_0__["AddListenerTask"](this.component, addAction);
         this.parseSubTask(task, data);
         return task;
     };
@@ -3610,12 +3309,12 @@ var ActionList = /** @class */ (function () {
             event: "Added" /* Added */,
             target: [],
         };
-        var task = new AddListenerTask_1.AddListenerTask(this.component, addedAction);
+        var task = new _AddListenerTask__WEBPACK_IMPORTED_MODULE_0__["AddListenerTask"](this.component, addedAction);
         this.parseSubTask(task, data);
         return task;
     };
     ActionList.prototype.parseSetProperty = function (data) {
-        var task = new SetPropertyTask_1.SetPropertyTask(this.component, data);
+        var task = new _SetPropertyTask__WEBPACK_IMPORTED_MODULE_1__["SetPropertyTask"](this.component, data);
         return task;
     };
     ActionList.prototype.parseClick = function (data) {
@@ -3624,16 +3323,16 @@ var ActionList = /** @class */ (function () {
             type: 13 /* AddEventListener */,
             target: data.target,
         };
-        var task = new AddListenerTask_1.AddListenerTask(this.component, addlistenerAction);
+        var task = new _AddListenerTask__WEBPACK_IMPORTED_MODULE_0__["AddListenerTask"](this.component, addlistenerAction);
         this.parseSubTask(task, data);
         return task;
     };
     ActionList.prototype.parseExpress = function (data) {
-        var task = new ExpressTask_1.ExpressTask(this.component, data);
+        var task = new _ExpressTask__WEBPACK_IMPORTED_MODULE_2__["ExpressTask"](this.component, data);
         return task;
     };
     ActionList.prototype.parseIf = function (data) {
-        var task = new IfTask_1.IfTask(this.component);
+        var task = new _IfTask__WEBPACK_IMPORTED_MODULE_3__["IfTask"](this.component);
         if (data.execute) {
             for (var i = 0, len = data.execute.length; i < len; i++) {
                 var ifPart = data.execute[i];
@@ -3641,7 +3340,7 @@ var ActionList = /** @class */ (function () {
                     ifPart.type === 9 /* ElseIf */ ||
                     ifPart.type === 10 /* Else */) {
                     var condition = ifPart.condition;
-                    var conditionQue = new QueueTask_1.QueueTask();
+                    var conditionQue = new _core_QueueTask__WEBPACK_IMPORTED_MODULE_4__["QueueTask"]();
                     if (ifPart.execute) {
                         for (var j = 0, jlen = ifPart.execute.length; j < jlen; j++) {
                             var subTask = this.parseAction(ifPart.execute[j]);
@@ -3657,89 +3356,89 @@ var ActionList = /** @class */ (function () {
         return task;
     };
     ActionList.prototype.parseDefineFunction = function (data) {
-        var funTask = new FunctionTask_1.FunctionTask(this.component, data.name);
+        var funTask = new _FunctionTask__WEBPACK_IMPORTED_MODULE_6__["FunctionTask"](this.component, data.name);
         this.parseSubTask(funTask, data);
-        var task = new DefineFunctionTask_1.DefineFunctionTask(this.component, data.name, data, funTask);
+        var task = new _DefineFunctionTask__WEBPACK_IMPORTED_MODULE_5__["DefineFunctionTask"](this.component, data.name, data, funTask);
         return task;
     };
     ActionList.prototype.parseCallFunction = function (data) {
-        var task = new CallFunctionTask_1.CallFunctionTask(this.component, data.name, data);
+        var task = new _CallFunctionTask__WEBPACK_IMPORTED_MODULE_7__["CallFunctionTask"](this.component, data.name, data);
         return task;
     };
     ActionList.prototype.parsePrint = function (data) {
-        var task = new PrintTask_1.PrintTask(this.component, data);
+        var task = new _PrintTask__WEBPACK_IMPORTED_MODULE_8__["PrintTask"](this.component, data);
         return task;
     };
     ActionList.prototype.parseAddEventListener = function (data) {
-        var task = new AddListenerTask_1.AddListenerTask(this.component, data);
+        var task = new _AddListenerTask__WEBPACK_IMPORTED_MODULE_0__["AddListenerTask"](this.component, data);
         this.parseSubTask(task, data);
         return task;
     };
     ActionList.prototype.parseRemoveEventListener = function (data) {
-        var task = new RemoveListenerTask_1.RemoveListenerTask(this.component, data);
+        var task = new _RemoveListenerTask__WEBPACK_IMPORTED_MODULE_28__["RemoveListenerTask"](this.component, data);
         return task;
     };
     ActionList.prototype.parseEmitEvent = function (data) {
-        var task = new EmitEventTask_1.EmitEventTask(this.component, data);
+        var task = new _EmitEventTask__WEBPACK_IMPORTED_MODULE_23__["EmitEventTask"](this.component, data);
         return task;
     };
     ActionList.prototype.parseAddEventListenerCall = function (data) {
         if (data.funName) {
-            var task = new AddListenerCallTask_1.AddListenerCallTask(this.component, data);
+            var task = new _AddListenerCallTask__WEBPACK_IMPORTED_MODULE_22__["AddListenerCallTask"](this.component, data);
             return task;
         }
     };
     ActionList.prototype.parsePlaySound = function (data) {
-        var task = new PlaySoundTask_1.PlaySoundTask(this.component, data.value, data.trackId, data);
+        var task = new _PlaySoundTask__WEBPACK_IMPORTED_MODULE_9__["PlaySoundTask"](this.component, data.value, data.trackId, data);
         return task;
     };
     ActionList.prototype.parsePauseSound = function (data) {
-        var task = new PauseSoundTask_1.PauseSoundTask(this.component, data.value, data.trackId, data);
+        var task = new _PauseSoundTask__WEBPACK_IMPORTED_MODULE_26__["PauseSoundTask"](this.component, data.value, data.trackId, data);
         return task;
     };
     ActionList.prototype.parseResumeSound = function (data) {
-        var task = new ResumeSoundTask_1.ResumeSoundTask(this.component, data.value, data.trackId, data);
+        var task = new _ResumeSoundTask__WEBPACK_IMPORTED_MODULE_27__["ResumeSoundTask"](this.component, data.value, data.trackId, data);
         return task;
     };
     ActionList.prototype.parsePlayAnimation = function (data) {
-        var task = new PlayAnimationTask_1.PlayAnimationTask(this.component, data);
+        var task = new _PlayAnimationTask__WEBPACK_IMPORTED_MODULE_10__["PlayAnimationTask"](this.component, data);
         return task;
     };
     ActionList.prototype.parseJumpToNextScene = function (data) {
-        var task = new JumpToNextSceneTask_1.JumpToNextSceneTask(this.component, data.transition);
+        var task = new _JumpToNextSceneTask__WEBPACK_IMPORTED_MODULE_11__["JumpToNextSceneTask"](this.component, data.transition);
         return task;
     };
     ActionList.prototype.parseJumpToPrevScene = function (data) {
-        var task = new JumpToPrevSceneTask_1.JumpToPrevSceneTask(this.component, data.transition);
+        var task = new _JumpToPrevSceneTask__WEBPACK_IMPORTED_MODULE_12__["JumpToPrevSceneTask"](this.component, data.transition);
         return task;
     };
     ActionList.prototype.parseJumpToScene = function (data) {
-        var task = new JumpToSceneTask_1.JumpToSceneTask(this.component, data.value, data.transition);
+        var task = new _JumpToSceneTask__WEBPACK_IMPORTED_MODULE_13__["JumpToSceneTask"](this.component, data.value, data.transition);
         return task;
     };
     ActionList.prototype.parseFor = function (data) {
-        var task = new ForTask_1.ForTask(this.component, data);
+        var task = new _ForTask__WEBPACK_IMPORTED_MODULE_29__["ForTask"](this.component, data);
         this.parseSubTask(task, data);
         return task;
     };
     ActionList.prototype.parseSetTimeout = function (data) {
-        var task = new SetTimeoutTask_1.SetTimeoutTask(this.component, data);
+        var task = new _SetTimeoutTask__WEBPACK_IMPORTED_MODULE_32__["SetTimeoutTask"](this.component, data);
         this.parseSubTask(task, data);
         return task;
     };
     ActionList.prototype.parseSetInterval = function (data) {
-        var task = new SetIntervalTask_1.SetIntervalTask(this.component, data);
+        var task = new _SetIntervalTask__WEBPACK_IMPORTED_MODULE_33__["SetIntervalTask"](this.component, data);
         this.parseSubTask(task, data);
         return task;
     };
     ActionList.prototype.parseEnterFrame = function (data) {
-        var task = new EnterFrameTask_1.EnterFrameTask(this.component, data);
+        var task = new _EnterFrameTask__WEBPACK_IMPORTED_MODULE_34__["EnterFrameTask"](this.component, data);
         this.parseSubTask(task, data);
         return task;
     };
     return ActionList;
 }());
-exports.ActionList = ActionList;
+
 
 
 /***/ }),
@@ -3748,12 +3447,17 @@ exports.ActionList = ActionList;
 /*!********************************************************************!*\
   !*** ./packages/player/src/core/actionTask/AddListenerCallTask.ts ***!
   \********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: AddListenerCallTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AddListenerCallTask", function() { return AddListenerCallTask; });
+/* harmony import */ var _core_ContainerTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _CallFunctionTask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CallFunctionTask */ "./packages/player/src/core/actionTask/CallFunctionTask.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -3766,12 +3470,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
 /* eslint-disable no-mixed-spaces-and-tabs */
-var ContainerTask_1 = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var CallFunctionTask_1 = __webpack_require__(/*! ./CallFunctionTask */ "./packages/player/src/core/actionTask/CallFunctionTask.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
+
+
 var AddListenerCallTask = /** @class */ (function (_super) {
     __extends(AddListenerCallTask, _super);
     function AddListenerCallTask(component, data) {
@@ -3795,12 +3498,12 @@ var AddListenerCallTask = /** @class */ (function (_super) {
                 name: this.funName,
                 params: [],
             };
-            var callfunctionTask = new CallFunctionTask_1.CallFunctionTask(this.component, this.funName, this.callfunData);
+            var callfunctionTask = new _CallFunctionTask__WEBPACK_IMPORTED_MODULE_2__["CallFunctionTask"](this.component, this.funName, this.callfunData);
             this.callfun = callfunctionTask;
             this.loopTask.addTask(callfunctionTask);
         }
         if (this.loopTask) {
-            this.loopTask.on(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onLoopComplete, this);
+            this.loopTask.on(_core_BaseTask__WEBPACK_IMPORTED_MODULE_1__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
         }
         if (this.component) {
             if (this.system) {
@@ -3816,7 +3519,7 @@ var AddListenerCallTask = /** @class */ (function (_super) {
                 }
             }
             else {
-                this._component = VFUtil_1.getTargetComponent(this.component, this.data.target);
+                this._component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__["getTargetComponent"])(this.component, this.data.target);
                 if (this._component) {
                     this._component.on(this.eventName, this.onTriger, this);
                 }
@@ -3844,7 +3547,7 @@ var AddListenerCallTask = /** @class */ (function (_super) {
             }
         }
         if (this.loopTask) {
-            this.loopTask.off(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onLoopComplete);
+            this.loopTask.off(_core_BaseTask__WEBPACK_IMPORTED_MODULE_1__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete);
             this.loopTask.complete();
         }
         _super.prototype.stop.call(this);
@@ -3878,8 +3581,8 @@ var AddListenerCallTask = /** @class */ (function (_super) {
         }
     };
     return AddListenerCallTask;
-}(ContainerTask_1.ContainerTask));
-exports.AddListenerCallTask = AddListenerCallTask;
+}(_core_ContainerTask__WEBPACK_IMPORTED_MODULE_0__["ContainerTask"]));
+
 
 
 /***/ }),
@@ -3888,12 +3591,16 @@ exports.AddListenerCallTask = AddListenerCallTask;
 /*!****************************************************************!*\
   !*** ./packages/player/src/core/actionTask/AddListenerTask.ts ***!
   \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: AddListenerTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AddListenerTask", function() { return AddListenerTask; });
+/* harmony import */ var _core_ContainerTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -3906,10 +3613,9 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var ContainerTask_1 = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
+
 var AddListenerTask = /** @class */ (function (_super) {
     __extends(AddListenerTask, _super);
     function AddListenerTask(component, data) {
@@ -3927,7 +3633,7 @@ var AddListenerTask = /** @class */ (function (_super) {
         this._loopComplete = true;
         if (this.component) {
             if (this.loopTask) {
-                this.loopTask.on(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onLoopComplete, this);
+                this.loopTask.on(_core_BaseTask__WEBPACK_IMPORTED_MODULE_1__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
             }
             if (this.system) {
                 var vfStage = this.component.vfStage;
@@ -3942,7 +3648,7 @@ var AddListenerTask = /** @class */ (function (_super) {
                 }
             }
             else {
-                this._component = VFUtil_1.getTargetComponent(this.component, this.data.target);
+                this._component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_2__["getTargetComponent"])(this.component, this.data.target);
                 if (this._component) {
                     this._component.on(this.eventName, this.onTriger, this);
                 }
@@ -3970,7 +3676,7 @@ var AddListenerTask = /** @class */ (function (_super) {
             }
         }
         if (this.loopTask) {
-            this.loopTask.off(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onLoopComplete);
+            this.loopTask.off(_core_BaseTask__WEBPACK_IMPORTED_MODULE_1__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete);
             this.loopTask.complete();
         }
         _super.prototype.stop.call(this);
@@ -3997,8 +3703,8 @@ var AddListenerTask = /** @class */ (function (_super) {
         }
     };
     return AddListenerTask;
-}(ContainerTask_1.ContainerTask));
-exports.AddListenerTask = AddListenerTask;
+}(_core_ContainerTask__WEBPACK_IMPORTED_MODULE_0__["ContainerTask"]));
+
 
 
 /***/ }),
@@ -4007,12 +3713,14 @@ exports.AddListenerTask = AddListenerTask;
 /*!****************************************************************!*\
   !*** ./packages/player/src/core/actionTask/ArrayConcatTask.ts ***!
   \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ArrayConcatTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ArrayConcatTask", function() { return ArrayConcatTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4025,8 +3733,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var ArrayConcatTask = /** @class */ (function (_super) {
     __extends(ArrayConcatTask, _super);
     function ArrayConcatTask(compontent, data) {
@@ -4053,8 +3760,8 @@ var ArrayConcatTask = /** @class */ (function (_super) {
         this.complete();
     };
     return ArrayConcatTask;
-}(BaseTask_1.BaseTask));
-exports.ArrayConcatTask = ArrayConcatTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4063,12 +3770,14 @@ exports.ArrayConcatTask = ArrayConcatTask;
 /*!**************************************************************!*\
   !*** ./packages/player/src/core/actionTask/ArrayInitTask.ts ***!
   \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ArrayInitTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ArrayInitTask", function() { return ArrayInitTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4081,8 +3790,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var ArrayInitTask = /** @class */ (function (_super) {
     __extends(ArrayInitTask, _super);
     function ArrayInitTask(compontent, data) {
@@ -4103,8 +3811,8 @@ var ArrayInitTask = /** @class */ (function (_super) {
         this.complete();
     };
     return ArrayInitTask;
-}(BaseTask_1.BaseTask));
-exports.ArrayInitTask = ArrayInitTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4113,12 +3821,14 @@ exports.ArrayInitTask = ArrayInitTask;
 /*!*************************************************************!*\
   !*** ./packages/player/src/core/actionTask/ArrayPopTask.ts ***!
   \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ArrayPopTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ArrayPopTask", function() { return ArrayPopTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4131,8 +3841,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var ArrayPopTask = /** @class */ (function (_super) {
     __extends(ArrayPopTask, _super);
     function ArrayPopTask(compontent, data) {
@@ -4153,8 +3862,8 @@ var ArrayPopTask = /** @class */ (function (_super) {
         this.complete();
     };
     return ArrayPopTask;
-}(BaseTask_1.BaseTask));
-exports.ArrayPopTask = ArrayPopTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4163,12 +3872,14 @@ exports.ArrayPopTask = ArrayPopTask;
 /*!**************************************************************!*\
   !*** ./packages/player/src/core/actionTask/ArrayPushTask.ts ***!
   \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ArrayPushTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ArrayPushTask", function() { return ArrayPushTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4181,8 +3892,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var ArrayPushTask = /** @class */ (function (_super) {
     __extends(ArrayPushTask, _super);
     function ArrayPushTask(compontent, data) {
@@ -4204,8 +3914,8 @@ var ArrayPushTask = /** @class */ (function (_super) {
         this.complete();
     };
     return ArrayPushTask;
-}(BaseTask_1.BaseTask));
-exports.ArrayPushTask = ArrayPushTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4214,12 +3924,14 @@ exports.ArrayPushTask = ArrayPushTask;
 /*!****************************************************************!*\
   !*** ./packages/player/src/core/actionTask/ArrayRandomTask.ts ***!
   \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ArrayRandomTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ArrayRandomTask", function() { return ArrayRandomTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4232,8 +3944,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var ArrayRandomTask = /** @class */ (function (_super) {
     __extends(ArrayRandomTask, _super);
     function ArrayRandomTask(compontent, data) {
@@ -4255,8 +3966,8 @@ var ArrayRandomTask = /** @class */ (function (_super) {
         this.complete();
     };
     return ArrayRandomTask;
-}(BaseTask_1.BaseTask));
-exports.ArrayRandomTask = ArrayRandomTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4265,12 +3976,14 @@ exports.ArrayRandomTask = ArrayRandomTask;
 /*!***************************************************************!*\
   !*** ./packages/player/src/core/actionTask/ArrayShiftTask.ts ***!
   \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ArrayShiftTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ArrayShiftTask", function() { return ArrayShiftTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4283,8 +3996,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var ArrayShiftTask = /** @class */ (function (_super) {
     __extends(ArrayShiftTask, _super);
     function ArrayShiftTask(compontent, data) {
@@ -4305,8 +4017,8 @@ var ArrayShiftTask = /** @class */ (function (_super) {
         this.complete();
     };
     return ArrayShiftTask;
-}(BaseTask_1.BaseTask));
-exports.ArrayShiftTask = ArrayShiftTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4315,12 +4027,14 @@ exports.ArrayShiftTask = ArrayShiftTask;
 /*!****************************************************************!*\
   !*** ./packages/player/src/core/actionTask/ArraySpliceTask.ts ***!
   \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ArraySpliceTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ArraySpliceTask", function() { return ArraySpliceTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4333,8 +4047,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var ArraySpliceTask = /** @class */ (function (_super) {
     __extends(ArraySpliceTask, _super);
     function ArraySpliceTask(compontent, data) {
@@ -4361,8 +4074,8 @@ var ArraySpliceTask = /** @class */ (function (_super) {
         this.complete();
     };
     return ArraySpliceTask;
-}(BaseTask_1.BaseTask));
-exports.ArraySpliceTask = ArraySpliceTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4371,12 +4084,14 @@ exports.ArraySpliceTask = ArraySpliceTask;
 /*!*****************************************************************!*\
   !*** ./packages/player/src/core/actionTask/ArrayUnshiftTask.ts ***!
   \*****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ArrayUnshiftTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ArrayUnshiftTask", function() { return ArrayUnshiftTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4389,8 +4104,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var ArrayUnshiftTask = /** @class */ (function (_super) {
     __extends(ArrayUnshiftTask, _super);
     function ArrayUnshiftTask(compontent, data) {
@@ -4412,8 +4126,8 @@ var ArrayUnshiftTask = /** @class */ (function (_super) {
         this.complete();
     };
     return ArrayUnshiftTask;
-}(BaseTask_1.BaseTask));
-exports.ArrayUnshiftTask = ArrayUnshiftTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4422,12 +4136,14 @@ exports.ArrayUnshiftTask = ArrayUnshiftTask;
 /*!**********************************************************!*\
   !*** ./packages/player/src/core/actionTask/BreakTask.ts ***!
   \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: BreakTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BreakTask", function() { return BreakTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4440,8 +4156,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var BreakTask = /** @class */ (function (_super) {
     __extends(BreakTask, _super);
     function BreakTask() {
@@ -4453,8 +4168,8 @@ var BreakTask = /** @class */ (function (_super) {
         this.complete();
     };
     return BreakTask;
-}(BaseTask_1.BaseTask));
-exports.BreakTask = BreakTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4463,12 +4178,16 @@ exports.BreakTask = BreakTask;
 /*!*****************************************************************!*\
   !*** ./packages/player/src/core/actionTask/CallFunctionTask.ts ***!
   \*****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: CallFunctionTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CallFunctionTask", function() { return CallFunctionTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _VariableManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../VariableManager */ "./packages/player/src/core/VariableManager.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4481,10 +4200,9 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var VariableManager_1 = __webpack_require__(/*! ../VariableManager */ "./packages/player/src/core/VariableManager.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
+
 var CallFunctionTask = /** @class */ (function (_super) {
     __extends(CallFunctionTask, _super);
     function CallFunctionTask(compontent, funName, data) {
@@ -4498,7 +4216,7 @@ var CallFunctionTask = /** @class */ (function (_super) {
     }
     CallFunctionTask.prototype.run = function () {
         _super.prototype.run.call(this);
-        this._component = VFUtil_1.getTargetComponent(this.component, this.data.target);
+        this._component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_2__["getTargetComponent"])(this.component, this.data.target);
         if (this._component && this._component.vfStage) {
             var variableManager = this._component.vfStage.variableManager;
             var funId = this.funName;
@@ -4520,10 +4238,10 @@ var CallFunctionTask = /** @class */ (function (_super) {
                 for (var i = 0, len = paramValues.length; i < len; i++) {
                     var paramId = funId + this.runId + 'param_' + i;
                     this.paramIds.push(paramId);
-                    if (!variableManager.variableMap[VariableManager_1.VariableManager.GLOBAL_ID]) {
-                        variableManager.variableMap[VariableManager_1.VariableManager.GLOBAL_ID] = {};
+                    if (!variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_1__["VariableManager"].GLOBAL_ID]) {
+                        variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_1__["VariableManager"].GLOBAL_ID] = {};
                     }
-                    variableManager.variableMap[VariableManager_1.VariableManager.GLOBAL_ID][paramId] = {
+                    variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_1__["VariableManager"].GLOBAL_ID][paramId] = {
                         id: paramId,
                         type: "object" /* OBJECT */,
                         value: paramValues[i],
@@ -4536,7 +4254,7 @@ var CallFunctionTask = /** @class */ (function (_super) {
                 if (this.paramIds.length) {
                     this.fun.injectParams(this.paramIds);
                 }
-                this.fun.on(BaseTask_1.TaskEvent.FUNCTION_RUN_COMPLETE, this.onRunComplete, this);
+                this.fun.on(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].FUNCTION_RUN_COMPLETE, this.onRunComplete, this);
                 this.fun.runWithId(this.runId);
             }
             else {
@@ -4564,7 +4282,7 @@ var CallFunctionTask = /** @class */ (function (_super) {
     CallFunctionTask.prototype.complete = function () {
         this.runId = 0;
         if (this.fun) {
-            this.fun.off(BaseTask_1.TaskEvent.FUNCTION_RUN_COMPLETE, this.onRunComplete, this);
+            this.fun.off(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].FUNCTION_RUN_COMPLETE, this.onRunComplete, this);
         }
         // 删除参数
         if (this.paramIds.length) {
@@ -4572,7 +4290,7 @@ var CallFunctionTask = /** @class */ (function (_super) {
                 var variableManager = this.component.vfStage.variableManager;
                 for (var i = 0, len = this.paramIds.length; i < len; i++) {
                     var paramId = this.paramIds[i];
-                    delete variableManager.variableMap[VariableManager_1.VariableManager.GLOBAL_ID][paramId];
+                    delete variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_1__["VariableManager"].GLOBAL_ID][paramId];
                 }
             }
         }
@@ -4584,8 +4302,8 @@ var CallFunctionTask = /** @class */ (function (_super) {
         }
     };
     return CallFunctionTask;
-}(BaseTask_1.BaseTask));
-exports.CallFunctionTask = CallFunctionTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4594,12 +4312,15 @@ exports.CallFunctionTask = CallFunctionTask;
 /*!**********************************************************************!*\
   !*** ./packages/player/src/core/actionTask/CallProtoFunctionTask.ts ***!
   \**********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: CallProtoFunctionTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CallProtoFunctionTask", function() { return CallProtoFunctionTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4612,9 +4333,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
 var CallProtoFunctionTask = /** @class */ (function (_super) {
     __extends(CallProtoFunctionTask, _super);
     function CallProtoFunctionTask(compontent, data) {
@@ -4625,7 +4345,7 @@ var CallProtoFunctionTask = /** @class */ (function (_super) {
     }
     Object.defineProperty(CallProtoFunctionTask.prototype, "target", {
         get: function () {
-            return VFUtil_1.getTargetComponent(this.component, this.data.target);
+            return Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(this.component, this.data.target);
         },
         enumerable: true,
         configurable: true
@@ -4654,8 +4374,8 @@ var CallProtoFunctionTask = /** @class */ (function (_super) {
         this.complete();
     };
     return CallProtoFunctionTask;
-}(BaseTask_1.BaseTask));
-exports.CallProtoFunctionTask = CallProtoFunctionTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4664,12 +4384,15 @@ exports.CallProtoFunctionTask = CallProtoFunctionTask;
 /*!*******************************************************************!*\
   !*** ./packages/player/src/core/actionTask/DefineFunctionTask.ts ***!
   \*******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: DefineFunctionTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DefineFunctionTask", function() { return DefineFunctionTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4682,9 +4405,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
 var DefineFunctionTask = /** @class */ (function (_super) {
     __extends(DefineFunctionTask, _super);
     function DefineFunctionTask(compontent, funName, data, fun) {
@@ -4701,7 +4423,7 @@ var DefineFunctionTask = /** @class */ (function (_super) {
         if (this.component.vfStage) {
             var variableManager = this.component.vfStage.variableManager;
             var funId = this.funName;
-            var subComponent = VFUtil_1.getTargetComponent(this.component, this.data.target);
+            var subComponent = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(this.component, this.data.target);
             if (subComponent) {
                 funId = subComponent.hashCode + this.funName;
             }
@@ -4716,8 +4438,8 @@ var DefineFunctionTask = /** @class */ (function (_super) {
         _super.prototype.stop.call(this);
     };
     return DefineFunctionTask;
-}(BaseTask_1.BaseTask));
-exports.DefineFunctionTask = DefineFunctionTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4726,12 +4448,15 @@ exports.DefineFunctionTask = DefineFunctionTask;
 /*!*******************************************************************!*\
   !*** ./packages/player/src/core/actionTask/DefineVariableTask.ts ***!
   \*******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: DefineVariableTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DefineVariableTask", function() { return DefineVariableTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4744,9 +4469,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
 var DefineVariableTask = /** @class */ (function (_super) {
     __extends(DefineVariableTask, _super);
     function DefineVariableTask(compontent, data) {
@@ -4759,7 +4483,7 @@ var DefineVariableTask = /** @class */ (function (_super) {
         _super.prototype.run.call(this);
         if (this.component && this.component.vfStage) {
             var variableManager = this.component.vfStage.variableManager;
-            var targetComponent = VFUtil_1.getTargetComponent(this.component, this.data.target);
+            var targetComponent = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(this.component, this.data.target);
             if (targetComponent) {
                 variableManager.addVariableDataToComponent(targetComponent, this.data.varId, this.data.variableType, this.data.value);
             }
@@ -4770,8 +4494,8 @@ var DefineVariableTask = /** @class */ (function (_super) {
         this.complete();
     };
     return DefineVariableTask;
-}(BaseTask_1.BaseTask));
-exports.DefineVariableTask = DefineVariableTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4780,12 +4504,15 @@ exports.DefineVariableTask = DefineVariableTask;
 /*!**************************************************************!*\
   !*** ./packages/player/src/core/actionTask/EmitEventTask.ts ***!
   \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: EmitEventTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EmitEventTask", function() { return EmitEventTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4798,9 +4525,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
 var EmitEventTask = /** @class */ (function (_super) {
     __extends(EmitEventTask, _super);
     function EmitEventTask(component, data) {
@@ -4840,7 +4566,7 @@ var EmitEventTask = /** @class */ (function (_super) {
                 }
             }
             else {
-                this.target = VFUtil_1.getTargetComponent(this.component, this.data.target);
+                this.target = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(this.component, this.data.target);
                 if (this.target) {
                     this.target.emit(this.eventName, emitEventData);
                 }
@@ -4869,8 +4595,8 @@ var EmitEventTask = /** @class */ (function (_super) {
         return this.eventData;
     };
     return EmitEventTask;
-}(BaseTask_1.BaseTask));
-exports.EmitEventTask = EmitEventTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -4879,12 +4605,15 @@ exports.EmitEventTask = EmitEventTask;
 /*!***************************************************************!*\
   !*** ./packages/player/src/core/actionTask/EnterFrameTask.ts ***!
   \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: EnterFrameTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EnterFrameTask", function() { return EnterFrameTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _core_ContainerTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -4897,9 +4626,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var ContainerTask_1 = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+
+
 var EnterFrameTask = /** @class */ (function (_super) {
     __extends(EnterFrameTask, _super);
     function EnterFrameTask(component, data) {
@@ -4915,7 +4643,7 @@ var EnterFrameTask = /** @class */ (function (_super) {
             var vfStage = this.component.vfStage;
             if (vfStage && vfStage.app) {
                 if (this.loopTask) {
-                    this.loopTask.addListener(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onLoopComplete, this);
+                    this.loopTask.addListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
                 }
                 vfStage.app.ticker.add(this.tick, this);
             }
@@ -4930,7 +4658,7 @@ var EnterFrameTask = /** @class */ (function (_super) {
     EnterFrameTask.prototype.complete = function () {
         _super.prototype.complete.call(this);
         if (this.loopTask) {
-            this.loopTask.removeListener(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onLoopComplete, this);
+            this.loopTask.removeListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
         }
         if (this.component) {
             var vfStage = this.component.vfStage;
@@ -4974,8 +4702,8 @@ var EnterFrameTask = /** @class */ (function (_super) {
         }
     };
     return EnterFrameTask;
-}(ContainerTask_1.ContainerTask));
-exports.EnterFrameTask = EnterFrameTask;
+}(_core_ContainerTask__WEBPACK_IMPORTED_MODULE_1__["ContainerTask"]));
+
 
 
 /***/ }),
@@ -4984,12 +4712,14 @@ exports.EnterFrameTask = EnterFrameTask;
 /*!************************************************************!*\
   !*** ./packages/player/src/core/actionTask/ExpressTask.ts ***!
   \************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ExpressTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ExpressTask", function() { return ExpressTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5002,8 +4732,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var ExpressTask = /** @class */ (function (_super) {
     __extends(ExpressTask, _super);
     function ExpressTask(compontent, data) {
@@ -5021,8 +4750,8 @@ var ExpressTask = /** @class */ (function (_super) {
         this.complete();
     };
     return ExpressTask;
-}(BaseTask_1.BaseTask));
-exports.ExpressTask = ExpressTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -5031,12 +4760,17 @@ exports.ExpressTask = ExpressTask;
 /*!********************************************************!*\
   !*** ./packages/player/src/core/actionTask/ForTask.ts ***!
   \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ForTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ForTask", function() { return ForTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _core_ContainerTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+/* harmony import */ var _VariableManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../VariableManager */ "./packages/player/src/core/VariableManager.ts");
+/* harmony import */ var _core_ActionListUtils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./core/ActionListUtils */ "./packages/player/src/core/actionTask/core/ActionListUtils.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5049,11 +4783,10 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var ContainerTask_1 = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
-var VariableManager_1 = __webpack_require__(/*! ../VariableManager */ "./packages/player/src/core/VariableManager.ts");
-var ActionListUtils_1 = __webpack_require__(/*! ./core/ActionListUtils */ "./packages/player/src/core/actionTask/core/ActionListUtils.ts");
+
+
+
+
 var ForTask = /** @class */ (function (_super) {
     __extends(ForTask, _super);
     function ForTask(compontent, data) {
@@ -5071,8 +4804,8 @@ var ForTask = /** @class */ (function (_super) {
         this._totalTimes = this.getforin();
         this._curTimes = -1;
         if (this.loopTask) {
-            this.loopTask.on(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onLoopComplete, this);
-            this.loopTask.on(BaseTask_1.TaskEvent.EVENT_FAIL, this.onLoopComplete, this);
+            this.loopTask.on(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
+            this.loopTask.on(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_FAIL, this.onLoopComplete, this);
         }
         this.addParams();
         this.runFor();
@@ -5137,10 +4870,10 @@ var ForTask = /** @class */ (function (_super) {
             var runId = variableManager.getFunctionId();
             var paramId = runId + '_for';
             this._paramId = paramId;
-            if (!variableManager.variableMap[VariableManager_1.VariableManager.GLOBAL_ID]) {
-                variableManager.variableMap[VariableManager_1.VariableManager.GLOBAL_ID] = {};
+            if (!variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID]) {
+                variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID] = {};
             }
-            variableManager.variableMap[VariableManager_1.VariableManager.GLOBAL_ID][paramId] = {
+            variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID][paramId] = {
                 id: paramId,
                 type: "object" /* OBJECT */,
                 value: 0,
@@ -5148,7 +4881,7 @@ var ForTask = /** @class */ (function (_super) {
             ///
             if (this.loopTask) {
                 var paramIds = this._paramIds.concat([this._paramId]);
-                ActionListUtils_1.injectParamsToQueueTask(this.loopTask, paramIds);
+                Object(_core_ActionListUtils__WEBPACK_IMPORTED_MODULE_3__["injectParamsToQueueTask"])(this.loopTask, paramIds);
             }
         }
     };
@@ -5156,12 +4889,12 @@ var ForTask = /** @class */ (function (_super) {
         if (this.component && this.component.vfStage) {
             var variableManager = this.component.vfStage.variableManager;
             var paramId = this._paramId;
-            delete variableManager.variableMap[VariableManager_1.VariableManager.GLOBAL_ID][paramId];
+            delete variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID][paramId];
         }
     };
     return ForTask;
-}(ContainerTask_1.ContainerTask));
-exports.ForTask = ForTask;
+}(_core_ContainerTask__WEBPACK_IMPORTED_MODULE_1__["ContainerTask"]));
+
 
 
 /***/ }),
@@ -5170,12 +4903,16 @@ exports.ForTask = ForTask;
 /*!*************************************************************!*\
   !*** ./packages/player/src/core/actionTask/FunctionTask.ts ***!
   \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: FunctionTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FunctionTask", function() { return FunctionTask; });
+/* harmony import */ var _core_ContainerTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _core_ActionListUtils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./core/ActionListUtils */ "./packages/player/src/core/actionTask/core/ActionListUtils.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5188,10 +4925,9 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var ContainerTask_1 = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var ActionListUtils_1 = __webpack_require__(/*! ./core/ActionListUtils */ "./packages/player/src/core/actionTask/core/ActionListUtils.ts");
+
+
+
 var FunctionTask = /** @class */ (function (_super) {
     __extends(FunctionTask, _super);
     function FunctionTask(compontent, funName) {
@@ -5204,7 +4940,7 @@ var FunctionTask = /** @class */ (function (_super) {
     }
     FunctionTask.prototype.injectParams = function (paramIds) {
         if (this.loopTask) {
-            ActionListUtils_1.injectParamsToQueueTask(this.loopTask, paramIds);
+            Object(_core_ActionListUtils__WEBPACK_IMPORTED_MODULE_2__["injectParamsToQueueTask"])(this.loopTask, paramIds);
         }
     };
     FunctionTask.prototype.runWithId = function (id) {
@@ -5245,8 +4981,8 @@ var FunctionTask = /** @class */ (function (_super) {
         _super.prototype.run.call(this);
         this._loopComplete = true;
         if (this.loopTask) {
-            this.loopTask.on(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onLoopComplete, this);
-            this.loopTask.on(BaseTask_1.TaskEvent.EVENT_BREAK, this.onBreak, this);
+            this.loopTask.on(_core_BaseTask__WEBPACK_IMPORTED_MODULE_1__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
+            this.loopTask.on(_core_BaseTask__WEBPACK_IMPORTED_MODULE_1__["TaskEvent"].EVENT_BREAK, this.onBreak, this);
         }
         if (this.callTargets.length > 0) {
             this.loopTask.run();
@@ -5265,8 +5001,8 @@ var FunctionTask = /** @class */ (function (_super) {
     };
     FunctionTask.prototype.complete = function () {
         this.callTargets.length = 0;
-        this.loopTask.off(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onLoopComplete, this);
-        this.loopTask.off(BaseTask_1.TaskEvent.EVENT_BREAK, this.onBreak, this);
+        this.loopTask.off(_core_BaseTask__WEBPACK_IMPORTED_MODULE_1__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
+        this.loopTask.off(_core_BaseTask__WEBPACK_IMPORTED_MODULE_1__["TaskEvent"].EVENT_BREAK, this.onBreak, this);
         _super.prototype.complete.call(this);
     };
     FunctionTask.prototype.onLoopComplete = function () {
@@ -5274,7 +5010,7 @@ var FunctionTask = /** @class */ (function (_super) {
             var callId = this.callTargets[0];
             this.callTargets.shift();
             this._isRunning = false;
-            this.emit(BaseTask_1.TaskEvent.FUNCTION_RUN_COMPLETE, callId);
+            this.emit(_core_BaseTask__WEBPACK_IMPORTED_MODULE_1__["TaskEvent"].FUNCTION_RUN_COMPLETE, callId);
         }
         if (this.callTargets.length > 0) {
             this.loopTask.run();
@@ -5284,8 +5020,8 @@ var FunctionTask = /** @class */ (function (_super) {
         }
     };
     return FunctionTask;
-}(ContainerTask_1.ContainerTask));
-exports.FunctionTask = FunctionTask;
+}(_core_ContainerTask__WEBPACK_IMPORTED_MODULE_0__["ContainerTask"]));
+
 
 
 /***/ }),
@@ -5294,12 +5030,14 @@ exports.FunctionTask = FunctionTask;
 /*!*******************************************************!*\
   !*** ./packages/player/src/core/actionTask/IfTask.ts ***!
   \*******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: IfTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "IfTask", function() { return IfTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5312,8 +5050,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var IfTask = /** @class */ (function (_super) {
     __extends(IfTask, _super);
     function IfTask(compontent) {
@@ -5339,8 +5076,8 @@ var IfTask = /** @class */ (function (_super) {
         _super.prototype.run.call(this);
         this.curRun = this.findTask();
         if (this.curRun) {
-            this.curRun.on(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onTaskComplete, this);
-            this.curRun.on(BaseTask_1.TaskEvent.EVENT_BREAK, this.onTaskBreak, this);
+            this.curRun.on(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onTaskComplete, this);
+            this.curRun.on(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_BREAK, this.onTaskBreak, this);
             this.curRun.run();
         }
         else {
@@ -5364,7 +5101,7 @@ var IfTask = /** @class */ (function (_super) {
     };
     IfTask.prototype.onTaskComplete = function (data) {
         if (this.curRun) {
-            this.curRun.off(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onTaskComplete, this);
+            this.curRun.off(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onTaskComplete, this);
         }
         this.complete();
     };
@@ -5373,8 +5110,8 @@ var IfTask = /** @class */ (function (_super) {
         this.complete();
     };
     return IfTask;
-}(BaseTask_1.BaseTask));
-exports.IfTask = IfTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -5383,12 +5120,14 @@ exports.IfTask = IfTask;
 /*!********************************************************************!*\
   !*** ./packages/player/src/core/actionTask/JumpToNextSceneTask.ts ***!
   \********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: JumpToNextSceneTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JumpToNextSceneTask", function() { return JumpToNextSceneTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5401,8 +5140,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var JumpToNextSceneTask = /** @class */ (function (_super) {
     __extends(JumpToNextSceneTask, _super);
     function JumpToNextSceneTask(compontent, transition) {
@@ -5423,8 +5161,8 @@ var JumpToNextSceneTask = /** @class */ (function (_super) {
         }
     };
     return JumpToNextSceneTask;
-}(BaseTask_1.BaseTask));
-exports.JumpToNextSceneTask = JumpToNextSceneTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -5433,12 +5171,14 @@ exports.JumpToNextSceneTask = JumpToNextSceneTask;
 /*!********************************************************************!*\
   !*** ./packages/player/src/core/actionTask/JumpToPrevSceneTask.ts ***!
   \********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: JumpToPrevSceneTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JumpToPrevSceneTask", function() { return JumpToPrevSceneTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5451,8 +5191,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var JumpToPrevSceneTask = /** @class */ (function (_super) {
     __extends(JumpToPrevSceneTask, _super);
     function JumpToPrevSceneTask(compontent, transition) {
@@ -5473,8 +5212,8 @@ var JumpToPrevSceneTask = /** @class */ (function (_super) {
         }
     };
     return JumpToPrevSceneTask;
-}(BaseTask_1.BaseTask));
-exports.JumpToPrevSceneTask = JumpToPrevSceneTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -5483,12 +5222,14 @@ exports.JumpToPrevSceneTask = JumpToPrevSceneTask;
 /*!****************************************************************!*\
   !*** ./packages/player/src/core/actionTask/JumpToSceneTask.ts ***!
   \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: JumpToSceneTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JumpToSceneTask", function() { return JumpToSceneTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5501,8 +5242,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var JumpToSceneTask = /** @class */ (function (_super) {
     __extends(JumpToSceneTask, _super);
     function JumpToSceneTask(compontent, sceneId, transition) {
@@ -5524,8 +5264,8 @@ var JumpToSceneTask = /** @class */ (function (_super) {
         }
     };
     return JumpToSceneTask;
-}(BaseTask_1.BaseTask));
-exports.JumpToSceneTask = JumpToSceneTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -5534,12 +5274,14 @@ exports.JumpToSceneTask = JumpToSceneTask;
 /*!***************************************************************!*\
   !*** ./packages/player/src/core/actionTask/PauseSoundTask.ts ***!
   \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: PauseSoundTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PauseSoundTask", function() { return PauseSoundTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5552,8 +5294,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var PauseSoundTask = /** @class */ (function (_super) {
     __extends(PauseSoundTask, _super);
     function PauseSoundTask(compontent, soundId, trackId, data) {
@@ -5593,8 +5334,8 @@ var PauseSoundTask = /** @class */ (function (_super) {
         }
     };
     return PauseSoundTask;
-}(BaseTask_1.BaseTask));
-exports.PauseSoundTask = PauseSoundTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -5603,12 +5344,15 @@ exports.PauseSoundTask = PauseSoundTask;
 /*!******************************************************************!*\
   !*** ./packages/player/src/core/actionTask/PlayAnimationTask.ts ***!
   \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: PlayAnimationTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlayAnimationTask", function() { return PlayAnimationTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5621,9 +5365,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
 var PlayAnimationTask = /** @class */ (function (_super) {
     __extends(PlayAnimationTask, _super);
     function PlayAnimationTask(compontent, data) {
@@ -5634,7 +5377,7 @@ var PlayAnimationTask = /** @class */ (function (_super) {
     }
     PlayAnimationTask.prototype.run = function () {
         _super.prototype.run.call(this);
-        this._component = VFUtil_1.getTargetComponent(this.component, this.data.target);
+        this._component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(this.component, this.data.target);
         var name = this.getValue();
         var times = this.getTimes();
         if (this._component && this._component.vfStage) {
@@ -5661,8 +5404,8 @@ var PlayAnimationTask = /** @class */ (function (_super) {
         return this.data.times;
     };
     return PlayAnimationTask;
-}(BaseTask_1.BaseTask));
-exports.PlayAnimationTask = PlayAnimationTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -5671,12 +5414,14 @@ exports.PlayAnimationTask = PlayAnimationTask;
 /*!**************************************************************!*\
   !*** ./packages/player/src/core/actionTask/PlaySoundTask.ts ***!
   \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: PlaySoundTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlaySoundTask", function() { return PlaySoundTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5689,8 +5434,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var PlaySoundTask = /** @class */ (function (_super) {
     __extends(PlaySoundTask, _super);
     function PlaySoundTask(compontent, soundId, trackId, data) {
@@ -5732,8 +5476,8 @@ var PlaySoundTask = /** @class */ (function (_super) {
         }
     };
     return PlaySoundTask;
-}(BaseTask_1.BaseTask));
-exports.PlaySoundTask = PlaySoundTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -5742,12 +5486,15 @@ exports.PlaySoundTask = PlaySoundTask;
 /*!**********************************************************!*\
   !*** ./packages/player/src/core/actionTask/PrintTask.ts ***!
   \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: PrintTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PrintTask", function() { return PrintTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _utils_Trace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/Trace */ "./packages/player/src/utils/Trace.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5760,9 +5507,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var Trace_1 = __webpack_require__(/*! ../../utils/Trace */ "./packages/player/src/utils/Trace.ts");
+
+
 var PrintTask = /** @class */ (function (_super) {
     __extends(PrintTask, _super);
     function PrintTask(component, data) {
@@ -5775,7 +5521,7 @@ var PrintTask = /** @class */ (function (_super) {
         var _a;
         // mark: 运行日志统一移到日志模块处理
         if ((_a = this.component.vfStage) === null || _a === void 0 ? void 0 : _a.config.debug)
-            Trace_1.default(this.getValue());
+            Object(_utils_Trace__WEBPACK_IMPORTED_MODULE_1__["default"])(this.getValue());
         this.complete();
     };
     PrintTask.prototype.getValue = function () {
@@ -5788,8 +5534,8 @@ var PrintTask = /** @class */ (function (_super) {
         return this.data.value;
     };
     return PrintTask;
-}(BaseTask_1.BaseTask));
-exports.PrintTask = PrintTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -5798,12 +5544,15 @@ exports.PrintTask = PrintTask;
 /*!*******************************************************************!*\
   !*** ./packages/player/src/core/actionTask/RemoveListenerTask.ts ***!
   \*******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: RemoveListenerTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RemoveListenerTask", function() { return RemoveListenerTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5816,9 +5565,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
 var RemoveListenerTask = /** @class */ (function (_super) {
     __extends(RemoveListenerTask, _super);
     function RemoveListenerTask(component, data) {
@@ -5847,7 +5595,7 @@ var RemoveListenerTask = /** @class */ (function (_super) {
                 }
             }
             else {
-                this._component = VFUtil_1.getTargetComponent(this.component, this.data.target);
+                this._component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(this.component, this.data.target);
                 if (this._component) {
                     this._component.off(this.eventName);
                 }
@@ -5856,8 +5604,8 @@ var RemoveListenerTask = /** @class */ (function (_super) {
         this.complete();
     };
     return RemoveListenerTask;
-}(BaseTask_1.BaseTask));
-exports.RemoveListenerTask = RemoveListenerTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -5866,12 +5614,14 @@ exports.RemoveListenerTask = RemoveListenerTask;
 /*!****************************************************************!*\
   !*** ./packages/player/src/core/actionTask/ResumeSoundTask.ts ***!
   \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ResumeSoundTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ResumeSoundTask", function() { return ResumeSoundTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5884,8 +5634,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var ResumeSoundTask = /** @class */ (function (_super) {
     __extends(ResumeSoundTask, _super);
     function ResumeSoundTask(compontent, soundId, trackId, data) {
@@ -5925,8 +5674,8 @@ var ResumeSoundTask = /** @class */ (function (_super) {
         }
     };
     return ResumeSoundTask;
-}(BaseTask_1.BaseTask));
-exports.ResumeSoundTask = ResumeSoundTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -5935,12 +5684,16 @@ exports.ResumeSoundTask = ResumeSoundTask;
 /*!****************************************************************!*\
   !*** ./packages/player/src/core/actionTask/SetIntervalTask.ts ***!
   \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: SetIntervalTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SetIntervalTask", function() { return SetIntervalTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+/* harmony import */ var _core_ContainerTask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -5953,10 +5706,9 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
-var ContainerTask_1 = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+
+
+
 var SetIntervalTask = /** @class */ (function (_super) {
     __extends(SetIntervalTask, _super);
     function SetIntervalTask(component, data) {
@@ -5982,7 +5734,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
             else {
                 time = this.data.value;
             }
-            if (!VFUtil_1.isNumber(time)) {
+            if (!Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(time)) {
                 time = 1;
             }
             return time;
@@ -6007,7 +5759,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
                     times = this.data.times;
                 }
             }
-            if (!VFUtil_1.isNumber(times)) {
+            if (!Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(times)) {
                 times = 0;
             }
             return times;
@@ -6021,7 +5773,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
         this._times = this.times;
         this.lastTimes = this._times;
         if (this.loopTask) {
-            this.loopTask.addListener(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onLoopComplete, this);
+            this.loopTask.addListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
         }
         this.runOnce(this._timeout, this._times);
     };
@@ -6032,7 +5784,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
             this.timeoutHandler = undefined;
         }
         if (this.loopTask) {
-            this.loopTask.removeListener(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onLoopComplete, this);
+            this.loopTask.removeListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
         }
     };
     SetIntervalTask.prototype.stop = function () {
@@ -6103,8 +5855,8 @@ var SetIntervalTask = /** @class */ (function (_super) {
         }
     };
     return SetIntervalTask;
-}(ContainerTask_1.ContainerTask));
-exports.SetIntervalTask = SetIntervalTask;
+}(_core_ContainerTask__WEBPACK_IMPORTED_MODULE_2__["ContainerTask"]));
+
 
 
 /***/ }),
@@ -6113,12 +5865,15 @@ exports.SetIntervalTask = SetIntervalTask;
 /*!****************************************************************!*\
   !*** ./packages/player/src/core/actionTask/SetPropertyTask.ts ***!
   \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: SetPropertyTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SetPropertyTask", function() { return SetPropertyTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -6131,9 +5886,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
 var SetPropertyTask = /** @class */ (function (_super) {
     __extends(SetPropertyTask, _super);
     function SetPropertyTask(compontent, data) {
@@ -6144,7 +5898,7 @@ var SetPropertyTask = /** @class */ (function (_super) {
     }
     SetPropertyTask.prototype.run = function () {
         _super.prototype.run.call(this);
-        var component = VFUtil_1.getTargetComponent(this.component, this.data.target);
+        var component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(this.component, this.data.target);
         if (component) {
             component[this.data.property] = this.getValue();
         }
@@ -6160,8 +5914,8 @@ var SetPropertyTask = /** @class */ (function (_super) {
         return this.data.value;
     };
     return SetPropertyTask;
-}(BaseTask_1.BaseTask));
-exports.SetPropertyTask = SetPropertyTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -6170,12 +5924,15 @@ exports.SetPropertyTask = SetPropertyTask;
 /*!***************************************************************!*\
   !*** ./packages/player/src/core/actionTask/SetTimeoutTask.ts ***!
   \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: SetTimeoutTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SetTimeoutTask", function() { return SetTimeoutTask; });
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+/* harmony import */ var _core_ContainerTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -6188,9 +5945,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
-var ContainerTask_1 = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+
+
 var SetTimeoutTask = /** @class */ (function (_super) {
     __extends(SetTimeoutTask, _super);
     function SetTimeoutTask(component, data) {
@@ -6211,7 +5967,7 @@ var SetTimeoutTask = /** @class */ (function (_super) {
             else {
                 time = this.data.value;
             }
-            if (!VFUtil_1.isNumber(time)) {
+            if (!Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(time)) {
                 time = 1;
             }
             return time;
@@ -6235,8 +5991,8 @@ var SetTimeoutTask = /** @class */ (function (_super) {
         this.complete();
     };
     return SetTimeoutTask;
-}(ContainerTask_1.ContainerTask));
-exports.SetTimeoutTask = SetTimeoutTask;
+}(_core_ContainerTask__WEBPACK_IMPORTED_MODULE_1__["ContainerTask"]));
+
 
 
 /***/ }),
@@ -6245,12 +6001,15 @@ exports.SetTimeoutTask = SetTimeoutTask;
 /*!*********************************************************!*\
   !*** ./packages/player/src/core/actionTask/WaitTask.ts ***!
   \*********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: WaitTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WaitTask", function() { return WaitTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -6263,9 +6022,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+
+
 var WaitTask = /** @class */ (function (_super) {
     __extends(WaitTask, _super);
     function WaitTask(component, data) {
@@ -6286,7 +6044,7 @@ var WaitTask = /** @class */ (function (_super) {
             else {
                 time = this.data.value;
             }
-            if (!VFUtil_1.isNumber(time)) {
+            if (!Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(time)) {
                 time = 1;
             }
             return time;
@@ -6307,8 +6065,8 @@ var WaitTask = /** @class */ (function (_super) {
         });
     };
     return WaitTask;
-}(BaseTask_1.BaseTask));
-exports.WaitTask = WaitTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -6317,26 +6075,40 @@ exports.WaitTask = WaitTask;
 /*!*********************************************************************!*\
   !*** ./packages/player/src/core/actionTask/core/ActionListUtils.ts ***!
   \*********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: injectParamsToQueueTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "injectParamsToQueueTask", function() { return injectParamsToQueueTask; });
+/* harmony import */ var _ExpressTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ExpressTask */ "./packages/player/src/core/actionTask/ExpressTask.ts");
+/* harmony import */ var _IfTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../IfTask */ "./packages/player/src/core/actionTask/IfTask.ts");
+/* harmony import */ var _SetPropertyTask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../SetPropertyTask */ "./packages/player/src/core/actionTask/SetPropertyTask.ts");
+/* harmony import */ var _PlayAnimationTask__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../PlayAnimationTask */ "./packages/player/src/core/actionTask/PlayAnimationTask.ts");
+/* harmony import */ var _PlaySoundTask__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../PlaySoundTask */ "./packages/player/src/core/actionTask/PlaySoundTask.ts");
+/* harmony import */ var _CallFunctionTask__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../CallFunctionTask */ "./packages/player/src/core/actionTask/CallFunctionTask.ts");
+/* harmony import */ var _PrintTask__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../PrintTask */ "./packages/player/src/core/actionTask/PrintTask.ts");
+/* harmony import */ var _model_IVFData__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../model/IVFData */ "./packages/player/src/core/model/IVFData.ts");
+/* harmony import */ var _ForTask__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../ForTask */ "./packages/player/src/core/actionTask/ForTask.ts");
+/* harmony import */ var _CallProtoFunctionTask__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../CallProtoFunctionTask */ "./packages/player/src/core/actionTask/CallProtoFunctionTask.ts");
+/* harmony import */ var _AddListenerTask__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../AddListenerTask */ "./packages/player/src/core/actionTask/AddListenerTask.ts");
+/* harmony import */ var _AddListenerCallTask__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../AddListenerCallTask */ "./packages/player/src/core/actionTask/AddListenerCallTask.ts");
+/* harmony import */ var _RemoveListenerTask__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../RemoveListenerTask */ "./packages/player/src/core/actionTask/RemoveListenerTask.ts");
+/* harmony import */ var _EmitEventTask__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../EmitEventTask */ "./packages/player/src/core/actionTask/EmitEventTask.ts");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-var ExpressTask_1 = __webpack_require__(/*! ../ExpressTask */ "./packages/player/src/core/actionTask/ExpressTask.ts");
-var IfTask_1 = __webpack_require__(/*! ../IfTask */ "./packages/player/src/core/actionTask/IfTask.ts");
-var SetPropertyTask_1 = __webpack_require__(/*! ../SetPropertyTask */ "./packages/player/src/core/actionTask/SetPropertyTask.ts");
-var PlayAnimationTask_1 = __webpack_require__(/*! ../PlayAnimationTask */ "./packages/player/src/core/actionTask/PlayAnimationTask.ts");
-var PlaySoundTask_1 = __webpack_require__(/*! ../PlaySoundTask */ "./packages/player/src/core/actionTask/PlaySoundTask.ts");
-var CallFunctionTask_1 = __webpack_require__(/*! ../CallFunctionTask */ "./packages/player/src/core/actionTask/CallFunctionTask.ts");
-var PrintTask_1 = __webpack_require__(/*! ../PrintTask */ "./packages/player/src/core/actionTask/PrintTask.ts");
-var IVFData_1 = __webpack_require__(/*! ../../model/IVFData */ "./packages/player/src/core/model/IVFData.ts");
-var ForTask_1 = __webpack_require__(/*! ../ForTask */ "./packages/player/src/core/actionTask/ForTask.ts");
-var CallProtoFunctionTask_1 = __webpack_require__(/*! ../CallProtoFunctionTask */ "./packages/player/src/core/actionTask/CallProtoFunctionTask.ts");
-var AddListenerTask_1 = __webpack_require__(/*! ../AddListenerTask */ "./packages/player/src/core/actionTask/AddListenerTask.ts");
-var AddListenerCallTask_1 = __webpack_require__(/*! ../AddListenerCallTask */ "./packages/player/src/core/actionTask/AddListenerCallTask.ts");
-var RemoveListenerTask_1 = __webpack_require__(/*! ../RemoveListenerTask */ "./packages/player/src/core/actionTask/RemoveListenerTask.ts");
-var EmitEventTask_1 = __webpack_require__(/*! ../EmitEventTask */ "./packages/player/src/core/actionTask/EmitEventTask.ts");
+
+
+
+
+
+
+
+
+
+
+
+
+
 function injectParamsToQueueTask(queue, paramIds) {
     var tasks = queue.tasks;
     if (tasks) {
@@ -6345,13 +6117,12 @@ function injectParamsToQueueTask(queue, paramIds) {
         }
     }
 }
-exports.injectParamsToQueueTask = injectParamsToQueueTask;
 function injectParamsToTask(task, paramIds) {
-    if (task instanceof ExpressTask_1.ExpressTask) {
+    if (task instanceof _ExpressTask__WEBPACK_IMPORTED_MODULE_0__["ExpressTask"]) {
         var express = (task).data.express;
         modifyParamValue(express, paramIds);
     }
-    else if (task instanceof IfTask_1.IfTask) {
+    else if (task instanceof _IfTask__WEBPACK_IMPORTED_MODULE_1__["IfTask"]) {
         var conditions = task.conditions;
         for (var j = 0, jlen = conditions.length; j < jlen; j++) {
             var exp = conditions[j];
@@ -6368,12 +6139,12 @@ function injectParamsToTask(task, paramIds) {
             injectParamsToQueueTask(task.elseRun, paramIds);
         }
     }
-    else if (task instanceof SetPropertyTask_1.SetPropertyTask) {
+    else if (task instanceof _SetPropertyTask__WEBPACK_IMPORTED_MODULE_2__["SetPropertyTask"]) {
         if (task.data.value && Array.isArray(task.data.value)) {
             modiyExpressItemParamValue(task.data.value, paramIds);
         }
     }
-    else if (task instanceof PlayAnimationTask_1.PlayAnimationTask) {
+    else if (task instanceof _PlayAnimationTask__WEBPACK_IMPORTED_MODULE_3__["PlayAnimationTask"]) {
         if (task.data.name && Array.isArray(task.data.name)) {
             modiyExpressItemParamValue(task.data.name, paramIds);
         }
@@ -6381,12 +6152,12 @@ function injectParamsToTask(task, paramIds) {
             modiyExpressItemParamValue(task.data.target, paramIds);
         }
     }
-    else if (task instanceof PlaySoundTask_1.PlaySoundTask) {
+    else if (task instanceof _PlaySoundTask__WEBPACK_IMPORTED_MODULE_4__["PlaySoundTask"]) {
         if (task.soundId && Array.isArray(task.soundId)) {
             modiyExpressItemParamValue(task.soundId, paramIds);
         }
     }
-    else if (task instanceof CallFunctionTask_1.CallFunctionTask) {
+    else if (task instanceof _CallFunctionTask__WEBPACK_IMPORTED_MODULE_5__["CallFunctionTask"]) {
         if (task.data && task.data.params) {
             modifyParamValue(task.data.params, paramIds);
         }
@@ -6394,19 +6165,19 @@ function injectParamsToTask(task, paramIds) {
             modiyExpressItemParamValue(task.data.target, paramIds);
         }
     }
-    else if (task instanceof PrintTask_1.PrintTask) {
+    else if (task instanceof _PrintTask__WEBPACK_IMPORTED_MODULE_6__["PrintTask"]) {
         if (task.data && task.data.value) {
             modiyExpressItemParamValue(task.data.value, paramIds);
         }
     }
-    else if (task instanceof ForTask_1.ForTask) {
+    else if (task instanceof _ForTask__WEBPACK_IMPORTED_MODULE_8__["ForTask"]) {
         task.injectParams(paramIds);
     }
-    else if (task instanceof AddListenerTask_1.AddListenerTask ||
-        task instanceof AddListenerCallTask_1.AddListenerCallTask ||
-        task instanceof RemoveListenerTask_1.RemoveListenerTask ||
-        task instanceof EmitEventTask_1.EmitEventTask ||
-        task instanceof CallProtoFunctionTask_1.CallProtoFunctionTask) {
+    else if (task instanceof _AddListenerTask__WEBPACK_IMPORTED_MODULE_10__["AddListenerTask"] ||
+        task instanceof _AddListenerCallTask__WEBPACK_IMPORTED_MODULE_11__["AddListenerCallTask"] ||
+        task instanceof _RemoveListenerTask__WEBPACK_IMPORTED_MODULE_12__["RemoveListenerTask"] ||
+        task instanceof _EmitEventTask__WEBPACK_IMPORTED_MODULE_13__["EmitEventTask"] ||
+        task instanceof _CallProtoFunctionTask__WEBPACK_IMPORTED_MODULE_9__["CallProtoFunctionTask"]) {
         if (task.data && task.data.target) {
             modiyExpressItemParamValue(task.data.target, paramIds);
         }
@@ -6422,13 +6193,13 @@ function modifyParamValue(express, paramIds) {
     }
 }
 function modiyExpressItemParamValue(expressItem, paramIds) {
-    if (expressItem[0] === IVFData_1.ExpressItemType.PARAM_VALUE) {
+    if (expressItem[0] === _model_IVFData__WEBPACK_IMPORTED_MODULE_7__["ExpressItemType"].PARAM_VALUE) {
         var paramIndex = expressItem[1];
         if (paramIds.length > paramIndex) {
             expressItem[2] = paramIds[paramIndex];
         }
     }
-    else if (expressItem[0] === IVFData_1.ExpressItemType.ARRAY_VALUE) {
+    else if (expressItem[0] === _model_IVFData__WEBPACK_IMPORTED_MODULE_7__["ExpressItemType"].ARRAY_VALUE) {
         // expressItem 0:type, 1:componentId, 2: variableId, 3: index, 4?: property
         if (Array.isArray(expressItem[3])) {
             modiyExpressItemParamValue(expressItem[3], paramIds);
@@ -6443,12 +6214,14 @@ function modiyExpressItemParamValue(expressItem, paramIds) {
 /*!**************************************************************!*\
   !*** ./packages/player/src/core/actionTask/core/BaseTask.ts ***!
   \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: TaskEvent, BaseTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TaskEvent", function() { return TaskEvent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BaseTask", function() { return BaseTask; });
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -6461,14 +6234,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
 var TaskEvent;
 (function (TaskEvent) {
     TaskEvent["EVENT_COMPLETE"] = "EVENT_COMPLETE";
     TaskEvent["EVENT_FAIL"] = "EVENT_FAIL";
     TaskEvent["EVENT_BREAK"] = "EVENT_BREAK";
     TaskEvent["FUNCTION_RUN_COMPLETE"] = "FUNCTION_RUN_COMPLETE";
-})(TaskEvent = exports.TaskEvent || (exports.TaskEvent = {}));
+})(TaskEvent || (TaskEvent = {}));
 var BaseTask = /** @class */ (function (_super) {
     __extends(BaseTask, _super);
     function BaseTask() {
@@ -6546,7 +6318,7 @@ var BaseTask = /** @class */ (function (_super) {
     });
     return BaseTask;
 }(vf.utils.EventEmitter));
-exports.BaseTask = BaseTask;
+
 
 
 /***/ }),
@@ -6555,12 +6327,15 @@ exports.BaseTask = BaseTask;
 /*!*******************************************************************!*\
   !*** ./packages/player/src/core/actionTask/core/ContainerTask.ts ***!
   \*******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ContainerTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ContainerTask", function() { return ContainerTask; });
+/* harmony import */ var _BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _QueueTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./QueueTask */ "./packages/player/src/core/actionTask/core/QueueTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -6573,15 +6348,14 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var QueueTask_1 = __webpack_require__(/*! ./QueueTask */ "./packages/player/src/core/actionTask/core/QueueTask.ts");
+
+
 var ContainerTask = /** @class */ (function (_super) {
     __extends(ContainerTask, _super);
     function ContainerTask() {
         var _this = _super.call(this) || this;
-        _this.loopTask = new QueueTask_1.QueueTask();
-        _this.loopTask.on(BaseTask_1.TaskEvent.EVENT_BREAK, _this.onBreak, _this);
+        _this.loopTask = new _QueueTask__WEBPACK_IMPORTED_MODULE_1__["QueueTask"]();
+        _this.loopTask.on(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_BREAK, _this.onBreak, _this);
         return _this;
     }
     ContainerTask.prototype.addSubTask = function (task) {
@@ -6595,14 +6369,14 @@ var ContainerTask = /** @class */ (function (_super) {
     ContainerTask.prototype.stop = function () {
         _super.prototype.stop.call(this);
         if (this.loopTask) {
-            this.loopTask.off(BaseTask_1.TaskEvent.EVENT_BREAK);
+            this.loopTask.off(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_BREAK);
             this.loopTask.stop();
         }
     };
     ContainerTask.prototype.break = function () {
         _super.prototype.break.call(this);
         if (this.loopTask) {
-            this.loopTask.off(BaseTask_1.TaskEvent.EVENT_BREAK);
+            this.loopTask.off(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_BREAK);
             this.loopTask.break();
         }
     };
@@ -6622,8 +6396,8 @@ var ContainerTask = /** @class */ (function (_super) {
         this.break();
     };
     return ContainerTask;
-}(BaseTask_1.BaseTask));
-exports.ContainerTask = ContainerTask;
+}(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -6632,12 +6406,14 @@ exports.ContainerTask = ContainerTask;
 /*!***************************************************************!*\
   !*** ./packages/player/src/core/actionTask/core/QueueTask.ts ***!
   \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: QueueTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "QueueTask", function() { return QueueTask; });
+/* harmony import */ var _BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -6650,8 +6426,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var BaseTask_1 = __webpack_require__(/*! ./BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+
 var QueueTask = /** @class */ (function (_super) {
     __extends(QueueTask, _super);
     function QueueTask() {
@@ -6684,9 +6459,9 @@ var QueueTask = /** @class */ (function (_super) {
             this._currentTask = null;
         }
         this._curTaskIndex = Number.MAX_VALUE;
-        this.off(BaseTask_1.TaskEvent.EVENT_COMPLETE);
-        this.off(BaseTask_1.TaskEvent.EVENT_BREAK);
-        this.off(BaseTask_1.TaskEvent.EVENT_FAIL);
+        this.off(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE);
+        this.off(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_BREAK);
+        this.off(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_FAIL);
         this.complete();
     };
     QueueTask.prototype.pause = function () {
@@ -6713,9 +6488,9 @@ var QueueTask = /** @class */ (function (_super) {
             this._currentTask = null;
         }
         this._curTaskIndex = Number.MAX_VALUE;
-        this.off(BaseTask_1.TaskEvent.EVENT_COMPLETE);
-        this.off(BaseTask_1.TaskEvent.EVENT_BREAK);
-        this.off(BaseTask_1.TaskEvent.EVENT_FAIL);
+        this.off(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE);
+        this.off(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_BREAK);
+        this.off(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_FAIL);
         this.complete();
     };
     QueueTask.prototype.addTask = function (task) {
@@ -6742,9 +6517,9 @@ var QueueTask = /** @class */ (function (_super) {
         }
         if (task) {
             this._currentTask = task;
-            this._currentTask.on(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onOneTaskComplete, this);
-            this._currentTask.on(BaseTask_1.TaskEvent.EVENT_FAIL, this.onOneTaskFail, this);
-            this._currentTask.on(BaseTask_1.TaskEvent.EVENT_BREAK, this.onOneTaskBreak, this);
+            this._currentTask.on(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onOneTaskComplete, this);
+            this._currentTask.on(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_FAIL, this.onOneTaskFail, this);
+            this._currentTask.on(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_BREAK, this.onOneTaskBreak, this);
             this._currentTask.run();
         }
         else {
@@ -6753,15 +6528,15 @@ var QueueTask = /** @class */ (function (_super) {
     };
     QueueTask.prototype.clearEvent = function (task) {
         if (task) {
-            task.off(BaseTask_1.TaskEvent.EVENT_COMPLETE, this.onOneTaskComplete, this);
-            task.off(BaseTask_1.TaskEvent.EVENT_FAIL, this.onOneTaskFail, this);
-            task.off(BaseTask_1.TaskEvent.EVENT_BREAK, this.onOneTaskBreak, this);
+            task.off(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onOneTaskComplete, this);
+            task.off(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_FAIL, this.onOneTaskFail, this);
+            task.off(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_BREAK, this.onOneTaskBreak, this);
         }
     };
     QueueTask.prototype.onOneTaskBreak = function (data) {
         if (this._currentTask) {
             this.clearEvent(this._currentTask);
-            this.emit(BaseTask_1.TaskEvent.EVENT_BREAK);
+            this.emit(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_BREAK);
             this.complete();
         }
     };
@@ -6781,8 +6556,8 @@ var QueueTask = /** @class */ (function (_super) {
         this._nextTask(this._currentTask);
     };
     return QueueTask;
-}(BaseTask_1.BaseTask));
-exports.QueueTask = QueueTask;
+}(_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
 
 
 /***/ }),
@@ -6791,20 +6566,28 @@ exports.QueueTask = QueueTask;
 /*!*********************************************************!*\
   !*** ./packages/player/src/core/animation/Animation.ts ***!
   \*********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: Animation */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Animation", function() { return Animation; });
+/* harmony import */ var _AnimationClip__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AnimationClip */ "./packages/player/src/core/animation/AnimationClip.ts");
+/* harmony import */ var _Timeline__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Timeline */ "./packages/player/src/core/animation/Timeline.ts");
+/* harmony import */ var _NumberFrame__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./NumberFrame */ "./packages/player/src/core/animation/NumberFrame.ts");
+/* harmony import */ var _BooleanFrame__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./BooleanFrame */ "./packages/player/src/core/animation/BooleanFrame.ts");
+/* harmony import */ var _StringFrame__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./StringFrame */ "./packages/player/src/core/animation/StringFrame.ts");
+/* harmony import */ var _ColorFrame__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ColorFrame */ "./packages/player/src/core/animation/ColorFrame.ts");
+/* harmony import */ var _EventTimeline__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EventTimeline */ "./packages/player/src/core/animation/EventTimeline.ts");
+/* harmony import */ var _EventFrame__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EventFrame */ "./packages/player/src/core/animation/EventFrame.ts");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-var AnimationClip_1 = __webpack_require__(/*! ./AnimationClip */ "./packages/player/src/core/animation/AnimationClip.ts");
-var Timeline_1 = __webpack_require__(/*! ./Timeline */ "./packages/player/src/core/animation/Timeline.ts");
-var NumberFrame_1 = __webpack_require__(/*! ./NumberFrame */ "./packages/player/src/core/animation/NumberFrame.ts");
-var BooleanFrame_1 = __webpack_require__(/*! ./BooleanFrame */ "./packages/player/src/core/animation/BooleanFrame.ts");
-var StringFrame_1 = __webpack_require__(/*! ./StringFrame */ "./packages/player/src/core/animation/StringFrame.ts");
-var ColorFrame_1 = __webpack_require__(/*! ./ColorFrame */ "./packages/player/src/core/animation/ColorFrame.ts");
-var EventTimeline_1 = __webpack_require__(/*! ./EventTimeline */ "./packages/player/src/core/animation/EventTimeline.ts");
-var EventFrame_1 = __webpack_require__(/*! ./EventFrame */ "./packages/player/src/core/animation/EventFrame.ts");
+
+
+
+
+
+
+
 var Animation = /** @class */ (function () {
     function Animation(component, data, fps) {
         if (fps === void 0) { fps = 30; }
@@ -7050,7 +6833,7 @@ var Animation = /** @class */ (function () {
             component = this.component.getChildById(childId);
         }
         if (component) {
-            var animClip = new AnimationClip_1.AnimationClip(animName);
+            var animClip = new _AnimationClip__WEBPACK_IMPORTED_MODULE_0__["AnimationClip"](animName);
             animClip.name = animName;
             animClip.fps = this.fps;
             animClip.target = component;
@@ -7090,30 +6873,30 @@ var Animation = /** @class */ (function () {
             case "alpha" /* ALPHA */:
             case "volume" /* VOLUME */:
             case "filterBlur" /* FITERBLUR */:
-                timeline = new Timeline_1.Timeline();
-                this.parseFrames(timeline, data.frames, NumberFrame_1.NumberFrame);
+                timeline = new _Timeline__WEBPACK_IMPORTED_MODULE_1__["Timeline"]();
+                this.parseFrames(timeline, data.frames, _NumberFrame__WEBPACK_IMPORTED_MODULE_2__["NumberFrame"]);
                 break;
             case "visible" /* VISIBLE */:
             case "enabled" /* ENABLED */:
-                timeline = new Timeline_1.Timeline();
-                this.parseFrames(timeline, data.frames, BooleanFrame_1.BooleanFrame);
+                timeline = new _Timeline__WEBPACK_IMPORTED_MODULE_1__["Timeline"]();
+                this.parseFrames(timeline, data.frames, _BooleanFrame__WEBPACK_IMPORTED_MODULE_3__["BooleanFrame"]);
                 break;
             case "text" /* TEXT */:
             case "play" /* PLAY */:
-                timeline = new Timeline_1.Timeline();
-                this.parseFrames(timeline, data.frames, StringFrame_1.StringFrame);
+                timeline = new _Timeline__WEBPACK_IMPORTED_MODULE_1__["Timeline"]();
+                this.parseFrames(timeline, data.frames, _StringFrame__WEBPACK_IMPORTED_MODULE_4__["StringFrame"]);
                 break;
             case "color" /* COLOR */:
-                timeline = new Timeline_1.Timeline();
-                this.parseFrames(timeline, data.frames, ColorFrame_1.ColorFrame);
+                timeline = new _Timeline__WEBPACK_IMPORTED_MODULE_1__["Timeline"]();
+                this.parseFrames(timeline, data.frames, _ColorFrame__WEBPACK_IMPORTED_MODULE_5__["ColorFrame"]);
                 break;
             case "event" /* EVENT */:
-                timeline = new EventTimeline_1.EventTimeline();
-                this.parseFrames(timeline, data.frames, EventFrame_1.EventFrame);
+                timeline = new _EventTimeline__WEBPACK_IMPORTED_MODULE_6__["EventTimeline"]();
+                this.parseFrames(timeline, data.frames, _EventFrame__WEBPACK_IMPORTED_MODULE_7__["EventFrame"]);
                 break;
             default:
-                timeline = new Timeline_1.Timeline();
-                this.parseFrames(timeline, data.frames, NumberFrame_1.NumberFrame);
+                timeline = new _Timeline__WEBPACK_IMPORTED_MODULE_1__["Timeline"]();
+                this.parseFrames(timeline, data.frames, _NumberFrame__WEBPACK_IMPORTED_MODULE_2__["NumberFrame"]);
                 break;
         }
         if (timeline) {
@@ -7140,7 +6923,7 @@ var Animation = /** @class */ (function () {
     };
     return Animation;
 }());
-exports.Animation = Animation;
+
 
 
 /***/ }),
@@ -7149,13 +6932,14 @@ exports.Animation = Animation;
 /*!*************************************************************!*\
   !*** ./packages/player/src/core/animation/AnimationClip.ts ***!
   \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: AnimationClip */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AnimationClip", function() { return AnimationClip; });
+/* harmony import */ var _EventTimeline__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EventTimeline */ "./packages/player/src/core/animation/EventTimeline.ts");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-var EventTimeline_1 = __webpack_require__(/*! ./EventTimeline */ "./packages/player/src/core/animation/EventTimeline.ts");
 var AnimationClip = /** @class */ (function () {
     function AnimationClip(name) {
         this.timelines = [];
@@ -7191,7 +6975,7 @@ var AnimationClip = /** @class */ (function () {
     AnimationClip.prototype.skipNextEvent = function () {
         for (var i = 0, len = this.timelines.length; i < len; i++) {
             var timeline = this.timelines[i];
-            if (timeline instanceof EventTimeline_1.EventTimeline) {
+            if (timeline instanceof _EventTimeline__WEBPACK_IMPORTED_MODULE_0__["EventTimeline"]) {
                 timeline.skipNextEmit();
             }
         }
@@ -7270,7 +7054,7 @@ var AnimationClip = /** @class */ (function () {
     };
     return AnimationClip;
 }());
-exports.AnimationClip = AnimationClip;
+
 
 
 /***/ }),
@@ -7279,12 +7063,14 @@ exports.AnimationClip = AnimationClip;
 /*!************************************************************!*\
   !*** ./packages/player/src/core/animation/BooleanFrame.ts ***!
   \************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: BooleanFrame */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BooleanFrame", function() { return BooleanFrame; });
+/* harmony import */ var _Frame__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Frame */ "./packages/player/src/core/animation/Frame.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7297,8 +7083,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var Frame_1 = __webpack_require__(/*! ./Frame */ "./packages/player/src/core/animation/Frame.ts");
+
 var BooleanFrame = /** @class */ (function (_super) {
     __extends(BooleanFrame, _super);
     function BooleanFrame() {
@@ -7308,8 +7093,8 @@ var BooleanFrame = /** @class */ (function (_super) {
         return this.value;
     };
     return BooleanFrame;
-}(Frame_1.Frame));
-exports.BooleanFrame = BooleanFrame;
+}(_Frame__WEBPACK_IMPORTED_MODULE_0__["Frame"]));
+
 
 
 /***/ }),
@@ -7318,12 +7103,14 @@ exports.BooleanFrame = BooleanFrame;
 /*!**********************************************************!*\
   !*** ./packages/player/src/core/animation/ColorFrame.ts ***!
   \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ColorFrame */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ColorFrame", function() { return ColorFrame; });
+/* harmony import */ var _Frame__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Frame */ "./packages/player/src/core/animation/Frame.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7336,8 +7123,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var Frame_1 = __webpack_require__(/*! ./Frame */ "./packages/player/src/core/animation/Frame.ts");
+
 var ColorFrame = /** @class */ (function (_super) {
     __extends(ColorFrame, _super);
     function ColorFrame() {
@@ -7366,8 +7152,8 @@ var ColorFrame = /** @class */ (function (_super) {
         return rgb[0] * 0x10000 + rgb[1] * 0x100 + rgb[2];
     };
     return ColorFrame;
-}(Frame_1.Frame));
-exports.ColorFrame = ColorFrame;
+}(_Frame__WEBPACK_IMPORTED_MODULE_0__["Frame"]));
+
 
 
 /***/ }),
@@ -7376,12 +7162,14 @@ exports.ColorFrame = ColorFrame;
 /*!**********************************************************!*\
   !*** ./packages/player/src/core/animation/EventFrame.ts ***!
   \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: EventFrame */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventFrame", function() { return EventFrame; });
+/* harmony import */ var _Frame__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Frame */ "./packages/player/src/core/animation/Frame.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7394,8 +7182,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var Frame_1 = __webpack_require__(/*! ./Frame */ "./packages/player/src/core/animation/Frame.ts");
+
 var EventFrame = /** @class */ (function (_super) {
     __extends(EventFrame, _super);
     function EventFrame() {
@@ -7405,8 +7192,8 @@ var EventFrame = /** @class */ (function (_super) {
         return this.value;
     };
     return EventFrame;
-}(Frame_1.Frame));
-exports.EventFrame = EventFrame;
+}(_Frame__WEBPACK_IMPORTED_MODULE_0__["Frame"]));
+
 
 
 /***/ }),
@@ -7415,12 +7202,14 @@ exports.EventFrame = EventFrame;
 /*!*************************************************************!*\
   !*** ./packages/player/src/core/animation/EventTimeline.ts ***!
   \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: EventTimeline */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventTimeline", function() { return EventTimeline; });
+/* harmony import */ var _Timeline__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Timeline */ "./packages/player/src/core/animation/Timeline.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7433,8 +7222,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var Timeline_1 = __webpack_require__(/*! ./Timeline */ "./packages/player/src/core/animation/Timeline.ts");
+
 var EventTimeline = /** @class */ (function (_super) {
     __extends(EventTimeline, _super);
     function EventTimeline() {
@@ -7505,8 +7293,8 @@ var EventTimeline = /** @class */ (function (_super) {
         }
     };
     return EventTimeline;
-}(Timeline_1.Timeline));
-exports.EventTimeline = EventTimeline;
+}(_Timeline__WEBPACK_IMPORTED_MODULE_0__["Timeline"]));
+
 
 
 /***/ }),
@@ -7515,12 +7303,12 @@ exports.EventTimeline = EventTimeline;
 /*!*****************************************************!*\
   !*** ./packages/player/src/core/animation/Frame.ts ***!
   \*****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: Frame */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Frame", function() { return Frame; });
 var Frame = /** @class */ (function () {
     function Frame() {
         this.time = -1;
@@ -7533,7 +7321,7 @@ var Frame = /** @class */ (function () {
     };
     return Frame;
 }());
-exports.Frame = Frame;
+
 
 
 /***/ }),
@@ -7542,12 +7330,14 @@ exports.Frame = Frame;
 /*!***********************************************************!*\
   !*** ./packages/player/src/core/animation/NumberFrame.ts ***!
   \***********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: NumberFrame */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NumberFrame", function() { return NumberFrame; });
+/* harmony import */ var _Frame__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Frame */ "./packages/player/src/core/animation/Frame.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7560,8 +7350,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var Frame_1 = __webpack_require__(/*! ./Frame */ "./packages/player/src/core/animation/Frame.ts");
+
 var NumberFrame = /** @class */ (function (_super) {
     __extends(NumberFrame, _super);
     function NumberFrame() {
@@ -7571,8 +7360,8 @@ var NumberFrame = /** @class */ (function (_super) {
         return this.value + (value - this.value) * progress;
     };
     return NumberFrame;
-}(Frame_1.Frame));
-exports.NumberFrame = NumberFrame;
+}(_Frame__WEBPACK_IMPORTED_MODULE_0__["Frame"]));
+
 
 
 /***/ }),
@@ -7581,12 +7370,14 @@ exports.NumberFrame = NumberFrame;
 /*!***********************************************************!*\
   !*** ./packages/player/src/core/animation/StringFrame.ts ***!
   \***********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: StringFrame */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StringFrame", function() { return StringFrame; });
+/* harmony import */ var _Frame__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Frame */ "./packages/player/src/core/animation/Frame.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7599,8 +7390,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var Frame_1 = __webpack_require__(/*! ./Frame */ "./packages/player/src/core/animation/Frame.ts");
+
 var StringFrame = /** @class */ (function (_super) {
     __extends(StringFrame, _super);
     function StringFrame() {
@@ -7610,8 +7400,8 @@ var StringFrame = /** @class */ (function (_super) {
         return this.value;
     };
     return StringFrame;
-}(Frame_1.Frame));
-exports.StringFrame = StringFrame;
+}(_Frame__WEBPACK_IMPORTED_MODULE_0__["Frame"]));
+
 
 
 /***/ }),
@@ -7620,13 +7410,14 @@ exports.StringFrame = StringFrame;
 /*!********************************************************!*\
   !*** ./packages/player/src/core/animation/Timeline.ts ***!
   \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: Timeline */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Timeline", function() { return Timeline; });
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-var VFUtil_1 = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
 var Timeline = /** @class */ (function () {
     function Timeline() {
         this.type = null;
@@ -7683,7 +7474,7 @@ var Timeline = /** @class */ (function () {
         if (curve && curve.length) {
             if (curve.length === 1) {
                 var curveType = curve[0];
-                curveProgress = VFUtil_1.getCurveProgress(curveType, lineProgress);
+                curveProgress = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_0__["getCurveProgress"])(curveType, lineProgress);
             }
             // todo bezier
         }
@@ -7730,7 +7521,7 @@ var Timeline = /** @class */ (function () {
     };
     return Timeline;
 }());
-exports.Timeline = Timeline;
+
 
 
 /***/ }),
@@ -7739,12 +7530,13 @@ exports.Timeline = Timeline;
 /*!***************************************************!*\
   !*** ./packages/player/src/core/model/IVFData.ts ***!
   \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ExpressItemType, SystemValueType */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ExpressItemType", function() { return ExpressItemType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SystemValueType", function() { return SystemValueType; });
 /// actionList ////////////////////////////////
 var ExpressItemType;
 (function (ExpressItemType) {
@@ -7760,7 +7552,7 @@ var ExpressItemType;
     ExpressItemType[ExpressItemType["PARAM_VALUE"] = 9] = "PARAM_VALUE";
     ExpressItemType[ExpressItemType["ARRAY_FUNCTION"] = 10] = "ARRAY_FUNCTION";
     ExpressItemType[ExpressItemType["COMPONENT"] = 11] = "COMPONENT";
-})(ExpressItemType = exports.ExpressItemType || (exports.ExpressItemType = {}));
+})(ExpressItemType || (ExpressItemType = {}));
 var SystemValueType;
 (function (SystemValueType) {
     SystemValueType[SystemValueType["TIME"] = 0] = "TIME";
@@ -7768,7 +7560,7 @@ var SystemValueType;
     SystemValueType[SystemValueType["MONTH"] = 2] = "MONTH";
     SystemValueType[SystemValueType["DAY"] = 3] = "DAY";
     SystemValueType[SystemValueType["DATE"] = 4] = "DATE";
-})(SystemValueType = exports.SystemValueType || (exports.SystemValueType = {}));
+})(SystemValueType || (SystemValueType = {}));
 
 
 /***/ }),
@@ -7777,24 +7569,36 @@ var SystemValueType;
 /*!***********************************************************!*\
   !*** ./packages/player/src/core/transition/Tranistion.ts ***!
   \***********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: Transition */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Transition", function() { return Transition; });
+/* harmony import */ var _filters_CrossFadeFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./filters/CrossFadeFilter */ "./packages/player/src/core/transition/filters/CrossFadeFilter.ts");
+/* harmony import */ var _filters_CircleFadeFilter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./filters/CircleFadeFilter */ "./packages/player/src/core/transition/filters/CircleFadeFilter.ts");
+/* harmony import */ var _filters_CrossZoomFilter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./filters/CrossZoomFilter */ "./packages/player/src/core/transition/filters/CrossZoomFilter.ts");
+/* harmony import */ var _filters_DoomScreenFilter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./filters/DoomScreenFilter */ "./packages/player/src/core/transition/filters/DoomScreenFilter.ts");
+/* harmony import */ var _filters_HeartWipeFilter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./filters/HeartWipeFilter */ "./packages/player/src/core/transition/filters/HeartWipeFilter.ts");
+/* harmony import */ var _filters_LinearBlurFilter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./filters/LinearBlurFilter */ "./packages/player/src/core/transition/filters/LinearBlurFilter.ts");
+/* harmony import */ var _filters_PageCurlFilter__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./filters/PageCurlFilter */ "./packages/player/src/core/transition/filters/PageCurlFilter.ts");
+/* harmony import */ var _filters_ToTearFilter__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./filters/ToTearFilter */ "./packages/player/src/core/transition/filters/ToTearFilter.ts");
+/* harmony import */ var _filters_WindFilter__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./filters/WindFilter */ "./packages/player/src/core/transition/filters/WindFilter.ts");
+/* harmony import */ var _filters_PageFlipLeftFilter__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./filters/PageFlipLeftFilter */ "./packages/player/src/core/transition/filters/PageFlipLeftFilter.ts");
+/* harmony import */ var _filters_PageFlipRightFilter__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./filters/PageFlipRightFilter */ "./packages/player/src/core/transition/filters/PageFlipRightFilter.ts");
+/* harmony import */ var _trans_FadeoutTran__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./trans/FadeoutTran */ "./packages/player/src/core/transition/trans/FadeoutTran.ts");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-var CrossFadeFilter_1 = __webpack_require__(/*! ./filters/CrossFadeFilter */ "./packages/player/src/core/transition/filters/CrossFadeFilter.ts");
-var CircleFadeFilter_1 = __webpack_require__(/*! ./filters/CircleFadeFilter */ "./packages/player/src/core/transition/filters/CircleFadeFilter.ts");
-var CrossZoomFilter_1 = __webpack_require__(/*! ./filters/CrossZoomFilter */ "./packages/player/src/core/transition/filters/CrossZoomFilter.ts");
-var DoomScreenFilter_1 = __webpack_require__(/*! ./filters/DoomScreenFilter */ "./packages/player/src/core/transition/filters/DoomScreenFilter.ts");
-var HeartWipeFilter_1 = __webpack_require__(/*! ./filters/HeartWipeFilter */ "./packages/player/src/core/transition/filters/HeartWipeFilter.ts");
-var LinearBlurFilter_1 = __webpack_require__(/*! ./filters/LinearBlurFilter */ "./packages/player/src/core/transition/filters/LinearBlurFilter.ts");
-var PageCurlFilter_1 = __webpack_require__(/*! ./filters/PageCurlFilter */ "./packages/player/src/core/transition/filters/PageCurlFilter.ts");
-var ToTearFilter_1 = __webpack_require__(/*! ./filters/ToTearFilter */ "./packages/player/src/core/transition/filters/ToTearFilter.ts");
-var WindFilter_1 = __webpack_require__(/*! ./filters/WindFilter */ "./packages/player/src/core/transition/filters/WindFilter.ts");
-var PageFlipLeftFilter_1 = __webpack_require__(/*! ./filters/PageFlipLeftFilter */ "./packages/player/src/core/transition/filters/PageFlipLeftFilter.ts");
-var PageFlipRightFilter_1 = __webpack_require__(/*! ./filters/PageFlipRightFilter */ "./packages/player/src/core/transition/filters/PageFlipRightFilter.ts");
-var FadeoutTran_1 = __webpack_require__(/*! ./trans/FadeoutTran */ "./packages/player/src/core/transition/trans/FadeoutTran.ts");
+
+
+
+
+
+
+
+
+
+
+
 var Transition = /** @class */ (function () {
     function Transition(vfStage, prevTexture, data) {
         this.vfStage = vfStage;
@@ -7826,33 +7630,33 @@ var Transition = /** @class */ (function () {
         var _a;
         if (this.vfStage && (this.vfStage.scaleX !== 1 || this.vfStage.scaleY !== 1 ||
             !((_a = this.vfStage.app) === null || _a === void 0 ? void 0 : _a.renderer.context).webGLVersion)) {
-            return new FadeoutTran_1.FadeoutTran();
+            return new _trans_FadeoutTran__WEBPACK_IMPORTED_MODULE_11__["FadeoutTran"]();
         }
         switch (type) {
             case "none" /* NONE */:
                 return null;
             case "fadeOut" /* FADE_OUT */:
-                return new CrossFadeFilter_1.CrossFadeFilter();
+                return new _filters_CrossFadeFilter__WEBPACK_IMPORTED_MODULE_0__["CrossFadeFilter"]();
             case "circleWipe" /* CIRCLE_WIPE */:
-                return new CircleFadeFilter_1.CircleFadeFilter();
+                return new _filters_CircleFadeFilter__WEBPACK_IMPORTED_MODULE_1__["CircleFadeFilter"]();
             case "crossZoom" /* CROSS_ZOOM */:
-                return new CrossZoomFilter_1.CrossZoomFilter();
+                return new _filters_CrossZoomFilter__WEBPACK_IMPORTED_MODULE_2__["CrossZoomFilter"]();
             case "doomScreen" /* DOOM_SCREEN */:
-                return new DoomScreenFilter_1.DoomScreenFilter();
+                return new _filters_DoomScreenFilter__WEBPACK_IMPORTED_MODULE_3__["DoomScreenFilter"]();
             case "heartWipe" /* HEART_WIPE */:
-                return new HeartWipeFilter_1.HeartWipeFilter();
+                return new _filters_HeartWipeFilter__WEBPACK_IMPORTED_MODULE_4__["HeartWipeFilter"]();
             case "linearBlur" /* LINEAR_BLUR */:
-                return new LinearBlurFilter_1.LinearBlurFilter();
+                return new _filters_LinearBlurFilter__WEBPACK_IMPORTED_MODULE_5__["LinearBlurFilter"]();
             case "pageCurl" /* PAGE_CURL */:
-                return new PageCurlFilter_1.PageCurlFilter();
+                return new _filters_PageCurlFilter__WEBPACK_IMPORTED_MODULE_6__["PageCurlFilter"]();
             case "toTear" /* TO_TEAR */:
-                return new ToTearFilter_1.ToTearFilter();
+                return new _filters_ToTearFilter__WEBPACK_IMPORTED_MODULE_7__["ToTearFilter"]();
             case "wind" /* WIND */:
-                return new WindFilter_1.WindFilter();
+                return new _filters_WindFilter__WEBPACK_IMPORTED_MODULE_8__["WindFilter"]();
             case "pageFlipLeft" /* PAGE_FLIP_LEFT */:
-                return new PageFlipLeftFilter_1.PageFlipLeftFilter();
+                return new _filters_PageFlipLeftFilter__WEBPACK_IMPORTED_MODULE_9__["PageFlipLeftFilter"]();
             case "pageFlipRight" /* PAGE_FLIP_RIGHT */:
-                return new PageFlipRightFilter_1.PageFlipRightFilter();
+                return new _filters_PageFlipRightFilter__WEBPACK_IMPORTED_MODULE_10__["PageFlipRightFilter"]();
             default:
                 return null;
         }
@@ -7860,7 +7664,7 @@ var Transition = /** @class */ (function () {
     };
     return Transition;
 }());
-exports.Transition = Transition;
+
 
 
 /***/ }),
@@ -7869,12 +7673,13 @@ exports.Transition = Transition;
 /*!***********************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/AbstractFilter.ts ***!
   \***********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: AbstractFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AbstractFilter", function() { return AbstractFilter; });
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7887,7 +7692,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
 var AbstractFilter = /** @class */ (function (_super) {
     __extends(AbstractFilter, _super);
     function AbstractFilter(vertexSrc, fragmentSrc, uniforms) {
@@ -7934,7 +7738,7 @@ var AbstractFilter = /** @class */ (function (_super) {
     };
     return AbstractFilter;
 }(vf.Filter));
-exports.AbstractFilter = AbstractFilter;
+
 
 
 /***/ }),
@@ -7943,12 +7747,14 @@ exports.AbstractFilter = AbstractFilter;
 /*!*************************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/CircleFadeFilter.ts ***!
   \*************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: CircleFadeFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CircleFadeFilter", function() { return CircleFadeFilter; });
+/* harmony import */ var _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7961,8 +7767,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractFilter_1 = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+
 var CircleFadeFilter = /** @class */ (function (_super) {
     __extends(CircleFadeFilter, _super);
     function CircleFadeFilter() {
@@ -7970,8 +7775,8 @@ var CircleFadeFilter = /** @class */ (function (_super) {
     }
     CircleFadeFilter.fragmentSrc = "\n            precision mediump float;\n            uniform sampler2D uSampler;\n            uniform sampler2D previousTexture;\n            uniform float progress;\n\n            uniform highp vec4 inputSize;\n            uniform highp vec4 outputFrame;\n\n            varying vec2 vFilterCoord;\n            varying vec2 vTextureCoord;\n\n            void main()\n            {\n                float m = outputFrame.z / 2000.0;\n                float t = inputSize.y / inputSize.x;\n                vec2 circle = vFilterCoord - 0.5;\n                circle.y = circle.y * t;\n                float d = length(circle);\n                float p2 = progress * progress;\n                if(d > p2) {\n                    gl_FragColor = texture2D(previousTexture, vFilterCoord);\n                } else {\n                    gl_FragColor = texture2D(uSampler, vTextureCoord);\n                }\n                gl_FragColor = vec4(m, 0.0, 0.0, 1.0);\n            }\n        ";
     return CircleFadeFilter;
-}(AbstractFilter_1.AbstractFilter));
-exports.CircleFadeFilter = CircleFadeFilter;
+}(_AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"]));
+
 
 
 /***/ }),
@@ -7980,12 +7785,14 @@ exports.CircleFadeFilter = CircleFadeFilter;
 /*!************************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/CrossFadeFilter.ts ***!
   \************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: CrossFadeFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CrossFadeFilter", function() { return CrossFadeFilter; });
+/* harmony import */ var _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7998,8 +7805,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractFilter_1 = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+
 var CrossFadeFilter = /** @class */ (function (_super) {
     __extends(CrossFadeFilter, _super);
     function CrossFadeFilter() {
@@ -8007,8 +7813,8 @@ var CrossFadeFilter = /** @class */ (function (_super) {
     }
     CrossFadeFilter.fragmentSrc = "\n            precision mediump float;\n            uniform sampler2D uSampler;\n            uniform sampler2D previousTexture;\n            uniform float progress;\n            varying vec2 vFilterCoord;\n            varying vec2 vTextureCoord;\n            void main()\n            {\n                vec4 col = texture2D(previousTexture, vFilterCoord);\n                vec4 col2 = texture2D(uSampler, vTextureCoord);\n                gl_FragColor = vec4(mix(col, col2, progress));\n            }\n        ";
     return CrossFadeFilter;
-}(AbstractFilter_1.AbstractFilter));
-exports.CrossFadeFilter = CrossFadeFilter;
+}(_AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"]));
+
 
 
 /***/ }),
@@ -8017,12 +7823,14 @@ exports.CrossFadeFilter = CrossFadeFilter;
 /*!************************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/CrossZoomFilter.ts ***!
   \************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: CrossZoomFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CrossZoomFilter", function() { return CrossZoomFilter; });
+/* harmony import */ var _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8035,12 +7843,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractFilter_1 = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+
 var CrossZoomFilter = /** @class */ (function (_super) {
     __extends(CrossZoomFilter, _super);
     function CrossZoomFilter() {
-        return _super.call(this, AbstractFilter_1.AbstractFilter.vertexSrc, CrossZoomFilter.fragmentSrc, CrossZoomFilter.linearBlurUniforms) || this;
+        return _super.call(this, _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"].vertexSrc, CrossZoomFilter.fragmentSrc, CrossZoomFilter.linearBlurUniforms) || this;
     }
     CrossZoomFilter.linearBlurUniforms = {
         filterMatrix: vf.Matrix.TEMP_MATRIX,
@@ -8051,8 +7858,8 @@ var CrossZoomFilter = /** @class */ (function (_super) {
     };
     CrossZoomFilter.fragmentSrc = "\n            #ifdef GL_ES\n            precision highp float;\n            #endif\n            uniform sampler2D uSampler;\n            uniform sampler2D previousTexture;\n            uniform float progress;\n            uniform float resolution;\n            uniform float strength;\n            \n            varying vec2 vTextureCoord;\n            varying vec2 vFilterCoord;\n            \n            const float PI = 3.141592653589793;\n            \n            float Linear_ease(in float begin, in float change, in float duration, in float time) {\n                return change * time / duration + begin;\n            }\n            \n            float Exponential_easeInOut(in float begin, in float change, in float duration, in float time) {\n                if (time == 0.0)\n                    return begin;\n                else if (time == duration)\n                    return begin + change;\n                time = time / (duration / 2.0);\n                if (time < 1.0)\n                    return change / 2.0 * pow(2.0, 10.0 * (time - 1.0)) + begin;\n                return change / 2.0 * (-pow(2.0, -10.0 * (time - 1.0)) + 2.0) + begin;\n            }\n            \n            float Sinusoidal_easeInOut(in float begin, in float change, in float duration, in float time) {\n                return -change / 2.0 * (cos(PI * time / duration) - 1.0) + begin;\n            }\n            \n            float random(in vec3 scale, in float seed) {\n                return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n            }\n            \n            vec3 crossFade(in vec2 uv1, in vec2 uv2, in float dissolve) {\n                return mix(texture2D(previousTexture, uv1).rgb, texture2D(uSampler, uv2).rgb, dissolve);\n            }\n            \n            void main() {\n            \n                vec2 center = vec2(Linear_ease(0.25, 0.5, 1.0, progress), 0.5);\n                float dissolve = Exponential_easeInOut(0.0, 1.0, 1.0, progress);\n            \n                float strength = Sinusoidal_easeInOut(0.0, strength, 0.5, progress);\n                \n                vec3 color = vec3(0.0);\n                float total = 0.0;\n                vec2 toCenter = center - vTextureCoord;\n        \n                float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n            \n                for (float t = 0.0; t <= 40.0; t++) {\n                    float percent = (t + offset) / 40.0;\n                    float weight = 4.0 * (percent - percent * percent);\n                    vec2 p = toCenter * percent * strength;\n                    color += crossFade(vFilterCoord + p, vTextureCoord + p, dissolve) * weight;\n                    total += weight;\n                }\n                gl_FragColor = vec4(color / total, 1.0);\n            }\n        ";
     return CrossZoomFilter;
-}(AbstractFilter_1.AbstractFilter));
-exports.CrossZoomFilter = CrossZoomFilter;
+}(_AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"]));
+
 
 
 /***/ }),
@@ -8061,12 +7868,14 @@ exports.CrossZoomFilter = CrossZoomFilter;
 /*!*************************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/DoomScreenFilter.ts ***!
   \*************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: DoomScreenFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DoomScreenFilter", function() { return DoomScreenFilter; });
+/* harmony import */ var _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8079,12 +7888,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractFilter_1 = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+
 var DoomScreenFilter = /** @class */ (function (_super) {
     __extends(DoomScreenFilter, _super);
     function DoomScreenFilter() {
-        var _this = _super.call(this, AbstractFilter_1.AbstractFilter.vertexSrc, DoomScreenFilter.fragmentSrc, DoomScreenFilter.linearblurUniforms) || this;
+        var _this = _super.call(this, _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"].vertexSrc, DoomScreenFilter.fragmentSrc, DoomScreenFilter.linearblurUniforms) || this;
         _this.padding = 0;
         return _this;
     }
@@ -8150,7 +7958,7 @@ var DoomScreenFilter = /** @class */ (function (_super) {
     DoomScreenFilter.fragmentSrc = "\n            #ifdef GL_ES\n            precision highp float;\n            #endif\n            \n            uniform sampler2D uSampler;\n            uniform sampler2D previousTexture;\n            uniform float progress;\n            uniform float resolution;\n            \n            uniform int barWidth;\n            uniform float amplitude;\n            uniform float noise;\n            uniform float frequency;\n            \n            varying vec2 vTextureCoord;\n            varying vec2 vFilterCoord;\n            \n            float rand(int num) {\n                return fract(mod(float(num) * 67123.313, 12.0) * sin(float(num) * 10.3) * cos(float(num)));\n            }\n            \n            float wave(int num) {\n                float fn = float(num) * frequency * 0.1  * float(barWidth);\n                return cos(fn * 0.5) * cos(fn * 0.13) * sin((fn+10.0) * 0.3) / 2.0 + 0.5;\n            }\n            \n            float pos(int num) {\n                return noise == 0.0 ? wave(num) : mix(wave(num), rand(num), noise);\n            }\n            \n            void main() {\n                int bar = int(vFilterCoord.x) / barWidth;\n                float scale = 1.0 + pos(bar) * amplitude;\n                float phase = progress * scale;\n                float posY = vFilterCoord.y / resolution;\n                vec2 p;\n                vec4 c;\n                if (phase + posY < 1.0) {\n                    p = vec2(vFilterCoord.x, vFilterCoord.y + mix(0.0, resolution, phase)) / resolution;\n                    c = texture2D(previousTexture, p);\n                } else {\n                    p = vTextureCoord.xy / resolution;\n                    c = texture2D(uSampler, p);\n                }\n                gl_FragColor = c;\n            }\n        ";
     return DoomScreenFilter;
 }(vf.Filter));
-exports.DoomScreenFilter = DoomScreenFilter;
+
 
 
 /***/ }),
@@ -8159,12 +7967,14 @@ exports.DoomScreenFilter = DoomScreenFilter;
 /*!************************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/HeartWipeFilter.ts ***!
   \************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: HeartWipeFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "HeartWipeFilter", function() { return HeartWipeFilter; });
+/* harmony import */ var _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8177,12 +7987,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractFilter_1 = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+
 var HeartWipeFilter = /** @class */ (function (_super) {
     __extends(HeartWipeFilter, _super);
     function HeartWipeFilter() {
-        return _super.call(this, AbstractFilter_1.AbstractFilter.vertexSrc, HeartWipeFilter.fragmentSrc, HeartWipeFilter.linearBlurUniforms) || this;
+        return _super.call(this, _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"].vertexSrc, HeartWipeFilter.fragmentSrc, HeartWipeFilter.linearBlurUniforms) || this;
     }
     HeartWipeFilter.linearBlurUniforms = {
         filterMatrix: vf.Matrix.TEMP_MATRIX,
@@ -8192,8 +8001,8 @@ var HeartWipeFilter = /** @class */ (function (_super) {
     };
     HeartWipeFilter.fragmentSrc = "\n            #ifdef GL_ES\n            precision highp float;\n            #endif\n            \n            uniform sampler2D uSampler;\n            uniform sampler2D previousTexture;\n            uniform float progress;\n            uniform float resolution;\n            \n            varying vec2 vTextureCoord;\n            varying vec2 vFilterCoord;\n            \n            bool inHeart (vec2 p, vec2 center, float size) {\n                if (size == 0.0) return false;\n                vec2 o = (p-center)/(1.6*size);\n                return pow(o.x*o.x+o.y*o.y-0.3, 3.0) < o.x*o.x*pow(o.y, 3.0);\n            }\n            \n            void main() {\n                vec2 p1 = vFilterCoord.xy / resolution;\n                vec2 p2 = vTextureCoord.xy / resolution;\n                float m = inHeart(p1, vec2(0.5, 0.4), progress) ? 1.0 : 0.0;\n                gl_FragColor = mix(texture2D(previousTexture, p1), texture2D(uSampler, p2), m);\n            }\n        ";
     return HeartWipeFilter;
-}(AbstractFilter_1.AbstractFilter));
-exports.HeartWipeFilter = HeartWipeFilter;
+}(_AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"]));
+
 
 
 /***/ }),
@@ -8202,12 +8011,14 @@ exports.HeartWipeFilter = HeartWipeFilter;
 /*!*************************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/LinearBlurFilter.ts ***!
   \*************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: LinearBlurFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LinearBlurFilter", function() { return LinearBlurFilter; });
+/* harmony import */ var _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8220,12 +8031,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractFilter_1 = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+
 var LinearBlurFilter = /** @class */ (function (_super) {
     __extends(LinearBlurFilter, _super);
     function LinearBlurFilter() {
-        return _super.call(this, AbstractFilter_1.AbstractFilter.vertexSrc, LinearBlurFilter.fragmentSrc, LinearBlurFilter.linearBlurUniforms) || this;
+        return _super.call(this, _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"].vertexSrc, LinearBlurFilter.fragmentSrc, LinearBlurFilter.linearBlurUniforms) || this;
     }
     LinearBlurFilter.linearBlurUniforms = {
         filterMatrix: vf.Matrix.TEMP_MATRIX,
@@ -8236,8 +8046,8 @@ var LinearBlurFilter = /** @class */ (function (_super) {
     };
     LinearBlurFilter.fragmentSrc = "\n            #ifdef GL_ES\n            precision highp float;\n            #endif\n            \n            uniform sampler2D uSampler;\n            uniform sampler2D previousTexture;\n            uniform float progress;\n            uniform float resolution;\n            uniform float intensity;\n            \n            varying vec2 vTextureCoord;\n            varying vec2 vFilterCoord;\n            \n            const int PASSES = 8;\n            \n            void main() {\n                vec2 p1 = vFilterCoord.xy;\n                vec2 p2 = vTextureCoord.xy;\n                vec4 c1 = vec4(0.0), c2 = vec4(0.0);\n                float disp = intensity*(0.5-distance(0.5, progress));\n                for (int xi=0; xi<PASSES; ++xi) {\n                        float x = float(xi) / float(PASSES) - 0.5;\n                    for (int yi=0; yi<PASSES; ++yi) {\n                        float y = float(yi) / float(PASSES) - 0.5;\n                        vec2 v = vec2(x,y);\n                        float d = disp;\n                        c1 += texture2D(previousTexture, p1 + d*v);\n                        c2 += texture2D(uSampler, p2 + d*v);\n                    }\n                }\n                c1 /= float(PASSES*PASSES);\n                c2 /= float(PASSES*PASSES);\n                gl_FragColor = mix(c1, c2, progress);\n            }\n        ";
     return LinearBlurFilter;
-}(AbstractFilter_1.AbstractFilter));
-exports.LinearBlurFilter = LinearBlurFilter;
+}(_AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"]));
+
 
 
 /***/ }),
@@ -8246,12 +8056,14 @@ exports.LinearBlurFilter = LinearBlurFilter;
 /*!***********************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/PageCurlFilter.ts ***!
   \***********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: PageCurlFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PageCurlFilter", function() { return PageCurlFilter; });
+/* harmony import */ var _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8264,12 +8076,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractFilter_1 = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+
 var PageCurlFilter = /** @class */ (function (_super) {
     __extends(PageCurlFilter, _super);
     function PageCurlFilter() {
-        return _super.call(this, AbstractFilter_1.AbstractFilter.vertexSrc, PageCurlFilter.fragmentSrc, PageCurlFilter.linearBlurUniforms) || this;
+        return _super.call(this, _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"].vertexSrc, PageCurlFilter.fragmentSrc, PageCurlFilter.linearBlurUniforms) || this;
     }
     PageCurlFilter.linearBlurUniforms = {
         filterMatrix: vf.Matrix.TEMP_MATRIX,
@@ -8279,8 +8090,8 @@ var PageCurlFilter = /** @class */ (function (_super) {
     };
     PageCurlFilter.fragmentSrc = "\n            #ifdef GL_ES\n            precision highp float;\n            #endif\n            \n            uniform sampler2D uSampler;\n            uniform sampler2D previousTexture;\n            uniform float progress;\n            uniform float resolution;\n            \n            varying vec2 vTextureCoord;\n            varying vec2 vFilterCoord;\n            \n            const float MIN_AMOUNT = -0.16;\n            const float MAX_AMOUNT = 1.3;\n            float amount = progress * (MAX_AMOUNT - MIN_AMOUNT) + MIN_AMOUNT;\n            \n            const float PI = 3.141592653589793;\n            \n            const float scale = 512.0;\n            const float sharpness = 3.0;\n            \n            float cylinderCenter = amount;\n            float cylinderAngle = 2.0 * PI * amount;\n            \n            const float cylinderRadius = 1.0 / PI / 2.0;\n            \n            vec3 hitPoint(float hitAngle, float yc, vec3 point, mat3 rrotation)\n            {\n                float hitPoint = hitAngle / (2.0 * PI);\n                point.y = hitPoint;\n                return rrotation * point;\n            }\n            \n            vec4 antiAlias(vec4 color1, vec4 color2, float distanc)\n            {\n                distanc *= scale;\n                if (distanc < 0.0) return color2;\n                if (distanc > 2.0) return color1;\n                float dd = pow(1.0 - distanc / 2.0, sharpness);\n                return ((color2 - color1) * dd) + color1;\n            }\n            \n            float distanceToEdge(vec3 point)\n            {\n                float dx = abs(point.x > 0.5 ? 1.0 - point.x : point.x);\n                float dy = abs(point.y > 0.5 ? 1.0 - point.y : point.y);\n                if (point.x < 0.0) dx = -point.x;\n                if (point.x > 1.0) dx = point.x - 1.0;\n                if (point.y < 0.0) dy = -point.y;\n                if (point.y > 1.0) dy = point.y - 1.0;\n                if ((point.x < 0.0 || point.x > 1.0) && (point.y < 0.0 || point.y > 1.0)) {\n                    return sqrt(dx * dx + dy * dy);\n                }\n                return min(dx, dy);\n            }\n            \n            vec4 seeThrough(float yc, vec2 p, mat3 rotation, mat3 rrotation)\n            {\n                float hitAngle = PI - (acos(yc / cylinderRadius) - cylinderAngle);\n                vec3 point = hitPoint(hitAngle, yc, rotation * vec3(p, 1.0), rrotation);\n                if (yc <= 0.0 && (point.x < 0.0 || point.y < 0.0 || point.x > 1.0 || point.y > 1.0))\n                {\n                    return texture2D(uSampler, vTextureCoord);\n                }\n            \n                if (yc > 0.0) return texture2D(previousTexture, p);\n            \n                vec4 color = texture2D(previousTexture, point.xy);\n                vec4 tcolor = vec4(0.0);\n            \n                return antiAlias(color, tcolor, distanceToEdge(point));\n            }\n            \n            vec4 seeThroughWithShadow(float yc, vec2 p, vec3 point, mat3 rotation, mat3 rrotation)\n            {\n                float shadow = distanceToEdge(point) * 30.0;\n                shadow = (1.0 - shadow) / 3.0;\n            \n                if (shadow < 0.0) shadow = 0.0; else shadow *= amount;\n            \n                vec4 shadowColor = seeThrough(yc, p, rotation, rrotation);\n                shadowColor.r -= shadow;\n                shadowColor.g -= shadow;\n                shadowColor.b -= shadow;\n            \n                return shadowColor;\n            }\n            \n            vec4 backside(float yc, vec3 point)\n            {\n                vec4 color = texture2D(previousTexture, point.xy);\n                float gray = (color.r + color.b + color.g) / 15.0;\n                gray += (8.0 / 10.0) * (pow(1.0 - abs(yc / cylinderRadius), 2.0 / 10.0) / 2.0 + (5.0 / 10.0));\n                color.rgb = vec3(gray);\n                return color;\n            }\n            \n            vec4 behindSurface(float yc, vec3 point, mat3 rrotation)\n            {\n                float shado = (1.0 - ((-cylinderRadius - yc) / amount * 7.0)) / 6.0;\n                shado *= 1.0 - abs(point.x - 0.5);\n            \n                yc = (-cylinderRadius - cylinderRadius - yc);\n            \n                float hitAngle = (acos(yc / cylinderRadius) + cylinderAngle) - PI;\n                point = hitPoint(hitAngle, yc, point, rrotation);\n            \n                if (yc < 0.0 && point.x >= 0.0 && point.y >= 0.0 && \n                    point.x <= 1.0 && point.y <= 1.0 && (hitAngle < PI || amount > 0.5))\n                {\n                    shado = 1.0 - (sqrt(pow(point.x - 0.5, 2.0) + pow(point.y - 0.5, 2.0)) / (71.0 / 100.0));\n                    shado *= pow(-yc / cylinderRadius, 3.0);\n                    shado *= 0.5;\n                }\n                else\n                {\n                    shado = 0.0;\n                }\n                return vec4(texture2D(uSampler, vTextureCoord).rgb - shado, 1.0);\n            }\n            \n            void main()\n            {\n                const float angle = 30.0 * PI / 180.0;\n                float c = cos(-angle);\n                float s = sin(-angle);\n            \n                mat3 rotation = mat3( c, s, 0, -s, c, 0, 0.12, 0.258, 1);\n                c = cos(angle);\n                s = sin(angle);\n            \n                mat3 rrotation = mat3(\tc, s, 0, -s, c, 0, 0.15, -0.5, 1);\n            \n                vec3 point = rotation * vec3(vFilterCoord, 1.0);\n            \n                float yc = point.y - cylinderCenter;\n            \n                if (yc < -cylinderRadius)\n                {\n                    gl_FragColor = behindSurface(yc, point, rrotation);\n                    return;\n                }\n            \n                if (yc > cylinderRadius)\n                {\n                    gl_FragColor = texture2D(previousTexture, vFilterCoord);\n                    return;\n                }\n            \n                float hitAngle = (acos(yc / cylinderRadius) + cylinderAngle) - PI;\n            \n                float hitAngleMod = mod(hitAngle, 2.0 * PI);\n                if ((hitAngleMod > PI && amount < 0.5) || (hitAngleMod > PI/2.0 && amount < 0.0))\n                {\n                    gl_FragColor = seeThrough(yc, vFilterCoord, rotation, rrotation);\n                    return;\n                }\n            \n                point = hitPoint(hitAngle, yc, point, rrotation);\n            \n                if (point.x < 0.0 || point.y < 0.0 || point.x > 1.0 || point.y > 1.0)\n                {\n                    gl_FragColor = seeThroughWithShadow(yc, vFilterCoord, point, rotation, rrotation);\n                    return;\n                }\n            \n                vec4 color = backside(yc, point);\n            \n                vec4 otherColor;\n                if (yc < 0.0)\n                {\n                    float shado = 1.0 - (sqrt(pow(point.x - 0.5, 2.0) + pow(point.y - 0.5, 2.0)) / 0.71);\n                    shado *= pow(-yc / cylinderRadius, 3.0);\n                    shado *= 0.5;\n                    otherColor = vec4(0.0, 0.0, 0.0, shado);\n                }\n                else\n                {\n                    otherColor = texture2D(previousTexture, vFilterCoord);\n                }\n            \n                color = antiAlias(color, otherColor, cylinderRadius - abs(yc));\n            \n                vec4 cl = seeThroughWithShadow(yc, vFilterCoord, point, rotation, rrotation);\n                float dist = distanceToEdge(point);\n            \n                gl_FragColor = antiAlias(color, cl, dist);\n            }\n        ";
     return PageCurlFilter;
-}(AbstractFilter_1.AbstractFilter));
-exports.PageCurlFilter = PageCurlFilter;
+}(_AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"]));
+
 
 
 /***/ }),
@@ -8289,12 +8100,14 @@ exports.PageCurlFilter = PageCurlFilter;
 /*!***************************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/PageFlipLeftFilter.ts ***!
   \***************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: PageFlipLeftFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PageFlipLeftFilter", function() { return PageFlipLeftFilter; });
+/* harmony import */ var _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8307,12 +8120,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractFilter_1 = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+
 var PageFlipLeftFilter = /** @class */ (function (_super) {
     __extends(PageFlipLeftFilter, _super);
     function PageFlipLeftFilter() {
-        return _super.call(this, AbstractFilter_1.AbstractFilter.vertexSrc, PageFlipLeftFilter.fragmentSrc, PageFlipLeftFilter.uniforms) || this;
+        return _super.call(this, _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"].vertexSrc, PageFlipLeftFilter.fragmentSrc, PageFlipLeftFilter.uniforms) || this;
     }
     PageFlipLeftFilter.uniforms = {
         filterMatrix: vf.Matrix.TEMP_MATRIX,
@@ -8322,8 +8134,8 @@ var PageFlipLeftFilter = /** @class */ (function (_super) {
     };
     PageFlipLeftFilter.fragmentSrc = "\n            #ifdef GL_ES\n            precision highp float;\n            #endif\n            \n            uniform sampler2D uSampler;\n            uniform sampler2D previousTexture;\n            uniform float progress;\n            uniform float resolution;\n            \n            varying vec2 vTextureCoord;\n            varying vec2 vFilterCoord;\n            \n            const float PI = 3.141592653589793;\n            const float MIN_ANGLE = PI / 4.0;\n            const float MAX_ANGLE = PI / 2.0;\n            const float MIN_X = 0.5;\n            const float MAX_X = 0.95;\n            const float sharpness = 3.0;\n            const float scale = 512.0;\n            // float easeProgress = ( pow((progress - 1.0), 3.0) + 1.0 );\n            // float easeProgress = (progress == 1.0) ? 1.0 : -pow(2.0, -10.0 * progress) + 1.0;\n            float p = progress > 0.99 ? 0.99 : progress;\n            float easeProgress =  sqrt(1.0 - pow((p - 1.0), 2.0));\n            float curX = (1.0 - easeProgress) * (MAX_X - MIN_X) + MIN_X;\n            float angle = (easeProgress) * (MAX_ANGLE - MIN_ANGLE) + MIN_ANGLE;\n                     \n            float distanceToLine(vec2 point)\n            {\n                vec2 p0 = vec2(1.0-curX, 1.0);\n                vec2 p1 = vec2(0.0, -(1.0 - curX) * tan(angle) + 1.0);\n                float a = p1.y - p0.y;\n                float b = p0.x - p1.x;\n                float c = p1.x * p0.y - p0.x * p1.y;\n                return abs(a * point.x + b * point.y + c) / sqrt(a * a + b * b);\n            }\n\n            vec4 antiAlias(vec4 color1, vec4 color2, float distanc)\n            {\n                distanc *= scale;\n                if (distanc < 0.0) return color2;\n                if (distanc > 2.0) return color1;\n                float dd = pow(1.0 - distanc / 2.0, sharpness);\n                return ((color2 - color1) * dd) + color1;\n            }\n\n            vec2 getMirro(vec2 point ) \n            {\n                vec2 p0 = vec2(1.0-curX, 1.0);\n                vec2 p1 = vec2(0.0, -(1.0 - curX) * tan(angle) + 1.0);\n                float a = p1.y - p0.y;\n                float b = p0.x - p1.x;\n                float c = p1.x * p0.y - p0.x * p1.y;\n                float k = -2.0 * (a * point.x + b * point.y + c) / (a * a + b * b);\n                vec2 p2 = vec2(point.x + k * a, point.y + k * b);\n                return p2;\n            }\n\n            vec4 curPageBack(vec2 point)\n            {\n                vec2 mirror = getMirro(point);\n                vec4 color = texture2D(uSampler, vec2(1.0 - mirror.x, mirror.y));\n                return color;\n            }\n\n            vec4 curPage(vec2 point)\n            {\n                vec4 color = texture2D(previousTexture, point.xy);\n                return color;\n            }\n            vec4 nextPage(vec2 point)\n            {\n                vec4 color = texture2D(uSampler, point);\n                float d = distanceToLine(point);\n                vec4 shadow = vec4(1.0, 0.0, 0.0, d);\n                if(d < 0.02) {\n                    float c = (0.1 - (0.02 - d)) * (10.0 + progress * 1.5);\n                    return vec4(color.r * c, color.g * c, color.b * c, 1.0);\n                };\n                return color;\n            }\n            bool isNextPage(vec2 point) \n            {\n                vec2 p0 = vec2(1.0-curX, 1.0);\n                vec2 p1 = vec2(0.0, -(1.0 - curX) * tan(angle) + 1.0);\n                vec2 p2 = vec2(point.x - p0.x, point.y - p0.y);\n                vec2 p3 = vec2(point.x - p1.x, point.y - p1.y);\n                return p2.x * p3.y - p3.x * p2.y < 0.0;\n            }\n            bool isCurPageBack(vec2 point)\n            {\n                vec2 p0 = vec2(1.0-curX, 1.0);\n                vec2 p1 = vec2(0.0, -(1.0 - curX) * tan(angle) + 1.0);\n                float a = p1.y - p0.y;\n                float b = p0.x - p1.x;\n                float c = p1.x * p0.y - p0.x * p1.y;\n                float k = -2.0 * (a * point.x + b * point.y + c) / (a * a + b * b);\n                vec2 p2 = vec2(point.x + k * a, point.y + k * b);\n                return p2.x > 0.0 && p2.x < 1.0 && p2.y > 0.0 && p2.y < 1.0;\n            }\n            \n            void main()\n            {\n            \n                vec4 color = vec4(1.0, 0.0, 0.0, 1.0);\n                if (isNextPage(vTextureCoord)) {\n                    color = nextPage(vTextureCoord);\n                } else if (isCurPageBack(vTextureCoord)) {\n                    color = curPageBack(vTextureCoord);\n                } else {\n                    color = curPage(vTextureCoord);\n                }\n                gl_FragColor = color;\n            }\n        ";
     return PageFlipLeftFilter;
-}(AbstractFilter_1.AbstractFilter));
-exports.PageFlipLeftFilter = PageFlipLeftFilter;
+}(_AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"]));
+
 
 
 /***/ }),
@@ -8332,12 +8144,14 @@ exports.PageFlipLeftFilter = PageFlipLeftFilter;
 /*!****************************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/PageFlipRightFilter.ts ***!
   \****************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: PageFlipRightFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PageFlipRightFilter", function() { return PageFlipRightFilter; });
+/* harmony import */ var _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8350,12 +8164,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractFilter_1 = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+
 var PageFlipRightFilter = /** @class */ (function (_super) {
     __extends(PageFlipRightFilter, _super);
     function PageFlipRightFilter() {
-        return _super.call(this, AbstractFilter_1.AbstractFilter.vertexSrc, PageFlipRightFilter.fragmentSrc, PageFlipRightFilter.uniforms) || this;
+        return _super.call(this, _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"].vertexSrc, PageFlipRightFilter.fragmentSrc, PageFlipRightFilter.uniforms) || this;
     }
     PageFlipRightFilter.uniforms = {
         filterMatrix: vf.Matrix.TEMP_MATRIX,
@@ -8365,8 +8178,8 @@ var PageFlipRightFilter = /** @class */ (function (_super) {
     };
     PageFlipRightFilter.fragmentSrc = "\n            #ifdef GL_ES\n            precision highp float;\n            #endif\n            \n            uniform sampler2D uSampler;\n            uniform sampler2D previousTexture;\n            uniform float progress;\n            uniform float resolution;\n            \n            varying vec2 vTextureCoord;\n            varying vec2 vFilterCoord;\n            \n            const float PI = 3.141592653589793;\n            const float MIN_ANGLE = PI / 4.0;\n            const float MAX_ANGLE = PI / 2.0;\n            const float MIN_X = 0.5;\n            const float MAX_X = 0.95;\n            const float sharpness = 3.0;\n            const float scale = 512.0;\n\n            // float easeProgress = ( pow((progress - 1.0), 3.0) + 1.0 );\n            // float easeProgress = (progress == 1.0) ? 1.0 : -pow(2.0, -10.0 * progress) + 1.0;\n            float p = progress > 0.99 ? 0.99 : progress;\n            float easeProgress =  sqrt(1.0 - pow((p - 1.0), 2.0));\n            float curX = (1.0 - easeProgress) * (MAX_X - MIN_X) + MIN_X;\n            float angle = (easeProgress) * (MAX_ANGLE - MIN_ANGLE) + MIN_ANGLE;\n                     \n            float distanceToLine(vec2 point)\n            {\n                vec2 p0 = vec2(curX, 1.0);\n                vec2 p1 = vec2(1.0, -(1.0 - curX) * tan(angle) + 1.0);\n                float a = p1.y - p0.y;\n                float b = p0.x - p1.x;\n                float c = p1.x * p0.y - p0.x * p1.y;\n                return abs(a * point.x + b * point.y + c) / sqrt(a * a + b * b);\n            }\n\n            vec4 antiAlias(vec4 color1, vec4 color2, float distanc)\n            {\n                distanc *= scale;\n                if (distanc < 0.0) return color2;\n                if (distanc > 2.0) return color1;\n                float dd = pow(1.0 - distanc / 2.0, sharpness);\n                return ((color2 - color1) * dd) + color1;\n            }\n\n            vec2 getMirro(vec2 point ) \n            {\n                vec2 p0 = vec2(curX, 1.0);\n                vec2 p1 = vec2(1.0, -(1.0 - curX) * tan(angle) + 1.0);\n                float a = p1.y - p0.y;\n                float b = p0.x - p1.x;\n                float c = p1.x * p0.y - p0.x * p1.y;\n                float k = -2.0 * (a * point.x + b * point.y + c) / (a * a + b * b);\n                vec2 p2 = vec2(point.x + k * a, point.y + k * b);\n                return p2;\n            }\n\n            vec4 curPageBack(vec2 point)\n            {\n                vec2 mirror = getMirro(point);\n                vec4 color = texture2D(uSampler, vec2(1.0 - mirror.x, mirror.y));\n                return color;\n            }\n\n            vec4 curPage(vec2 point)\n            {\n                vec4 color = texture2D(previousTexture, point);\n                float d = distanceToLine(point);\n                vec4 shadow = vec4(1.0, 0.0, 0.0, 1.0);\n                // return shadow;\n                // if(d < 0.2) {\n                //     float c = (0.1 - (0.02 - d)) * (10.0 + progress * 1.5);\n                //     return vec4(color.r * c, color.g * c, color.b * c, 1.0);\n                // };\n                return color;\n            }\n            vec4 nextPage(vec2 point)\n            {\n                vec4 color = texture2D(uSampler, point);\n                float d = distanceToLine(point);\n                vec4 shadow = vec4(1.0, 0.0, 0.0, d);\n                if(d < 0.02) {\n                    float c = (0.1 - (0.02 - d)) * (10.0 + progress * 1.5);\n                    return vec4(color.r * c, color.g * c, color.b * c, 1.0);\n                };\n                return color;\n            }\n            bool isNextPage(vec2 point) \n            {\n                vec2 p0 = vec2(curX, 1.0);\n                vec2 p1 = vec2(1.0, -(1.0 - curX) * tan(angle) + 1.0);\n                vec2 p2 = vec2(point.x - p0.x, point.y - p0.y);\n                vec2 p3 = vec2(point.x - p1.x, point.y - p1.y);\n                return p2.x * p3.y - p3.x * p2.y > 0.0;\n            }\n            bool isCurPageBack(vec2 point)\n            {\n                vec2 p0 = vec2(curX, 1.0);\n                vec2 p1 = vec2(1.0, -(1.0 - curX) * tan(angle) + 1.0);\n                float a = p1.y - p0.y;\n                float b = p0.x - p1.x;\n                float c = p1.x * p0.y - p0.x * p1.y;\n                float k = -2.0 * (a * point.x + b * point.y + c) / (a * a + b * b);\n                vec2 p2 = vec2(point.x + k * a, point.y + k * b);\n                return p2.x > 0.0 && p2.x < 1.0 && p2.y > 0.0 && p2.y < 1.0;\n            }\n            \n            \n            void main()\n            {\n            \n                vec4 color = vec4(1.0, 0.0, 0.0, 1.0);\n                if (isNextPage(vTextureCoord)) {\n                    color = nextPage(vTextureCoord);\n                } else if (isCurPageBack(vTextureCoord)) {\n                    color = curPageBack(vTextureCoord);\n                } else {\n                    color = curPage(vTextureCoord);\n                }\n                gl_FragColor = color;\n            }\n        ";
     return PageFlipRightFilter;
-}(AbstractFilter_1.AbstractFilter));
-exports.PageFlipRightFilter = PageFlipRightFilter;
+}(_AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"]));
+
 
 
 /***/ }),
@@ -8375,12 +8188,14 @@ exports.PageFlipRightFilter = PageFlipRightFilter;
 /*!*********************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/ToTearFilter.ts ***!
   \*********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: ToTearFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ToTearFilter", function() { return ToTearFilter; });
+/* harmony import */ var _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8393,8 +8208,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractFilter_1 = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+
 var ToTearFilter = /** @class */ (function (_super) {
     __extends(ToTearFilter, _super);
     function ToTearFilter() {
@@ -8404,8 +8218,8 @@ var ToTearFilter = /** @class */ (function (_super) {
     }
     ToTearFilter.fragmentSrc = "\n            precision highp float;\n            varying vec2 vTextureCoord;\n            varying vec2 vFilterCoord;\n            uniform sampler2D uSampler;\n            uniform sampler2D previousTexture;\n            uniform float progress;\n            \n            void main() {\n                vec4 displacement1 = texture2D( previousTexture, vTextureCoord);\n                vec4 displacement2 = texture2D( uSampler, vFilterCoord);\n                vec4 displacement = mix(displacement1, displacement2, vec4(progress));\n                vec2 mixTexture = mix(displacement.xy, vTextureCoord.xy, vec2(progress));\n                vec2 testPos1 = mixTexture + (1.0 - progress) * displacement.xy * 0.5;\n                vec2 testPos = mix(testPos1, vec2(1.0), vec2(1.0 - progress));\n                vec2 distUv = vec2(testPos.x, vTextureCoord.y);\n                vec4 color = texture2D(uSampler, distUv);\n                vec4 color1 = texture2D(previousTexture, distUv);\n                gl_FragColor = vec4(mix(color, vec4(vec3(color1), 0.0), 0.18));\n            }\n        ";
     return ToTearFilter;
-}(AbstractFilter_1.AbstractFilter));
-exports.ToTearFilter = ToTearFilter;
+}(_AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"]));
+
 
 
 /***/ }),
@@ -8414,12 +8228,14 @@ exports.ToTearFilter = ToTearFilter;
 /*!*******************************************************************!*\
   !*** ./packages/player/src/core/transition/filters/WindFilter.ts ***!
   \*******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: WindFilter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WindFilter", function() { return WindFilter; });
+/* harmony import */ var _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8432,12 +8248,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var AbstractFilter_1 = __webpack_require__(/*! ./AbstractFilter */ "./packages/player/src/core/transition/filters/AbstractFilter.ts");
+
 var WindFilter = /** @class */ (function (_super) {
     __extends(WindFilter, _super);
     function WindFilter() {
-        return _super.call(this, AbstractFilter_1.AbstractFilter.vertexSrc, WindFilter.fragmentSrc, WindFilter.linearBlurUniforms) || this;
+        return _super.call(this, _AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"].vertexSrc, WindFilter.fragmentSrc, WindFilter.linearBlurUniforms) || this;
     }
     WindFilter.linearBlurUniforms = {
         filterMatrix: vf.Matrix.TEMP_MATRIX,
@@ -8448,8 +8263,8 @@ var WindFilter = /** @class */ (function (_super) {
     };
     WindFilter.fragmentSrc = "\n            #ifdef GL_ES\n            precision highp float;\n            #endif\n            \n            uniform sampler2D uSampler;\n            uniform sampler2D previousTexture;\n            uniform float progress;\n            uniform float resolution;\n            uniform float size;\n            \n            varying vec2 vTextureCoord;\n            varying vec2 vFilterCoord;\n            \n            float rand (vec2 co) {\n                return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);\n            }\n            \n            void main() {\n                float r = rand(vec2(0, vTextureCoord.y));\n                float m = smoothstep(0.0, -size, vTextureCoord.x*(1.0-size) + size*r - (progress * (1.0 + size)));\n                gl_FragColor = mix(texture2D(previousTexture, vFilterCoord), texture2D(uSampler, vTextureCoord), m);\n            }\n        ";
     return WindFilter;
-}(AbstractFilter_1.AbstractFilter));
-exports.WindFilter = WindFilter;
+}(_AbstractFilter__WEBPACK_IMPORTED_MODULE_0__["AbstractFilter"]));
+
 
 
 /***/ }),
@@ -8458,12 +8273,12 @@ exports.WindFilter = WindFilter;
 /*!******************************************************************!*\
   !*** ./packages/player/src/core/transition/trans/FadeoutTran.ts ***!
   \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: FadeoutTran */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FadeoutTran", function() { return FadeoutTran; });
 var FadeoutTran = /** @class */ (function () {
     function FadeoutTran() {
         this._progress = 0;
@@ -8506,7 +8321,7 @@ var FadeoutTran = /** @class */ (function () {
     };
     return FadeoutTran;
 }());
-exports.FadeoutTran = FadeoutTran;
+
 
 
 /***/ }),
@@ -8515,12 +8330,13 @@ exports.FadeoutTran = FadeoutTran;
 /*!****************************************************!*\
   !*** ./packages/player/src/display/VFComponent.ts ***!
   \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: VFComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VFComponent", function() { return VFComponent; });
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8533,7 +8349,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
 var VFComponent = /** @class */ (function (_super) {
     __extends(VFComponent, _super);
     function VFComponent() {
@@ -8759,7 +8574,7 @@ var VFComponent = /** @class */ (function (_super) {
     VFComponent.maxHashCode = 10000;
     return VFComponent;
 }(vf.gui.Container));
-exports.VFComponent = VFComponent;
+
 
 
 /***/ }),
@@ -8768,12 +8583,13 @@ exports.VFComponent = VFComponent;
 /*!************************************************!*\
   !*** ./packages/player/src/display/VFScene.ts ***!
   \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: VFScene */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VFScene", function() { return VFScene; });
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8786,7 +8602,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
 var VFScene = /** @class */ (function (_super) {
     __extends(VFScene, _super);
     function VFScene(vfStage) {
@@ -8833,7 +8648,7 @@ var VFScene = /** @class */ (function (_super) {
     };
     return VFScene;
 }(vf.gui.Container));
-exports.VFScene = VFScene;
+
 
 
 /***/ }),
@@ -8842,12 +8657,18 @@ exports.VFScene = VFScene;
 /*!************************************************!*\
   !*** ./packages/player/src/display/VFStage.ts ***!
   \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: VFStage */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VFStage", function() { return VFStage; });
+/* harmony import */ var _core_VariableManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/VariableManager */ "./packages/player/src/core/VariableManager.ts");
+/* harmony import */ var _sound_SoundManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sound/SoundManager */ "./packages/player/src/sound/SoundManager.ts");
+/* harmony import */ var _core_RES__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/RES */ "./packages/player/src/core/RES.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+/* harmony import */ var _plugs_PlugIndex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./plugs/PlugIndex */ "./packages/player/src/display/plugs/PlugIndex.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8860,12 +8681,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var VariableManager_1 = __webpack_require__(/*! ../core/VariableManager */ "./packages/player/src/core/VariableManager.ts");
-var SoundManager_1 = __webpack_require__(/*! ../sound/SoundManager */ "./packages/player/src/sound/SoundManager.ts");
-var RES_1 = __webpack_require__(/*! ../core/RES */ "./packages/player/src/core/RES.ts");
-var VFUtil_1 = __webpack_require__(/*! ../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
-var Plugs = __webpack_require__(/*! ./plugs/PlugIndex */ "./packages/player/src/display/plugs/PlugIndex.ts");
+
+
+
+
+
 var STAGE_STATUS;
 (function (STAGE_STATUS) {
     STAGE_STATUS[STAGE_STATUS["NONE"] = 0] = "NONE";
@@ -8892,12 +8712,12 @@ var VFStage = /** @class */ (function (_super) {
         _this.player = player;
         vf.gui.Utils.debug = config.debug;
         // 配置数据后，创建各种管理器
-        _this.res = new RES_1.RES(_this);
-        _this.variableManager = new VariableManager_1.VariableManager();
-        _this.soundManager = new SoundManager_1.SoundManager(_this.res, _this);
+        _this.res = new _core_RES__WEBPACK_IMPORTED_MODULE_2__["RES"](_this);
+        _this.variableManager = new _core_VariableManager__WEBPACK_IMPORTED_MODULE_0__["VariableManager"]();
+        _this.soundManager = new _sound_SoundManager__WEBPACK_IMPORTED_MODULE_1__["SoundManager"](_this.res, _this);
         _this.tween = new vf.gui.Tween();
         // tslint:disable-next-line: no-unused-expression
-        new Plugs.PlugIndex();
+        new _plugs_PlugIndex__WEBPACK_IMPORTED_MODULE_4__["PlugIndex"]();
         return _this;
     }
     Object.defineProperty(VFStage.prototype, "systemEvent", {
@@ -9020,7 +8840,7 @@ var VFStage = /** @class */ (function (_super) {
                     if (transitionData == null) {
                         transitionData = this.curScene.transition;
                     }
-                    prevTexture = VFUtil_1.renderTexture(this.app, this.container, this.container.width, this.container.height);
+                    prevTexture = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__["renderTexture"])(this.app, this.container, this.container.width, this.container.height);
                 }
                 this.removeChild(this.curScene);
                 this.curScene.dispose();
@@ -9030,7 +8850,7 @@ var VFStage = /** @class */ (function (_super) {
             this.curScene.height = this.height;
             this.addChild(scene);
             if (transitionData && prevTexture) {
-                VFUtil_1.applyTransition(this, prevTexture, transitionData);
+                Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__["applyTransition"])(this, prevTexture, transitionData);
             }
             else {
                 this.emit("TransitionStart" /* TransitionStart */);
@@ -9059,7 +8879,7 @@ var VFStage = /** @class */ (function (_super) {
         var plugsData = this.config.plugs;
         for (var _i = 0, plugsData_1 = plugsData; _i < plugsData_1.length; _i++) {
             var value = plugsData_1[_i];
-            var PlugsClass = (Plugs[value.id]);
+            var PlugsClass = (_plugs_PlugIndex__WEBPACK_IMPORTED_MODULE_4__[value.id]);
             if (PlugsClass) {
                 var plug = new PlugsClass(value.id, this);
                 plug.load(value);
@@ -9082,7 +8902,7 @@ var VFStage = /** @class */ (function (_super) {
     };
     return VFStage;
 }(vf.gui.Stage));
-exports.VFStage = VFStage;
+
 
 
 /***/ }),
@@ -9091,12 +8911,14 @@ exports.VFStage = VFStage;
 /*!************************************************************!*\
   !*** ./packages/player/src/display/plugs/BoardDrawPlug.ts ***!
   \************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: BoardDrawPlug */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BoardDrawPlug", function() { return BoardDrawPlug; });
+/* harmony import */ var _Plug__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Plug */ "./packages/player/src/display/plugs/Plug.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -9109,8 +8931,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var Plug_1 = __webpack_require__(/*! ./Plug */ "./packages/player/src/display/plugs/Plug.ts");
+
 /**
  * 画板插件
  * @author yangxiao
@@ -9167,8 +8988,8 @@ var BoardDrawPlug = /** @class */ (function (_super) {
         }
     };
     return BoardDrawPlug;
-}(Plug_1.Plug));
-exports.BoardDrawPlug = BoardDrawPlug;
+}(_Plug__WEBPACK_IMPORTED_MODULE_0__["Plug"]));
+
 
 
 /***/ }),
@@ -9177,12 +8998,12 @@ exports.BoardDrawPlug = BoardDrawPlug;
 /*!***************************************************!*\
   !*** ./packages/player/src/display/plugs/Plug.ts ***!
   \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: Plug */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Plug", function() { return Plug; });
 /**
  * 基于接口的抽象实现
  * @author yangxiao
@@ -9225,7 +9046,7 @@ var Plug = /** @class */ (function () {
     };
     return Plug;
 }());
-exports.Plug = Plug;
+
 
 
 /***/ }),
@@ -9234,23 +9055,27 @@ exports.Plug = Plug;
 /*!********************************************************!*\
   !*** ./packages/player/src/display/plugs/PlugIndex.ts ***!
   \********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: BoardDrawPlug, SliderEditorPlug, PlugIndex */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlugIndex", function() { return PlugIndex; });
+/* harmony import */ var _BoardDrawPlug__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BoardDrawPlug */ "./packages/player/src/display/plugs/BoardDrawPlug.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BoardDrawPlug", function() { return _BoardDrawPlug__WEBPACK_IMPORTED_MODULE_0__["BoardDrawPlug"]; });
 
-Object.defineProperty(exports, "__esModule", { value: true });
-var BoardDrawPlug_1 = __webpack_require__(/*! ./BoardDrawPlug */ "./packages/player/src/display/plugs/BoardDrawPlug.ts");
-exports.BoardDrawPlug = BoardDrawPlug_1.BoardDrawPlug;
-var SliderEditorPlug_1 = __webpack_require__(/*! ./SliderEditorPlug */ "./packages/player/src/display/plugs/SliderEditorPlug.ts");
-exports.SliderEditorPlug = SliderEditorPlug_1.SliderEditorPlug;
+/* harmony import */ var _SliderEditorPlug__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SliderEditorPlug */ "./packages/player/src/display/plugs/SliderEditorPlug.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SliderEditorPlug", function() { return _SliderEditorPlug__WEBPACK_IMPORTED_MODULE_1__["SliderEditorPlug"]; });
+
+
+
 var PlugIndex = /** @class */ (function () {
     function PlugIndex() {
         //
     }
     return PlugIndex;
 }());
-exports.PlugIndex = PlugIndex;
+
 
 
 /***/ }),
@@ -9259,12 +9084,14 @@ exports.PlugIndex = PlugIndex;
 /*!***************************************************************!*\
   !*** ./packages/player/src/display/plugs/SliderEditorPlug.ts ***!
   \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: SliderEditorPlug */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SliderEditorPlug", function() { return SliderEditorPlug; });
+/* harmony import */ var _Plug__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Plug */ "./packages/player/src/display/plugs/Plug.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -9277,8 +9104,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var Plug_1 = __webpack_require__(/*! ./Plug */ "./packages/player/src/display/plugs/Plug.ts");
+
 /**
  * 基于互动课件slider业务的特殊插件，用于解决穿透，鼠标事件等问题
  * @author yangxiao
@@ -9347,8 +9173,8 @@ var SliderEditorPlug = /** @class */ (function (_super) {
         this.dom = null;
     };
     return SliderEditorPlug;
-}(Plug_1.Plug));
-exports.SliderEditorPlug = SliderEditorPlug;
+}(_Plug__WEBPACK_IMPORTED_MODULE_0__["Plug"]));
+
 
 
 /***/ }),
@@ -9357,12 +9183,11 @@ exports.SliderEditorPlug = SliderEditorPlug;
 /*!***************************************************!*\
   !*** ./packages/player/src/error/ErrorDisplay.ts ***!
   \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__.r(__webpack_exports__);
 /**
  * 显示错误信息
  * TODO:
@@ -9417,7 +9242,7 @@ var ErrorDisplay = /** @class */ (function () {
     };
     return ErrorDisplay;
 }());
-exports.default = ErrorDisplay;
+/* harmony default export */ __webpack_exports__["default"] = (ErrorDisplay);
 
 
 /***/ }),
@@ -9426,12 +9251,14 @@ exports.default = ErrorDisplay;
 /*!*************************************************!*\
   !*** ./packages/player/src/event/StateEvent.ts ***!
   \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __extends = (this && this.__extends) || (function () {
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var eventemitter3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! eventemitter3 */ "./node_modules/eventemitter3/index.js");
+/* harmony import */ var eventemitter3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(eventemitter3__WEBPACK_IMPORTED_MODULE_0__);
+var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -9444,8 +9271,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-Object.defineProperty(exports, "__esModule", { value: true });
-var eventemitter3_1 = __webpack_require__(/*! eventemitter3 */ "./node_modules/eventemitter3/index.js");
+
 var StateEvent = /** @class */ (function (_super) {
     __extends(StateEvent, _super);
     function StateEvent() {
@@ -9488,8 +9314,8 @@ var StateEvent = /** @class */ (function (_super) {
         this.emit("status" /* STATUS */, msg);
     };
     return StateEvent;
-}(eventemitter3_1.EventEmitter));
-exports.default = StateEvent;
+}(eventemitter3__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]));
+/* harmony default export */ __webpack_exports__["default"] = (StateEvent);
 
 
 /***/ }),
@@ -9498,21 +9324,15 @@ exports.default = StateEvent;
 /*!**************************************!*\
   !*** ./packages/player/src/index.ts ***!
   \**************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: Player */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Player__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Player */ "./packages/player/src/Player.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Player", function() { return _Player__WEBPACK_IMPORTED_MODULE_0__["Player"]; });
 
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./Player */ "./packages/player/src/Player.ts"));
-var w = window;
-if (w.vf === undefined) {
-    w.vf = {};
-}
-w.vf.player = this;
+
 
 
 /***/ }),
@@ -9521,12 +9341,14 @@ w.vf.player = this;
 /*!***************************************************!*\
   !*** ./packages/player/src/sound/SoundManager.ts ***!
   \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: SoundManager */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SoundManager", function() { return SoundManager; });
+/* harmony import */ var _assets_empty_audio_mp3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../assets/empty-audio.mp3 */ "./assets/empty-audio.mp3");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -9535,7 +9357,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
     return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
@@ -9562,8 +9384,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-var empty_audio_mp3_1 = __webpack_require__(/*! ../../../../assets/empty-audio.mp3 */ "./assets/empty-audio.mp3");
+
 var SoundManager = /** @class */ (function () {
     function SoundManager(res, vfStage) {
         this.trackMap = {};
@@ -9731,7 +9552,7 @@ var SoundManager = /** @class */ (function () {
     SoundManager.prototype.testAutoPlay = function () {
         return new Promise(function (resolve) {
             var audio = document.createElement('audio');
-            audio.src = empty_audio_mp3_1.default;
+            audio.src = _assets_empty_audio_mp3__WEBPACK_IMPORTED_MODULE_0__["default"];
             document.body.appendChild(audio);
             var autoplay = true;
             audio.play().then(function () {
@@ -9786,7 +9607,7 @@ var SoundManager = /** @class */ (function () {
     };
     return SoundManager;
 }());
-exports.SoundManager = SoundManager;
+
 
 
 /***/ }),
@@ -9795,12 +9616,12 @@ exports.SoundManager = SoundManager;
 /*!**********************************************************!*\
   !*** ./packages/player/src/utils/CalculatePlayerSize.ts ***!
   \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return calculateUpdatePlayerSize; });
 /**
  * @private
  *
@@ -9872,7 +9693,6 @@ function calculateUpdatePlayerSize(canvas, stage, scaleMode, appParentDivName, c
     stage.scaleY = canvasScaleY;
     return { width: canvas.width, height: canvas.height, scaleX: canvasScaleX, scaleY: canvasScaleY };
 }
-exports.default = calculateUpdatePlayerSize;
 /**
  * @private
  * 计算舞台显示尺寸
@@ -9947,12 +9767,14 @@ function calculateStageSize(scaleMode, screenWidth, screenHeight, contentWidth, 
 /*!***************************************************!*\
   !*** ./packages/player/src/utils/ImportScript.ts ***!
   \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return importScript; });
+/* harmony import */ var _getUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getUrl */ "./packages/player/src/utils/getUrl.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -9961,7 +9783,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
     return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
@@ -9988,8 +9810,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-var getUrl_1 = __webpack_require__(/*! ./getUrl */ "./packages/player/src/utils/getUrl.ts");
+
 function checkModule() {
     var w = window;
     if (w.require === undefined) {
@@ -10033,7 +9854,7 @@ function importScript(url, cdns, moduleName, loadCompleteCallBack) {
                     var loadScript = function (index) {
                         var s = document.createElement('script');
                         s.async = false;
-                        s.src = index === 0 ? url : getUrl_1.getUrl(url, '', cdns, index - 1);
+                        s.src = index === 0 ? url : Object(_getUrl__WEBPACK_IMPORTED_MODULE_0__["getUrl"])(url, '', cdns, index - 1);
                         s.addEventListener('load', loadComplete, false);
                         s.addEventListener('error', loadError, false);
                         document.body.appendChild(s);
@@ -10077,7 +9898,6 @@ function importScript(url, cdns, moduleName, loadCompleteCallBack) {
         });
     });
 }
-exports.default = importScript;
 
 
 /***/ }),
@@ -10086,12 +9906,12 @@ exports.default = importScript;
 /*!********************************************!*\
   !*** ./packages/player/src/utils/Trace.ts ***!
   \********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return trace; });
 function trace() {
     var args = [];
     for (var _i = 0; _i < arguments.length; _i++) {
@@ -10113,7 +9933,6 @@ function trace() {
         case 6: return console.log(title, args[0], args[1], args[2], args[3], args[4], args[5]);
     }
 }
-exports.default = trace;
 //
 // export default class Trace {
 //     public static NAME		    :string = 'Trace';
@@ -10249,15 +10068,30 @@ exports.default = trace;
 /*!*********************************************!*\
   !*** ./packages/player/src/utils/VFUtil.ts ***!
   \*********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: getTargetComponent, getComponentOrChild, getCurveProgress, applyTransition, renderTexture, getCanvasColor, webglDebug, isObject, isNumber, isString, isBoolean, isArray, stringFormat */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTargetComponent", function() { return getTargetComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getComponentOrChild", function() { return getComponentOrChild; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurveProgress", function() { return getCurveProgress; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "applyTransition", function() { return applyTransition; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderTexture", function() { return renderTexture; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCanvasColor", function() { return getCanvasColor; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "webglDebug", function() { return webglDebug; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isObject", function() { return isObject; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isNumber", function() { return isNumber; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isString", function() { return isString; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isBoolean", function() { return isBoolean; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isArray", function() { return isArray; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stringFormat", function() { return stringFormat; });
+/* harmony import */ var _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/model/IVFData */ "./packages/player/src/core/model/IVFData.ts");
+/* harmony import */ var _display_VFComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../display/VFComponent */ "./packages/player/src/display/VFComponent.ts");
+/* harmony import */ var _core_transition_Tranistion__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/transition/Tranistion */ "./packages/player/src/core/transition/Tranistion.ts");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-var IVFData_1 = __webpack_require__(/*! ../core/model/IVFData */ "./packages/player/src/core/model/IVFData.ts");
-var VFComponent_1 = __webpack_require__(/*! ../display/VFComponent */ "./packages/player/src/display/VFComponent.ts");
-var Tranistion_1 = __webpack_require__(/*! ../core/transition/Tranistion */ "./packages/player/src/core/transition/Tranistion.ts");
+
+
 /**
  * 获取从父级开始的对象
  */
@@ -10265,7 +10099,7 @@ function getParentByTargetComponent(component, targets) {
     var com = component;
     while (targets.length > 0) {
         var childId = targets.shift();
-        if (com && com instanceof VFComponent_1.VFComponent && childId) {
+        if (com && com instanceof _display_VFComponent__WEBPACK_IMPORTED_MODULE_1__["VFComponent"] && childId) {
             com = com.getChildById(childId);
         }
         else {
@@ -10292,7 +10126,7 @@ function getRootByTargetComponent(component, targets) {
     }
     for (var i = 0, len = curScene.uiChildren.length; i < len; i++) {
         curCom = curScene.uiChildren[i];
-        if (curCom instanceof VFComponent_1.VFComponent && curCom.id === rootComID) {
+        if (curCom instanceof _display_VFComponent__WEBPACK_IMPORTED_MODULE_1__["VFComponent"] && curCom.id === rootComID) {
             break;
         }
     }
@@ -10304,12 +10138,12 @@ function getRootByTargetComponent(component, targets) {
 function getTargetComponent(component, targetData) {
     // 支持从变量，属性，数组，参数中获取 组件
     if (component && Array.isArray(targetData) && targetData.length > 1) {
-        if (targetData[0] === IVFData_1.ExpressItemType.VARIABLE ||
-            targetData[0] === IVFData_1.ExpressItemType.PROPERTY ||
-            targetData[0] === IVFData_1.ExpressItemType.ARRAY_VALUE ||
-            targetData[0] === IVFData_1.ExpressItemType.PARAM_VALUE ||
-            targetData[0] === IVFData_1.ExpressItemType.OBJECT_VALUE ||
-            targetData[0] === IVFData_1.ExpressItemType.COMPONENT) {
+        if (targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].VARIABLE ||
+            targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PROPERTY ||
+            targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_VALUE ||
+            targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARAM_VALUE ||
+            targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].OBJECT_VALUE ||
+            targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].COMPONENT) {
             var vfStage = component.vfStage;
             if (vfStage && vfStage.variableManager) {
                 var variableManager = vfStage.variableManager;
@@ -10322,7 +10156,6 @@ function getTargetComponent(component, targetData) {
     }
     return getComponentOrChild(component, targetData);
 }
-exports.getTargetComponent = getTargetComponent;
 function getComponentOrChild(component, targetData) {
     if (!targetData) {
         return component;
@@ -10340,7 +10173,6 @@ function getComponentOrChild(component, targetData) {
         }
     }
 }
-exports.getComponentOrChild = getComponentOrChild;
 function getCurveProgress(type, pos) {
     var s = 0;
     switch (type) {
@@ -10510,12 +10342,10 @@ function getCurveProgress(type, pos) {
             return pos;
     }
 }
-exports.getCurveProgress = getCurveProgress;
 function applyTransition(vfStage, prevTexture, data) {
-    var transition = new Tranistion_1.Transition(vfStage, prevTexture, data);
+    var transition = new _core_transition_Tranistion__WEBPACK_IMPORTED_MODULE_2__["Transition"](vfStage, prevTexture, data);
     transition.run();
 }
-exports.applyTransition = applyTransition;
 function renderTexture(app, container, width, height) {
     var w = width || app.view.width;
     var h = height || app.view.height;
@@ -10527,7 +10357,6 @@ function renderTexture(app, container, width, height) {
     app.renderer.render(container, texture);
     return texture;
 }
-exports.renderTexture = renderTexture;
 function getCanvasColor(app, container, x, y) {
     // const canvas = app.view;
     // console.log('canvas', canvas)
@@ -10544,33 +10373,26 @@ function getCanvasColor(app, container, x, y) {
     var pixels = app.renderer.extract.pixels(texture);
     return pixels;
 }
-exports.getCanvasColor = getCanvasColor;
 function webglDebug(app, container) {
     var c = getCanvasColor(app, container, 0, 0);
     // tslint:disable-next-line: no-console
     console.log(' canvas 0,0, color:', 'r:', c[0] / 255, 'g:', c[1], 'b:', c[2], c);
 }
-exports.webglDebug = webglDebug;
 function isObject(obj) {
     return Object.prototype.toString.call(obj) === '[object Object]';
 }
-exports.isObject = isObject;
 function isNumber(obj) {
     return typeof obj === 'number' && !isNaN(obj);
 }
-exports.isNumber = isNumber;
 function isString(obj) {
     return typeof obj === 'string';
 }
-exports.isString = isString;
 function isBoolean(obj) {
     return typeof obj === 'boolean';
 }
-exports.isBoolean = isBoolean;
 function isArray(obj) {
     return Array.isArray(obj);
 }
-exports.isArray = isArray;
 /**
  *	 按指定格式替换字符串
 * @param str 原字符串 var str:string="a{0}c{1}e";
@@ -10601,7 +10423,6 @@ function stringFormat(str) {
     }
     return str;
 }
-exports.stringFormat = stringFormat;
 
 
 /***/ }),
@@ -10610,12 +10431,12 @@ exports.stringFormat = stringFormat;
 /*!*******************************************************!*\
   !*** ./packages/player/src/utils/getFileExtension.ts ***!
   \*******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: getFileExtension */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getFileExtension", function() { return getFileExtension; });
 /**
  * 获取加载文件的扩展名
  */
@@ -10635,7 +10456,6 @@ function getFileExtension(url) {
     }
     return ext.toLowerCase();
 }
-exports.getFileExtension = getFileExtension;
 
 
 /***/ }),
@@ -10644,14 +10464,17 @@ exports.getFileExtension = getFileExtension;
 /*!*********************************************!*\
   !*** ./packages/player/src/utils/getUrl.ts ***!
   \*********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: getUrl, getCdnUrl */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUrl", function() { return getUrl; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCdnUrl", function() { return getCdnUrl; });
+/* harmony import */ var _getFileExtension__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFileExtension */ "./packages/player/src/utils/getFileExtension.ts");
+/* harmony import */ var _assets_Assets__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../assets/Assets */ "./packages/assets/Assets.ts");
 
-Object.defineProperty(exports, "__esModule", { value: true });
-var getFileExtension_1 = __webpack_require__(/*! ./getFileExtension */ "./packages/player/src/utils/getFileExtension.ts");
-var Assets_1 = __webpack_require__(/*! ../../../assets/Assets */ "./packages/assets/Assets.ts");
+
 function getUrl(url, baseUrl, cdns, index) {
     if (baseUrl === void 0) { baseUrl = ''; }
     if (index === void 0) { index = 0; }
@@ -10665,13 +10488,12 @@ function getUrl(url, baseUrl, cdns, index) {
     }
     return url;
 }
-exports.getUrl = getUrl;
 function getCdnUrl(url, cdns, index) {
     if (index === void 0) { index = 0; }
     if (url.indexOf('data:') === 0) {
         return url;
     }
-    var type = Assets_1.getAssetType(getFileExtension_1.getFileExtension(url));
+    var type = Object(_assets_Assets__WEBPACK_IMPORTED_MODULE_1__["getAssetType"])(Object(_getFileExtension__WEBPACK_IMPORTED_MODULE_0__["getFileExtension"])(url));
     var cdn;
     switch (type) {
         case 4 /* Image */:
@@ -10693,7 +10515,6 @@ function getCdnUrl(url, cdns, index) {
     }
     return cdn;
 }
-exports.getCdnUrl = getCdnUrl;
 
 
 /***/ }),
@@ -10702,12 +10523,14 @@ exports.getCdnUrl = getCdnUrl;
 /*!***************************************************!*\
   !*** ./packages/player/src/utils/readFileSync.ts ***!
   \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: readFileSyncExt, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "readFileSyncExt", function() { return readFileSyncExt; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return readFileSync; });
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -10716,7 +10539,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
     return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
@@ -10743,7 +10566,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 function parseJson(text, result) {
     try {
         result.data = ((typeof text) === 'string') ? JSON.parse(text) : text;
@@ -10838,7 +10660,6 @@ function readFileSyncExt(url, cdns, options, listener) {
         });
     });
 }
-exports.readFileSyncExt = readFileSyncExt;
 /**
  * 读取文件
  * @param url 文件路径
@@ -10899,7 +10720,6 @@ function readFileSync(url, options, listener) {
         xhr.send();
     });
 }
-exports.default = readFileSync;
 
 
 /***/ })

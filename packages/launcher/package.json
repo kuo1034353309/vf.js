@@ -1,15 +1,17 @@
 {
   "name": "@vf.js/launcher",
-  "version": "0.2.0",
+  "version": "0.3.0",
+  "status": "beta",
   "description": "",
-  "main": "dist/launcher.js",
+  "main": "dist/launcher.min.js",
   "types": "launcher.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "npmPublish": "npm publish -registry=https://registry.npmjs.org"
   },
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "launcher.d.ts"
   ],
   "author": "",
   "license": "ISC",

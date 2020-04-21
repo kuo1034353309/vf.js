@@ -101,9 +101,8 @@ export default class Config extends BaseInfo {
         if(this.cdns.wx === undefined){
             this.cdns.wx = this.cdns.default.concat();
         }
-        this._language = options.language || Player.system.language;
+        this._language = options.language || vf.utils.getSystemInfo().language;
         this._i18n = new I18N(this._language);
-        this.output('Config Info：', this.info);
     }
 
     public get container(): HTMLElement {
