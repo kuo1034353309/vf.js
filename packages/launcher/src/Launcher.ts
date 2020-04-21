@@ -123,7 +123,7 @@ class VIPKIDLauncher {
         }
 
         if (w['vf']['gui'] === undefined) {
-            const v = 'gui-v1.3.1';
+            const v = 'gui-v1.3.2';
 
             if (process.env.NODE_ENV === 'production') {
                 libs.push(`${cdn}vf/engine/${v}/gui.min.js`);
