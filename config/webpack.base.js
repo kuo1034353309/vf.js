@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const launcherPackage = require('../packages/launcher/package.json');
+const playerPackage = require('../packages/player/package.json');
 const engineOutPath = '../dist/vf/engine';
 
 module.exports = {
@@ -40,6 +41,7 @@ module.exports = {
         ]),
         new webpack.DefinePlugin({
             VFBUILDDATE: JSON.stringify(new Date().toLocaleString()),
+            PLAYERRVERION: JSON.stringify(playerPackage.version),
             LAUNCHERVERION: JSON.stringify(launcherPackage.version),
         }),
         // dev 添加

@@ -11,6 +11,8 @@ declare let VFBUILDDATE: any; // webpack全局变量，prod环境使用
 
 declare let LAUNCHERVERION: any;
 
+declare let PLAYERRVERION: any;
+
 /**
  * vf集成方案加载器
  *
@@ -132,7 +134,7 @@ class VIPKIDLauncher {
         }
 
         if (w['vf']['player'] === undefined) {
-            const v = 'player-v0.3.0';
+            const v = `player-v${PLAYERRVERION}`;
 
             if (process.env.NODE_ENV === 'production') {
                 libs.push(`${cdn}vf/engine/${v}/player.min.js`);
