@@ -45,7 +45,7 @@ VF默认使用WebGL2渲染，初始化时检测到低端设备或不支持的浏
 <script src="http://unpkg.com/@vf.js/launcher/dist/launcher.min.js"></script>
 ```
 
-### 使用过程像数 1, 2 一样容易
+### 使用过程像数 1, 2, 3 一样容易
 
 ``` js {10}
 
