@@ -53,7 +53,7 @@ import {createVF} from '@vf.js/launcher';
 // 2.设置插入页面的div容器
 createVF({container:document.getElementById("div")},player=>{
   // 3.启动实例
-  vf.play('data.json');
+  player.play('data.json');
 });
 
 ```
