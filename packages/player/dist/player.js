@@ -9112,32 +9112,40 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var SliderEditorPlug = /** @class */ (function (_super) {
     __extends(SliderEditorPlug, _super);
     function SliderEditorPlug(className, parent) {
-        return _super.call(this, className, parent) || this;
-    }
-    SliderEditorPlug.prototype.onLoad = function (data) {
-        var _a, _b, _c, _d;
+        var _this = _super.call(this, className, parent) || this;
         var element = document.getElementById('drawCanvas');
+        // eslint-disable-next-line no-eq-null
         if (element == null) {
             var canvasContainer = document.getElementsByClassName('canvas-container')[0];
             if (canvasContainer && canvasContainer.children[1]) {
                 element = canvasContainer.children[1];
             }
         }
+        // eslint-disable-next-line no-eq-null
         if (element == null) {
             // 无法找到画线，可能是回放模式
-            this.parent.systemEvent.emitError('E0002', ['drawCanvas|canvas-container'], "warning" /* WARNING */);
+            _this.parent.systemEvent.emitError('E0002', ['drawCanvas|canvas-container'], "warning" /* WARNING */);
+            return _this;
+        }
+        _this.dom = element;
+        return _this;
+    }
+    SliderEditorPlug.prototype.onLoad = function (data) {
+        var _a, _b;
+        if (this.dom === undefined) {
             return;
         }
-        this.dom = element;
+        var element = this.dom;
         var parent = this.parent;
-        // tslint:disable-next-line: max-line-length  
+        // tslint:disable-next-line: max-line-length
         var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+        // eslint-disable-next-line no-undef
+        var interaction = ((_a = parent.app) === null || _a === void 0 ? void 0 : _a.renderer).plugins.interaction;
         this.observer = new MutationObserver(function (mutations) {
             mutations.forEach(function (mutation) {
-                var _a;
                 if (mutation.type === 'attributes') {
                     var node = mutation.target;
-                    var currentCursorMode = (_a = parent.app) === null || _a === void 0 ? void 0 : _a.renderer.plugins.interaction.currentCursorMode;
+                    var currentCursorMode = interaction.currentCursorMode;
                     if (node.dataset.cursor !== node.style.cursor) {
                         if (currentCursorMode === 'pointer') {
                             node.style.cursor = 'pointer';
@@ -9154,8 +9162,8 @@ var SliderEditorPlug = /** @class */ (function (_super) {
             attributeFilter: ['style'],
         });
         var defaultCursor = element.style.cursor;
-        (_a = parent.app) === null || _a === void 0 ? void 0 : _a.renderer.plugins.interaction.setTargetElement(element, (_b = parent.app) === null || _b === void 0 ? void 0 : _b.renderer.resolution);
-        var cursorStyles = (_d = (_c = parent.app) === null || _c === void 0 ? void 0 : _c.renderer.plugins.interaction) === null || _d === void 0 ? void 0 : _d.cursorStyles;
+        interaction.setTargetElement(element, (_b = parent.app) === null || _b === void 0 ? void 0 : _b.renderer.resolution);
+        var cursorStyles = interaction.cursorStyles;
         cursorStyles.default = defaultCursor;
         element.style.display = 'none';
         setTimeout(function () {
@@ -9163,9 +9171,8 @@ var SliderEditorPlug = /** @class */ (function (_super) {
             if (element) {
                 element.style.display = '';
             }
-            ;
         }, 60);
-        return this;
+        return;
     };
     SliderEditorPlug.prototype.onRelease = function () {
         var _a;

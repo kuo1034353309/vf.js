@@ -1,5 +1,3 @@
-<p align="center"><a href="https://vipkid-edu.github.io/vf-docs/" target="_blank" rel="noopener noreferrer"><img src="https://vipkid-edu.github.io/vf-docs/logo_x3.png" alt="VF logo"></a></p>
-
 ## 介绍
 
 VF 引擎是一套用于快速构建互动教学场景的解决方案中的图形交互引擎，引擎的设计并不是 **「重复发明轮子（*Reinventing the wheel*）」**，而是基于行业内比较成熟、优秀的方案做的改造与封装。
@@ -59,16 +57,4 @@ createVF({container:document.getElementById("div")},player=>{
 });
 
 ```
-
-## 如何构建(How build)
-
-1. git clone https://github.com/vipkid-edu/vf.js
-1. npm i
-1. setup Visual Studio Code
-1. npm run start
-1. view http://127.0.0.1:8088/
-
-### License
-
-This content is released under the (http://opensource.org/licenses/MIT) MIT License.
 

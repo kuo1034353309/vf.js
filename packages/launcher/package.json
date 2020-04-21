@@ -1,6 +1,6 @@
 {
   "name": "@vf.js/launcher",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "status": "beta",
   "description": "",
   "main": "dist/launcher.min.js",
@@ -11,7 +11,8 @@
   "files": [
     "lib",
     "dist",
-    "launcher.d.ts"
+    "launcher.d.ts",
+    "README.md"
   ],
   "author": "",
   "license": "ISC",
