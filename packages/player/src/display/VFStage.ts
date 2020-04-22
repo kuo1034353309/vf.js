@@ -21,8 +21,8 @@ enum STAGE_STATUS {
     STOP,
 }
 
+// eslint-disable-next-line no-undef
 export class VFStage extends vf.gui.Stage {
-
     public variableManager: VariableManager;
     public soundManager: SoundManager;
     public tween: vf.gui.Tween;
@@ -42,6 +42,7 @@ export class VFStage extends vf.gui.Stage {
 
 
     constructor(data: IVFDataV1, config: Config, player:Player) {
+        
         super(config.width, config.height);
         this.data = data;
         this.width = config.width;

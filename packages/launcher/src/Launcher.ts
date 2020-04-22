@@ -218,7 +218,6 @@ class VIPKIDLauncher {
     }
 
     private loadJs() {
-
         if (this._loadcount >= this._loadMaxCount) {
             this.createEngine();
 

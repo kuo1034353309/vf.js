@@ -133,9 +133,9 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
-        this.version = "0.3.2";
+        this.version = "0.3.4";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "2020-4-21 5:03:15 PM";
+        this.buildInfo = "2020-4-22 11:09:50 AM";
         this._loadedLibs = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
@@ -215,7 +215,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             }
         }
         if (w['vf']['player'] === undefined) {
-            var v = "player-v" + "0.3.0";
+            var v = "player-v" + "0.3.1";
             if (false) {}
             else {
                 libs.push("./packages/player/dist/player.js");

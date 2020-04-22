@@ -589,6 +589,8 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
 
 
@@ -598,10 +600,10 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 var Player = /** @class */ (function () {
     function Player(options) {
-        var _this = this;
         /**
          * 接口，避免写入逻辑
          */
+        // eslint-disable-next-line handle-callback-err
         this.onError = function (err) {
             //
         };
@@ -638,30 +640,22 @@ var Player = /** @class */ (function () {
         //  1. 初始化配置
         this.config = new _core_Config__WEBPACK_IMPORTED_MODULE_3__["default"](options);
         var config = this.config;
+        // eslint-disable-next-line no-console
         console.groupEnd();
         // 2. 初始化引擎
+        // eslint-disable-next-line no-undef
         this.app = new vf.Application({
             backgroundColor: parseInt(config.bgcolor || '0', 16),
             transparent: config.wmode === 'transparent',
             antialias: true,
         });
-        // console.group('VF Player: - v' + options.engineVersion);
-        // 1、启动后检查并初始化运行环境
-        // Player.system = System.getInstance();
-        // 影响卸载与垃圾回收
-        // Engine.system.systemEvent.on(EventType.STATE, this.onSystemCheck, this);
-        // 影响卸载与垃圾回收
-        // this.config.systemEvent.on(EventType.STATE, this.onConfigCheck, this);
         this._errpanel = new _error_ErrorDisplay__WEBPACK_IMPORTED_MODULE_4__["default"](this.config);
         this.initSystemEvent();
         this._readyState = "init" /* INIT */;
         //  3、如果配了资源地址，则启动数据加载
-        setTimeout(function () {
-            // 延迟一帧执行
-            if (_this.config.src) {
-                _this.play(_this.config.src);
-            }
-        }, 10);
+        if (this.config.src) {
+            this.play(this.config.src);
+        }
     }
     Object.defineProperty(Player.prototype, "readyState", {
         get: function () {
@@ -677,8 +671,8 @@ var Player = /** @class */ (function () {
     Player.prototype.play = function (src) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                if (this._readyState !== "init" /* INIT */ &&
-                    this._readyState !== "loaded" /* LOADED */) {
+                if (this._readyState !== "init" /* INIT */
+                    && this._readyState !== "loaded" /* LOADED */) {
                     this.reload();
                 }
                 this.loadData(src);
@@ -705,7 +699,9 @@ var Player = /** @class */ (function () {
         this.config.systemEvent.emit("onMessage" /* ONMESSAGE */, msg);
     };
     Player.prototype.runtimeLog = function (msg) {
-        this.onMessage(msg);
+        if (this.onMessage) {
+            this.onMessage(msg);
+        }
     };
     Player.prototype.switchToNextScene = function (transition) {
         if (this.stage) {
@@ -826,7 +822,7 @@ var Player = /** @class */ (function () {
                         if (!data.conversion) return [3 /*break*/, 9];
                         if (!(typeof src === 'string')) return [3 /*break*/, 8];
                         version = src.split('?')[1] || 'v=0';
-                        conversionPath = src.substr(0, src.lastIndexOf('/')) + '/' + data.conversion + '?' + version;
+                        conversionPath = src.substr(0, src.lastIndexOf('/')) + "/" + data.conversion + "?" + version;
                         return [4 /*yield*/, Object(_utils_ImportScript__WEBPACK_IMPORTED_MODULE_2__["default"])(conversionPath).catch(function (e) {
                                 _this.onStatus(e);
                             })];
@@ -853,14 +849,6 @@ var Player = /** @class */ (function () {
             });
         });
     };
-    Player.prototype.onSystemCheck = function (evt) {
-        // 检查系统环境不支持的报错
-        // this.onError(evt);
-    };
-    Player.prototype.onConfigCheck = function (evt) {
-        // 验证配置信息有问题的报错
-        // this.onError(evt);
-    };
     // ------------------------- 外部与钩子 ---------------------------//
     /**
      * 接收到服务
@@ -879,21 +867,31 @@ var Player = /** @class */ (function () {
                 this._errpanel.setMessage(msg.code, msg.data);
             }
             msg.message = this._errpanel.getText(msg.code, msg.data);
-            this.onError(msg);
+            if (this.onError) {
+                this.onError(msg);
+            }
             return;
         }
         switch (msg.code) {
             case "init" /* INIT */:
-                this.onInit();
+                if (this.onInit) {
+                    this.onInit();
+                }
                 break;
             case "ready" /* READY */:
-                this.onReady();
+                if (this.onReady) {
+                    this.onReady();
+                }
                 break;
             case "sceneCreate" /* SCENE_CREATE */:
-                this.onSceneCreate();
+                if (this.onSceneCreate) {
+                    this.onSceneCreate();
+                }
                 break;
             default:
-                this.onMessage(msg);
+                if (this.onMessage) {
+                    this.onMessage(msg);
+                }
         }
     };
     return Player;
@@ -8695,6 +8693,7 @@ var STAGE_STATUS;
     STAGE_STATUS[STAGE_STATUS["PAUSED"] = 4] = "PAUSED";
     STAGE_STATUS[STAGE_STATUS["STOP"] = 5] = "STOP";
 })(STAGE_STATUS || (STAGE_STATUS = {}));
+// eslint-disable-next-line no-undef
 var VFStage = /** @class */ (function (_super) {
     __extends(VFStage, _super);
     function VFStage(data, config, player) {
