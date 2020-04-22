@@ -10529,13 +10529,13 @@ function getCdnUrl(url, cdns, index) {
 /*!***************************************************!*\
   !*** ./packages/player/src/utils/readFileSync.ts ***!
   \***************************************************/
-/*! exports provided: readFileSyncExt, default */
+/*! exports provided: default, readFileSyncExt */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "readFileSyncExt", function() { return readFileSyncExt; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return readFileSync; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "readFileSyncExt", function() { return readFileSyncExt; });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10593,7 +10593,7 @@ function geXHRtData(target) {
         code: '0',
         level: "command" /* COMMAND */,
         message: undefined,
-        data: null
+        data: null,
     };
     try {
         var response = xhr.response || xhr.responseText;
@@ -10609,11 +10609,11 @@ function geXHRtData(target) {
     catch (error) {
         msg.code = 'S0002';
         msg.level = "error" /* ERROR */;
-        msg.data = xhr.responseURL + ' , ' + error;
+        msg.data = xhr.responseURL + " , " + error;
         return msg;
     }
 }
-// tslint:disable-next-line: max-line-length
+// eslint-disable-next-line max-len
 function removeEventListener(xhr, listener) {
     if (listener) {
         listener.forEach(function (value) {
@@ -10626,6 +10626,64 @@ function removeEventListener(xhr, listener) {
     xhr.onreadystatechange = null;
 }
 /**
+ * 读取文件
+ * @param url 文件路径
+ * @param options 文件配置
+ * @param listener 监听回调
+ */
+// eslint-disable-next-line max-len
+function readFileSync(url, options, listener) {
+    if (options === void 0) { options = {}; }
+    return new Promise(function (resolve, reject) {
+        var errorCount = { cur: 0, max: options.errorCount || 1 };
+        var xhr = new XMLHttpRequest();
+        var method = options.method || 'GET';
+        xhr.timeout = options.timeout || 0;
+        xhr.responseType = options.responseType || 'text';
+        if (listener) {
+            listener.forEach(function (value) {
+                xhr.addEventListener(value[0], value[1]);
+            });
+        }
+        xhr.onload = function (evt) {
+            var msg = geXHRtData(evt.target);
+            if (msg) {
+                if (msg.level === "error" /* ERROR */) {
+                    return reject(msg);
+                }
+                removeEventListener(xhr, listener);
+                return resolve(msg.data);
+            }
+        };
+        xhr.onreadystatechange = function (evt) {
+            var xhr = evt.currentTarget;
+            if ((xhr.readyState === 2 || xhr.readyState === 4) && xhr.status >= 400) {
+                if (errorCount.cur >= errorCount.max) {
+                    removeEventListener(xhr, listener);
+                    return reject({ code: 'S0001', level: "error" /* ERROR */, data: [xhr.responseURL || url, xhr.status] });
+                }
+                errorCount.cur++;
+                xhr.abort();
+                xhr.open(method, url, true);
+                xhr.send();
+            }
+        };
+        xhr.onerror = function (evt) {
+            var xhr = evt.currentTarget;
+            if (errorCount.cur >= errorCount.max) {
+                removeEventListener(xhr, listener);
+                return reject({ code: 'S0001', level: "error" /* ERROR */, data: [xhr.responseURL || url, xhr.status] });
+            }
+            errorCount.cur++;
+            xhr.abort();
+            xhr.open(method, url, true);
+            xhr.send();
+        };
+        xhr.open(method, url, true);
+        xhr.send();
+    });
+}
+/**
  * 赌球文件
  * @param url 文件路径
  * @param cdns  CDN路径 ，如果设置CDN，最终的地址为 cdn + url
@@ -10634,7 +10692,7 @@ function removeEventListener(xhr, listener) {
  * @example
  * const data = await readFileSyncExt('assets/xxx.mp3', []).catch(value=>{console.log(value)});
  */
-// tslint:disable-next-line: max-line-length
+// eslint-disable-next-line max-len
 function readFileSyncExt(url, cdns, options, listener) {
     if (options === void 0) { options = {}; }
     return __awaiter(this, void 0, void 0, function () {
@@ -10664,66 +10722,6 @@ function readFileSyncExt(url, cdns, options, listener) {
                 case 6: return [2 /*return*/, new Promise(function (resolve, reject) { reject(err); })];
             }
         });
-    });
-}
-/**
- * 读取文件
- * @param url 文件路径
- * @param options 文件配置
- * @param listener 监听回调
- */
-// tslint:disable-next-line: max-line-length
-function readFileSync(url, options, listener) {
-    if (options === void 0) { options = {}; }
-    return new Promise(function (resolve, reject) {
-        var errorCount = { cur: 0, max: options.errorCount || 1 };
-        var xhr = new XMLHttpRequest();
-        var method = options.method || 'GET';
-        xhr.timeout = options.timeout || 0;
-        xhr.responseType = options.responseType || 'text';
-        if (listener) {
-            listener.forEach(function (value) {
-                xhr.addEventListener(value[0], value[1]);
-            });
-        }
-        xhr.onload = function (evt) {
-            var msg = geXHRtData(evt.target);
-            if (msg) {
-                if (msg.level === "error" /* ERROR */) {
-                    return reject(msg);
-                }
-                else {
-                    removeEventListener(xhr, listener);
-                    return resolve(msg.data);
-                }
-            }
-        };
-        xhr.onreadystatechange = function (evt) {
-            var xhr = evt.currentTarget;
-            if ((xhr.readyState === 2 || xhr.readyState === 4) && xhr.status >= 400) {
-                if (errorCount.cur >= errorCount.max) {
-                    removeEventListener(xhr, listener);
-                    return reject({ code: 'S0001', level: "error" /* ERROR */, data: [xhr.responseURL, xhr.status], });
-                }
-                errorCount.cur++;
-                xhr.abort();
-                xhr.open(method, url, true);
-                xhr.send();
-            }
-        };
-        xhr.onerror = function (evt) {
-            var xhr = evt.currentTarget;
-            if (errorCount.cur >= errorCount.max) {
-                removeEventListener(xhr, listener);
-                return reject({ code: 'S0001', level: "error" /* ERROR */, data: [xhr.responseURL, xhr.status], });
-            }
-            errorCount.cur++;
-            xhr.abort();
-            xhr.open(method, url, true);
-            xhr.send();
-        };
-        xhr.open(method, url, true);
-        xhr.send();
     });
 }
 
