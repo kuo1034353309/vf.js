@@ -33,6 +33,33 @@ VF默认使用WebGL渲染，初始化时检测到低端设备或不支持的浏�
 * [文档(Docs)](http://vipkid-edu.github.io/vf-docs)
 
 
+## 安装与使用
+
+#### NPM
+```
+  npm i @vf.js/launcher --save-dev
+```
+
+#### CDN Script
+```
+<script src="http://unpkg.com/@vf.js/launcher/dist/launcher.min.js"></script>
+```
+
+### 使用过程像数 1, 2, 3 一样容易
+
+``` js {10}
+
+// 1. ES6方式引入，CDN Script方式不需要写
+import {createVF} from '@vf.js/launcher';
+
+// 2.设置插入页面的div容器
+createVF({container:document.getElementById("div")},player=>{
+  // 3.启动实例
+  player.play('data.json');
+});
+
+```
+
 ## 如何构建(How build)
 
 1. git clone https://github.com/vipkid-edu/vf.js
