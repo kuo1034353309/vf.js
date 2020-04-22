@@ -1,3 +1,4 @@
+/* eslint-disable no-eq-null */
 /* eslint-disable arrow-body-style */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable dot-notation */
@@ -38,8 +39,7 @@ class VIPKIDLauncher {
     // eslint-disable-next-line no-undef
     private buildInfo = VFBUILDDATE;
 
-    private _extendsLibsUrl?: string[];
-    private _loadedLibs: string[] = [];
+    private _extendsLibsUrl: string[] = [];
 
     private _loadcount = 0;
     private _loadMaxCount = 40;
@@ -101,54 +101,47 @@ class VIPKIDLauncher {
      * 环境依赖配置，可以读取一个engine-vserion.json文件获取版本依赖，由于还需要单独加载（本地动态脚本替换不科学～），为了速度，暂缓修改。
      */
     private getEnvConfig(index: number) {
-        const w = (window as any);
         const cdn = this._config.vfvars.cdns.default[index];
-        const libs: string[] = [];
+        let libs: string[] = [];
         const extendsLibsUrl = this._extendsLibsUrl;
 
-        if (w['vf']['CanvasRenderer'] === undefined) {
-            const v = VFVERSION;
+        const vf = VFVERSION;
+        const gui = GUIVERSION;
+        const player = `player-v${PLAYERRVERION}`;
 
-            if (process.env.NODE_ENV === 'production') {
-                libs.push(`${cdn}vf/engine/${v}/vf.min.js`);
-            }
-            else {
-                libs.push(`./libs/${v}/vf.js`);
-            }
+        if (process.env.NODE_ENV === 'production') {
+            libs.push(`${cdn}vf/engine/${vf}/vf.min.js`);
+        }
+        else {
+            libs.push(`./libs/${vf}/vf.js`);
         }
 
-        if (extendsLibsUrl && extendsLibsUrl.length > 0) {
-            if (this._loadedLibs.indexOf(extendsLibsUrl[0]) !== -1) {
-                extendsLibsUrl.shift();
-            }
-            if (extendsLibsUrl[0]) {
-                libs.push(extendsLibsUrl[0]);
-            }
+        libs = libs.concat(extendsLibsUrl);
+
+        if (process.env.NODE_ENV === 'production') {
+            libs.push(`${cdn}vf/engine/${gui}/gui.min.js`);
+        }
+        else {
+            libs.push(`./libs/${gui}/gui.js`);
         }
 
-        if (w['vf']['gui'] === undefined) {
-            const v = GUIVERSION;
-
-            if (process.env.NODE_ENV === 'production') {
-                libs.push(`${cdn}vf/engine/${v}/gui.min.js`);
-            }
-            else {
-                libs.push(`./libs/${v}/gui.js`);
-            }
+        if (process.env.NODE_ENV === 'production') {
+            libs.push(`${cdn}vf/engine/${player}/player.min.js`);
+        }
+        else {
+            libs.push(`./packages/player/dist/player.js`);
         }
 
-        if (w['vf']['player'] === undefined) {
-            const v = `player-v${PLAYERRVERION}`;
+        const canLibs: string[] = [];
 
-            if (process.env.NODE_ENV === 'production') {
-                libs.push(`${cdn}vf/engine/${v}/player.min.js`);
+        libs.forEach((value) => {
+            // eslint-disable-next-line eqeqeq
+            if (document.getElementById(`vf-script-${value}`) == null) {
+                canLibs.push(value);
             }
-            else {
-                libs.push(`./packages/player/dist/player.js`);
-            }
-        }
+        });
 
-        return libs;
+        return canLibs;
     }
 
     /**
@@ -245,6 +238,7 @@ class VIPKIDLauncher {
         const script = document.createElement('script');
 
         script.type = 'text/javascript';
+        script.id = `vf-script-${item}`;
         script.async = false;
         script.src = item;
         script.addEventListener('load', this.onJsComplete.bind(this), false);
@@ -253,9 +247,6 @@ class VIPKIDLauncher {
     }
 
     private onJsComplete(evt: Event) {
-        const script = evt.target as HTMLScriptElement;
-
-        this._loadedLibs.push(script.src);
         this.removeJsLoadEvent(evt);
         this.loadJs();
     }

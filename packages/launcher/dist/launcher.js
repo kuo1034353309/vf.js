@@ -136,7 +136,7 @@ var VIPKIDLauncher = /** @class */ (function () {
         this.version = "0.3.5";
         // eslint-disable-next-line no-undef
         this.buildInfo = "2020-4-22 3:04:03 PM";
-        this._loadedLibs = [];
+        this._extendsLibsUrl = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
         if (completeCall === undefined) {
@@ -188,40 +188,33 @@ var VIPKIDLauncher = /** @class */ (function () {
      * 环境依赖配置，可以读取一个engine-vserion.json文件获取版本依赖，由于还需要单独加载（本地动态脚本替换不科学～），为了速度，暂缓修改。
      */
     VIPKIDLauncher.prototype.getEnvConfig = function (index) {
-        var w = window;
         var cdn = this._config.vfvars.cdns.default[index];
         var libs = [];
         var extendsLibsUrl = this._extendsLibsUrl;
-        if (w['vf']['CanvasRenderer'] === undefined) {
-            var v = "vf-v5.2.21-v10";
-            if (false) {}
-            else {
-                libs.push("./libs/" + v + "/vf.js");
-            }
+        var vf = "vf-v5.2.21-v10";
+        var gui = "gui-v1.3.4";
+        var player = "player-v" + "0.3.2";
+        if (false) {}
+        else {
+            libs.push("./libs/" + vf + "/vf.js");
         }
-        if (extendsLibsUrl && extendsLibsUrl.length > 0) {
-            if (this._loadedLibs.indexOf(extendsLibsUrl[0]) !== -1) {
-                extendsLibsUrl.shift();
-            }
-            if (extendsLibsUrl[0]) {
-                libs.push(extendsLibsUrl[0]);
-            }
+        libs = libs.concat(extendsLibsUrl);
+        if (false) {}
+        else {
+            libs.push("./libs/" + gui + "/gui.js");
         }
-        if (w['vf']['gui'] === undefined) {
-            var v = "gui-v1.3.4";
-            if (false) {}
-            else {
-                libs.push("./libs/" + v + "/gui.js");
-            }
+        if (false) {}
+        else {
+            libs.push("./packages/player/dist/player.js");
         }
-        if (w['vf']['player'] === undefined) {
-            var v = "player-v" + "0.3.2";
-            if (false) {}
-            else {
-                libs.push("./packages/player/dist/player.js");
+        var canLibs = [];
+        libs.forEach(function (value) {
+            // eslint-disable-next-line eqeqeq
+            if (document.getElementById("vf-script-" + value) == null) {
+                canLibs.push(value);
             }
-        }
-        return libs;
+        });
+        return canLibs;
     };
     /**
      * 关于Loading界面布局的可以提出去
@@ -299,6 +292,7 @@ var VIPKIDLauncher = /** @class */ (function () {
         var item = libs.shift();
         var script = document.createElement('script');
         script.type = 'text/javascript';
+        script.id = "vf-script-" + item;
         script.async = false;
         script.src = item;
         script.addEventListener('load', this.onJsComplete.bind(this), false);
@@ -306,8 +300,6 @@ var VIPKIDLauncher = /** @class */ (function () {
         document.body.appendChild(script);
     };
     VIPKIDLauncher.prototype.onJsComplete = function (evt) {
-        var script = evt.target;
-        this._loadedLibs.push(script.src);
         this.removeJsLoadEvent(evt);
         this.loadJs();
     };
