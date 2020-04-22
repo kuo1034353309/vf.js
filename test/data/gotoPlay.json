@@ -57,7 +57,7 @@
       },
       "12": {
         "type": "image",
-        "url": "./test/VF_STI01/assets/STI01_bg.png",
+        "url": "./test/data/assets/dino.png",
         "name": "12"
       },
       "13": {
@@ -82,17 +82,17 @@
       },
       "17": {
         "type": "image",
-        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/gray_image.png",
+        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/test_1.png",
         "name": "17"
       },
       "18": {
         "type": "image",
-        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/gray_image.png",
+        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/test_2.png",
         "name": "18"
       },
       "19": {
         "type": "image",
-        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/gray_image.png",
+        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/test_3.png",
         "name": "19"
       },
       "20": {
@@ -112,17 +112,17 @@
       },
       "23": {
         "type": "image",
-        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/gray_image.png",
+        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/test_1.png",
         "name": "23"
       },
       "24": {
         "type": "image",
-        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/gray_image.png",
+        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/test_2.png",
         "name": "24"
       },
       "25": {
         "type": "image",
-        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/gray_image.png",
+        "url": "//ic-static-ali.vipkid.com.cn/course/material/DEMO1-U1-LC1-L1/test_3.png",
         "name": "25"
       },
       "26": {
@@ -138,9 +138,9 @@
     },
     "global": {
       "config": {
-        "topic_text": "小火车",
-        "content_text": "小火车",
-        "option_type": "text",
+        "topic_text": "11sdsadasdkjajsdljbajksdljbhaklsdjbhaskldjbasdknljnabhsdnkl;djnsbknlm;askjnbknla;skjn1",
+        "content_text": "asdfkansdfklkanjsdasdasjdjo;ialkdhal;jdhnoadjhbjaklsd;kojjaksdl;oajsbdnkasdjbkaldjknla;ds",
+        "option_type": "image",
         "target_option": [
           {
             "target_type": "default",
@@ -158,7 +158,7 @@
         ],
         "select_option": [
           {
-            "text": "222",
+            "text": "wwwwwwww\nmmmmmmmm",
             "key": "2"
           },
           {
@@ -184,7 +184,7 @@
         ],
         "endAudio": ""
       },
-      "playAudioBySelf": true,
+      "audioPlayBySelf": true,
       "optionType": "text",
       "targetCount": 5,
       "targetScale": 1,
@@ -205,9 +205,67 @@
       "targetTextArr": [],
       "targetImageArr": [],
       "optionArr": [],
+      "optionId": 0,
       "gameOver": false,
       "trainMove": false,
-      "finishAudio": false
+      "trainStop": true,
+      "endingAnswerAudio": false,
+      "rotateTarget": [],
+      "rotates": [
+        20,
+        -15,
+        10,
+        -5,
+        0
+      ],
+      "rotateIndex": 0,
+      "shakeOptionIdArr": [],
+      "option": {
+        "id": 0,
+        "action": "dragEnd",
+        "actionData": ""
+      },
+      "event_playAudio": {
+        "code": "playAudio",
+        "level": "command",
+        "data": {
+          "val": -1,
+          "controller": false
+        }
+      },
+      "event_pauseAudio": {
+        "code": "pauseAudio",
+        "level": "command"
+      },
+      "event_actionData": {
+        "code": "actionData",
+        "level": "command",
+        "data": {
+          "id": 0,
+          "action": "",
+          "actionData": ""
+        }
+      },
+      "event_status": {
+        "code": "status",
+        "level": "command",
+        "data": {
+          "optionOrderArr": [],
+          "trainStop": false,
+          "gameOver": false,
+          "options": []
+        }
+      },
+      "event_chooseOption": {
+        "code": "chooseOption",
+        "level": "command",
+        "data": {
+          "totalCount": 1,
+          "isRight": false,
+          "isFinish": false,
+          "controller": false
+        }
+      }
     },
     "scenes": [
       {
@@ -231,8 +289,50 @@
             "libId": 1
           },
           {
+            "id": "topic_text",
+            "libId": 5,
+            "text": "",
+            "style": {
+              "top": 39,
+              "justifyContent": "center",
+              "fontSize": 40,
+              "lineHeight": 49,
+              "fontFamily": "Century Gothic",
+              "color": 0
+            }
+          },
+          {
+            "id": "content_text",
+            "libId": 5,
+            "text": "",
+            "style": {
+              "top": 102,
+              "justifyContent": "center",
+              "textAlign": "left",
+              "fontSize": 29,
+              "fontFamily": "Century Gothic",
+              "wordWrap": true,
+              "wordWrapWidth": 922,
+              "color": 0,
+              "lineHeight": 39,
+              "maskImage": "4",
+              "maskSize": [
+                924,
+                80
+              ],
+              "maskPosition": [
+                0,
+                0
+              ],
+              "breakWords": true
+            }
+          },
+          {
             "id": "content",
-            "libId": 3
+            "libId": 3,
+            "style": {
+              "top": 0
+            }
           }
         ],
         "actionList": [
@@ -244,6 +344,13 @@
               []
             ],
             "execute": [
+              {
+                "type": 0,
+                "value": [
+                  0,
+                  "ziye----Add"
+                ]
+              },
               {
                 "type": 12,
                 "target": [
@@ -269,13 +376,43 @@
                 "name": "addListener"
               },
               {
-                "type": 12,
-                "target": [
-                  11,
-                  []
-                ],
-                "name": "trainEnter"
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
+                      [
+                        1,
+                        [
+                          -1
+                        ],
+                        "audioPlayBySelf"
+                      ]
+                    ],
+                    "execute": [
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "trainEnter"
+                      },
+                      {
+                        "type": 35,
+                        "value": "//如果自己播音效，说明是本地，不考虑信令问题"
+                      }
+                    ]
+                  }
+                ]
               }
+            ]
+          },
+          {
+            "type": 0,
+            "value": [
+              0,
+              "ziye----hahahahh"
             ]
           },
           {
@@ -549,27 +686,6 @@
                     ],
                     "execute": [
                       {
-                        "type": 6,
-                        "express": [
-                          [
-                            4,
-                            [
-                              "content",
-                              "selectOptionsText"
-                            ],
-                            "visible"
-                          ],
-                          [
-                            5,
-                            "="
-                          ],
-                          [
-                            0,
-                            true
-                          ]
-                        ]
-                      },
-                      {
                         "type": 38,
                         "forin": [
                           1,
@@ -613,7 +729,7 @@
                                           [
                                             "content",
                                             "selectOptionsText",
-                                            "option0"
+                                            "0"
                                           ]
                                         ]
                                       ]
@@ -627,7 +743,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option0"
+                                          "0"
                                         ],
                                         "visible"
                                       ],
@@ -649,7 +765,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option0",
+                                          "0",
                                           "text"
                                         ],
                                         "text"
@@ -694,7 +810,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option0"
+                                          "0"
                                         ],
                                         "dragOption"
                                       ]
@@ -761,7 +877,7 @@
                                           [
                                             "content",
                                             "selectOptionsText",
-                                            "option1"
+                                            "1"
                                           ]
                                         ]
                                       ]
@@ -775,7 +891,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option1"
+                                          "1"
                                         ],
                                         "visible"
                                       ],
@@ -797,7 +913,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option1",
+                                          "1",
                                           "text"
                                         ],
                                         "text"
@@ -842,7 +958,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option1"
+                                          "1"
                                         ],
                                         "dragOption"
                                       ]
@@ -909,7 +1025,7 @@
                                           [
                                             "content",
                                             "selectOptionsText",
-                                            "option2"
+                                            "2"
                                           ]
                                         ]
                                       ]
@@ -923,7 +1039,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option2"
+                                          "2"
                                         ],
                                         "visible"
                                       ],
@@ -945,7 +1061,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option2",
+                                          "2",
                                           "text"
                                         ],
                                         "text"
@@ -990,7 +1106,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option2"
+                                          "2"
                                         ],
                                         "dragOption"
                                       ]
@@ -1057,7 +1173,7 @@
                                           [
                                             "content",
                                             "selectOptionsText",
-                                            "option3"
+                                            "3"
                                           ]
                                         ]
                                       ]
@@ -1071,7 +1187,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option3"
+                                          "3"
                                         ],
                                         "visible"
                                       ],
@@ -1093,7 +1209,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option3",
+                                          "3",
                                           "text"
                                         ],
                                         "text"
@@ -1138,7 +1254,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option3"
+                                          "3"
                                         ],
                                         "dragOption"
                                       ]
@@ -1205,7 +1321,7 @@
                                           [
                                             "content",
                                             "selectOptionsText",
-                                            "option4"
+                                            "4"
                                           ]
                                         ]
                                       ]
@@ -1219,7 +1335,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option4"
+                                          "4"
                                         ],
                                         "visible"
                                       ],
@@ -1241,7 +1357,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option4",
+                                          "4",
                                           "text"
                                         ],
                                         "text"
@@ -1286,7 +1402,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option4"
+                                          "4"
                                         ],
                                         "dragOption"
                                       ]
@@ -1353,7 +1469,7 @@
                                           [
                                             "content",
                                             "selectOptionsText",
-                                            "option5"
+                                            "5"
                                           ]
                                         ]
                                       ]
@@ -1367,7 +1483,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option5"
+                                          "5"
                                         ],
                                         "visible"
                                       ],
@@ -1389,7 +1505,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option5",
+                                          "5",
                                           "text"
                                         ],
                                         "text"
@@ -1434,7 +1550,7 @@
                                         [
                                           "content",
                                           "selectOptionsText",
-                                          "option5"
+                                          "5"
                                         ],
                                         "dragOption"
                                       ]
@@ -2479,27 +2595,6 @@
                     "type": 10,
                     "execute": [
                       {
-                        "type": 6,
-                        "express": [
-                          [
-                            4,
-                            [
-                              "content",
-                              "selectOptionsImage"
-                            ],
-                            "visible"
-                          ],
-                          [
-                            5,
-                            "="
-                          ],
-                          [
-                            0,
-                            true
-                          ]
-                        ]
-                      },
-                      {
                         "type": 38,
                         "forin": [
                           1,
@@ -2543,7 +2638,7 @@
                                           [
                                             "content",
                                             "selectOptionsImage",
-                                            "option0"
+                                            "0"
                                           ]
                                         ]
                                       ]
@@ -2557,7 +2652,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option0"
+                                          "0"
                                         ],
                                         "visible"
                                       ],
@@ -2568,6 +2663,29 @@
                                       [
                                         0,
                                         true
+                                      ]
+                                    ]
+                                  },
+                                  {
+                                    "type": 6,
+                                    "express": [
+                                      [
+                                        4,
+                                        [
+                                          "content",
+                                          "selectOptionsImage",
+                                          "0",
+                                          "optionImage"
+                                        ],
+                                        "src"
+                                      ],
+                                      [
+                                        5,
+                                        "="
+                                      ],
+                                      [
+                                        0,
+                                        22
                                       ]
                                     ]
                                   },
@@ -2594,7 +2712,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option0"
+                                          "0"
                                         ],
                                         "dragOption"
                                       ]
@@ -2661,7 +2779,7 @@
                                           [
                                             "content",
                                             "selectOptionsImage",
-                                            "option1"
+                                            "1"
                                           ]
                                         ]
                                       ]
@@ -2675,7 +2793,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option1"
+                                          "1"
                                         ],
                                         "visible"
                                       ],
@@ -2686,6 +2804,29 @@
                                       [
                                         0,
                                         true
+                                      ]
+                                    ]
+                                  },
+                                  {
+                                    "type": 6,
+                                    "express": [
+                                      [
+                                        4,
+                                        [
+                                          "content",
+                                          "selectOptionsImage",
+                                          "1",
+                                          "optionImage"
+                                        ],
+                                        "src"
+                                      ],
+                                      [
+                                        5,
+                                        "="
+                                      ],
+                                      [
+                                        0,
+                                        23
                                       ]
                                     ]
                                   },
@@ -2712,7 +2853,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option1"
+                                          "1"
                                         ],
                                         "dragOption"
                                       ]
@@ -2779,7 +2920,7 @@
                                           [
                                             "content",
                                             "selectOptionsImage",
-                                            "option2"
+                                            "2"
                                           ]
                                         ]
                                       ]
@@ -2793,7 +2934,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option2"
+                                          "2"
                                         ],
                                         "visible"
                                       ],
@@ -2804,6 +2945,29 @@
                                       [
                                         0,
                                         true
+                                      ]
+                                    ]
+                                  },
+                                  {
+                                    "type": 6,
+                                    "express": [
+                                      [
+                                        4,
+                                        [
+                                          "content",
+                                          "selectOptionsImage",
+                                          "2",
+                                          "optionImage"
+                                        ],
+                                        "src"
+                                      ],
+                                      [
+                                        5,
+                                        "="
+                                      ],
+                                      [
+                                        0,
+                                        24
                                       ]
                                     ]
                                   },
@@ -2830,7 +2994,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option2"
+                                          "2"
                                         ],
                                         "dragOption"
                                       ]
@@ -2897,7 +3061,7 @@
                                           [
                                             "content",
                                             "selectOptionsImage",
-                                            "option3"
+                                            "3"
                                           ]
                                         ]
                                       ]
@@ -2911,7 +3075,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option3"
+                                          "3"
                                         ],
                                         "visible"
                                       ],
@@ -2922,6 +3086,29 @@
                                       [
                                         0,
                                         true
+                                      ]
+                                    ]
+                                  },
+                                  {
+                                    "type": 6,
+                                    "express": [
+                                      [
+                                        4,
+                                        [
+                                          "content",
+                                          "selectOptionsImage",
+                                          "3",
+                                          "optionImage"
+                                        ],
+                                        "src"
+                                      ],
+                                      [
+                                        5,
+                                        "="
+                                      ],
+                                      [
+                                        0,
+                                        25
                                       ]
                                     ]
                                   },
@@ -2948,7 +3135,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option3"
+                                          "3"
                                         ],
                                         "dragOption"
                                       ]
@@ -3015,7 +3202,7 @@
                                           [
                                             "content",
                                             "selectOptionsImage",
-                                            "option4"
+                                            "4"
                                           ]
                                         ]
                                       ]
@@ -3029,7 +3216,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option4"
+                                          "4"
                                         ],
                                         "visible"
                                       ],
@@ -3040,6 +3227,29 @@
                                       [
                                         0,
                                         true
+                                      ]
+                                    ]
+                                  },
+                                  {
+                                    "type": 6,
+                                    "express": [
+                                      [
+                                        4,
+                                        [
+                                          "content",
+                                          "selectOptionsImage",
+                                          "4",
+                                          "optionImage"
+                                        ],
+                                        "src"
+                                      ],
+                                      [
+                                        5,
+                                        "="
+                                      ],
+                                      [
+                                        0,
+                                        26
                                       ]
                                     ]
                                   },
@@ -3066,7 +3276,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option4"
+                                          "4"
                                         ],
                                         "dragOption"
                                       ]
@@ -3133,7 +3343,7 @@
                                           [
                                             "content",
                                             "selectOptionsImage",
-                                            "option5"
+                                            "5"
                                           ]
                                         ]
                                       ]
@@ -3147,7 +3357,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option5"
+                                          "5"
                                         ],
                                         "visible"
                                       ],
@@ -3158,6 +3368,29 @@
                                       [
                                         0,
                                         true
+                                      ]
+                                    ]
+                                  },
+                                  {
+                                    "type": 6,
+                                    "express": [
+                                      [
+                                        4,
+                                        [
+                                          "content",
+                                          "selectOptionsImage",
+                                          "5",
+                                          "optionImage"
+                                        ],
+                                        "src"
+                                      ],
+                                      [
+                                        5,
+                                        "="
+                                      ],
+                                      [
+                                        0,
+                                        27
                                       ]
                                     ]
                                   },
@@ -3184,7 +3417,7 @@
                                         [
                                           "content",
                                           "selectOptionsImage",
-                                          "option5"
+                                          "5"
                                         ],
                                         "dragOption"
                                       ]
@@ -3370,7 +3603,8 @@
                                                 [
                                                   "content",
                                                   "train",
-                                                  "target_image0"
+                                                  "target_container0",
+                                                  "target_image"
                                                 ],
                                                 "visible"
                                               ],
@@ -3381,6 +3615,29 @@
                                               [
                                                 0,
                                                 true
+                                              ]
+                                            ]
+                                          },
+                                          {
+                                            "type": 6,
+                                            "express": [
+                                              [
+                                                4,
+                                                [
+                                                  "content",
+                                                  "train",
+                                                  "target_container0",
+                                                  "target_image"
+                                                ],
+                                                "src"
+                                              ],
+                                              [
+                                                5,
+                                                "="
+                                              ],
+                                              [
+                                                0,
+                                                16
                                               ]
                                             ]
                                           }
@@ -3492,7 +3749,8 @@
                                                 [
                                                   "content",
                                                   "train",
-                                                  "target_image1"
+                                                  "target_container1",
+                                                  "target_image"
                                                 ],
                                                 "visible"
                                               ],
@@ -3503,6 +3761,29 @@
                                               [
                                                 0,
                                                 true
+                                              ]
+                                            ]
+                                          },
+                                          {
+                                            "type": 6,
+                                            "express": [
+                                              [
+                                                4,
+                                                [
+                                                  "content",
+                                                  "train",
+                                                  "target_container1",
+                                                  "target_image"
+                                                ],
+                                                "src"
+                                              ],
+                                              [
+                                                5,
+                                                "="
+                                              ],
+                                              [
+                                                0,
+                                                17
                                               ]
                                             ]
                                           }
@@ -3614,7 +3895,8 @@
                                                 [
                                                   "content",
                                                   "train",
-                                                  "target_image2"
+                                                  "target_container2",
+                                                  "target_image"
                                                 ],
                                                 "visible"
                                               ],
@@ -3625,6 +3907,29 @@
                                               [
                                                 0,
                                                 true
+                                              ]
+                                            ]
+                                          },
+                                          {
+                                            "type": 6,
+                                            "express": [
+                                              [
+                                                4,
+                                                [
+                                                  "content",
+                                                  "train",
+                                                  "target_container2",
+                                                  "target_image"
+                                                ],
+                                                "src"
+                                              ],
+                                              [
+                                                5,
+                                                "="
+                                              ],
+                                              [
+                                                0,
+                                                17
                                               ]
                                             ]
                                           }
@@ -3736,7 +4041,8 @@
                                                 [
                                                   "content",
                                                   "train",
-                                                  "target_image3"
+                                                  "target_container3",
+                                                  "target_image"
                                                 ],
                                                 "visible"
                                               ],
@@ -3747,6 +4053,29 @@
                                               [
                                                 0,
                                                 true
+                                              ]
+                                            ]
+                                          },
+                                          {
+                                            "type": 6,
+                                            "express": [
+                                              [
+                                                4,
+                                                [
+                                                  "content",
+                                                  "train",
+                                                  "target_container3",
+                                                  "target_image"
+                                                ],
+                                                "src"
+                                              ],
+                                              [
+                                                5,
+                                                "="
+                                              ],
+                                              [
+                                                0,
+                                                17
                                               ]
                                             ]
                                           }
@@ -3858,7 +4187,8 @@
                                                 [
                                                   "content",
                                                   "train",
-                                                  "target_image4"
+                                                  "target_container4",
+                                                  "target_image"
                                                 ],
                                                 "visible"
                                               ],
@@ -3869,6 +4199,29 @@
                                               [
                                                 0,
                                                 true
+                                              ]
+                                            ]
+                                          },
+                                          {
+                                            "type": 6,
+                                            "express": [
+                                              [
+                                                4,
+                                                [
+                                                  "content",
+                                                  "train",
+                                                  "target_container4",
+                                                  "target_image"
+                                                ],
+                                                "src"
+                                              ],
+                                              [
+                                                5,
+                                                "="
+                                              ],
+                                              [
+                                                0,
+                                                17
                                               ]
                                             ]
                                           }
@@ -3980,7 +4333,8 @@
                                                 [
                                                   "content",
                                                   "train",
-                                                  "target_image5"
+                                                  "target_container5",
+                                                  "target_image"
                                                 ],
                                                 "visible"
                                               ],
@@ -3991,6 +4345,29 @@
                                               [
                                                 0,
                                                 true
+                                              ]
+                                            ]
+                                          },
+                                          {
+                                            "type": 6,
+                                            "express": [
+                                              [
+                                                4,
+                                                [
+                                                  "content",
+                                                  "train",
+                                                  "target_container5",
+                                                  "target_image"
+                                                ],
+                                                "src"
+                                              ],
+                                              [
+                                                5,
+                                                "="
+                                              ],
+                                              [
+                                                0,
+                                                17
                                               ]
                                             ]
                                           }
@@ -4265,6 +4642,10 @@
                           [
                             5,
                             "/"
+                          ],
+                          [
+                            0,
+                            2
                           ]
                         ]
                       },
@@ -4485,12 +4866,818 @@
                     "targetScale"
                   ]
                 ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    4,
+                    [
+                      "topic_text"
+                    ],
+                    "text"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    8,
+                    [
+                      -1
+                    ],
+                    "config",
+                    "topic_text"
+                  ]
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    4,
+                    [
+                      "content_text"
+                    ],
+                    "text"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    8,
+                    [
+                      -1
+                    ],
+                    "config",
+                    "content_text"
+                  ]
+                ]
+              },
+              {
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
+                      [
+                        5,
+                        "!"
+                      ],
+                      [
+                        8,
+                        [
+                          -1
+                        ],
+                        "config",
+                        "content_text"
+                      ],
+                      [
+                        5,
+                        "&&"
+                      ],
+                      [
+                        5,
+                        "!"
+                      ],
+                      [
+                        8,
+                        [
+                          -1
+                        ],
+                        "config",
+                        "topic_text"
+                      ]
+                    ],
+                    "execute": [
+                      {
+                        "type": 0,
+                        "value": [
+                          0,
+                          "2"
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            4,
+                            [
+                              "content"
+                            ],
+                            "style",
+                            "top"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            0,
+                            -30
+                          ]
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": 9,
+                    "condition": [
+                      [
+                        5,
+                        "!"
+                      ],
+                      [
+                        8,
+                        [
+                          -1
+                        ],
+                        "config",
+                        "content_text"
+                      ]
+                    ],
+                    "execute": [
+                      {
+                        "type": 0,
+                        "value": [
+                          0,
+                          "1"
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            4,
+                            [
+                              "content"
+                            ],
+                            "style",
+                            "top"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            0,
+                            10
+                          ]
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": 10,
+                    "execute": [
+                      {
+                        "type": 0,
+                        "value": [
+                          0,
+                          3
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            4,
+                            [
+                              "content"
+                            ],
+                            "style",
+                            "top"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            0,
+                            40
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "randomOption",
+            "execute": [
+              {
+                "type": 0,
+                "value": [
+                  0,
+                  "ziye----randomOption"
+                ]
+              },
+              {
+                "type": 38,
+                "forin": [
+                  1,
+                  [
+                    -1
+                  ],
+                  "optionOrderArr"
+                ],
+                "execute": [
+                  {
+                    "type": 7,
+                    "execute": [
+                      {
+                        "type": 8,
+                        "condition": [
+                          [
+                            9,
+                            0,
+                            "i"
+                          ],
+                          [
+                            5,
+                            "=="
+                          ],
+                          [
+                            0,
+                            0
+                          ]
+                        ],
+                        "execute": [
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsImage",
+                                  "0"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          },
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsText",
+                                  "0"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": 9,
+                        "condition": [
+                          [
+                            9,
+                            0,
+                            "i"
+                          ],
+                          [
+                            5,
+                            "=="
+                          ],
+                          [
+                            0,
+                            1
+                          ]
+                        ],
+                        "execute": [
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsImage",
+                                  "1"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          },
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsText",
+                                  "1"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": 9,
+                        "condition": [
+                          [
+                            9,
+                            0,
+                            "i"
+                          ],
+                          [
+                            5,
+                            "=="
+                          ],
+                          [
+                            0,
+                            2
+                          ]
+                        ],
+                        "execute": [
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsImage",
+                                  "2"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          },
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsText",
+                                  "2"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": 9,
+                        "condition": [
+                          [
+                            9,
+                            0,
+                            "i"
+                          ],
+                          [
+                            5,
+                            "=="
+                          ],
+                          [
+                            0,
+                            3
+                          ]
+                        ],
+                        "execute": [
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsImage",
+                                  "3"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          },
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsText",
+                                  "3"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": 9,
+                        "condition": [
+                          [
+                            9,
+                            0,
+                            "i"
+                          ],
+                          [
+                            5,
+                            "=="
+                          ],
+                          [
+                            0,
+                            4
+                          ]
+                        ],
+                        "execute": [
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsImage",
+                                  "4"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          },
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsText",
+                                  "4"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": 9,
+                        "condition": [
+                          [
+                            9,
+                            0,
+                            "i"
+                          ],
+                          [
+                            5,
+                            "=="
+                          ],
+                          [
+                            0,
+                            5
+                          ]
+                        ],
+                        "execute": [
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsImage",
+                                  "5"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          },
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                4,
+                                [
+                                  "content",
+                                  "selectOptionsText",
+                                  "5"
+                                ],
+                                "x"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionOrderArr",
+                                [
+                                  9,
+                                  0,
+                                  "i"
+                                ]
+                              ],
+                              [
+                                5,
+                                "*"
+                              ],
+                              [
+                                0,
+                                180
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           },
           {
             "type": 43,
             "execute": [
+              {
+                "type": 35,
+                "value": "//能加注释？"
+              },
               {
                 "type": 7,
                 "execute": [
@@ -4605,6 +5792,56 @@
                                 "type": 6,
                                 "express": [
                                   [
+                                    1,
+                                    [
+                                      -1
+                                    ],
+                                    "trainStop"
+                                  ],
+                                  [
+                                    5,
+                                    "="
+                                  ],
+                                  [
+                                    0,
+                                    true
+                                  ]
+                                ]
+                              },
+                              {
+                                "type": 6,
+                                "express": [
+                                  [
+                                    8,
+                                    [
+                                      -1
+                                    ],
+                                    "event_status",
+                                    "data",
+                                    "trainStop"
+                                  ],
+                                  [
+                                    5,
+                                    "="
+                                  ],
+                                  [
+                                    0,
+                                    true
+                                  ]
+                                ]
+                              },
+                              {
+                                "type": 12,
+                                "target": [
+                                  11,
+                                  []
+                                ],
+                                "name": "sendStatusData"
+                              },
+                              {
+                                "type": 6,
+                                "express": [
+                                  [
                                     4,
                                     [
                                       "content",
@@ -4642,6 +5879,20 @@
                                   [
                                     0,
                                     false
+                                  ]
+                                ]
+                              },
+                              {
+                                "type": 12,
+                                "target": [
+                                  11,
+                                  []
+                                ],
+                                "name": "showOptions",
+                                "params": [
+                                  [
+                                    0,
+                                    true
                                   ]
                                 ]
                               }
@@ -4694,6 +5945,10 @@
                   [
                     0,
                     1
+                  ],
+                  [
+                    0,
+                    false
                   ]
                 ]
               },
@@ -4748,92 +6003,434 @@
             "name": "trainLeave",
             "execute": [
               {
-                "type": 41,
-                "value": [
-                  0,
-                  2000
+                "type": 6,
+                "express": [
+                  [
+                    1,
+                    [
+                      -1
+                    ],
+                    "trainMove"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    0,
+                    true
+                  ]
+                ]
+              },
+              {
+                "type": 35,
+                "value": "//播放火车离开音效"
+              },
+              {
+                "type": 12,
+                "target": [
+                  11,
+                  []
                 ],
+                "name": "playAudio",
+                "params": [
+                  [
+                    0,
+                    2
+                  ],
+                  [
+                    9,
+                    0,
+                    "controller"
+                  ]
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    4,
+                    [
+                      "content",
+                      "train",
+                      "smoke"
+                    ],
+                    "visible"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    0,
+                    false
+                  ]
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    4,
+                    [
+                      "content",
+                      "train",
+                      "smoke_move"
+                    ],
+                    "visible"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    0,
+                    true
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "setTrainPos",
+            "execute": [
+              {
+                "type": 35,
+                "value": "//直接设置火车的位置"
+              },
+              {
+                "type": 7,
                 "execute": [
                   {
-                    "type": 6,
-                    "express": [
+                    "type": 8,
+                    "condition": [
                       [
                         1,
                         [
                           -1
                         ],
-                        "trainMove"
-                      ],
-                      [
-                        5,
-                        "="
-                      ],
-                      [
-                        0,
-                        true
+                        "gameOver"
                       ]
-                    ]
-                  },
-                  {
-                    "type": 35,
-                    "value": "//播放火车离开音效"
-                  },
-                  {
-                    "type": 12,
-                    "target": [
-                      11,
-                      []
                     ],
-                    "name": "playAudio",
-                    "params": [
-                      [
-                        0,
-                        2
-                      ]
+                    "execute": [
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            4,
+                            [
+                              "content",
+                              "train"
+                            ],
+                            "x"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            0,
+                            -10000
+                          ]
+                        ]
+                      }
                     ]
                   },
                   {
-                    "type": 6,
-                    "express": [
+                    "type": 10,
+                    "execute": [
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            4,
+                            [
+                              "content",
+                              "train"
+                            ],
+                            "x"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            1,
+                            [
+                              -1
+                            ],
+                            "trainStopOffX"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    4,
+                    [
+                      "content",
+                      "train",
+                      "smoke"
+                    ],
+                    "visible"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    0,
+                    true
+                  ]
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    4,
+                    [
+                      "content",
+                      "train",
+                      "smoke_move"
+                    ],
+                    "visible"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    0,
+                    false
+                  ]
+                ]
+              },
+              {
+                "type": 12,
+                "target": [
+                  11,
+                  []
+                ],
+                "name": "showOptions",
+                "params": [
+                  [
+                    0,
+                    false
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "showOptions",
+            "execute": [
+              {
+                "type": 12,
+                "target": [
+                  11,
+                  []
+                ],
+                "name": "pauseAudio",
+                "params": [
+                  [
+                    0,
+                    1
+                  ]
+                ]
+              },
+              {
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
                       [
-                        4,
+                        8,
                         [
-                          "content",
-                          "train",
-                          "smoke"
+                          -1
                         ],
-                        "visible"
+                        "config",
+                        "option_type"
                       ],
                       [
                         5,
-                        "="
+                        "=="
                       ],
                       [
                         0,
-                        false
+                        "text"
                       ]
+                    ],
+                    "execute": [
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            4,
+                            [
+                              "content",
+                              "selectOptionsText"
+                            ],
+                            "visible"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            0,
+                            true
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 7,
+                        "execute": [
+                          {
+                            "type": 8,
+                            "condition": [
+                              [
+                                9,
+                                0,
+                                "animation"
+                              ]
+                            ],
+                            "execute": [
+                              {
+                                "type": 17,
+                                "name": [
+                                  0,
+                                  "show_text_option"
+                                ],
+                                "target": [
+                                  11,
+                                  [
+                                    "content"
+                                  ]
+                                ],
+                                "times": 1
+                              }
+                            ]
+                          },
+                          {
+                            "type": 10,
+                            "execute": [
+                              {
+                                "type": 6,
+                                "express": [
+                                  [
+                                    4,
+                                    [
+                                      "content",
+                                      "selectOptionsText"
+                                    ],
+                                    "alpha"
+                                  ],
+                                  [
+                                    5,
+                                    "="
+                                  ],
+                                  [
+                                    0,
+                                    1
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
                     ]
                   },
                   {
-                    "type": 6,
-                    "express": [
-                      [
-                        4,
-                        [
-                          "content",
-                          "train",
-                          "smoke_move"
-                        ],
-                        "visible"
-                      ],
-                      [
-                        5,
-                        "="
-                      ],
-                      [
-                        0,
-                        true
-                      ]
+                    "type": 10,
+                    "execute": [
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            4,
+                            [
+                              "content",
+                              "selectOptionsImage"
+                            ],
+                            "visible"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            0,
+                            true
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 7,
+                        "execute": [
+                          {
+                            "type": 8,
+                            "condition": [
+                              [
+                                9,
+                                0,
+                                "animation"
+                              ]
+                            ],
+                            "execute": [
+                              {
+                                "type": 17,
+                                "name": [
+                                  0,
+                                  "show_image_option"
+                                ],
+                                "target": [
+                                  11,
+                                  [
+                                    "content"
+                                  ]
+                                ],
+                                "times": 1
+                              }
+                            ]
+                          },
+                          {
+                            "type": 10,
+                            "execute": [
+                              {
+                                "type": 6,
+                                "express": [
+                                  [
+                                    4,
+                                    [
+                                      "content",
+                                      "selectOptionsImage"
+                                    ],
+                                    "alpha"
+                                  ],
+                                  [
+                                    5,
+                                    "="
+                                  ],
+                                  [
+                                    0,
+                                    1
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
                     ]
                   }
                 ]
@@ -4935,6 +6532,16 @@
                       "option"
                     ],
                     "funName": "onDragTarget"
+                  },
+                  {
+                    "type": 29,
+                    "event": "AnimationComplete",
+                    "target": [
+                      1,
+                      [],
+                      "option"
+                    ],
+                    "funName": "optionEnabled"
                   }
                 ]
               }
@@ -4945,94 +6552,346 @@
             "name": "onDragStartBefore",
             "execute": [
               {
-                "type": 6,
-                "express": [
-                  [
-                    9,
-                    0,
-                    "event",
-                    "scaleX"
-                  ],
-                  [
-                    5,
-                    "="
-                  ],
-                  [
-                    0,
-                    0.9
-                  ],
-                  [
-                    5,
-                    "*"
-                  ],
-                  [
-                    1,
-                    [
-                      -1
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
+                      [
+                        5,
+                        "!"
+                      ],
+                      [
+                        9,
+                        1,
+                        "event",
+                        "signalling"
+                      ]
                     ],
-                    "optionScale"
-                  ]
+                    "execute": [
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "dealDragStartBefore",
+                        "params": [
+                          [
+                            9,
+                            0,
+                            "target"
+                          ],
+                          [
+                            0,
+                            true
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "sendActionData",
+                        "params": [
+                          [
+                            9,
+                            0,
+                            "target",
+                            "id"
+                          ],
+                          [
+                            0,
+                            "dragStartBefore"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
                 ]
-              },
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "onDragStart",
+            "execute": [
               {
-                "type": 6,
-                "express": [
-                  [
-                    9,
-                    0,
-                    "event",
-                    "scaleY"
-                  ],
-                  [
-                    5,
-                    "="
-                  ],
-                  [
-                    0,
-                    0.9
-                  ],
-                  [
-                    5,
-                    "*"
-                  ],
-                  [
-                    1,
-                    [
-                      -1
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
+                      [
+                        5,
+                        "!"
+                      ],
+                      [
+                        9,
+                        1,
+                        "event",
+                        "signalling"
+                      ]
                     ],
-                    "optionScale"
-                  ]
+                    "execute": [
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "sendActionData",
+                        "params": [
+                          [
+                            9,
+                            0,
+                            "target",
+                            "id"
+                          ],
+                          [
+                            0,
+                            "dragStart"
+                          ],
+                          [
+                            9,
+                            0,
+                            "target",
+                            "dragOption",
+                            "actionData"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
                 ]
-              },
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "onDragMove",
+            "execute": [
               {
-                "type": 6,
-                "express": [
-                  [
-                    9,
-                    0,
-                    "event",
-                    "x"
-                  ],
-                  [
-                    5,
-                    "="
-                  ],
-                  [
-                    9,
-                    0,
-                    "event",
-                    "x"
-                  ],
-                  [
-                    5,
-                    "*"
-                  ],
-                  [
-                    1,
-                    [
-                      -1
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
+                      [
+                        5,
+                        "!"
+                      ],
+                      [
+                        9,
+                        1,
+                        "event",
+                        "signalling"
+                      ]
                     ],
-                    "optionScale"
+                    "execute": [
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "sendActionData",
+                        "params": [
+                          [
+                            9,
+                            0,
+                            "target",
+                            "id"
+                          ],
+                          [
+                            0,
+                            "dragMove"
+                          ],
+                          [
+                            9,
+                            0,
+                            "target",
+                            "dragOption",
+                            "actionData"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "onDragEnd",
+            "execute": [
+              {
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
+                      [
+                        5,
+                        "!"
+                      ],
+                      [
+                        9,
+                        1,
+                        "event",
+                        "signalling"
+                      ]
+                    ],
+                    "execute": [
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "dealDragEnd",
+                        "params": [
+                          [
+                            9,
+                            0,
+                            "target"
+                          ],
+                          [
+                            0,
+                            true
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "sendActionData",
+                        "params": [
+                          [
+                            9,
+                            0,
+                            "target",
+                            "id"
+                          ],
+                          [
+                            0,
+                            "dragEnd"
+                          ],
+                          [
+                            9,
+                            0,
+                            "target",
+                            "dragOption",
+                            "actionData"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "onDragTarget",
+            "execute": [
+              {
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
+                      [
+                        5,
+                        "!"
+                      ],
+                      [
+                        9,
+                        1,
+                        "event",
+                        "signalling"
+                      ]
+                    ],
+                    "execute": [
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "dealDragTarget",
+                        "params": [
+                          [
+                            9,
+                            0,
+                            "target"
+                          ],
+                          [
+                            0,
+                            true
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "sendActionData",
+                        "params": [
+                          [
+                            9,
+                            0,
+                            "target",
+                            "id"
+                          ],
+                          [
+                            0,
+                            "dragTarget"
+                          ],
+                          [
+                            9,
+                            0,
+                            "target",
+                            "dragOption",
+                            "actionData"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "dealDragStartBefore",
+            "execute": [
+              {
+                "type": 12,
+                "target": [
+                  11,
+                  []
+                ],
+                "name": "playAudio",
+                "params": [
+                  [
+                    0,
+                    3
+                  ],
+                  [
+                    9,
+                    1,
+                    "controller"
                   ]
                 ]
               },
@@ -5075,51 +6934,92 @@
                 ]
               },
               {
-                "type": 0,
-                "value": [
-                  0,
-                  "onDragStartBefore"
-                ]
-              },
-              {
-                "type": 12,
-                "target": [
-                  11,
-                  []
-                ],
-                "name": "playAudio",
-                "params": [
+                "type": 6,
+                "express": [
+                  [
+                    9,
+                    0,
+                    "target",
+                    "enabled"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
                   [
                     0,
-                    3
+                    true
                   ]
-                ]
-              }
-            ]
-          },
-          {
-            "type": 11,
-            "name": "onDragStart",
-            "execute": [
-              {
-                "type": 0,
-                "value": [
-                  0,
-                  "onDragStart"
                 ]
               },
               {
                 "type": 6,
                 "express": [
                   [
-                    4,
+                    9,
+                    0,
+                    "target",
+                    "scaleX"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    0,
+                    0.85
+                  ],
+                  [
+                    5,
+                    "*"
+                  ],
+                  [
+                    1,
                     [
-                      "content",
-                      "selectOptionsText",
-                      "option5"
+                      -1
                     ],
-                    "dragOption",
-                    "actionData"
+                    "optionScale"
+                  ]
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    9,
+                    0,
+                    "target",
+                    "scaleY"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    0,
+                    0.85
+                  ],
+                  [
+                    5,
+                    "*"
+                  ],
+                  [
+                    1,
+                    [
+                      -1
+                    ],
+                    "optionScale"
+                  ]
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    9,
+                    0,
+                    "target",
+                    "x"
                   ],
                   [
                     5,
@@ -5128,95 +7028,19 @@
                   [
                     9,
                     0,
-                    "event",
-                    "dragOption",
-                    "actionData"
-                  ]
-                ]
-              }
-            ]
-          },
-          {
-            "type": 11,
-            "name": "onDragMove",
-            "execute": [
-              {
-                "type": 0,
-                "value": [
-                  0,
-                  "onDragMove"
-                ]
-              },
-              {
-                "type": 6,
-                "express": [
-                  [
-                    4,
-                    [
-                      "content",
-                      "selectOptionsText",
-                      "option5"
-                    ],
-                    "dragOption",
-                    "actionData"
+                    "target",
+                    "x"
                   ],
                   [
                     5,
-                    "="
+                    "*"
                   ],
                   [
-                    9,
-                    0,
-                    "event",
-                    "dragOption",
-                    "actionData"
-                  ]
-                ]
-              }
-            ]
-          },
-          {
-            "type": 11,
-            "name": "onDragEnd",
-            "execute": [
-              {
-                "type": 12,
-                "target": [
-                  11,
-                  []
-                ],
-                "name": "dealDragEnd",
-                "params": [
-                  [
-                    9,
-                    0,
-                    "event"
-                  ]
-                ]
-              },
-              {
-                "type": 6,
-                "express": [
-                  [
-                    4,
+                    1,
                     [
-                      "content",
-                      "selectOptionsText",
-                      "option5"
+                      -1
                     ],
-                    "dragOption",
-                    "actionData"
-                  ],
-                  [
-                    5,
-                    "="
-                  ],
-                  [
-                    9,
-                    0,
-                    "event",
-                    "dragOption",
-                    "actionData"
+                    "optionScale"
                   ]
                 ]
               }
@@ -5239,7 +7063,7 @@
                   [
                     9,
                     0,
-                    "event",
+                    "target",
                     "scaleX"
                   ],
                   [
@@ -5258,7 +7082,7 @@
                   [
                     9,
                     0,
-                    "event",
+                    "target",
                     "scaleY"
                   ],
                   [
@@ -5277,7 +7101,7 @@
                   [
                     9,
                     0,
-                    "event",
+                    "target",
                     "x"
                   ],
                   [
@@ -5287,7 +7111,7 @@
                   [
                     9,
                     0,
-                    "event",
+                    "target",
                     "x"
                   ],
                   [
@@ -5324,7 +7148,7 @@
                         "targetTextArr",
                         [
                           9,
-                          1,
+                          2,
                           "i"
                         ],
                         "visible"
@@ -5352,21 +7176,67 @@
                   [
                     0,
                     5
+                  ],
+                  [
+                    9,
+                    1,
+                    "controller"
                   ]
                 ]
+              },
+              {
+                "type": 17,
+                "name": [
+                  0,
+                  "shake"
+                ],
+                "target": [
+                  9,
+                  0,
+                  "target"
+                ],
+                "times": 1
               },
               {
                 "type": 6,
                 "express": [
                   [
-                    4,
-                    [
-                      "content",
-                      "selectOptionsText",
-                      "option5"
-                    ],
-                    "dragOption",
-                    "actionData"
+                    9,
+                    0,
+                    "target",
+                    "enabled"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    0,
+                    false
+                  ]
+                ]
+              },
+              {
+                "type": 0,
+                "value": [
+                  9,
+                  0,
+                  "target"
+                ]
+              },
+              {
+                "type": 37,
+                "variableType": "object",
+                "value": "",
+                "varId": "id"
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    1,
+                    [],
+                    "id"
                   ],
                   [
                     5,
@@ -5375,31 +7245,37 @@
                   [
                     9,
                     0,
-                    "event",
-                    "dragOption",
-                    "actionData"
+                    "target",
+                    "id"
                   ]
                 ]
-              }
-            ]
-          },
-          {
-            "type": 11,
-            "name": "onDragTarget",
-            "execute": [
+              },
               {
-                "type": 0,
-                "value": [
-                  0,
-                  "onDragTarget"
+                "type": 6,
+                "express": [
+                  [
+                    10,
+                    [
+                      -1
+                    ],
+                    "shakeOptionIdArr",
+                    "push",
+                    [
+                      1,
+                      [],
+                      "id"
+                    ]
+                  ]
                 ]
               },
               {
                 "type": 0,
                 "value": [
-                  9,
-                  0,
-                  "event"
+                  1,
+                  [
+                    -1
+                  ],
+                  "shakeOptionIdArr"
                 ]
               },
               {
@@ -5408,39 +7284,130 @@
                   11,
                   []
                 ],
-                "name": "dealDragTarget",
+                "name": "sendChooseOption",
                 "params": [
                   [
-                    9,
                     0,
-                    "event"
+                    false
+                  ],
+                  [
+                    9,
+                    1,
+                    "controller"
                   ]
+                ]
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "optionEnabled",
+            "execute": [
+              {
+                "type": 0,
+                "value": [
+                  1,
+                  [
+                    -1
+                  ],
+                  "shakeOptionIdArr"
                 ]
               },
               {
-                "type": 6,
-                "express": [
-                  [
-                    4,
-                    [
-                      "content",
-                      "selectOptionsText",
-                      "option5"
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
+                      [
+                        6,
+                        [
+                          -1
+                        ],
+                        "shakeOptionIdArr"
+                      ],
+                      [
+                        5,
+                        ">"
+                      ],
+                      [
+                        0,
+                        0
+                      ]
                     ],
-                    "dragOption",
-                    "actionData"
-                  ],
-                  [
-                    5,
-                    "="
-                  ],
-                  [
-                    9,
-                    0,
-                    "event",
-                    "dragOption",
-                    "actionData"
-                  ]
+                    "execute": [
+                      {
+                        "type": 37,
+                        "variableType": "object",
+                        "value": "",
+                        "varId": "optionId"
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            1,
+                            [],
+                            "optionId"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            7,
+                            [
+                              -1
+                            ],
+                            "shakeOptionIdArr",
+                            [
+                              0,
+                              0
+                            ]
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            7,
+                            [
+                              -1
+                            ],
+                            "optionArr",
+                            [
+                              1,
+                              [],
+                              "optionId"
+                            ],
+                            "enabled"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            0,
+                            true
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            10,
+                            [
+                              -1
+                            ],
+                            "shakeOptionIdArr",
+                            "shift"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
                 ]
               }
             ]
@@ -5455,7 +7422,7 @@
                   [
                     9,
                     0,
-                    "event",
+                    "target",
                     "scaleX"
                   ],
                   [
@@ -5474,7 +7441,7 @@
                   [
                     9,
                     0,
-                    "event",
+                    "target",
                     "scaleY"
                   ],
                   [
@@ -5493,7 +7460,7 @@
                   [
                     9,
                     0,
-                    "event",
+                    "target",
                     "x"
                   ],
                   [
@@ -5512,7 +7479,7 @@
                   [
                     9,
                     0,
-                    "event",
+                    "target",
                     "y"
                   ],
                   [
@@ -5526,12 +7493,27 @@
                 ]
               },
               {
+                "type": 0,
+                "value": [
+                  0,
+                  "--------dealDragTarget"
+                ]
+              },
+              {
+                "type": 0,
+                "value": [
+                  9,
+                  0,
+                  "target"
+                ]
+              },
+              {
                 "type": 6,
                 "express": [
                   [
                     9,
                     0,
-                    "event",
+                    "target",
                     "dragOption",
                     "draggable"
                   ],
@@ -5566,7 +7548,7 @@
                         "targetTextArr",
                         [
                           9,
-                          1,
+                          2,
                           "i"
                         ],
                         "visible"
@@ -5661,6 +7643,44 @@
                         ]
                       },
                       {
+                        "type": 38,
+                        "forin": [
+                          1,
+                          [
+                            -1
+                          ],
+                          "optionArr"
+                        ],
+                        "execute": [
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionArr",
+                                [
+                                  9,
+                                  2,
+                                  "i"
+                                ],
+                                "enabled"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                0,
+                                false
+                              ]
+                            ]
+                          }
+                        ]
+                      },
+                      {
                         "type": 7,
                         "execute": [
                           {
@@ -5671,7 +7691,7 @@
                                 [
                                   -1
                                 ],
-                                "finishAudio"
+                                "endingAnswerAudio"
                               ]
                             ],
                             "execute": [
@@ -5686,20 +7706,70 @@
                                   [
                                     0,
                                     6
+                                  ],
+                                  [
+                                    9,
+                                    1,
+                                    "controller"
                                   ]
+                                ]
+                              },
+                              {
+                                "type": 41,
+                                "value": [
+                                  0,
+                                  2000
+                                ],
+                                "execute": [
+                                  {
+                                    "type": 12,
+                                    "target": [
+                                      11,
+                                      []
+                                    ],
+                                    "name": "trainLeave",
+                                    "params": [
+                                      [
+                                        9,
+                                        1,
+                                        "controller"
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": 10,
+                            "execute": [
+                              {
+                                "type": 41,
+                                "value": [
+                                  0,
+                                  500
+                                ],
+                                "execute": [
+                                  {
+                                    "type": 12,
+                                    "target": [
+                                      11,
+                                      []
+                                    ],
+                                    "name": "trainLeave",
+                                    "params": [
+                                      [
+                                        9,
+                                        1,
+                                        "controller"
+                                      ]
+                                    ]
+                                  }
                                 ]
                               }
                             ]
                           }
                         ]
-                      },
-                      {
-                        "type": 12,
-                        "target": [
-                          11,
-                          []
-                        ],
-                        "name": "trainLeave"
                       }
                     ]
                   }
@@ -5716,7 +7786,482 @@
                   [
                     0,
                     4
+                  ],
+                  [
+                    9,
+                    1,
+                    "controller"
                   ]
+                ]
+              },
+              {
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
+                      [
+                        9,
+                        1,
+                        "controller"
+                      ]
+                    ],
+                    "execute": [
+                      {
+                        "type": 35,
+                        "value": "//发送状态"
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            8,
+                            [
+                              -1
+                            ],
+                            "event_status",
+                            "data",
+                            "trainStop"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            1,
+                            [
+                              -1
+                            ],
+                            "trainStop"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            8,
+                            [
+                              -1
+                            ],
+                            "event_status",
+                            "data",
+                            "gameOver"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            1,
+                            [
+                              -1
+                            ],
+                            "gameOver"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            8,
+                            [
+                              -1
+                            ],
+                            "option",
+                            "id"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            9,
+                            0,
+                            "target",
+                            "id"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            8,
+                            [
+                              -1
+                            ],
+                            "option",
+                            "action"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            0,
+                            "dragTarget"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            8,
+                            [
+                              -1
+                            ],
+                            "option",
+                            "actionData"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            9,
+                            0,
+                            "target",
+                            "dragOption",
+                            "actionData"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 37,
+                        "variableType": "object",
+                        "value": "",
+                        "varId": "options"
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            1,
+                            [],
+                            "options"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            8,
+                            [
+                              -1
+                            ],
+                            "event_status",
+                            "data",
+                            "options"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            10,
+                            [],
+                            "options",
+                            "push",
+                            [
+                              1,
+                              [
+                                -1
+                              ],
+                              "option"
+                            ]
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 0,
+                        "value": [
+                          0,
+                          "ziye--------------------发送状态信令"
+                        ]
+                      },
+                      {
+                        "type": 0,
+                        "value": [
+                          1,
+                          [
+                            -1
+                          ],
+                          "option"
+                        ]
+                      },
+                      {
+                        "type": 0,
+                        "value": [
+                          1,
+                          [],
+                          "options"
+                        ]
+                      },
+                      {
+                        "type": 0,
+                        "value": [
+                          1,
+                          [
+                            -1
+                          ],
+                          "event_status"
+                        ]
+                      },
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "sendStatusData"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": 12,
+                "target": [
+                  11,
+                  []
+                ],
+                "name": "sendChooseOption",
+                "params": [
+                  [
+                    0,
+                    true
+                  ],
+                  [
+                    9,
+                    1,
+                    "controller"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "sendActionData",
+            "execute": [
+              {
+                "type": 6,
+                "express": [
+                  [
+                    8,
+                    [
+                      -1
+                    ],
+                    "event_actionData",
+                    "data",
+                    "id"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    9,
+                    0,
+                    "id"
+                  ]
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    8,
+                    [
+                      -1
+                    ],
+                    "event_actionData",
+                    "data",
+                    "action"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    9,
+                    1,
+                    "action"
+                  ]
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    8,
+                    [
+                      -1
+                    ],
+                    "event_actionData",
+                    "data",
+                    "actionData"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    9,
+                    2,
+                    "actionData"
+                  ]
+                ]
+              },
+              {
+                "type": 15,
+                "event": "event_actionData",
+                "target": [],
+                "system": true,
+                "eventData": [
+                  1,
+                  [
+                    -1
+                  ],
+                  "event_actionData"
+                ]
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "sendStatusData",
+            "execute": [
+              {
+                "type": 15,
+                "event": "event_status",
+                "target": [],
+                "system": true,
+                "eventData": [
+                  1,
+                  [
+                    -1
+                  ],
+                  "event_status"
+                ]
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "sendChooseOption",
+            "execute": [
+              {
+                "type": 6,
+                "express": [
+                  [
+                    8,
+                    [
+                      -1
+                    ],
+                    "event_chooseOption",
+                    "data",
+                    "totalCount"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    1,
+                    [
+                      -1
+                    ],
+                    "totalCount"
+                  ]
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    8,
+                    [
+                      -1
+                    ],
+                    "event_chooseOption",
+                    "data",
+                    "isRight"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    9,
+                    0,
+                    "isRight"
+                  ]
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    8,
+                    [
+                      -1
+                    ],
+                    "event_chooseOption",
+                    "data",
+                    "isFinish"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    1,
+                    [
+                      -1
+                    ],
+                    "gameOver"
+                  ]
+                ]
+              },
+              {
+                "type": 6,
+                "express": [
+                  [
+                    8,
+                    [
+                      -1
+                    ],
+                    "event_chooseOption",
+                    "data",
+                    "controller"
+                  ],
+                  [
+                    5,
+                    "="
+                  ],
+                  [
+                    9,
+                    1,
+                    "controller"
+                  ]
+                ]
+              },
+              {
+                "type": 15,
+                "event": "event_chooseOption",
+                "target": [],
+                "system": true,
+                "eventData": [
+                  1,
+                  [
+                    -1
+                  ],
+                  "event_chooseOption"
                 ]
               }
             ]
@@ -5736,7 +8281,7 @@
                         [
                           -1
                         ],
-                        "playAudioBySelf"
+                        "audioPlayBySelf"
                       ]
                     ],
                     "execute": [
@@ -5753,7 +8298,891 @@
                   },
                   {
                     "type": 10,
-                    "execute": []
+                    "execute": [
+                      {
+                        "type": 0,
+                        "value": [
+                          0,
+                          "ziye----playAudio_vf"
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            8,
+                            [
+                              -1
+                            ],
+                            "event_playAudio",
+                            "data",
+                            "val"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            9,
+                            0,
+                            "id"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            8,
+                            [
+                              -1
+                            ],
+                            "event_playAudio",
+                            "data",
+                            "controller"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            9,
+                            1,
+                            "controller"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 15,
+                        "event": "event_playAudio",
+                        "target": [],
+                        "system": true,
+                        "eventData": [
+                          1,
+                          [
+                            -1
+                          ],
+                          "event_playAudio"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": 11,
+            "name": "pauseAudio",
+            "execute": [
+              {
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
+                      [
+                        1,
+                        [
+                          -1
+                        ],
+                        "audioPlayBySelf"
+                      ]
+                    ],
+                    "execute": [
+                      {
+                        "type": 33,
+                        "value": [
+                          9,
+                          0,
+                          "id"
+                        ],
+                        "trackId": 1
+                      }
+                    ]
+                  },
+                  {
+                    "type": 10,
+                    "execute": [
+                      {
+                        "type": 15,
+                        "event": "event_pauseAudio",
+                        "target": [],
+                        "system": true,
+                        "eventData": [
+                          1,
+                          [
+                            -1
+                          ],
+                          "event_pauseAudio"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": 29,
+            "event": "onMessage",
+            "target": [],
+            "system": true,
+            "funName": "message_call"
+          },
+          {
+            "type": 11,
+            "name": "message_call",
+            "execute": [
+              {
+                "type": 0,
+                "value": [
+                  9,
+                  0,
+                  "param"
+                ]
+              },
+              {
+                "type": 7,
+                "execute": [
+                  {
+                    "type": 8,
+                    "condition": [
+                      [
+                        9,
+                        0,
+                        "param",
+                        "code"
+                      ],
+                      [
+                        5,
+                        "=="
+                      ],
+                      [
+                        0,
+                        "displayOption"
+                      ]
+                    ],
+                    "execute": [
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            1,
+                            [
+                              -1
+                            ],
+                            "optionOrderArr"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            9,
+                            0,
+                            "param",
+                            "data"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            8,
+                            [
+                              -1
+                            ],
+                            "event_status",
+                            "data",
+                            "optionOrderArr"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            9,
+                            0,
+                            "param",
+                            "data"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "randomOption"
+                      },
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "trainEnter"
+                      }
+                    ]
+                  },
+                  {
+                    "type": 9,
+                    "condition": [
+                      [
+                        9,
+                        0,
+                        "param",
+                        "code"
+                      ],
+                      [
+                        5,
+                        "=="
+                      ],
+                      [
+                        0,
+                        "actionData"
+                      ]
+                    ],
+                    "execute": [
+                      {
+                        "type": 37,
+                        "variableType": "object",
+                        "value": "",
+                        "varId": "id"
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            1,
+                            [],
+                            "id"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            9,
+                            0,
+                            "param",
+                            "data",
+                            "id"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 7,
+                        "execute": [
+                          {
+                            "type": 8,
+                            "condition": [
+                              [
+                                9,
+                                0,
+                                "param",
+                                "data",
+                                "action"
+                              ],
+                              [
+                                5,
+                                "=="
+                              ],
+                              [
+                                0,
+                                "dragStartBefore"
+                              ]
+                            ],
+                            "execute": [
+                              {
+                                "type": 12,
+                                "target": [
+                                  11,
+                                  []
+                                ],
+                                "name": "dealDragStartBefore",
+                                "params": [
+                                  [
+                                    7,
+                                    [
+                                      -1
+                                    ],
+                                    "optionArr",
+                                    [
+                                      1,
+                                      [],
+                                      "id"
+                                    ]
+                                  ],
+                                  [
+                                    0,
+                                    false
+                                  ]
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": 10,
+                            "execute": [
+                              {
+                                "type": 6,
+                                "express": [
+                                  [
+                                    7,
+                                    [
+                                      -1
+                                    ],
+                                    "optionArr",
+                                    [
+                                      1,
+                                      [],
+                                      "id"
+                                    ],
+                                    "dragOption",
+                                    "actionData"
+                                  ],
+                                  [
+                                    5,
+                                    "="
+                                  ],
+                                  [
+                                    9,
+                                    0,
+                                    "param",
+                                    "data",
+                                    "actionData"
+                                  ]
+                                ]
+                              },
+                              {
+                                "type": 0,
+                                "value": [
+                                  0,
+                                  "----------------1111"
+                                ]
+                              },
+                              {
+                                "type": 7,
+                                "execute": [
+                                  {
+                                    "type": 8,
+                                    "condition": [
+                                      [
+                                        9,
+                                        0,
+                                        "param",
+                                        "data",
+                                        "action"
+                                      ],
+                                      [
+                                        5,
+                                        "=="
+                                      ],
+                                      [
+                                        0,
+                                        "dragEnd"
+                                      ]
+                                    ],
+                                    "execute": [
+                                      {
+                                        "type": 12,
+                                        "target": [
+                                          11,
+                                          []
+                                        ],
+                                        "name": "dealDragEnd",
+                                        "params": [
+                                          [
+                                            7,
+                                            [
+                                              -1
+                                            ],
+                                            "optionArr",
+                                            [
+                                              1,
+                                              [],
+                                              "id"
+                                            ]
+                                          ],
+                                          [
+                                            0,
+                                            false
+                                          ]
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": 9,
+                                    "condition": [
+                                      [
+                                        9,
+                                        0,
+                                        "param",
+                                        "data",
+                                        "action"
+                                      ],
+                                      [
+                                        5,
+                                        "=="
+                                      ],
+                                      [
+                                        0,
+                                        "dragTarget"
+                                      ]
+                                    ],
+                                    "execute": [
+                                      {
+                                        "type": 12,
+                                        "target": [
+                                          11,
+                                          []
+                                        ],
+                                        "name": "dealDragTarget",
+                                        "params": [
+                                          [
+                                            7,
+                                            [
+                                              -1
+                                            ],
+                                            "optionArr",
+                                            [
+                                              1,
+                                              [],
+                                              "id"
+                                            ]
+                                          ],
+                                          [
+                                            0,
+                                            false
+                                          ]
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": 9,
+                    "condition": [
+                      [
+                        9,
+                        0,
+                        "param",
+                        "code"
+                      ],
+                      [
+                        5,
+                        "=="
+                      ],
+                      [
+                        0,
+                        "status"
+                      ]
+                    ],
+                    "execute": [
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            1,
+                            [
+                              -1
+                            ],
+                            "optionOrderArr"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            9,
+                            0,
+                            "param",
+                            "data",
+                            "optionOrderArr"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 12,
+                        "target": [
+                          11,
+                          []
+                        ],
+                        "name": "randomOption"
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            1,
+                            [
+                              -1
+                            ],
+                            "gameOver"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            9,
+                            0,
+                            "param",
+                            "data",
+                            "gameOver"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            1,
+                            [
+                              -1
+                            ],
+                            "trainStop"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            9,
+                            0,
+                            "param",
+                            "data",
+                            "trainStop"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 7,
+                        "execute": [
+                          {
+                            "type": 8,
+                            "condition": [
+                              [
+                                1,
+                                [
+                                  -1
+                                ],
+                                "trainStop"
+                              ]
+                            ],
+                            "execute": [
+                              {
+                                "type": 12,
+                                "target": [
+                                  11,
+                                  []
+                                ],
+                                "name": "setTrainPos"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": 7,
+                        "execute": [
+                          {
+                            "type": 8,
+                            "condition": [
+                              [
+                                1,
+                                [
+                                  -1
+                                ],
+                                "gameOver"
+                              ]
+                            ],
+                            "execute": [
+                              {
+                                "type": 38,
+                                "forin": [
+                                  1,
+                                  [
+                                    -1
+                                  ],
+                                  "optionArr"
+                                ],
+                                "execute": [
+                                  {
+                                    "type": 6,
+                                    "express": [
+                                      [
+                                        7,
+                                        [
+                                          -1
+                                        ],
+                                        "optionArr",
+                                        [
+                                          9,
+                                          1,
+                                          "i"
+                                        ],
+                                        "enabled"
+                                      ],
+                                      [
+                                        5,
+                                        "="
+                                      ],
+                                      [
+                                        0,
+                                        false
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": 37,
+                        "variableType": "object",
+                        "value": "",
+                        "varId": "options"
+                      },
+                      {
+                        "type": 6,
+                        "express": [
+                          [
+                            1,
+                            [],
+                            "options"
+                          ],
+                          [
+                            5,
+                            "="
+                          ],
+                          [
+                            9,
+                            0,
+                            "param",
+                            "data",
+                            "options"
+                          ]
+                        ]
+                      },
+                      {
+                        "type": 38,
+                        "forin": [
+                          1,
+                          [],
+                          "options"
+                        ],
+                        "execute": [
+                          {
+                            "type": 37,
+                            "variableType": "object",
+                            "value": "",
+                            "varId": "optionData"
+                          },
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                1,
+                                [],
+                                "optionData"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [],
+                                "options",
+                                [
+                                  9,
+                                  1,
+                                  "i"
+                                ]
+                              ]
+                            ]
+                          },
+                          {
+                            "type": 37,
+                            "variableType": "object",
+                            "value": "",
+                            "varId": "id"
+                          },
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                1,
+                                [],
+                                "id"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                8,
+                                [],
+                                "optionData",
+                                "id"
+                              ]
+                            ]
+                          },
+                          {
+                            "type": 37,
+                            "variableType": "object",
+                            "value": "",
+                            "varId": "optionTarget"
+                          },
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                1,
+                                [],
+                                "optionTarget"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionArr",
+                                [
+                                  1,
+                                  [],
+                                  "id"
+                                ]
+                              ]
+                            ]
+                          },
+                          {
+                            "type": 37,
+                            "variableType": "object",
+                            "value": "",
+                            "varId": "dragOption"
+                          },
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                1,
+                                [],
+                                "dragOption"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                8,
+                                [],
+                                "optionTarget",
+                                "dragOption"
+                              ]
+                            ]
+                          },
+                          {
+                            "type": 0,
+                            "value": [
+                              8,
+                              [],
+                              "optionData",
+                              "actionData"
+                            ]
+                          },
+                          {
+                            "type": 6,
+                            "express": [
+                              [
+                                8,
+                                [],
+                                "dragOption",
+                                "actionData"
+                              ],
+                              [
+                                5,
+                                "="
+                              ],
+                              [
+                                8,
+                                [],
+                                "optionData",
+                                "actionData"
+                              ]
+                            ]
+                          },
+                          {
+                            "type": 0,
+                            "value": [
+                              0,
+                              "1111111"
+                            ]
+                          },
+                          {
+                            "type": 0,
+                            "value": [
+                              8,
+                              [],
+                              "dragOption",
+                              "actionData"
+                            ]
+                          },
+                          {
+                            "type": 0,
+                            "value": [
+                              0,
+                              "2222222"
+                            ]
+                          },
+                          {
+                            "type": 12,
+                            "target": [
+                              11,
+                              []
+                            ],
+                            "name": "dealDragTarget",
+                            "params": [
+                              [
+                                7,
+                                [
+                                  -1
+                                ],
+                                "optionArr",
+                                [
+                                  1,
+                                  [],
+                                  "id"
+                                ]
+                              ],
+                              [
+                                0,
+                                false
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               }
@@ -5775,7 +9204,7 @@
           },
           {
             "id": "train",
-            "libId": 27,
+            "libId": 17,
             "x": 1000,
             "y": 238,
             "scaleX": 1,
@@ -5787,21 +9216,81 @@
           },
           {
             "id": "selectOptionsText",
-            "libId": 31,
+            "libId": 22,
             "x": 0,
             "y": 450,
             "scaleX": 1,
             "scaleY": 1,
+            "alpha": 0,
             "visible": false
           },
           {
             "id": "selectOptionsImage",
-            "libId": 32,
+            "libId": 23,
             "x": 0,
             "y": 450,
             "scaleX": 1,
             "scaleY": 1,
+            "alpha": 0,
             "visible": false
+          }
+        ],
+        "animations": [
+          {
+            "name": "show_text_option",
+            "duration": 30,
+            "autoPlay": false,
+            "loop": false,
+            "children": {
+              "selectOptionsText": {
+                "duration": 30,
+                "loop": false,
+                "timelines": [
+                  {
+                    "type": "alpha",
+                    "loop": false,
+                    "frames": [
+                      {
+                        "frame": 1,
+                        "value": 0
+                      },
+                      {
+                        "frame": 30,
+                        "value": 1
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "show_image_option",
+            "duration": 30,
+            "autoPlay": false,
+            "loop": false,
+            "children": {
+              "selectOptionsImage": {
+                "duration": 30,
+                "loop": false,
+                "timelines": [
+                  {
+                    "type": "alpha",
+                    "loop": false,
+                    "frames": [
+                      {
+                        "frame": 1,
+                        "value": 0
+                      },
+                      {
+                        "frame": 30,
+                        "value": 1
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
           }
         ]
       },
@@ -5866,61 +9355,11 @@
         "src": 16
       },
       "16": {
-        "name": "targetImage1",
-        "type": "Image",
-        "src": 17
-      },
-      "17": {
-        "name": "targetImage2",
-        "type": "Image",
-        "src": 18
-      },
-      "18": {
-        "name": "targetImage3",
-        "type": "Image",
-        "src": 19
-      },
-      "19": {
-        "name": "targetImage4",
-        "type": "Image",
-        "src": 20
-      },
-      "20": {
-        "name": "targetImage5",
-        "type": "Image",
-        "src": 21
-      },
-      "21": {
         "name": "optionImage0",
         "type": "Image",
         "src": 22
       },
-      "22": {
-        "name": "optionImage1",
-        "type": "Image",
-        "src": 23
-      },
-      "23": {
-        "name": "optionImage2",
-        "type": "Image",
-        "src": 24
-      },
-      "24": {
-        "name": "optionImage3",
-        "type": "Image",
-        "src": 25
-      },
-      "25": {
-        "name": "optionImage4",
-        "type": "Image",
-        "src": 26
-      },
-      "26": {
-        "name": "optionImage5",
-        "type": "Image",
-        "src": 27
-      },
-      "27": {
+      "17": {
         "type": "custom",
         "children": [
           {
@@ -5955,7 +9394,7 @@
           },
           {
             "id": "target_container0",
-            "libId": 28,
+            "libId": 18,
             "x": 242,
             "y": 100,
             "visible": false,
@@ -5965,15 +9404,8 @@
             }
           },
           {
-            "id": "target_image0",
-            "libId": 15,
-            "x": 272,
-            "y": -15,
-            "visible": false
-          },
-          {
             "id": "target_container1",
-            "libId": 28,
+            "libId": 18,
             "x": 420,
             "y": 100,
             "visible": false,
@@ -5983,15 +9415,8 @@
             }
           },
           {
-            "id": "target_image1",
-            "libId": 16,
-            "x": 450,
-            "y": -15,
-            "visible": false
-          },
-          {
             "id": "target_container2",
-            "libId": 28,
+            "libId": 18,
             "x": 598,
             "y": 100,
             "visible": false,
@@ -6001,15 +9426,8 @@
             }
           },
           {
-            "id": "target_image2",
-            "libId": 17,
-            "x": 628,
-            "y": -15,
-            "visible": false
-          },
-          {
             "id": "target_container3",
-            "libId": 28,
+            "libId": 18,
             "x": 776,
             "y": 100,
             "visible": false,
@@ -6019,15 +9437,8 @@
             }
           },
           {
-            "id": "target_image3",
-            "libId": 18,
-            "x": 806,
-            "y": -15,
-            "visible": false
-          },
-          {
             "id": "target_container4",
-            "libId": 28,
+            "libId": 18,
             "x": 954,
             "y": 100,
             "visible": false,
@@ -6037,15 +9448,8 @@
             }
           },
           {
-            "id": "target_image4",
-            "libId": 19,
-            "x": 984,
-            "y": -15,
-            "visible": false
-          },
-          {
             "id": "target_container5",
-            "libId": 28,
+            "libId": 18,
             "x": 1132,
             "y": 100,
             "visible": false,
@@ -6053,17 +9457,10 @@
               "droppable": true,
               "dropGroup": "5"
             }
-          },
-          {
-            "id": "target_image5",
-            "libId": 20,
-            "x": 1162,
-            "y": -15,
-            "visible": false
           }
         ]
       },
-      "28": {
+      "18": {
         "type": "custom",
         "width": 158,
         "height": 130,
@@ -6094,40 +9491,52 @@
           },
           {
             "id": "textContainer",
-            "libId": 29,
+            "libId": 19,
             "width": 158,
             "height": 150,
+            "x": 30,
+            "y": -115,
+            "visible": false
+          },
+          {
+            "id": "target_image",
+            "libId": 15,
             "x": 30,
             "y": -115,
             "visible": false
           }
         ]
       },
-      "29": {
+      "19": {
         "type": "custom",
         "children": [
           {
             "id": "box",
-            "libId": 10
+            "libId": 10,
+            "pivotX": 80,
+            "pivotY": 65
           },
           {
             "id": "text",
             "libId": 6,
             "text": "11",
+            "width": 150,
             "height": 60,
+            "pivotX": 75,
+            "pivotY": 30,
             "style": {
               "justifyContent": "center",
               "alignContent": "center",
-              "fontSize": 24,
+              "fontSize": 20,
               "fontFamily": "Century Gothic",
               "wordWrap": true,
-              "wordWrapWidth": 384,
+              "wordWrapWidth": 150,
               "color": 0,
               "lineHeight": 30,
-              "maxHeight": 30,
+              "maxHeight": 60,
               "maskImage": "4",
               "maskSize": [
-                100,
+                150,
                 60
               ],
               "maskPosition": [
@@ -6136,14 +9545,141 @@
               ]
             }
           }
+        ],
+        "animations": [
+          {
+            "name": "shake",
+            "duration": 20,
+            "autoPlay": false,
+            "loop": false,
+            "children": {
+              "box": {
+                "duration": 20,
+                "loop": false,
+                "timelines": [
+                  {
+                    "type": "rotation",
+                    "loop": false,
+                    "frames": [
+                      {
+                        "frame": 8,
+                        "value": 20
+                      },
+                      {
+                        "frame": 11,
+                        "value": -15
+                      },
+                      {
+                        "frame": 14,
+                        "value": 10
+                      },
+                      {
+                        "frame": 17,
+                        "value": -5
+                      },
+                      {
+                        "frame": 20,
+                        "value": 0
+                      }
+                    ]
+                  }
+                ]
+              },
+              "text": {
+                "duration": 20,
+                "loop": false,
+                "timelines": [
+                  {
+                    "type": "rotation",
+                    "loop": false,
+                    "frames": [
+                      {
+                        "frame": 8,
+                        "value": 20
+                      },
+                      {
+                        "frame": 11,
+                        "value": -15
+                      },
+                      {
+                        "frame": 14,
+                        "value": 10
+                      },
+                      {
+                        "frame": 17,
+                        "value": -5
+                      },
+                      {
+                        "frame": 20,
+                        "value": 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
         ]
       },
-      "31": {
+      "20": {
         "type": "custom",
         "children": [
           {
-            "id": "option0",
-            "libId": 29,
+            "id": "optionImage",
+            "libId": 16,
+            "pivotX": 80,
+            "pivotY": 65
+          }
+        ],
+        "animations": [
+          {
+            "name": "shake",
+            "duration": 20,
+            "autoPlay": false,
+            "loop": false,
+            "children": {
+              "optionImage": {
+                "duration": 20,
+                "loop": false,
+                "timelines": [
+                  {
+                    "type": "rotation",
+                    "loop": false,
+                    "frames": [
+                      {
+                        "frame": 8,
+                        "value": 20
+                      },
+                      {
+                        "frame": 11,
+                        "value": -15
+                      },
+                      {
+                        "frame": 14,
+                        "value": 10
+                      },
+                      {
+                        "frame": 17,
+                        "value": -5
+                      },
+                      {
+                        "frame": 20,
+                        "value": 0
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "22": {
+        "type": "custom",
+        "children": [
+          {
+            "id": 0,
+            "libId": 19,
             "x": 0,
             "y": 0,
             "height": 150,
@@ -6158,8 +9694,8 @@
             }
           },
           {
-            "id": "option1",
-            "libId": 29,
+            "id": 1,
+            "libId": 19,
             "x": 180,
             "y": 0,
             "height": 150,
@@ -6174,8 +9710,8 @@
             }
           },
           {
-            "id": "option2",
-            "libId": 29,
+            "id": 2,
+            "libId": 19,
             "x": 360,
             "y": 0,
             "height": 150,
@@ -6190,8 +9726,8 @@
             }
           },
           {
-            "id": "option3",
-            "libId": 29,
+            "id": 3,
+            "libId": 19,
             "x": 540,
             "y": 0,
             "height": 150,
@@ -6206,8 +9742,8 @@
             }
           },
           {
-            "id": "option4",
-            "libId": 29,
+            "id": 4,
+            "libId": 19,
             "x": 720,
             "y": 0,
             "height": 150,
@@ -6222,8 +9758,8 @@
             }
           },
           {
-            "id": "option5",
-            "libId": 29,
+            "id": 5,
+            "libId": 19,
             "x": 900,
             "y": 0,
             "height": 150,
@@ -6239,12 +9775,12 @@
           }
         ]
       },
-      "32": {
+      "23": {
         "type": "custom",
         "children": [
           {
-            "id": "option0",
-            "libId": 21,
+            "id": 0,
+            "libId": 20,
             "x": 0,
             "y": 0,
             "dragOption": {
@@ -6258,8 +9794,8 @@
             }
           },
           {
-            "id": "option1",
-            "libId": 22,
+            "id": 1,
+            "libId": 20,
             "x": 180,
             "y": 0,
             "dragOption": {
@@ -6273,8 +9809,8 @@
             }
           },
           {
-            "id": "option2",
-            "libId": 23,
+            "id": 2,
+            "libId": 20,
             "x": 360,
             "y": 0,
             "dragOption": {
@@ -6288,8 +9824,8 @@
             }
           },
           {
-            "id": "option3",
-            "libId": 24,
+            "id": 3,
+            "libId": 20,
             "x": 540,
             "y": 0,
             "dragOption": {
@@ -6303,8 +9839,8 @@
             }
           },
           {
-            "id": "option4",
-            "libId": 25,
+            "id": 4,
+            "libId": 20,
             "x": 720,
             "y": 0,
             "dragOption": {
@@ -6318,8 +9854,8 @@
             }
           },
           {
-            "id": "option5",
-            "libId": 26,
+            "id": 5,
+            "libId": 20,
             "x": 900,
             "y": 0,
             "dragOption": {

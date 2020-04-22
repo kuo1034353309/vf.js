@@ -15,11 +15,12 @@
       ]
     ],
     "plugins": [
+      ["@babel/plugin-transform-typescript"],
       ["@babel/plugin-transform-arrow-functions", { "spec": true }],
       ["@babel/plugin-transform-block-scoping"],
       ["@babel/plugin-transform-classes"],
       ["@babel/plugin-transform-runtime"],
-      ["@babel/plugin-transform-typescript"],
-      ["@babel/plugin-transform-modules-umd"]
+      ["@babel/plugin-transform-modules-umd"],
+      ["@babel/plugin-transform-class-properties"]
     ]
   }
