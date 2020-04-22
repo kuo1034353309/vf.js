@@ -7,9 +7,13 @@ import IEvent from '@player/event/IEvent';
 import { EventLevel } from '@player/event/EventLevel';
 import LoadingAsset from '../../../assets/loading2.svg';
 
-declare let VFBUILDDATE: any; // webpack全局变量，prod环境使用
+declare let VFBUILDDATE: any; // 编译时间
 
 declare let LAUNCHERVERION: any;
+
+declare let VFVERSION: any;
+
+declare let GUIVERSION: any;
 
 declare let PLAYERRVERION: any;
 
@@ -103,7 +107,7 @@ class VIPKIDLauncher {
         const extendsLibsUrl = this._extendsLibsUrl;
 
         if (w['vf']['CanvasRenderer'] === undefined) {
-            const v = 'vf-v5.2.21-v10';
+            const v = VFVERSION;
 
             if (process.env.NODE_ENV === 'production') {
                 libs.push(`${cdn}vf/engine/${v}/vf.min.js`);
@@ -123,7 +127,7 @@ class VIPKIDLauncher {
         }
 
         if (w['vf']['gui'] === undefined) {
-            const v = 'gui-v1.3.4';
+            const v = GUIVERSION;
 
             if (process.env.NODE_ENV === 'production') {
                 libs.push(`${cdn}vf/engine/${v}/gui.min.js`);

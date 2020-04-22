@@ -1,10 +1,31 @@
 /* eslint-disable no-undef */
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const launcherPackage = require('../packages/launcher/package.json');
 const playerPackage = require('../packages/player/package.json');
 const engineOutPath = '../dist/vf/engine';
+
+// eslint-disable-next-line no-unused-vars
+let guiVersion = '';
+// eslint-disable-next-line no-unused-vars
+let vfVersion = '';
+const libs = fs.readdirSync(path.join(__dirname, '../libs'));
+
+libs.forEach((value) => {
+    if (value.indexOf('gui-v') !== -1) {
+        guiVersion = value;
+    }
+    else if (value.indexOf('vf-v') !== -1) {
+        vfVersion = value;
+    }
+});
+
+if (guiVersion === '' || vfVersion === '') {
+    // eslint-disable-next-line no-throw-literal
+    throw 'error guiVersion or vfVersion';
+}
 
 module.exports = {
     mode: 'development',
@@ -43,6 +64,8 @@ module.exports = {
             VFBUILDDATE: JSON.stringify(new Date().toLocaleString()),
             PLAYERRVERION: JSON.stringify(playerPackage.version),
             LAUNCHERVERION: JSON.stringify(launcherPackage.version),
+            GUIVERSION: JSON.stringify(guiVersion),
+            VFVERSION: JSON.stringify(vfVersion),
         }),
         // dev 添加
         // new CopyWebpackPlugin([

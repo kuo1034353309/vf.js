@@ -133,9 +133,9 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
-        this.version = "0.3.4";
+        this.version = "0.3.5";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "2020-4-22 2:19:38 PM";
+        this.buildInfo = "2020-4-22 3:04:03 PM";
         this._loadedLibs = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
@@ -193,7 +193,7 @@ var VIPKIDLauncher = /** @class */ (function () {
         var libs = [];
         var extendsLibsUrl = this._extendsLibsUrl;
         if (w['vf']['CanvasRenderer'] === undefined) {
-            var v = 'vf-v5.2.21-v10';
+            var v = "vf-v5.2.21-v10";
             if (false) {}
             else {
                 libs.push("./libs/" + v + "/vf.js");
@@ -208,7 +208,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             }
         }
         if (w['vf']['gui'] === undefined) {
-            var v = 'gui-v1.3.4';
+            var v = "gui-v1.3.4";
             if (false) {}
             else {
                 libs.push("./libs/" + v + "/gui.js");
