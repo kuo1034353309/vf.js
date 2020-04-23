@@ -376,6 +376,7 @@ function createVF(options, completeCall, errorCall) {
                 value.parentNode.removeChild(value);
             }
         });
+        delete window.vf;
     }
     // eslint-disable-next-line no-new
     new VIPKIDLauncher(options, completeCall, errorCall);

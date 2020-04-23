@@ -327,6 +327,7 @@ export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) 
                 value.parentNode.removeChild(value);
             }
         });
+        delete window.vf;
     }
 
     // eslint-disable-next-line no-new

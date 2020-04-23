@@ -48,23 +48,6 @@
             //location.reload();
         }
 
-        /** option:
-            container: document.getElementById("vf-container"), 
-            bgcolor: '0xffffff',
-            debug: true,
-            language: 'zh-CN',
-            // wmode : "transparent", /不填写，不会处理透明，默认白色背景
-            // scaleMode: 'showAll'//不填写，根据配置数据读取 'showAll', 'noScale','cover','contain'
-            vfvars: {
-                useNativeAudio: false, //业务线动态设置,是否使用原生播放
-            }
-            plugs: [
-
-            ]
-            libs: [
-
-            ]
-        */
         createVF({ container: document.getElementById("vf-container") , debug: true}, function (player) {
 
             player.onReady = () => {
