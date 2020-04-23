@@ -9819,12 +9819,6 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 function checkModule() {
     var w = window;
-    if (w.require === undefined) {
-        w.require = function () { };
-    }
-    if (w.exports === undefined) {
-        w.exports = {};
-    }
     if (w.module === undefined) {
         w.module = {};
     }

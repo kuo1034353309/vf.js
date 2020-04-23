@@ -27,7 +27,7 @@ class VIPKIDLauncher {
     private readonly _config: IVFOptions;
 
     private _cdnsIndex = 0;
-    private _background?: HTMLImageElement;
+    private _loading?: HTMLImageElement;
 
     private _errorLoadCount = 0;
     private _errorLoadMaxCount = 10;
@@ -97,46 +97,49 @@ class VIPKIDLauncher {
         };
     }
 
+    private getLibUrl(version: string, cdn?: string, name?: string) {
+        let url = '';
+
+        if (name === undefined) {
+            return { url: version, version };
+        }
+        if (process.env.NODE_ENV === 'production') {
+            url = `${cdn}vf/engine/${version}/${name}.min.js`;
+        }
+        else {
+            switch (name) {
+                case 'player':
+                    url = `./packages/player/dist/${name}.js`;
+                    break;
+                default:
+                    url = `./libs/${version}/${name}.js`;
+            }
+        }
+
+        return { url, version };
+    }
     /**
      * 环境依赖配置，可以读取一个engine-vserion.json文件获取版本依赖，由于还需要单独加载（本地动态脚本替换不科学～），为了速度，暂缓修改。
      */
     private getEnvConfig(index: number) {
         const cdn = this._config.vfvars.cdns.default[index];
-        let libs: string[] = [];
+        const libs: { url: string; version: string }[] = [];
+        const canLibs: { url: string; version: string }[] = [];
         const extendsLibsUrl = this._extendsLibsUrl;
 
-        const vf = VFVERSION;
-        const gui = GUIVERSION;
-        const player = `player-v${PLAYERRVERION}`;
+        libs.push(this.getLibUrl(VFVERSION, cdn, 'vf'));
 
-        if (process.env.NODE_ENV === 'production') {
-            libs.push(`${cdn}vf/engine/${vf}/vf.min.js`);
-        }
-        else {
-            libs.push(`./libs/${vf}/vf.js`);
-        }
+        extendsLibsUrl.forEach((value) => {
+            libs.push(this.getLibUrl(value));
+        });
 
-        libs = libs.concat(extendsLibsUrl);
+        libs.push(this.getLibUrl(GUIVERSION, cdn, 'gui'));
 
-        if (process.env.NODE_ENV === 'production') {
-            libs.push(`${cdn}vf/engine/${gui}/gui.min.js`);
-        }
-        else {
-            libs.push(`./libs/${gui}/gui.js`);
-        }
-
-        if (process.env.NODE_ENV === 'production') {
-            libs.push(`${cdn}vf/engine/${player}/player.min.js`);
-        }
-        else {
-            libs.push(`./packages/player/dist/player.js`);
-        }
-
-        const canLibs: string[] = [];
+        libs.push(this.getLibUrl(`player-v${PLAYERRVERION}`, cdn, 'player'));
 
         libs.forEach((value) => {
             // eslint-disable-next-line eqeqeq
-            if (document.getElementById(`vf-script-${value}`) == null) {
+            if (document.getElementById(value.version) == null) {
                 canLibs.push(value);
             }
         });
@@ -150,13 +153,14 @@ class VIPKIDLauncher {
     private showLoading() {
         const _container = this._config.container;
 
-        if (this._background && this._background.parentElement) {
+        if (this._loading) {
             return;
         }
         if (_container) {
-            const img = this._background = new Image();
+            const img = this._loading = new Image();
 
-            img.name = 'loading';
+            img.name = 'vf-loading';
+            img.id = Date.now().toString();
             img.style.position = 'absolute';
             img.src = LoadingAsset;
             const bound = this.getInnerBound(_container);
@@ -189,9 +193,13 @@ class VIPKIDLauncher {
      * 关于Loading界面布局的可以提出去
      */
     private hideLoading() {
-        if (this._background) {
-            this._background.remove();
-            // this._background = undefined;
+        const loading = this._loading;
+
+        if (loading && loading.parentNode) {
+            loading.onload = null;
+            loading.parentNode.removeChild(loading);
+            loading.remove();
+            // this._loading = undefined;
         }
     }
 
@@ -233,17 +241,24 @@ class VIPKIDLauncher {
 
         this._loadcount++;
 
-        const item = libs.shift() as string;
+        const item = libs.shift();
 
-        const script = document.createElement('script');
+        if (item) {
+            const script = document.createElement('script');
 
-        script.type = 'text/javascript';
-        script.id = `vf-script-${item}`;
-        script.async = false;
-        script.src = item;
-        script.addEventListener('load', this.onJsComplete.bind(this), false);
-        script.addEventListener('error', this.onJsError.bind(this), false);
-        document.body.appendChild(script);
+            script.setAttribute('name', 'vf-script');
+            script.type = 'text/javascript';
+            script.id = item.version;
+            script.title = LAUNCHERVERION;
+            script.async = false;
+            script.src = item.url;
+            script.addEventListener('load', this.onJsComplete.bind(this), false);
+            script.addEventListener('error', this.onJsError.bind(this), false);
+            document.body.appendChild(script);
+        }
+        else {
+            throw new Error('[VF LOG] launcher loadJs item of undefined!');
+        }
     }
 
     private onJsComplete(evt: Event) {
@@ -303,6 +318,17 @@ class VIPKIDLauncher {
 }
 
 export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) => {}, errorCall?: (e: IEvent) => {}) {
+    const scripts = document.getElementsByName('vf-script');
+    const version = LAUNCHERVERION;
+
+    if (scripts.length > 0 && scripts[0].title !== version) {
+        scripts.forEach((value) => {
+            if (value.parentNode) {
+                value.parentNode.removeChild(value);
+            }
+        });
+    }
+
     // eslint-disable-next-line no-new
     new VIPKIDLauncher(options, completeCall, errorCall);
 }

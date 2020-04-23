@@ -62,8 +62,8 @@ module.exports = {
         ]),
         new webpack.DefinePlugin({
             VFBUILDDATE: JSON.stringify(new Date().toLocaleString()),
-            PLAYERRVERION: JSON.stringify(playerPackage.version),
             LAUNCHERVERION: JSON.stringify(launcherPackage.version),
+            PLAYERRVERION: JSON.stringify(playerPackage.version),
             GUIVERSION: JSON.stringify(guiVersion),
             VFVERSION: JSON.stringify(vfVersion),
         }),
