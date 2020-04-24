@@ -1,5 +1,5 @@
 {
-  "name": "@vf/player",
+  "name": "player",
   "scripts": {
     "dev": "webpack --config config/webpack.dev.js --watch",
     "start": "node config/dev-server.js & npm run watch",

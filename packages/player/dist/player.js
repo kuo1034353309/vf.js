@@ -1927,7 +1927,7 @@ var RES = /** @class */ (function (_super) {
                             this.stage.systemEvent.emitError('E0003', [id], "warning" /* WARNING */);
                             continue;
                         }
-                        if (assetsItem.type === "sound" /* SOUND */ && this.stage.config.vfvars.useNativeAudio) {
+                        if (assetsItem.type === "audio" /* AUDIO */ && this.stage.config.vfvars.useNativeAudio) {
                             this.stage.systemEvent.emitError('S0004', [id], "warning" /* WARNING */);
                             continue;
                         }
@@ -9819,12 +9819,6 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 function checkModule() {
     var w = window;
-    if (w.require === undefined) {
-        w.require = function () { };
-    }
-    if (w.exports === undefined) {
-        w.exports = {};
-    }
     if (w.module === undefined) {
         w.module = {};
     }

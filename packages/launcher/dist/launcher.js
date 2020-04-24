@@ -133,10 +133,10 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
-        this.version = "0.3.4";
+        this.version = "0.3.8";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "2020-4-22 2:19:38 PM";
-        this._loadedLibs = [];
+        this.buildInfo = "2020-4-23 4:57:55 PM";
+        this._extendsLibsUrl = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
         if (completeCall === undefined) {
@@ -184,56 +184,58 @@ var VIPKIDLauncher = /** @class */ (function () {
             ],
         };
     };
+    VIPKIDLauncher.prototype.getLibUrl = function (version, cdn, name) {
+        var url = '';
+        if (name === undefined) {
+            return { url: version, version: version };
+        }
+        if (false) {}
+        else {
+            switch (name) {
+                case 'player':
+                    url = "./packages/player/dist/" + name + ".js";
+                    break;
+                default:
+                    url = "./libs/" + version + "/" + name + ".js";
+            }
+        }
+        return { url: url, version: version };
+    };
     /**
      * 环境依赖配置，可以读取一个engine-vserion.json文件获取版本依赖，由于还需要单独加载（本地动态脚本替换不科学～），为了速度，暂缓修改。
      */
     VIPKIDLauncher.prototype.getEnvConfig = function (index) {
-        var w = window;
+        var _this = this;
         var cdn = this._config.vfvars.cdns.default[index];
         var libs = [];
+        var canLibs = [];
         var extendsLibsUrl = this._extendsLibsUrl;
-        if (w['vf']['CanvasRenderer'] === undefined) {
-            var v = 'vf-v5.2.21-v10';
-            if (false) {}
-            else {
-                libs.push("./libs/" + v + "/vf.js");
+        libs.push(this.getLibUrl("vf-v5.2.21-v10", cdn, 'vf'));
+        extendsLibsUrl.forEach(function (value) {
+            libs.push(_this.getLibUrl(value));
+        });
+        libs.push(this.getLibUrl("gui-v1.3.5", cdn, 'gui'));
+        libs.push(this.getLibUrl("player-v" + "0.3.8", cdn, 'player'));
+        libs.forEach(function (value) {
+            // eslint-disable-next-line eqeqeq
+            if (document.getElementById(value.version) == null) {
+                canLibs.push(value);
             }
-        }
-        if (extendsLibsUrl && extendsLibsUrl.length > 0) {
-            if (this._loadedLibs.indexOf(extendsLibsUrl[0]) !== -1) {
-                extendsLibsUrl.shift();
-            }
-            if (extendsLibsUrl[0]) {
-                libs.push(extendsLibsUrl[0]);
-            }
-        }
-        if (w['vf']['gui'] === undefined) {
-            var v = 'gui-v1.3.4';
-            if (false) {}
-            else {
-                libs.push("./libs/" + v + "/gui.js");
-            }
-        }
-        if (w['vf']['player'] === undefined) {
-            var v = "player-v" + "0.3.2";
-            if (false) {}
-            else {
-                libs.push("./packages/player/dist/player.js");
-            }
-        }
-        return libs;
+        });
+        return canLibs;
     };
     /**
      * 关于Loading界面布局的可以提出去
      */
     VIPKIDLauncher.prototype.showLoading = function () {
         var _container = this._config.container;
-        if (this._background && this._background.parentElement) {
+        if (this._loading) {
             return;
         }
         if (_container) {
-            var img_1 = this._background = new Image();
-            img_1.name = 'loading';
+            var img_1 = this._loading = new Image();
+            img_1.name = 'vf-loading';
+            img_1.id = Date.now().toString();
             img_1.style.position = 'absolute';
             img_1.src = _assets_loading2_svg__WEBPACK_IMPORTED_MODULE_0__["default"];
             var bound_1 = this.getInnerBound(_container);
@@ -263,9 +265,12 @@ var VIPKIDLauncher = /** @class */ (function () {
      * 关于Loading界面布局的可以提出去
      */
     VIPKIDLauncher.prototype.hideLoading = function () {
-        if (this._background) {
-            this._background.remove();
-            // this._background = undefined;
+        var loading = this._loading;
+        if (loading && loading.parentNode) {
+            loading.onload = null;
+            loading.parentNode.removeChild(loading);
+            loading.remove();
+            // this._loading = undefined;
         }
     };
     VIPKIDLauncher.prototype.getInnerBound = function (ele) {
@@ -297,17 +302,23 @@ var VIPKIDLauncher = /** @class */ (function () {
         this.showLoading();
         this._loadcount++;
         var item = libs.shift();
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.async = false;
-        script.src = item;
-        script.addEventListener('load', this.onJsComplete.bind(this), false);
-        script.addEventListener('error', this.onJsError.bind(this), false);
-        document.body.appendChild(script);
+        if (item) {
+            var script = document.createElement('script');
+            script.setAttribute('name', 'vf-script');
+            script.type = 'text/javascript';
+            script.id = item.version;
+            script.title = "0.3.8";
+            script.async = false;
+            script.src = item.url;
+            script.addEventListener('load', this.onJsComplete.bind(this), false);
+            script.addEventListener('error', this.onJsError.bind(this), false);
+            document.body.appendChild(script);
+        }
+        else {
+            throw new Error('[VF LOG] launcher loadJs item of undefined!');
+        }
     };
     VIPKIDLauncher.prototype.onJsComplete = function (evt) {
-        var script = evt.target;
-        this._loadedLibs.push(script.src);
         this.removeJsLoadEvent(evt);
         this.loadJs();
     };
@@ -357,6 +368,16 @@ var VIPKIDLauncher = /** @class */ (function () {
     return VIPKIDLauncher;
 }());
 function createVF(options, completeCall, errorCall) {
+    var scripts = document.getElementsByName('vf-script');
+    var version = "0.3.8";
+    if (scripts.length > 0 && scripts[0].title !== version) {
+        scripts.forEach(function (value) {
+            if (value.parentNode) {
+                value.parentNode.removeChild(value);
+            }
+        });
+        delete window.vf;
+    }
     // eslint-disable-next-line no-new
     new VIPKIDLauncher(options, completeCall, errorCall);
 }

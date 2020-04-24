@@ -245,7 +245,7 @@ export class RES extends vf.utils.EventEmitter {
                     this.stage.systemEvent.emitError('E0003', [id], EventLevel.WARNING);
                     continue;
                 }
-                if (assetsItem.type === AssetType.SOUND && this.stage.config.vfvars.useNativeAudio) {
+                if (assetsItem.type === AssetType.AUDIO && this.stage.config.vfvars.useNativeAudio) {
                     this.stage.systemEvent.emitError('S0004', [id], EventLevel.WARNING);
                     continue;
                 }
