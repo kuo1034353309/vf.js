@@ -1,0 +1,24 @@
+language: node_js
+branches:
+  only:
+    - master
+    - /v[0-9]+(\.[0-9]+).*/
+node_js:
+  - 10
+install:
+  - npm ci
+script:
+  - npm test
+  - echo "$TRAVIS_EVENT_TYPE"
+  - echo "$TRAVIS_TAG"
+  - echo "$TRAVIS_BRANCH"
+  - echo "$TRAVIS_BUILD_STAGE_NAME"
+before_deploy:
+  - npm run product
+deploy:
+  provider: npm
+  email: "$NPM_EMAIL"
+  api_token: "$NPM_TOKEN"
+  skip_cleanup: true
+  on:
+    tags: true

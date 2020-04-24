@@ -5,22 +5,11 @@
         {
           "targets": {
             "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
-          },
-          "modules": false,
-          "debug": true,
-          "uglify": true,
-          "useBuiltIns": true
+          }
         },
         "es2015"
       ]
     ],
     "plugins": [
-      ["@babel/plugin-transform-typescript"],
-      ["@babel/plugin-transform-arrow-functions", { "spec": true }],
-      ["@babel/plugin-transform-block-scoping"],
-      ["@babel/plugin-transform-classes"],
-      ["@babel/plugin-transform-runtime"],
-      ["@babel/plugin-transform-modules-umd"],
-      ["@babel/plugin-transform-class-properties"]
     ]
   }
