@@ -1,19 +1,9 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-prototype-builtins */
 import { EventLevel } from '../event/EventLevel';
 import { getUrl } from './getUrl';
 import { CDN } from '../core/model/IVFData';
-
-function checkModule(): void {
-    const w = window as any;
-
-    if (w.module === undefined) {
-        w.module = {};
-    }
-    if (w.module.exports === undefined) {
-        w.module.exports = {};
-    }
-}
 
 /**
  * 加载script js 或js模块
@@ -29,12 +19,15 @@ function checkModule(): void {
  *
  */
 export default async function importScript(url: string, cdns?: CDN, moduleName?: string, loadCompleteCallBack?: Function): Promise<boolean | any> {
-    checkModule();
 
-    const _namespace = vf.gui as any;
+    const gui = vf.gui as any;
 
-    if (moduleName && _namespace[moduleName]) {
-        return _namespace[moduleName];
+    if (gui.plugs === undefined) {
+        gui.plugs = {};
+    }
+
+    if (moduleName && gui.plugs[moduleName]) {
+        return gui.plugs[moduleName];
     }
 
     const errorUrls: any[] = [];
@@ -58,13 +51,10 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
                 loadCompleteCallBack();
             }
             if (moduleName) {
-                const w = window as any;
-                const exports = w.module.exports;
-
-                if (exports.hasOwnProperty(moduleName)) {
-                    _namespace[moduleName] = exports[moduleName];
-
-                    return resolve(_namespace[moduleName]);
+                if (gui.plugs.module.hasOwnProperty(moduleName)) {
+                    gui.plugs[moduleName] = gui.plugs.module[moduleName];
+                    gui.plugs.module = null;
+                    return resolve(gui.plugs[moduleName]);
                 }
 
                 return resolve(false);

@@ -91,15 +91,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./packages/filterAlpha/src/FilterAlpha.ts");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./packages/testButton/src/TestButton.ts");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./packages/filterAlpha/src/FilterAlpha.ts":
-/*!*************************************************!*\
-  !*** ./packages/filterAlpha/src/FilterAlpha.ts ***!
-  \*************************************************/
+/***/ "./packages/testButton/src/TestButton.ts":
+/*!***********************************************!*\
+  !*** ./packages/testButton/src/TestButton.ts ***!
+  \***********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -119,51 +119,56 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var fragment_glsl_1 = __webpack_require__(/*! ./fragment.glsl */ "./packages/filterAlpha/src/fragment.glsl");
-var FilterAlpha = /** @class */ (function (_super) {
-    __extends(FilterAlpha, _super);
-    /**
-     * 构造函数不能包含任何参数，需要以set get实现
-     */
-    function FilterAlpha() {
-        return _super.call(this, vf.gui.Filter.defaultFilterVertex, fragment_glsl_1.default, { uAlpha: 1 }) || this;
+var TestButton = /** @class */ (function (_super) {
+    __extends(TestButton, _super);
+    function TestButton(text) {
+        if (text === void 0) { text = ""; }
+        var _this = _super.call(this) || this;
+        _this._text = '';
+        _this.sprite = new vf.Text(text, { breakWords: true, fill: "#ffffff" }); //VF基础组件
+        _this.container.addChild(_this.sprite); //容器
+        return _this;
     }
-    Object.defineProperty(FilterAlpha.prototype, "alpha", {
+    Object.defineProperty(TestButton.prototype, "text", {
         /**
-         * Coefficient for alpha multiplication
-         *
-         * @member {number}
-         * @default 1
+         * 文本内容
          */
         get: function () {
-            return this.uniforms.uAlpha;
+            return this._text;
         },
         set: function (value) {
-            this.uniforms.uAlpha = value;
+            this._text = value;
+            this.invalidateSize();
+            this.invalidateDisplayList(); //触发更新显示列表
+            this.alpha;
         },
         enumerable: true,
         configurable: true
     });
-    return FilterAlpha;
-}(vf.gui.Filter));
-exports.FilterAlpha = FilterAlpha;
+    /**
+     * 更新显示列表
+     * @param unscaledWidth
+     * @param unscaledHeight
+     */
+    TestButton.prototype.updateDisplayList = function (unscaledWidth, unscaledHeight) {
+        _super.prototype.updateDisplayList.call(this, unscaledWidth, unscaledHeight);
+        this.sprite.text = this._text;
+    };
+    TestButton.prototype.release = function () {
+        _super.prototype.release.call(this);
+        var sprite = this.sprite;
+        if (sprite && sprite.parent) {
+            sprite.parent.removeChild(sprite).destroy();
+        }
+        this.offAll();
+    };
+    return TestButton;
+}(vf.gui.DisplayObject));
+exports.TestButton = TestButton;
 
-
-/***/ }),
-
-/***/ "./packages/filterAlpha/src/fragment.glsl":
-/*!************************************************!*\
-  !*** ./packages/filterAlpha/src/fragment.glsl ***!
-  \************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("varying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float uAlpha;\n\nvoid main(void)\n{\n   gl_FragColor = texture2D(uSampler, vTextureCoord) * uAlpha;\n}");
 
 /***/ })
 
 /******/ });
 });
-//# sourceMappingURL=FilterAlpha.js.map
+//# sourceMappingURL=TestButton.js.map

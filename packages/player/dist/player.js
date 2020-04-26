@@ -9817,15 +9817,6 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
     }
 };
 
-function checkModule() {
-    var w = window;
-    if (w.module === undefined) {
-        w.module = {};
-    }
-    if (w.module.exports === undefined) {
-        w.module.exports = {};
-    }
-}
 /**
  * 加载script js 或js模块
  * 1. 支持普通的全局js加载，常规script标签方式引入
@@ -9841,12 +9832,14 @@ function checkModule() {
  */
 function importScript(url, cdns, moduleName, loadCompleteCallBack) {
     return __awaiter(this, void 0, void 0, function () {
-        var _namespace, errorUrls;
+        var gui, errorUrls;
         return __generator(this, function (_a) {
-            checkModule();
-            _namespace = vf.gui;
-            if (moduleName && _namespace[moduleName]) {
-                return [2 /*return*/, _namespace[moduleName]];
+            gui = vf.gui;
+            if (gui.plugs === undefined) {
+                gui.plugs = {};
+            }
+            if (moduleName && gui.plugs[moduleName]) {
+                return [2 /*return*/, gui.plugs[moduleName]];
             }
             errorUrls = [];
             return [2 /*return*/, new Promise(function (resolve, reject) {
@@ -9865,11 +9858,10 @@ function importScript(url, cdns, moduleName, loadCompleteCallBack) {
                             loadCompleteCallBack();
                         }
                         if (moduleName) {
-                            var w = window;
-                            var exports_1 = w.module.exports;
-                            if (exports_1.hasOwnProperty(moduleName)) {
-                                _namespace[moduleName] = exports_1[moduleName];
-                                return resolve(_namespace[moduleName]);
+                            if (gui.plugs.module.hasOwnProperty(moduleName)) {
+                                gui.plugs[moduleName] = gui.plugs.module[moduleName];
+                                gui.plugs.module = null;
+                                return resolve(gui.plugs[moduleName]);
                             }
                             return resolve(false);
                         }
