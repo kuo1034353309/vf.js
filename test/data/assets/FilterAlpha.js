@@ -6,7 +6,7 @@
 	else if(typeof exports === 'object')
 		exports["module"] = factory();
 	else
-		root["vf"] = root["vf"] || {}, root["vf"]["gui"] = root["vf"]["gui"] || {}, root["vf"]["gui"]["plugs"] = root["vf"]["gui"]["plugs"] || {}, root["vf"]["gui"]["plugs"]["module"] = factory();
+		root["vf"] = root["vf"] || {}, root["vf"]["gui"] = root["vf"]["gui"] || {}, root["vf"]["gui"]["module"] = factory();
 })(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -91,15 +91,28 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./packages/filterAlpha/src/FilterAlpha.ts");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./packages/filterAlpha/src/index.ts");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./packages/filterAlpha/src/FilterAlpha.ts":
-/*!*************************************************!*\
-  !*** ./packages/filterAlpha/src/FilterAlpha.ts ***!
-  \*************************************************/
+/***/ "./packages/filterAlpha/src/fragment.glsl":
+/*!************************************************!*\
+  !*** ./packages/filterAlpha/src/fragment.glsl ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ("varying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float uAlpha;\n\nvoid main(void)\n{\n   gl_FragColor = texture2D(uSampler, vTextureCoord) * uAlpha;\n}");
+
+/***/ }),
+
+/***/ "./packages/filterAlpha/src/index.ts":
+/*!*******************************************!*\
+  !*** ./packages/filterAlpha/src/index.ts ***!
+  \*******************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -149,21 +162,8 @@ var FilterAlpha = /** @class */ (function (_super) {
 exports.FilterAlpha = FilterAlpha;
 
 
-/***/ }),
-
-/***/ "./packages/filterAlpha/src/fragment.glsl":
-/*!************************************************!*\
-  !*** ./packages/filterAlpha/src/fragment.glsl ***!
-  \************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("varying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float uAlpha;\n\nvoid main(void)\n{\n   gl_FragColor = texture2D(uSampler, vTextureCoord) * uAlpha;\n}");
-
 /***/ })
 
 /******/ });
 });
-//# sourceMappingURL=FilterAlpha.js.map
+//# sourceMappingURL=filterAlpha.js.map

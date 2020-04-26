@@ -6,7 +6,7 @@
 	else if(typeof exports === 'object')
 		exports["module"] = factory();
 	else
-		root["vf"] = root["vf"] || {}, root["vf"]["gui"] = root["vf"]["gui"] || {}, root["vf"]["gui"]["plugs"] = root["vf"]["gui"]["plugs"] || {}, root["vf"]["gui"]["plugs"]["module"] = factory();
+		root["vf"] = root["vf"] || {}, root["vf"]["gui"] = root["vf"]["gui"] || {}, root["vf"]["gui"]["module"] = factory();
 })(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -91,15 +91,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./packages/testButton/src/TestButton.ts");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./packages/testButton/src/index.ts");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./packages/testButton/src/TestButton.ts":
-/*!***********************************************!*\
-  !*** ./packages/testButton/src/TestButton.ts ***!
-  \***********************************************/
+/***/ "./packages/testButton/src/index.ts":
+/*!******************************************!*\
+  !*** ./packages/testButton/src/index.ts ***!
+  \******************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -171,4 +171,4 @@ exports.TestButton = TestButton;
 
 /******/ });
 });
-//# sourceMappingURL=TestButton.js.map
+//# sourceMappingURL=testButton.js.map

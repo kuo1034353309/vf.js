@@ -1,5 +1,10 @@
 /* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
+/* eslint-disable max-len */
+/* eslint-disable consistent-return */
+/* eslint-disable func-names */
+/* eslint-disable func-style */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-prototype-builtins */
 import { EventLevel } from '../event/EventLevel';
 import { getUrl } from './getUrl';
@@ -22,12 +27,8 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
 
     const gui = vf.gui as any;
 
-    if (gui.plugs === undefined) {
-        gui.plugs = {};
-    }
-
-    if (moduleName && gui.plugs[moduleName]) {
-        return gui.plugs[moduleName];
+    if (moduleName && gui[moduleName]) {
+        return gui[moduleName];
     }
 
     const errorUrls: any[] = [];
@@ -51,10 +52,11 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
                 loadCompleteCallBack();
             }
             if (moduleName) {
-                if (gui.plugs.module.hasOwnProperty(moduleName)) {
-                    gui.plugs[moduleName] = gui.plugs.module[moduleName];
-                    gui.plugs.module = null;
-                    return resolve(gui.plugs[moduleName]);
+                if (gui.module.hasOwnProperty(moduleName)) {
+                    gui[moduleName] = gui.module[moduleName];
+                    gui.module = null;
+
+                    return resolve(gui[moduleName]);
                 }
 
                 return resolve(false);

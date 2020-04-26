@@ -9835,11 +9835,8 @@ function importScript(url, cdns, moduleName, loadCompleteCallBack) {
         var gui, errorUrls;
         return __generator(this, function (_a) {
             gui = vf.gui;
-            if (gui.plugs === undefined) {
-                gui.plugs = {};
-            }
-            if (moduleName && gui.plugs[moduleName]) {
-                return [2 /*return*/, gui.plugs[moduleName]];
+            if (moduleName && gui[moduleName]) {
+                return [2 /*return*/, gui[moduleName]];
             }
             errorUrls = [];
             return [2 /*return*/, new Promise(function (resolve, reject) {
@@ -9858,10 +9855,10 @@ function importScript(url, cdns, moduleName, loadCompleteCallBack) {
                             loadCompleteCallBack();
                         }
                         if (moduleName) {
-                            if (gui.plugs.module.hasOwnProperty(moduleName)) {
-                                gui.plugs[moduleName] = gui.plugs.module[moduleName];
-                                gui.plugs.module = null;
-                                return resolve(gui.plugs[moduleName]);
+                            if (gui.module.hasOwnProperty(moduleName)) {
+                                gui[moduleName] = gui.module[moduleName];
+                                gui.module = null;
+                                return resolve(gui[moduleName]);
                             }
                             return resolve(false);
                         }
