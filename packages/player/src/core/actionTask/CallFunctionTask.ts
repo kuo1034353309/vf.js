@@ -24,7 +24,7 @@ export class CallFunctionTask extends BaseTask {
         public run(): void {
             super.run();
             this._component = getTargetComponent(this.component, this.data.target) as VFComponent;
-            if (this._component && this._component.vfStage) {
+            if (this._component instanceof VFComponent && this._component && this._component.vfStage ) {
                 const variableManager = this._component.vfStage.variableManager;
                 let funId = this.funName;
                 this.runId = variableManager.getFunctionId();
@@ -67,6 +67,26 @@ export class CallFunctionTask extends BaseTask {
                     this.complete();
                 }
             } else {
+                if (this.component.vfStage) {
+                    const variableManager = this.component.vfStage.variableManager;
+                    const runTarget = this._component as any;
+                    let  funName = this.data.name;
+                    if (Array.isArray(funName)) {
+                        funName = variableManager.getExpressItemValue(this.component, funName);
+                    }
+                    const funParam = [];
+                    if (this.data.params) {
+                        for (let i: number = 0, len: number = this.data.params.length; i < len; i++) {
+                            const param = variableManager.getExpressItemValue(this.component, this.data.params[i]);
+                            funParam.push(param);
+                        }
+                    }
+                    if (runTarget && funName && runTarget[funName as string]) {
+                        // tslint:disable-next-line: ban-types
+                        (runTarget[funName as string] as Function).apply(runTarget, funParam);
+                    }
+                    
+                }
                 this.complete();
             }
         }
