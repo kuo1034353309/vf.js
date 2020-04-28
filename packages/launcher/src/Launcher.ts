@@ -127,6 +127,10 @@ class VIPKIDLauncher {
         const canLibs: { url: string; version: string }[] = [];
         const extendsLibsUrl = this._extendsLibsUrl;
 
+        if (this._config.debug) {
+            libs.push(this.getLibUrl(`https://s.vipkidstatic.com/vf/engine/debug/vconsole.min.js`));
+        }
+
         libs.push(this.getLibUrl(VFVERSION, cdn, 'vf'));
 
         extendsLibsUrl.forEach((value) => {
@@ -303,6 +307,10 @@ class VIPKIDLauncher {
      */
     private createEngine() {
         if (this.completeCall) {
+            if (this._config.debug) {
+                // eslint-disable-next-line no-new
+                new (window as any).VConsole();
+            }
             // eslint-disable-next-line no-undef
             vf.utils.skipHello();
             const player = new (window as any)['vf']['player']['Player'](this._config);
