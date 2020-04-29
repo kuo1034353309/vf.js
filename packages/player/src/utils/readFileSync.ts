@@ -106,7 +106,11 @@ export default function readFileSync<K extends keyof XMLHttpRequestEventTargetEv
             }
         };
 
+        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
         xhr.onreadystatechange = (evt: Event) => {
+            if (evt === undefined) {
+                return;
+            }
             const xhr = evt.currentTarget as XMLHttpRequest;
 
             if ((xhr.readyState === 2 || xhr.readyState === 4) && xhr.status >= 400) {
