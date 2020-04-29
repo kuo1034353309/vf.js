@@ -1,381 +1,12 @@
 /*!
- * @vf.js/vf - v5.2.1-v10
- * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+ * @vf.js/vf - v5.2.1-v11
+ * Compiled Tue, 28 Apr 2020 09:44:15 UTC
  *
  * @vf.js/vf is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
  */
 var PIXI = (function (exports) {
 	'use strict';
-
-	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-	function commonjsRequire () {
-		throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
-	}
-
-	function unwrapExports (x) {
-		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-	}
-
-	function createCommonjsModule(fn, module) {
-		return module = { exports: {} }, fn(module, module.exports), module.exports;
-	}
-
-	function getCjsExportFromNamespace (n) {
-		return n && n['default'] || n;
-	}
-
-	var promise = createCommonjsModule(function (module, exports) {
-	(function(global){
-
-	//
-	// Check for native Promise and it has correct interface
-	//
-
-	var NativePromise = global['Promise'];
-	var nativePromiseSupported =
-	  NativePromise &&
-	  // Some of these methods are missing from
-	  // Firefox/Chrome experimental implementations
-	  'resolve' in NativePromise &&
-	  'reject' in NativePromise &&
-	  'all' in NativePromise &&
-	  'race' in NativePromise &&
-	  // Older version of the spec had a resolver object
-	  // as the arg rather than a function
-	  (function(){
-	    var resolve;
-	    new NativePromise(function(r){ resolve = r; });
-	    return typeof resolve === 'function';
-	  })();
-
-
-	//
-	// export if necessary
-	//
-
-	if ('object' !== 'undefined' && exports)
-	{
-	  // node.js
-	  exports.Promise = nativePromiseSupported ? NativePromise : Promise;
-	  exports.Polyfill = Promise;
-	}
-	else
-	{
-	  // AMD
-	  if (typeof undefined == 'function' && undefined.amd)
-	  {
-	    undefined(function(){
-	      return nativePromiseSupported ? NativePromise : Promise;
-	    });
-	  }
-	  else
-	  {
-	    // in browser add to global
-	    if (!nativePromiseSupported)
-	      { global['Promise'] = Promise; }
-	  }
-	}
-
-
-	//
-	// Polyfill
-	//
-
-	var PENDING = 'pending';
-	var SEALED = 'sealed';
-	var FULFILLED = 'fulfilled';
-	var REJECTED = 'rejected';
-	var NOOP = function(){};
-
-	function isArray(value) {
-	  return Object.prototype.toString.call(value) === '[object Array]';
-	}
-
-	// async calls
-	var asyncSetTimer = typeof setImmediate !== 'undefined' ? setImmediate : setTimeout;
-	var asyncQueue = [];
-	var asyncTimer;
-
-	function asyncFlush(){
-	  // run promise callbacks
-	  for (var i = 0; i < asyncQueue.length; i++)
-	    { asyncQueue[i][0](asyncQueue[i][1]); }
-
-	  // reset async asyncQueue
-	  asyncQueue = [];
-	  asyncTimer = false;
-	}
-
-	function asyncCall(callback, arg){
-	  asyncQueue.push([callback, arg]);
-
-	  if (!asyncTimer)
-	  {
-	    asyncTimer = true;
-	    asyncSetTimer(asyncFlush, 0);
-	  }
-	}
-
-
-	function invokeResolver(resolver, promise) {
-	  function resolvePromise(value) {
-	    resolve(promise, value);
-	  }
-
-	  function rejectPromise(reason) {
-	    reject(promise, reason);
-	  }
-
-	  try {
-	    resolver(resolvePromise, rejectPromise);
-	  } catch(e) {
-	    rejectPromise(e);
-	  }
-	}
-
-	function invokeCallback(subscriber){
-	  var owner = subscriber.owner;
-	  var settled = owner.state_;
-	  var value = owner.data_;  
-	  var callback = subscriber[settled];
-	  var promise = subscriber.then;
-
-	  if (typeof callback === 'function')
-	  {
-	    settled = FULFILLED;
-	    try {
-	      value = callback(value);
-	    } catch(e) {
-	      reject(promise, e);
-	    }
-	  }
-
-	  if (!handleThenable(promise, value))
-	  {
-	    if (settled === FULFILLED)
-	      { resolve(promise, value); }
-
-	    if (settled === REJECTED)
-	      { reject(promise, value); }
-	  }
-	}
-
-	function handleThenable(promise, value) {
-	  var resolved;
-
-	  try {
-	    if (promise === value)
-	      { throw new TypeError('A promises callback cannot return that same promise.'); }
-
-	    if (value && (typeof value === 'function' || typeof value === 'object'))
-	    {
-	      var then = value.then;  // then should be retrived only once
-
-	      if (typeof then === 'function')
-	      {
-	        then.call(value, function(val){
-	          if (!resolved)
-	          {
-	            resolved = true;
-
-	            if (value !== val)
-	              { resolve(promise, val); }
-	            else
-	              { fulfill(promise, val); }
-	          }
-	        }, function(reason){
-	          if (!resolved)
-	          {
-	            resolved = true;
-
-	            reject(promise, reason);
-	          }
-	        });
-
-	        return true;
-	      }
-	    }
-	  } catch (e) {
-	    if (!resolved)
-	      { reject(promise, e); }
-
-	    return true;
-	  }
-
-	  return false;
-	}
-
-	function resolve(promise, value){
-	  if (promise === value || !handleThenable(promise, value))
-	    { fulfill(promise, value); }
-	}
-
-	function fulfill(promise, value){
-	  if (promise.state_ === PENDING)
-	  {
-	    promise.state_ = SEALED;
-	    promise.data_ = value;
-
-	    asyncCall(publishFulfillment, promise);
-	  }
-	}
-
-	function reject(promise, reason){
-	  if (promise.state_ === PENDING)
-	  {
-	    promise.state_ = SEALED;
-	    promise.data_ = reason;
-
-	    asyncCall(publishRejection, promise);
-	  }
-	}
-
-	function publish(promise) {
-	  var callbacks = promise.then_;
-	  promise.then_ = undefined;
-
-	  for (var i = 0; i < callbacks.length; i++) {
-	    invokeCallback(callbacks[i]);
-	  }
-	}
-
-	function publishFulfillment(promise){
-	  promise.state_ = FULFILLED;
-	  publish(promise);
-	}
-
-	function publishRejection(promise){
-	  promise.state_ = REJECTED;
-	  publish(promise);
-	}
-
-	/**
-	* @class
-	*/
-	function Promise(resolver){
-	  if (typeof resolver !== 'function')
-	    { throw new TypeError('Promise constructor takes a function argument'); }
-
-	  if (this instanceof Promise === false)
-	    { throw new TypeError('Failed to construct \'Promise\': Please use the \'new\' operator, this object constructor cannot be called as a function.'); }
-
-	  this.then_ = [];
-
-	  invokeResolver(resolver, this);
-	}
-
-	Promise.prototype = {
-	  constructor: Promise,
-
-	  state_: PENDING,
-	  then_: null,
-	  data_: undefined,
-
-	  then: function(onFulfillment, onRejection){
-	    var subscriber = {
-	      owner: this,
-	      then: new this.constructor(NOOP),
-	      fulfilled: onFulfillment,
-	      rejected: onRejection
-	    };
-
-	    if (this.state_ === FULFILLED || this.state_ === REJECTED)
-	    {
-	      // already resolved, call callback async
-	      asyncCall(invokeCallback, subscriber);
-	    }
-	    else
-	    {
-	      // subscribe
-	      this.then_.push(subscriber);
-	    }
-
-	    return subscriber.then;
-	  },
-
-	  'catch': function(onRejection) {
-	    return this.then(null, onRejection);
-	  }
-	};
-
-	Promise.all = function(promises){
-	  var Class = this;
-
-	  if (!isArray(promises))
-	    { throw new TypeError('You must pass an array to Promise.all().'); }
-
-	  return new Class(function(resolve, reject){
-	    var results = [];
-	    var remaining = 0;
-
-	    function resolver(index){
-	      remaining++;
-	      return function(value){
-	        results[index] = value;
-	        if (!--remaining)
-	          { resolve(results); }
-	      };
-	    }
-
-	    for (var i = 0, promise; i < promises.length; i++)
-	    {
-	      promise = promises[i];
-
-	      if (promise && typeof promise.then === 'function')
-	        { promise.then(resolver(i), reject); }
-	      else
-	        { results[i] = promise; }
-	    }
-
-	    if (!remaining)
-	      { resolve(results); }
-	  });
-	};
-
-	Promise.race = function(promises){
-	  var Class = this;
-
-	  if (!isArray(promises))
-	    { throw new TypeError('You must pass an array to Promise.race().'); }
-
-	  return new Class(function(resolve, reject) {
-	    for (var i = 0, promise; i < promises.length; i++)
-	    {
-	      promise = promises[i];
-
-	      if (promise && typeof promise.then === 'function')
-	        { promise.then(resolve, reject); }
-	      else
-	        { resolve(promise); }
-	    }
-	  });
-	};
-
-	Promise.resolve = function(value){
-	  var Class = this;
-
-	  if (value && typeof value === 'object' && value.constructor === Class)
-	    { return value; }
-
-	  return new Class(function(resolve){
-	    resolve(value);
-	  });
-	};
-
-	Promise.reject = function(reason){
-	  var Class = this;
-
-	  return new Class(function(resolve, reject){
-	    reject(reason);
-	  });
-	};
-
-	})(typeof window != 'undefined' ? window : typeof commonjsGlobal != 'undefined' ? commonjsGlobal : typeof self != 'undefined' ? self : commonjsGlobal);
-	});
-	var promise_1 = promise.Promise;
-	var promise_2 = promise.Polyfill;
 
 	/*
 	object-assign
@@ -472,17 +103,2570 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/polyfill - v5.2.1
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/polyfill is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
 	 */
 
-	// Support for IE 9 - 11 which does not include Promises
-	if (!window.Promise)
-	{
-	    window.Promise = promise_2;
+	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+	function unwrapExports (x) {
+		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 	}
+
+	function createCommonjsModule(fn, module) {
+		return module = { exports: {} }, fn(module, module.exports), module.exports;
+	}
+
+	var check = function (it) {
+	  return it && it.Math == Math && it;
+	};
+
+	// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+	var global_1 =
+	  // eslint-disable-next-line no-undef
+	  check(typeof globalThis == 'object' && globalThis) ||
+	  check(typeof window == 'object' && window) ||
+	  check(typeof self == 'object' && self) ||
+	  check(typeof commonjsGlobal == 'object' && commonjsGlobal) ||
+	  // eslint-disable-next-line no-new-func
+	  Function('return this')();
+
+	var fails = function (exec) {
+	  try {
+	    return !!exec();
+	  } catch (error) {
+	    return true;
+	  }
+	};
+
+	// Thank's IE8 for his funny defineProperty
+	var descriptors = !fails(function () {
+	  return Object.defineProperty({}, 1, { get: function () { return 7; } })[1] != 7;
+	});
+
+	var isObject = function (it) {
+	  return typeof it === 'object' ? it !== null : typeof it === 'function';
+	};
+
+	var document$1 = global_1.document;
+	// typeof document.createElement is 'object' in old IE
+	var EXISTS = isObject(document$1) && isObject(document$1.createElement);
+
+	var documentCreateElement = function (it) {
+	  return EXISTS ? document$1.createElement(it) : {};
+	};
+
+	// Thank's IE8 for his funny defineProperty
+	var ie8DomDefine = !descriptors && !fails(function () {
+	  return Object.defineProperty(documentCreateElement('div'), 'a', {
+	    get: function () { return 7; }
+	  }).a != 7;
+	});
+
+	var anObject = function (it) {
+	  if (!isObject(it)) {
+	    throw TypeError(String(it) + ' is not an object');
+	  } return it;
+	};
+
+	// `ToPrimitive` abstract operation
+	// https://tc39.github.io/ecma262/#sec-toprimitive
+	// instead of the ES6 spec version, we didn't implement @@toPrimitive case
+	// and the second argument - flag - preferred type is a string
+	var toPrimitive = function (input, PREFERRED_STRING) {
+	  if (!isObject(input)) { return input; }
+	  var fn, val;
+	  if (PREFERRED_STRING && typeof (fn = input.toString) == 'function' && !isObject(val = fn.call(input))) { return val; }
+	  if (typeof (fn = input.valueOf) == 'function' && !isObject(val = fn.call(input))) { return val; }
+	  if (!PREFERRED_STRING && typeof (fn = input.toString) == 'function' && !isObject(val = fn.call(input))) { return val; }
+	  throw TypeError("Can't convert object to primitive value");
+	};
+
+	var nativeDefineProperty = Object.defineProperty;
+
+	// `Object.defineProperty` method
+	// https://tc39.github.io/ecma262/#sec-object.defineproperty
+	var f = descriptors ? nativeDefineProperty : function defineProperty(O, P, Attributes) {
+	  anObject(O);
+	  P = toPrimitive(P, true);
+	  anObject(Attributes);
+	  if (ie8DomDefine) { try {
+	    return nativeDefineProperty(O, P, Attributes);
+	  } catch (error) { /* empty */ } }
+	  if ('get' in Attributes || 'set' in Attributes) { throw TypeError('Accessors not supported'); }
+	  if ('value' in Attributes) { O[P] = Attributes.value; }
+	  return O;
+	};
+
+	var objectDefineProperty = {
+		f: f
+	};
+
+	var createPropertyDescriptor = function (bitmap, value) {
+	  return {
+	    enumerable: !(bitmap & 1),
+	    configurable: !(bitmap & 2),
+	    writable: !(bitmap & 4),
+	    value: value
+	  };
+	};
+
+	var createNonEnumerableProperty = descriptors ? function (object, key, value) {
+	  return objectDefineProperty.f(object, key, createPropertyDescriptor(1, value));
+	} : function (object, key, value) {
+	  object[key] = value;
+	  return object;
+	};
+
+	var setGlobal = function (key, value) {
+	  try {
+	    createNonEnumerableProperty(global_1, key, value);
+	  } catch (error) {
+	    global_1[key] = value;
+	  } return value;
+	};
+
+	var SHARED = '__core-js_shared__';
+	var store = global_1[SHARED] || setGlobal(SHARED, {});
+
+	var sharedStore = store;
+
+	var shared = createCommonjsModule(function (module) {
+	(module.exports = function (key, value) {
+	  return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
+	})('versions', []).push({
+	  version: '3.6.5',
+	  mode: 'global',
+	  copyright: '© 2020 Denis Pushkarev (zloirock.ru)'
+	});
+	});
+
+	var hasOwnProperty$1 = {}.hasOwnProperty;
+
+	var has = function (it, key) {
+	  return hasOwnProperty$1.call(it, key);
+	};
+
+	var id = 0;
+	var postfix = Math.random();
+
+	var uid = function (key) {
+	  return 'Symbol(' + String(key === undefined ? '' : key) + ')_' + (++id + postfix).toString(36);
+	};
+
+	var nativeSymbol = !!Object.getOwnPropertySymbols && !fails(function () {
+	  // Chrome 38 Symbol has incorrect toString conversion
+	  // eslint-disable-next-line no-undef
+	  return !String(Symbol());
+	});
+
+	var useSymbolAsUid = nativeSymbol
+	  // eslint-disable-next-line no-undef
+	  && !Symbol.sham
+	  // eslint-disable-next-line no-undef
+	  && typeof Symbol.iterator == 'symbol';
+
+	var WellKnownSymbolsStore = shared('wks');
+	var Symbol$1 = global_1.Symbol;
+	var createWellKnownSymbol = useSymbolAsUid ? Symbol$1 : Symbol$1 && Symbol$1.withoutSetter || uid;
+
+	var wellKnownSymbol = function (name) {
+	  if (!has(WellKnownSymbolsStore, name)) {
+	    if (nativeSymbol && has(Symbol$1, name)) { WellKnownSymbolsStore[name] = Symbol$1[name]; }
+	    else { WellKnownSymbolsStore[name] = createWellKnownSymbol('Symbol.' + name); }
+	  } return WellKnownSymbolsStore[name];
+	};
+
+	var TO_STRING_TAG = wellKnownSymbol('toStringTag');
+	var test = {};
+
+	test[TO_STRING_TAG] = 'z';
+
+	var toStringTagSupport = String(test) === '[object z]';
+
+	var functionToString = Function.toString;
+
+	// this helper broken in `3.4.1-3.4.4`, so we can't use `shared` helper
+	if (typeof sharedStore.inspectSource != 'function') {
+	  sharedStore.inspectSource = function (it) {
+	    return functionToString.call(it);
+	  };
+	}
+
+	var inspectSource = sharedStore.inspectSource;
+
+	var WeakMap = global_1.WeakMap;
+
+	var nativeWeakMap = typeof WeakMap === 'function' && /native code/.test(inspectSource(WeakMap));
+
+	var keys = shared('keys');
+
+	var sharedKey = function (key) {
+	  return keys[key] || (keys[key] = uid(key));
+	};
+
+	var hiddenKeys = {};
+
+	var WeakMap$1 = global_1.WeakMap;
+	var set, get, has$1;
+
+	var enforce = function (it) {
+	  return has$1(it) ? get(it) : set(it, {});
+	};
+
+	var getterFor = function (TYPE) {
+	  return function (it) {
+	    var state;
+	    if (!isObject(it) || (state = get(it)).type !== TYPE) {
+	      throw TypeError('Incompatible receiver, ' + TYPE + ' required');
+	    } return state;
+	  };
+	};
+
+	if (nativeWeakMap) {
+	  var store$1 = new WeakMap$1();
+	  var wmget = store$1.get;
+	  var wmhas = store$1.has;
+	  var wmset = store$1.set;
+	  set = function (it, metadata) {
+	    wmset.call(store$1, it, metadata);
+	    return metadata;
+	  };
+	  get = function (it) {
+	    return wmget.call(store$1, it) || {};
+	  };
+	  has$1 = function (it) {
+	    return wmhas.call(store$1, it);
+	  };
+	} else {
+	  var STATE = sharedKey('state');
+	  hiddenKeys[STATE] = true;
+	  set = function (it, metadata) {
+	    createNonEnumerableProperty(it, STATE, metadata);
+	    return metadata;
+	  };
+	  get = function (it) {
+	    return has(it, STATE) ? it[STATE] : {};
+	  };
+	  has$1 = function (it) {
+	    return has(it, STATE);
+	  };
+	}
+
+	var internalState = {
+	  set: set,
+	  get: get,
+	  has: has$1,
+	  enforce: enforce,
+	  getterFor: getterFor
+	};
+
+	var redefine = createCommonjsModule(function (module) {
+	var getInternalState = internalState.get;
+	var enforceInternalState = internalState.enforce;
+	var TEMPLATE = String(String).split('String');
+
+	(module.exports = function (O, key, value, options) {
+	  var unsafe = options ? !!options.unsafe : false;
+	  var simple = options ? !!options.enumerable : false;
+	  var noTargetGet = options ? !!options.noTargetGet : false;
+	  if (typeof value == 'function') {
+	    if (typeof key == 'string' && !has(value, 'name')) { createNonEnumerableProperty(value, 'name', key); }
+	    enforceInternalState(value).source = TEMPLATE.join(typeof key == 'string' ? key : '');
+	  }
+	  if (O === global_1) {
+	    if (simple) { O[key] = value; }
+	    else { setGlobal(key, value); }
+	    return;
+	  } else if (!unsafe) {
+	    delete O[key];
+	  } else if (!noTargetGet && O[key]) {
+	    simple = true;
+	  }
+	  if (simple) { O[key] = value; }
+	  else { createNonEnumerableProperty(O, key, value); }
+	// add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
+	})(Function.prototype, 'toString', function toString() {
+	  return typeof this == 'function' && getInternalState(this).source || inspectSource(this);
+	});
+	});
+
+	var toString = {}.toString;
+
+	var classofRaw = function (it) {
+	  return toString.call(it).slice(8, -1);
+	};
+
+	var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
+	// ES3 wrong here
+	var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
+
+	// fallback for IE11 Script Access Denied error
+	var tryGet = function (it, key) {
+	  try {
+	    return it[key];
+	  } catch (error) { /* empty */ }
+	};
+
+	// getting tag from ES6+ `Object.prototype.toString`
+	var classof = toStringTagSupport ? classofRaw : function (it) {
+	  var O, tag, result;
+	  return it === undefined ? 'Undefined' : it === null ? 'Null'
+	    // @@toStringTag case
+	    : typeof (tag = tryGet(O = Object(it), TO_STRING_TAG$1)) == 'string' ? tag
+	    // builtinTag case
+	    : CORRECT_ARGUMENTS ? classofRaw(O)
+	    // ES3 arguments fallback
+	    : (result = classofRaw(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : result;
+	};
+
+	// `Object.prototype.toString` method implementation
+	// https://tc39.github.io/ecma262/#sec-object.prototype.tostring
+	var objectToString = toStringTagSupport ? {}.toString : function toString() {
+	  return '[object ' + classof(this) + ']';
+	};
+
+	// `Object.prototype.toString` method
+	// https://tc39.github.io/ecma262/#sec-object.prototype.tostring
+	if (!toStringTagSupport) {
+	  redefine(Object.prototype, 'toString', objectToString, { unsafe: true });
+	}
+
+	var ceil = Math.ceil;
+	var floor = Math.floor;
+
+	// `ToInteger` abstract operation
+	// https://tc39.github.io/ecma262/#sec-tointeger
+	var toInteger = function (argument) {
+	  return isNaN(argument = +argument) ? 0 : (argument > 0 ? floor : ceil)(argument);
+	};
+
+	// `RequireObjectCoercible` abstract operation
+	// https://tc39.github.io/ecma262/#sec-requireobjectcoercible
+	var requireObjectCoercible = function (it) {
+	  if (it == undefined) { throw TypeError("Can't call method on " + it); }
+	  return it;
+	};
+
+	// `String.prototype.{ codePointAt, at }` methods implementation
+	var createMethod = function (CONVERT_TO_STRING) {
+	  return function ($this, pos) {
+	    var S = String(requireObjectCoercible($this));
+	    var position = toInteger(pos);
+	    var size = S.length;
+	    var first, second;
+	    if (position < 0 || position >= size) { return CONVERT_TO_STRING ? '' : undefined; }
+	    first = S.charCodeAt(position);
+	    return first < 0xD800 || first > 0xDBFF || position + 1 === size
+	      || (second = S.charCodeAt(position + 1)) < 0xDC00 || second > 0xDFFF
+	        ? CONVERT_TO_STRING ? S.charAt(position) : first
+	        : CONVERT_TO_STRING ? S.slice(position, position + 2) : (first - 0xD800 << 10) + (second - 0xDC00) + 0x10000;
+	  };
+	};
+
+	var stringMultibyte = {
+	  // `String.prototype.codePointAt` method
+	  // https://tc39.github.io/ecma262/#sec-string.prototype.codepointat
+	  codeAt: createMethod(false),
+	  // `String.prototype.at` method
+	  // https://github.com/mathiasbynens/String.prototype.at
+	  charAt: createMethod(true)
+	};
+
+	var nativePropertyIsEnumerable = {}.propertyIsEnumerable;
+	var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+
+	// Nashorn ~ JDK8 bug
+	var NASHORN_BUG = getOwnPropertyDescriptor && !nativePropertyIsEnumerable.call({ 1: 2 }, 1);
+
+	// `Object.prototype.propertyIsEnumerable` method implementation
+	// https://tc39.github.io/ecma262/#sec-object.prototype.propertyisenumerable
+	var f$1 = NASHORN_BUG ? function propertyIsEnumerable(V) {
+	  var descriptor = getOwnPropertyDescriptor(this, V);
+	  return !!descriptor && descriptor.enumerable;
+	} : nativePropertyIsEnumerable;
+
+	var objectPropertyIsEnumerable = {
+		f: f$1
+	};
+
+	var split = ''.split;
+
+	// fallback for non-array-like ES3 and non-enumerable old V8 strings
+	var indexedObject = fails(function () {
+	  // throws an error in rhino, see https://github.com/mozilla/rhino/issues/346
+	  // eslint-disable-next-line no-prototype-builtins
+	  return !Object('z').propertyIsEnumerable(0);
+	}) ? function (it) {
+	  return classofRaw(it) == 'String' ? split.call(it, '') : Object(it);
+	} : Object;
+
+	// toObject with fallback for non-array-like ES3 strings
+
+
+
+	var toIndexedObject = function (it) {
+	  return indexedObject(requireObjectCoercible(it));
+	};
+
+	var nativeGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+
+	// `Object.getOwnPropertyDescriptor` method
+	// https://tc39.github.io/ecma262/#sec-object.getownpropertydescriptor
+	var f$2 = descriptors ? nativeGetOwnPropertyDescriptor : function getOwnPropertyDescriptor(O, P) {
+	  O = toIndexedObject(O);
+	  P = toPrimitive(P, true);
+	  if (ie8DomDefine) { try {
+	    return nativeGetOwnPropertyDescriptor(O, P);
+	  } catch (error) { /* empty */ } }
+	  if (has(O, P)) { return createPropertyDescriptor(!objectPropertyIsEnumerable.f.call(O, P), O[P]); }
+	};
+
+	var objectGetOwnPropertyDescriptor = {
+		f: f$2
+	};
+
+	var path = global_1;
+
+	var aFunction = function (variable) {
+	  return typeof variable == 'function' ? variable : undefined;
+	};
+
+	var getBuiltIn = function (namespace, method) {
+	  return arguments.length < 2 ? aFunction(path[namespace]) || aFunction(global_1[namespace])
+	    : path[namespace] && path[namespace][method] || global_1[namespace] && global_1[namespace][method];
+	};
+
+	var min = Math.min;
+
+	// `ToLength` abstract operation
+	// https://tc39.github.io/ecma262/#sec-tolength
+	var toLength = function (argument) {
+	  return argument > 0 ? min(toInteger(argument), 0x1FFFFFFFFFFFFF) : 0; // 2 ** 53 - 1 == 9007199254740991
+	};
+
+	var max = Math.max;
+	var min$1 = Math.min;
+
+	// Helper for a popular repeating case of the spec:
+	// Let integer be ? ToInteger(index).
+	// If integer < 0, let result be max((length + integer), 0); else let result be min(integer, length).
+	var toAbsoluteIndex = function (index, length) {
+	  var integer = toInteger(index);
+	  return integer < 0 ? max(integer + length, 0) : min$1(integer, length);
+	};
+
+	// `Array.prototype.{ indexOf, includes }` methods implementation
+	var createMethod$1 = function (IS_INCLUDES) {
+	  return function ($this, el, fromIndex) {
+	    var O = toIndexedObject($this);
+	    var length = toLength(O.length);
+	    var index = toAbsoluteIndex(fromIndex, length);
+	    var value;
+	    // Array#includes uses SameValueZero equality algorithm
+	    // eslint-disable-next-line no-self-compare
+	    if (IS_INCLUDES && el != el) { while (length > index) {
+	      value = O[index++];
+	      // eslint-disable-next-line no-self-compare
+	      if (value != value) { return true; }
+	    // Array#indexOf ignores holes, Array#includes - not
+	    } } else { for (;length > index; index++) {
+	      if ((IS_INCLUDES || index in O) && O[index] === el) { return IS_INCLUDES || index || 0; }
+	    } } return !IS_INCLUDES && -1;
+	  };
+	};
+
+	var arrayIncludes = {
+	  // `Array.prototype.includes` method
+	  // https://tc39.github.io/ecma262/#sec-array.prototype.includes
+	  includes: createMethod$1(true),
+	  // `Array.prototype.indexOf` method
+	  // https://tc39.github.io/ecma262/#sec-array.prototype.indexof
+	  indexOf: createMethod$1(false)
+	};
+
+	var indexOf = arrayIncludes.indexOf;
+
+
+	var objectKeysInternal = function (object, names) {
+	  var O = toIndexedObject(object);
+	  var i = 0;
+	  var result = [];
+	  var key;
+	  for (key in O) { !has(hiddenKeys, key) && has(O, key) && result.push(key); }
+	  // Don't enum bug & hidden keys
+	  while (names.length > i) { if (has(O, key = names[i++])) {
+	    ~indexOf(result, key) || result.push(key);
+	  } }
+	  return result;
+	};
+
+	// IE8- don't enum bug keys
+	var enumBugKeys = [
+	  'constructor',
+	  'hasOwnProperty',
+	  'isPrototypeOf',
+	  'propertyIsEnumerable',
+	  'toLocaleString',
+	  'toString',
+	  'valueOf'
+	];
+
+	var hiddenKeys$1 = enumBugKeys.concat('length', 'prototype');
+
+	// `Object.getOwnPropertyNames` method
+	// https://tc39.github.io/ecma262/#sec-object.getownpropertynames
+	var f$3 = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
+	  return objectKeysInternal(O, hiddenKeys$1);
+	};
+
+	var objectGetOwnPropertyNames = {
+		f: f$3
+	};
+
+	var f$4 = Object.getOwnPropertySymbols;
+
+	var objectGetOwnPropertySymbols = {
+		f: f$4
+	};
+
+	// all object keys, includes non-enumerable and symbols
+	var ownKeys = getBuiltIn('Reflect', 'ownKeys') || function ownKeys(it) {
+	  var keys = objectGetOwnPropertyNames.f(anObject(it));
+	  var getOwnPropertySymbols = objectGetOwnPropertySymbols.f;
+	  return getOwnPropertySymbols ? keys.concat(getOwnPropertySymbols(it)) : keys;
+	};
+
+	var copyConstructorProperties = function (target, source) {
+	  var keys = ownKeys(source);
+	  var defineProperty = objectDefineProperty.f;
+	  var getOwnPropertyDescriptor = objectGetOwnPropertyDescriptor.f;
+	  for (var i = 0; i < keys.length; i++) {
+	    var key = keys[i];
+	    if (!has(target, key)) { defineProperty(target, key, getOwnPropertyDescriptor(source, key)); }
+	  }
+	};
+
+	var replacement = /#|\.prototype\./;
+
+	var isForced = function (feature, detection) {
+	  var value = data[normalize(feature)];
+	  return value == POLYFILL ? true
+	    : value == NATIVE ? false
+	    : typeof detection == 'function' ? fails(detection)
+	    : !!detection;
+	};
+
+	var normalize = isForced.normalize = function (string) {
+	  return String(string).replace(replacement, '.').toLowerCase();
+	};
+
+	var data = isForced.data = {};
+	var NATIVE = isForced.NATIVE = 'N';
+	var POLYFILL = isForced.POLYFILL = 'P';
+
+	var isForced_1 = isForced;
+
+	var getOwnPropertyDescriptor$1 = objectGetOwnPropertyDescriptor.f;
+
+
+
+
+
+
+	/*
+	  options.target      - name of the target object
+	  options.global      - target is the global object
+	  options.stat        - export as static methods of target
+	  options.proto       - export as prototype methods of target
+	  options.real        - real prototype method for the `pure` version
+	  options.forced      - export even if the native feature is available
+	  options.bind        - bind methods to the target, required for the `pure` version
+	  options.wrap        - wrap constructors to preventing global pollution, required for the `pure` version
+	  options.unsafe      - use the simple assignment of property instead of delete + defineProperty
+	  options.sham        - add a flag to not completely full polyfills
+	  options.enumerable  - export as enumerable property
+	  options.noTargetGet - prevent calling a getter on target
+	*/
+	var _export = function (options, source) {
+	  var TARGET = options.target;
+	  var GLOBAL = options.global;
+	  var STATIC = options.stat;
+	  var FORCED, target, key, targetProperty, sourceProperty, descriptor;
+	  if (GLOBAL) {
+	    target = global_1;
+	  } else if (STATIC) {
+	    target = global_1[TARGET] || setGlobal(TARGET, {});
+	  } else {
+	    target = (global_1[TARGET] || {}).prototype;
+	  }
+	  if (target) { for (key in source) {
+	    sourceProperty = source[key];
+	    if (options.noTargetGet) {
+	      descriptor = getOwnPropertyDescriptor$1(target, key);
+	      targetProperty = descriptor && descriptor.value;
+	    } else { targetProperty = target[key]; }
+	    FORCED = isForced_1(GLOBAL ? key : TARGET + (STATIC ? '.' : '#') + key, options.forced);
+	    // contained in target
+	    if (!FORCED && targetProperty !== undefined) {
+	      if (typeof sourceProperty === typeof targetProperty) { continue; }
+	      copyConstructorProperties(sourceProperty, targetProperty);
+	    }
+	    // add a flag to not completely full polyfills
+	    if (options.sham || (targetProperty && targetProperty.sham)) {
+	      createNonEnumerableProperty(sourceProperty, 'sham', true);
+	    }
+	    // extend global
+	    redefine(target, key, sourceProperty, options);
+	  } }
+	};
+
+	// `ToObject` abstract operation
+	// https://tc39.github.io/ecma262/#sec-toobject
+	var toObject$1 = function (argument) {
+	  return Object(requireObjectCoercible(argument));
+	};
+
+	var correctPrototypeGetter = !fails(function () {
+	  function F() { /* empty */ }
+	  F.prototype.constructor = null;
+	  return Object.getPrototypeOf(new F()) !== F.prototype;
+	});
+
+	var IE_PROTO = sharedKey('IE_PROTO');
+	var ObjectPrototype = Object.prototype;
+
+	// `Object.getPrototypeOf` method
+	// https://tc39.github.io/ecma262/#sec-object.getprototypeof
+	var objectGetPrototypeOf = correctPrototypeGetter ? Object.getPrototypeOf : function (O) {
+	  O = toObject$1(O);
+	  if (has(O, IE_PROTO)) { return O[IE_PROTO]; }
+	  if (typeof O.constructor == 'function' && O instanceof O.constructor) {
+	    return O.constructor.prototype;
+	  } return O instanceof Object ? ObjectPrototype : null;
+	};
+
+	var ITERATOR = wellKnownSymbol('iterator');
+	var BUGGY_SAFARI_ITERATORS = false;
+
+	var returnThis = function () { return this; };
+
+	// `%IteratorPrototype%` object
+	// https://tc39.github.io/ecma262/#sec-%iteratorprototype%-object
+	var IteratorPrototype, PrototypeOfArrayIteratorPrototype, arrayIterator;
+
+	if ([].keys) {
+	  arrayIterator = [].keys();
+	  // Safari 8 has buggy iterators w/o `next`
+	  if (!('next' in arrayIterator)) { BUGGY_SAFARI_ITERATORS = true; }
+	  else {
+	    PrototypeOfArrayIteratorPrototype = objectGetPrototypeOf(objectGetPrototypeOf(arrayIterator));
+	    if (PrototypeOfArrayIteratorPrototype !== Object.prototype) { IteratorPrototype = PrototypeOfArrayIteratorPrototype; }
+	  }
+	}
+
+	if (IteratorPrototype == undefined) { IteratorPrototype = {}; }
+
+	// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+	if (!has(IteratorPrototype, ITERATOR)) {
+	  createNonEnumerableProperty(IteratorPrototype, ITERATOR, returnThis);
+	}
+
+	var iteratorsCore = {
+	  IteratorPrototype: IteratorPrototype,
+	  BUGGY_SAFARI_ITERATORS: BUGGY_SAFARI_ITERATORS
+	};
+
+	// `Object.keys` method
+	// https://tc39.github.io/ecma262/#sec-object.keys
+	var objectKeys = Object.keys || function keys(O) {
+	  return objectKeysInternal(O, enumBugKeys);
+	};
+
+	// `Object.defineProperties` method
+	// https://tc39.github.io/ecma262/#sec-object.defineproperties
+	var objectDefineProperties = descriptors ? Object.defineProperties : function defineProperties(O, Properties) {
+	  anObject(O);
+	  var keys = objectKeys(Properties);
+	  var length = keys.length;
+	  var index = 0;
+	  var key;
+	  while (length > index) { objectDefineProperty.f(O, key = keys[index++], Properties[key]); }
+	  return O;
+	};
+
+	var html = getBuiltIn('document', 'documentElement');
+
+	var GT = '>';
+	var LT = '<';
+	var PROTOTYPE = 'prototype';
+	var SCRIPT = 'script';
+	var IE_PROTO$1 = sharedKey('IE_PROTO');
+
+	var EmptyConstructor = function () { /* empty */ };
+
+	var scriptTag = function (content) {
+	  return LT + SCRIPT + GT + content + LT + '/' + SCRIPT + GT;
+	};
+
+	// Create object with fake `null` prototype: use ActiveX Object with cleared prototype
+	var NullProtoObjectViaActiveX = function (activeXDocument) {
+	  activeXDocument.write(scriptTag(''));
+	  activeXDocument.close();
+	  var temp = activeXDocument.parentWindow.Object;
+	  activeXDocument = null; // avoid memory leak
+	  return temp;
+	};
+
+	// Create object with fake `null` prototype: use iframe Object with cleared prototype
+	var NullProtoObjectViaIFrame = function () {
+	  // Thrash, waste and sodomy: IE GC bug
+	  var iframe = documentCreateElement('iframe');
+	  var JS = 'java' + SCRIPT + ':';
+	  var iframeDocument;
+	  iframe.style.display = 'none';
+	  html.appendChild(iframe);
+	  // https://github.com/zloirock/core-js/issues/475
+	  iframe.src = String(JS);
+	  iframeDocument = iframe.contentWindow.document;
+	  iframeDocument.open();
+	  iframeDocument.write(scriptTag('document.F=Object'));
+	  iframeDocument.close();
+	  return iframeDocument.F;
+	};
+
+	// Check for document.domain and active x support
+	// No need to use active x approach when document.domain is not set
+	// see https://github.com/es-shims/es5-shim/issues/150
+	// variation of https://github.com/kitcambridge/es5-shim/commit/4f738ac066346
+	// avoid IE GC bug
+	var activeXDocument;
+	var NullProtoObject = function () {
+	  try {
+	    /* global ActiveXObject */
+	    activeXDocument = document.domain && new ActiveXObject('htmlfile');
+	  } catch (error) { /* ignore */ }
+	  NullProtoObject = activeXDocument ? NullProtoObjectViaActiveX(activeXDocument) : NullProtoObjectViaIFrame();
+	  var length = enumBugKeys.length;
+	  while (length--) { delete NullProtoObject[PROTOTYPE][enumBugKeys[length]]; }
+	  return NullProtoObject();
+	};
+
+	hiddenKeys[IE_PROTO$1] = true;
+
+	// `Object.create` method
+	// https://tc39.github.io/ecma262/#sec-object.create
+	var objectCreate = Object.create || function create(O, Properties) {
+	  var result;
+	  if (O !== null) {
+	    EmptyConstructor[PROTOTYPE] = anObject(O);
+	    result = new EmptyConstructor();
+	    EmptyConstructor[PROTOTYPE] = null;
+	    // add "__proto__" for Object.getPrototypeOf polyfill
+	    result[IE_PROTO$1] = O;
+	  } else { result = NullProtoObject(); }
+	  return Properties === undefined ? result : objectDefineProperties(result, Properties);
+	};
+
+	var defineProperty = objectDefineProperty.f;
+
+
+
+	var TO_STRING_TAG$2 = wellKnownSymbol('toStringTag');
+
+	var setToStringTag = function (it, TAG, STATIC) {
+	  if (it && !has(it = STATIC ? it : it.prototype, TO_STRING_TAG$2)) {
+	    defineProperty(it, TO_STRING_TAG$2, { configurable: true, value: TAG });
+	  }
+	};
+
+	var iterators = {};
+
+	var IteratorPrototype$1 = iteratorsCore.IteratorPrototype;
+
+
+
+
+
+	var returnThis$1 = function () { return this; };
+
+	var createIteratorConstructor = function (IteratorConstructor, NAME, next) {
+	  var TO_STRING_TAG = NAME + ' Iterator';
+	  IteratorConstructor.prototype = objectCreate(IteratorPrototype$1, { next: createPropertyDescriptor(1, next) });
+	  setToStringTag(IteratorConstructor, TO_STRING_TAG, false, true);
+	  iterators[TO_STRING_TAG] = returnThis$1;
+	  return IteratorConstructor;
+	};
+
+	var aPossiblePrototype = function (it) {
+	  if (!isObject(it) && it !== null) {
+	    throw TypeError("Can't set " + String(it) + ' as a prototype');
+	  } return it;
+	};
+
+	// `Object.setPrototypeOf` method
+	// https://tc39.github.io/ecma262/#sec-object.setprototypeof
+	// Works with __proto__ only. Old v8 can't work with null proto objects.
+	/* eslint-disable no-proto */
+	var objectSetPrototypeOf = Object.setPrototypeOf || ('__proto__' in {} ? function () {
+	  var CORRECT_SETTER = false;
+	  var test = {};
+	  var setter;
+	  try {
+	    setter = Object.getOwnPropertyDescriptor(Object.prototype, '__proto__').set;
+	    setter.call(test, []);
+	    CORRECT_SETTER = test instanceof Array;
+	  } catch (error) { /* empty */ }
+	  return function setPrototypeOf(O, proto) {
+	    anObject(O);
+	    aPossiblePrototype(proto);
+	    if (CORRECT_SETTER) { setter.call(O, proto); }
+	    else { O.__proto__ = proto; }
+	    return O;
+	  };
+	}() : undefined);
+
+	var IteratorPrototype$2 = iteratorsCore.IteratorPrototype;
+	var BUGGY_SAFARI_ITERATORS$1 = iteratorsCore.BUGGY_SAFARI_ITERATORS;
+	var ITERATOR$1 = wellKnownSymbol('iterator');
+	var KEYS = 'keys';
+	var VALUES = 'values';
+	var ENTRIES = 'entries';
+
+	var returnThis$2 = function () { return this; };
+
+	var defineIterator = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, IS_SET, FORCED) {
+	  createIteratorConstructor(IteratorConstructor, NAME, next);
+
+	  var getIterationMethod = function (KIND) {
+	    if (KIND === DEFAULT && defaultIterator) { return defaultIterator; }
+	    if (!BUGGY_SAFARI_ITERATORS$1 && KIND in IterablePrototype) { return IterablePrototype[KIND]; }
+	    switch (KIND) {
+	      case KEYS: return function keys() { return new IteratorConstructor(this, KIND); };
+	      case VALUES: return function values() { return new IteratorConstructor(this, KIND); };
+	      case ENTRIES: return function entries() { return new IteratorConstructor(this, KIND); };
+	    } return function () { return new IteratorConstructor(this); };
+	  };
+
+	  var TO_STRING_TAG = NAME + ' Iterator';
+	  var INCORRECT_VALUES_NAME = false;
+	  var IterablePrototype = Iterable.prototype;
+	  var nativeIterator = IterablePrototype[ITERATOR$1]
+	    || IterablePrototype['@@iterator']
+	    || DEFAULT && IterablePrototype[DEFAULT];
+	  var defaultIterator = !BUGGY_SAFARI_ITERATORS$1 && nativeIterator || getIterationMethod(DEFAULT);
+	  var anyNativeIterator = NAME == 'Array' ? IterablePrototype.entries || nativeIterator : nativeIterator;
+	  var CurrentIteratorPrototype, methods, KEY;
+
+	  // fix native
+	  if (anyNativeIterator) {
+	    CurrentIteratorPrototype = objectGetPrototypeOf(anyNativeIterator.call(new Iterable()));
+	    if (IteratorPrototype$2 !== Object.prototype && CurrentIteratorPrototype.next) {
+	      if (objectGetPrototypeOf(CurrentIteratorPrototype) !== IteratorPrototype$2) {
+	        if (objectSetPrototypeOf) {
+	          objectSetPrototypeOf(CurrentIteratorPrototype, IteratorPrototype$2);
+	        } else if (typeof CurrentIteratorPrototype[ITERATOR$1] != 'function') {
+	          createNonEnumerableProperty(CurrentIteratorPrototype, ITERATOR$1, returnThis$2);
+	        }
+	      }
+	      // Set @@toStringTag to native iterators
+	      setToStringTag(CurrentIteratorPrototype, TO_STRING_TAG, true, true);
+	    }
+	  }
+
+	  // fix Array#{values, @@iterator}.name in V8 / FF
+	  if (DEFAULT == VALUES && nativeIterator && nativeIterator.name !== VALUES) {
+	    INCORRECT_VALUES_NAME = true;
+	    defaultIterator = function values() { return nativeIterator.call(this); };
+	  }
+
+	  // define iterator
+	  if (IterablePrototype[ITERATOR$1] !== defaultIterator) {
+	    createNonEnumerableProperty(IterablePrototype, ITERATOR$1, defaultIterator);
+	  }
+	  iterators[NAME] = defaultIterator;
+
+	  // export additional methods
+	  if (DEFAULT) {
+	    methods = {
+	      values: getIterationMethod(VALUES),
+	      keys: IS_SET ? defaultIterator : getIterationMethod(KEYS),
+	      entries: getIterationMethod(ENTRIES)
+	    };
+	    if (FORCED) { for (KEY in methods) {
+	      if (BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME || !(KEY in IterablePrototype)) {
+	        redefine(IterablePrototype, KEY, methods[KEY]);
+	      }
+	    } } else { _export({ target: NAME, proto: true, forced: BUGGY_SAFARI_ITERATORS$1 || INCORRECT_VALUES_NAME }, methods); }
+	  }
+
+	  return methods;
+	};
+
+	var charAt = stringMultibyte.charAt;
+
+
+
+	var STRING_ITERATOR = 'String Iterator';
+	var setInternalState = internalState.set;
+	var getInternalState = internalState.getterFor(STRING_ITERATOR);
+
+	// `String.prototype[@@iterator]` method
+	// https://tc39.github.io/ecma262/#sec-string.prototype-@@iterator
+	defineIterator(String, 'String', function (iterated) {
+	  setInternalState(this, {
+	    type: STRING_ITERATOR,
+	    string: String(iterated),
+	    index: 0
+	  });
+	// `%StringIteratorPrototype%.next` method
+	// https://tc39.github.io/ecma262/#sec-%stringiteratorprototype%.next
+	}, function next() {
+	  var state = getInternalState(this);
+	  var string = state.string;
+	  var index = state.index;
+	  var point;
+	  if (index >= string.length) { return { value: undefined, done: true }; }
+	  point = charAt(string, index);
+	  state.index += point.length;
+	  return { value: point, done: false };
+	});
+
+	// iterable DOM collections
+	// flag - `iterable` interface - 'entries', 'keys', 'values', 'forEach' methods
+	var domIterables = {
+	  CSSRuleList: 0,
+	  CSSStyleDeclaration: 0,
+	  CSSValueList: 0,
+	  ClientRectList: 0,
+	  DOMRectList: 0,
+	  DOMStringList: 0,
+	  DOMTokenList: 1,
+	  DataTransferItemList: 0,
+	  FileList: 0,
+	  HTMLAllCollection: 0,
+	  HTMLCollection: 0,
+	  HTMLFormElement: 0,
+	  HTMLSelectElement: 0,
+	  MediaList: 0,
+	  MimeTypeArray: 0,
+	  NamedNodeMap: 0,
+	  NodeList: 1,
+	  PaintRequestList: 0,
+	  Plugin: 0,
+	  PluginArray: 0,
+	  SVGLengthList: 0,
+	  SVGNumberList: 0,
+	  SVGPathSegList: 0,
+	  SVGPointList: 0,
+	  SVGStringList: 0,
+	  SVGTransformList: 0,
+	  SourceBufferList: 0,
+	  StyleSheetList: 0,
+	  TextTrackCueList: 0,
+	  TextTrackList: 0,
+	  TouchList: 0
+	};
+
+	var UNSCOPABLES = wellKnownSymbol('unscopables');
+	var ArrayPrototype = Array.prototype;
+
+	// Array.prototype[@@unscopables]
+	// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+	if (ArrayPrototype[UNSCOPABLES] == undefined) {
+	  objectDefineProperty.f(ArrayPrototype, UNSCOPABLES, {
+	    configurable: true,
+	    value: objectCreate(null)
+	  });
+	}
+
+	// add a key to Array.prototype[@@unscopables]
+	var addToUnscopables = function (key) {
+	  ArrayPrototype[UNSCOPABLES][key] = true;
+	};
+
+	var ARRAY_ITERATOR = 'Array Iterator';
+	var setInternalState$1 = internalState.set;
+	var getInternalState$1 = internalState.getterFor(ARRAY_ITERATOR);
+
+	// `Array.prototype.entries` method
+	// https://tc39.github.io/ecma262/#sec-array.prototype.entries
+	// `Array.prototype.keys` method
+	// https://tc39.github.io/ecma262/#sec-array.prototype.keys
+	// `Array.prototype.values` method
+	// https://tc39.github.io/ecma262/#sec-array.prototype.values
+	// `Array.prototype[@@iterator]` method
+	// https://tc39.github.io/ecma262/#sec-array.prototype-@@iterator
+	// `CreateArrayIterator` internal method
+	// https://tc39.github.io/ecma262/#sec-createarrayiterator
+	var es_array_iterator = defineIterator(Array, 'Array', function (iterated, kind) {
+	  setInternalState$1(this, {
+	    type: ARRAY_ITERATOR,
+	    target: toIndexedObject(iterated), // target
+	    index: 0,                          // next index
+	    kind: kind                         // kind
+	  });
+	// `%ArrayIteratorPrototype%.next` method
+	// https://tc39.github.io/ecma262/#sec-%arrayiteratorprototype%.next
+	}, function () {
+	  var state = getInternalState$1(this);
+	  var target = state.target;
+	  var kind = state.kind;
+	  var index = state.index++;
+	  if (!target || index >= target.length) {
+	    state.target = undefined;
+	    return { value: undefined, done: true };
+	  }
+	  if (kind == 'keys') { return { value: index, done: false }; }
+	  if (kind == 'values') { return { value: target[index], done: false }; }
+	  return { value: [index, target[index]], done: false };
+	}, 'values');
+
+	// argumentsList[@@iterator] is %ArrayProto_values%
+	// https://tc39.github.io/ecma262/#sec-createunmappedargumentsobject
+	// https://tc39.github.io/ecma262/#sec-createmappedargumentsobject
+	iterators.Arguments = iterators.Array;
+
+	// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
+	addToUnscopables('keys');
+	addToUnscopables('values');
+	addToUnscopables('entries');
+
+	var ITERATOR$2 = wellKnownSymbol('iterator');
+	var TO_STRING_TAG$3 = wellKnownSymbol('toStringTag');
+	var ArrayValues = es_array_iterator.values;
+
+	for (var COLLECTION_NAME in domIterables) {
+	  var Collection = global_1[COLLECTION_NAME];
+	  var CollectionPrototype = Collection && Collection.prototype;
+	  if (CollectionPrototype) {
+	    // some Chrome versions have non-configurable methods on DOMTokenList
+	    if (CollectionPrototype[ITERATOR$2] !== ArrayValues) { try {
+	      createNonEnumerableProperty(CollectionPrototype, ITERATOR$2, ArrayValues);
+	    } catch (error) {
+	      CollectionPrototype[ITERATOR$2] = ArrayValues;
+	    } }
+	    if (!CollectionPrototype[TO_STRING_TAG$3]) {
+	      createNonEnumerableProperty(CollectionPrototype, TO_STRING_TAG$3, COLLECTION_NAME);
+	    }
+	    if (domIterables[COLLECTION_NAME]) { for (var METHOD_NAME in es_array_iterator) {
+	      // some Chrome versions have non-configurable methods on DOMTokenList
+	      if (CollectionPrototype[METHOD_NAME] !== es_array_iterator[METHOD_NAME]) { try {
+	        createNonEnumerableProperty(CollectionPrototype, METHOD_NAME, es_array_iterator[METHOD_NAME]);
+	      } catch (error) {
+	        CollectionPrototype[METHOD_NAME] = es_array_iterator[METHOD_NAME];
+	      } }
+	    } }
+	  }
+	}
+
+	var nativePromiseConstructor = global_1.Promise;
+
+	var redefineAll = function (target, src, options) {
+	  for (var key in src) { redefine(target, key, src[key], options); }
+	  return target;
+	};
+
+	var SPECIES = wellKnownSymbol('species');
+
+	var setSpecies = function (CONSTRUCTOR_NAME) {
+	  var Constructor = getBuiltIn(CONSTRUCTOR_NAME);
+	  var defineProperty = objectDefineProperty.f;
+
+	  if (descriptors && Constructor && !Constructor[SPECIES]) {
+	    defineProperty(Constructor, SPECIES, {
+	      configurable: true,
+	      get: function () { return this; }
+	    });
+	  }
+	};
+
+	var aFunction$1 = function (it) {
+	  if (typeof it != 'function') {
+	    throw TypeError(String(it) + ' is not a function');
+	  } return it;
+	};
+
+	var anInstance = function (it, Constructor, name) {
+	  if (!(it instanceof Constructor)) {
+	    throw TypeError('Incorrect ' + (name ? name + ' ' : '') + 'invocation');
+	  } return it;
+	};
+
+	var ITERATOR$3 = wellKnownSymbol('iterator');
+	var ArrayPrototype$1 = Array.prototype;
+
+	// check on default Array iterator
+	var isArrayIteratorMethod = function (it) {
+	  return it !== undefined && (iterators.Array === it || ArrayPrototype$1[ITERATOR$3] === it);
+	};
+
+	// optional / simple context binding
+	var functionBindContext = function (fn, that, length) {
+	  aFunction$1(fn);
+	  if (that === undefined) { return fn; }
+	  switch (length) {
+	    case 0: return function () {
+	      return fn.call(that);
+	    };
+	    case 1: return function (a) {
+	      return fn.call(that, a);
+	    };
+	    case 2: return function (a, b) {
+	      return fn.call(that, a, b);
+	    };
+	    case 3: return function (a, b, c) {
+	      return fn.call(that, a, b, c);
+	    };
+	  }
+	  return function (/* ...args */) {
+	    return fn.apply(that, arguments);
+	  };
+	};
+
+	var ITERATOR$4 = wellKnownSymbol('iterator');
+
+	var getIteratorMethod = function (it) {
+	  if (it != undefined) { return it[ITERATOR$4]
+	    || it['@@iterator']
+	    || iterators[classof(it)]; }
+	};
+
+	// call something on iterator step with safe closing on error
+	var callWithSafeIterationClosing = function (iterator, fn, value, ENTRIES) {
+	  try {
+	    return ENTRIES ? fn(anObject(value)[0], value[1]) : fn(value);
+	  // 7.4.6 IteratorClose(iterator, completion)
+	  } catch (error) {
+	    var returnMethod = iterator['return'];
+	    if (returnMethod !== undefined) { anObject(returnMethod.call(iterator)); }
+	    throw error;
+	  }
+	};
+
+	var iterate_1 = createCommonjsModule(function (module) {
+	var Result = function (stopped, result) {
+	  this.stopped = stopped;
+	  this.result = result;
+	};
+
+	var iterate = module.exports = function (iterable, fn, that, AS_ENTRIES, IS_ITERATOR) {
+	  var boundFunction = functionBindContext(fn, that, AS_ENTRIES ? 2 : 1);
+	  var iterator, iterFn, index, length, result, next, step;
+
+	  if (IS_ITERATOR) {
+	    iterator = iterable;
+	  } else {
+	    iterFn = getIteratorMethod(iterable);
+	    if (typeof iterFn != 'function') { throw TypeError('Target is not iterable'); }
+	    // optimisation for array iterators
+	    if (isArrayIteratorMethod(iterFn)) {
+	      for (index = 0, length = toLength(iterable.length); length > index; index++) {
+	        result = AS_ENTRIES
+	          ? boundFunction(anObject(step = iterable[index])[0], step[1])
+	          : boundFunction(iterable[index]);
+	        if (result && result instanceof Result) { return result; }
+	      } return new Result(false);
+	    }
+	    iterator = iterFn.call(iterable);
+	  }
+
+	  next = iterator.next;
+	  while (!(step = next.call(iterator)).done) {
+	    result = callWithSafeIterationClosing(iterator, boundFunction, step.value, AS_ENTRIES);
+	    if (typeof result == 'object' && result && result instanceof Result) { return result; }
+	  } return new Result(false);
+	};
+
+	iterate.stop = function (result) {
+	  return new Result(true, result);
+	};
+	});
+
+	var ITERATOR$5 = wellKnownSymbol('iterator');
+	var SAFE_CLOSING = false;
+
+	try {
+	  var called = 0;
+	  var iteratorWithReturn = {
+	    next: function () {
+	      return { done: !!called++ };
+	    },
+	    'return': function () {
+	      SAFE_CLOSING = true;
+	    }
+	  };
+	  iteratorWithReturn[ITERATOR$5] = function () {
+	    return this;
+	  };
+	} catch (error) { /* empty */ }
+
+	var checkCorrectnessOfIteration = function (exec, SKIP_CLOSING) {
+	  if (!SKIP_CLOSING && !SAFE_CLOSING) { return false; }
+	  var ITERATION_SUPPORT = false;
+	  try {
+	    var object = {};
+	    object[ITERATOR$5] = function () {
+	      return {
+	        next: function () {
+	          return { done: ITERATION_SUPPORT = true };
+	        }
+	      };
+	    };
+	    exec(object);
+	  } catch (error) { /* empty */ }
+	  return ITERATION_SUPPORT;
+	};
+
+	var SPECIES$1 = wellKnownSymbol('species');
+
+	// `SpeciesConstructor` abstract operation
+	// https://tc39.github.io/ecma262/#sec-speciesconstructor
+	var speciesConstructor = function (O, defaultConstructor) {
+	  var C = anObject(O).constructor;
+	  var S;
+	  return C === undefined || (S = anObject(C)[SPECIES$1]) == undefined ? defaultConstructor : aFunction$1(S);
+	};
+
+	var engineUserAgent = getBuiltIn('navigator', 'userAgent') || '';
+
+	var engineIsIos = /(iphone|ipod|ipad).*applewebkit/i.test(engineUserAgent);
+
+	var location = global_1.location;
+	var set$1 = global_1.setImmediate;
+	var clear = global_1.clearImmediate;
+	var process = global_1.process;
+	var MessageChannel = global_1.MessageChannel;
+	var Dispatch = global_1.Dispatch;
+	var counter = 0;
+	var queue = {};
+	var ONREADYSTATECHANGE = 'onreadystatechange';
+	var defer, channel, port;
+
+	var run = function (id) {
+	  // eslint-disable-next-line no-prototype-builtins
+	  if (queue.hasOwnProperty(id)) {
+	    var fn = queue[id];
+	    delete queue[id];
+	    fn();
+	  }
+	};
+
+	var runner = function (id) {
+	  return function () {
+	    run(id);
+	  };
+	};
+
+	var listener = function (event) {
+	  run(event.data);
+	};
+
+	var post = function (id) {
+	  // old engines have not location.origin
+	  global_1.postMessage(id + '', location.protocol + '//' + location.host);
+	};
+
+	// Node.js 0.9+ & IE10+ has setImmediate, otherwise:
+	if (!set$1 || !clear) {
+	  set$1 = function setImmediate(fn) {
+	    var arguments$1 = arguments;
+
+	    var args = [];
+	    var i = 1;
+	    while (arguments.length > i) { args.push(arguments$1[i++]); }
+	    queue[++counter] = function () {
+	      // eslint-disable-next-line no-new-func
+	      (typeof fn == 'function' ? fn : Function(fn)).apply(undefined, args);
+	    };
+	    defer(counter);
+	    return counter;
+	  };
+	  clear = function clearImmediate(id) {
+	    delete queue[id];
+	  };
+	  // Node.js 0.8-
+	  if (classofRaw(process) == 'process') {
+	    defer = function (id) {
+	      process.nextTick(runner(id));
+	    };
+	  // Sphere (JS game engine) Dispatch API
+	  } else if (Dispatch && Dispatch.now) {
+	    defer = function (id) {
+	      Dispatch.now(runner(id));
+	    };
+	  // Browsers with MessageChannel, includes WebWorkers
+	  // except iOS - https://github.com/zloirock/core-js/issues/624
+	  } else if (MessageChannel && !engineIsIos) {
+	    channel = new MessageChannel();
+	    port = channel.port2;
+	    channel.port1.onmessage = listener;
+	    defer = functionBindContext(port.postMessage, port, 1);
+	  // Browsers with postMessage, skip WebWorkers
+	  // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
+	  } else if (
+	    global_1.addEventListener &&
+	    typeof postMessage == 'function' &&
+	    !global_1.importScripts &&
+	    !fails(post) &&
+	    location.protocol !== 'file:'
+	  ) {
+	    defer = post;
+	    global_1.addEventListener('message', listener, false);
+	  // IE8-
+	  } else if (ONREADYSTATECHANGE in documentCreateElement('script')) {
+	    defer = function (id) {
+	      html.appendChild(documentCreateElement('script'))[ONREADYSTATECHANGE] = function () {
+	        html.removeChild(this);
+	        run(id);
+	      };
+	    };
+	  // Rest old browsers
+	  } else {
+	    defer = function (id) {
+	      setTimeout(runner(id), 0);
+	    };
+	  }
+	}
+
+	var task = {
+	  set: set$1,
+	  clear: clear
+	};
+
+	var getOwnPropertyDescriptor$2 = objectGetOwnPropertyDescriptor.f;
+
+	var macrotask = task.set;
+
+
+	var MutationObserver = global_1.MutationObserver || global_1.WebKitMutationObserver;
+	var process$1 = global_1.process;
+	var Promise$1 = global_1.Promise;
+	var IS_NODE = classofRaw(process$1) == 'process';
+	// Node.js 11 shows ExperimentalWarning on getting `queueMicrotask`
+	var queueMicrotaskDescriptor = getOwnPropertyDescriptor$2(global_1, 'queueMicrotask');
+	var queueMicrotask = queueMicrotaskDescriptor && queueMicrotaskDescriptor.value;
+
+	var flush, head, last, notify, toggle, node, promise, then;
+
+	// modern engines have queueMicrotask method
+	if (!queueMicrotask) {
+	  flush = function () {
+	    var parent, fn;
+	    if (IS_NODE && (parent = process$1.domain)) { parent.exit(); }
+	    while (head) {
+	      fn = head.fn;
+	      head = head.next;
+	      try {
+	        fn();
+	      } catch (error) {
+	        if (head) { notify(); }
+	        else { last = undefined; }
+	        throw error;
+	      }
+	    } last = undefined;
+	    if (parent) { parent.enter(); }
+	  };
+
+	  // Node.js
+	  if (IS_NODE) {
+	    notify = function () {
+	      process$1.nextTick(flush);
+	    };
+	  // browsers with MutationObserver, except iOS - https://github.com/zloirock/core-js/issues/339
+	  } else if (MutationObserver && !engineIsIos) {
+	    toggle = true;
+	    node = document.createTextNode('');
+	    new MutationObserver(flush).observe(node, { characterData: true });
+	    notify = function () {
+	      node.data = toggle = !toggle;
+	    };
+	  // environments with maybe non-completely correct, but existent Promise
+	  } else if (Promise$1 && Promise$1.resolve) {
+	    // Promise.resolve without an argument throws an error in LG WebOS 2
+	    promise = Promise$1.resolve(undefined);
+	    then = promise.then;
+	    notify = function () {
+	      then.call(promise, flush);
+	    };
+	  // for other environments - macrotask based on:
+	  // - setImmediate
+	  // - MessageChannel
+	  // - window.postMessag
+	  // - onreadystatechange
+	  // - setTimeout
+	  } else {
+	    notify = function () {
+	      // strange IE + webpack dev server bug - use .call(global)
+	      macrotask.call(global_1, flush);
+	    };
+	  }
+	}
+
+	var microtask = queueMicrotask || function (fn) {
+	  var task = { fn: fn, next: undefined };
+	  if (last) { last.next = task; }
+	  if (!head) {
+	    head = task;
+	    notify();
+	  } last = task;
+	};
+
+	var PromiseCapability = function (C) {
+	  var resolve, reject;
+	  this.promise = new C(function ($$resolve, $$reject) {
+	    if (resolve !== undefined || reject !== undefined) { throw TypeError('Bad Promise constructor'); }
+	    resolve = $$resolve;
+	    reject = $$reject;
+	  });
+	  this.resolve = aFunction$1(resolve);
+	  this.reject = aFunction$1(reject);
+	};
+
+	// 25.4.1.5 NewPromiseCapability(C)
+	var f$5 = function (C) {
+	  return new PromiseCapability(C);
+	};
+
+	var newPromiseCapability = {
+		f: f$5
+	};
+
+	var promiseResolve = function (C, x) {
+	  anObject(C);
+	  if (isObject(x) && x.constructor === C) { return x; }
+	  var promiseCapability = newPromiseCapability.f(C);
+	  var resolve = promiseCapability.resolve;
+	  resolve(x);
+	  return promiseCapability.promise;
+	};
+
+	var hostReportErrors = function (a, b) {
+	  var console = global_1.console;
+	  if (console && console.error) {
+	    arguments.length === 1 ? console.error(a) : console.error(a, b);
+	  }
+	};
+
+	var perform = function (exec) {
+	  try {
+	    return { error: false, value: exec() };
+	  } catch (error) {
+	    return { error: true, value: error };
+	  }
+	};
+
+	var process$2 = global_1.process;
+	var versions = process$2 && process$2.versions;
+	var v8 = versions && versions.v8;
+	var match, version;
+
+	if (v8) {
+	  match = v8.split('.');
+	  version = match[0] + match[1];
+	} else if (engineUserAgent) {
+	  match = engineUserAgent.match(/Edge\/(\d+)/);
+	  if (!match || match[1] >= 74) {
+	    match = engineUserAgent.match(/Chrome\/(\d+)/);
+	    if (match) { version = match[1]; }
+	  }
+	}
+
+	var engineV8Version = version && +version;
+
+	var task$1 = task.set;
+
+
+
+
+
+
+
+
+
+
+	var SPECIES$2 = wellKnownSymbol('species');
+	var PROMISE = 'Promise';
+	var getInternalState$2 = internalState.get;
+	var setInternalState$2 = internalState.set;
+	var getInternalPromiseState = internalState.getterFor(PROMISE);
+	var PromiseConstructor = nativePromiseConstructor;
+	var TypeError$1 = global_1.TypeError;
+	var document$2 = global_1.document;
+	var process$3 = global_1.process;
+	var $fetch = getBuiltIn('fetch');
+	var newPromiseCapability$1 = newPromiseCapability.f;
+	var newGenericPromiseCapability = newPromiseCapability$1;
+	var IS_NODE$1 = classofRaw(process$3) == 'process';
+	var DISPATCH_EVENT = !!(document$2 && document$2.createEvent && global_1.dispatchEvent);
+	var UNHANDLED_REJECTION = 'unhandledrejection';
+	var REJECTION_HANDLED = 'rejectionhandled';
+	var PENDING = 0;
+	var FULFILLED = 1;
+	var REJECTED = 2;
+	var HANDLED = 1;
+	var UNHANDLED = 2;
+	var Internal, OwnPromiseCapability, PromiseWrapper, nativeThen;
+
+	var FORCED = isForced_1(PROMISE, function () {
+	  var GLOBAL_CORE_JS_PROMISE = inspectSource(PromiseConstructor) !== String(PromiseConstructor);
+	  if (!GLOBAL_CORE_JS_PROMISE) {
+	    // V8 6.6 (Node 10 and Chrome 66) have a bug with resolving custom thenables
+	    // https://bugs.chromium.org/p/chromium/issues/detail?id=830565
+	    // We can't detect it synchronously, so just check versions
+	    if (engineV8Version === 66) { return true; }
+	    // Unhandled rejections tracking support, NodeJS Promise without it fails @@species test
+	    if (!IS_NODE$1 && typeof PromiseRejectionEvent != 'function') { return true; }
+	  }
+	  // We can't use @@species feature detection in V8 since it causes
+	  // deoptimization and performance degradation
+	  // https://github.com/zloirock/core-js/issues/679
+	  if (engineV8Version >= 51 && /native code/.test(PromiseConstructor)) { return false; }
+	  // Detect correctness of subclassing with @@species support
+	  var promise = PromiseConstructor.resolve(1);
+	  var FakePromise = function (exec) {
+	    exec(function () { /* empty */ }, function () { /* empty */ });
+	  };
+	  var constructor = promise.constructor = {};
+	  constructor[SPECIES$2] = FakePromise;
+	  return !(promise.then(function () { /* empty */ }) instanceof FakePromise);
+	});
+
+	var INCORRECT_ITERATION = FORCED || !checkCorrectnessOfIteration(function (iterable) {
+	  PromiseConstructor.all(iterable)['catch'](function () { /* empty */ });
+	});
+
+	// helpers
+	var isThenable = function (it) {
+	  var then;
+	  return isObject(it) && typeof (then = it.then) == 'function' ? then : false;
+	};
+
+	var notify$1 = function (promise, state, isReject) {
+	  if (state.notified) { return; }
+	  state.notified = true;
+	  var chain = state.reactions;
+	  microtask(function () {
+	    var value = state.value;
+	    var ok = state.state == FULFILLED;
+	    var index = 0;
+	    // variable length - can't use forEach
+	    while (chain.length > index) {
+	      var reaction = chain[index++];
+	      var handler = ok ? reaction.ok : reaction.fail;
+	      var resolve = reaction.resolve;
+	      var reject = reaction.reject;
+	      var domain = reaction.domain;
+	      var result, then, exited;
+	      try {
+	        if (handler) {
+	          if (!ok) {
+	            if (state.rejection === UNHANDLED) { onHandleUnhandled(promise, state); }
+	            state.rejection = HANDLED;
+	          }
+	          if (handler === true) { result = value; }
+	          else {
+	            if (domain) { domain.enter(); }
+	            result = handler(value); // can throw
+	            if (domain) {
+	              domain.exit();
+	              exited = true;
+	            }
+	          }
+	          if (result === reaction.promise) {
+	            reject(TypeError$1('Promise-chain cycle'));
+	          } else if (then = isThenable(result)) {
+	            then.call(result, resolve, reject);
+	          } else { resolve(result); }
+	        } else { reject(value); }
+	      } catch (error) {
+	        if (domain && !exited) { domain.exit(); }
+	        reject(error);
+	      }
+	    }
+	    state.reactions = [];
+	    state.notified = false;
+	    if (isReject && !state.rejection) { onUnhandled(promise, state); }
+	  });
+	};
+
+	var dispatchEvent = function (name, promise, reason) {
+	  var event, handler;
+	  if (DISPATCH_EVENT) {
+	    event = document$2.createEvent('Event');
+	    event.promise = promise;
+	    event.reason = reason;
+	    event.initEvent(name, false, true);
+	    global_1.dispatchEvent(event);
+	  } else { event = { promise: promise, reason: reason }; }
+	  if (handler = global_1['on' + name]) { handler(event); }
+	  else if (name === UNHANDLED_REJECTION) { hostReportErrors('Unhandled promise rejection', reason); }
+	};
+
+	var onUnhandled = function (promise, state) {
+	  task$1.call(global_1, function () {
+	    var value = state.value;
+	    var IS_UNHANDLED = isUnhandled(state);
+	    var result;
+	    if (IS_UNHANDLED) {
+	      result = perform(function () {
+	        if (IS_NODE$1) {
+	          process$3.emit('unhandledRejection', value, promise);
+	        } else { dispatchEvent(UNHANDLED_REJECTION, promise, value); }
+	      });
+	      // Browsers should not trigger `rejectionHandled` event if it was handled here, NodeJS - should
+	      state.rejection = IS_NODE$1 || isUnhandled(state) ? UNHANDLED : HANDLED;
+	      if (result.error) { throw result.value; }
+	    }
+	  });
+	};
+
+	var isUnhandled = function (state) {
+	  return state.rejection !== HANDLED && !state.parent;
+	};
+
+	var onHandleUnhandled = function (promise, state) {
+	  task$1.call(global_1, function () {
+	    if (IS_NODE$1) {
+	      process$3.emit('rejectionHandled', promise);
+	    } else { dispatchEvent(REJECTION_HANDLED, promise, state.value); }
+	  });
+	};
+
+	var bind = function (fn, promise, state, unwrap) {
+	  return function (value) {
+	    fn(promise, state, value, unwrap);
+	  };
+	};
+
+	var internalReject = function (promise, state, value, unwrap) {
+	  if (state.done) { return; }
+	  state.done = true;
+	  if (unwrap) { state = unwrap; }
+	  state.value = value;
+	  state.state = REJECTED;
+	  notify$1(promise, state, true);
+	};
+
+	var internalResolve = function (promise, state, value, unwrap) {
+	  if (state.done) { return; }
+	  state.done = true;
+	  if (unwrap) { state = unwrap; }
+	  try {
+	    if (promise === value) { throw TypeError$1("Promise can't be resolved itself"); }
+	    var then = isThenable(value);
+	    if (then) {
+	      microtask(function () {
+	        var wrapper = { done: false };
+	        try {
+	          then.call(value,
+	            bind(internalResolve, promise, wrapper, state),
+	            bind(internalReject, promise, wrapper, state)
+	          );
+	        } catch (error) {
+	          internalReject(promise, wrapper, error, state);
+	        }
+	      });
+	    } else {
+	      state.value = value;
+	      state.state = FULFILLED;
+	      notify$1(promise, state, false);
+	    }
+	  } catch (error) {
+	    internalReject(promise, { done: false }, error, state);
+	  }
+	};
+
+	// constructor polyfill
+	if (FORCED) {
+	  // 25.4.3.1 Promise(executor)
+	  PromiseConstructor = function Promise(executor) {
+	    anInstance(this, PromiseConstructor, PROMISE);
+	    aFunction$1(executor);
+	    Internal.call(this);
+	    var state = getInternalState$2(this);
+	    try {
+	      executor(bind(internalResolve, this, state), bind(internalReject, this, state));
+	    } catch (error) {
+	      internalReject(this, state, error);
+	    }
+	  };
+	  // eslint-disable-next-line no-unused-vars
+	  Internal = function Promise(executor) {
+	    setInternalState$2(this, {
+	      type: PROMISE,
+	      done: false,
+	      notified: false,
+	      parent: false,
+	      reactions: [],
+	      rejection: false,
+	      state: PENDING,
+	      value: undefined
+	    });
+	  };
+	  Internal.prototype = redefineAll(PromiseConstructor.prototype, {
+	    // `Promise.prototype.then` method
+	    // https://tc39.github.io/ecma262/#sec-promise.prototype.then
+	    then: function then(onFulfilled, onRejected) {
+	      var state = getInternalPromiseState(this);
+	      var reaction = newPromiseCapability$1(speciesConstructor(this, PromiseConstructor));
+	      reaction.ok = typeof onFulfilled == 'function' ? onFulfilled : true;
+	      reaction.fail = typeof onRejected == 'function' && onRejected;
+	      reaction.domain = IS_NODE$1 ? process$3.domain : undefined;
+	      state.parent = true;
+	      state.reactions.push(reaction);
+	      if (state.state != PENDING) { notify$1(this, state, false); }
+	      return reaction.promise;
+	    },
+	    // `Promise.prototype.catch` method
+	    // https://tc39.github.io/ecma262/#sec-promise.prototype.catch
+	    'catch': function (onRejected) {
+	      return this.then(undefined, onRejected);
+	    }
+	  });
+	  OwnPromiseCapability = function () {
+	    var promise = new Internal();
+	    var state = getInternalState$2(promise);
+	    this.promise = promise;
+	    this.resolve = bind(internalResolve, promise, state);
+	    this.reject = bind(internalReject, promise, state);
+	  };
+	  newPromiseCapability.f = newPromiseCapability$1 = function (C) {
+	    return C === PromiseConstructor || C === PromiseWrapper
+	      ? new OwnPromiseCapability(C)
+	      : newGenericPromiseCapability(C);
+	  };
+
+	  if (typeof nativePromiseConstructor == 'function') {
+	    nativeThen = nativePromiseConstructor.prototype.then;
+
+	    // wrap native Promise#then for native async functions
+	    redefine(nativePromiseConstructor.prototype, 'then', function then(onFulfilled, onRejected) {
+	      var that = this;
+	      return new PromiseConstructor(function (resolve, reject) {
+	        nativeThen.call(that, resolve, reject);
+	      }).then(onFulfilled, onRejected);
+	    // https://github.com/zloirock/core-js/issues/640
+	    }, { unsafe: true });
+
+	    // wrap fetch result
+	    if (typeof $fetch == 'function') { _export({ global: true, enumerable: true, forced: true }, {
+	      // eslint-disable-next-line no-unused-vars
+	      fetch: function fetch(input /* , init */) {
+	        return promiseResolve(PromiseConstructor, $fetch.apply(global_1, arguments));
+	      }
+	    }); }
+	  }
+	}
+
+	_export({ global: true, wrap: true, forced: FORCED }, {
+	  Promise: PromiseConstructor
+	});
+
+	setToStringTag(PromiseConstructor, PROMISE, false, true);
+	setSpecies(PROMISE);
+
+	PromiseWrapper = getBuiltIn(PROMISE);
+
+	// statics
+	_export({ target: PROMISE, stat: true, forced: FORCED }, {
+	  // `Promise.reject` method
+	  // https://tc39.github.io/ecma262/#sec-promise.reject
+	  reject: function reject(r) {
+	    var capability = newPromiseCapability$1(this);
+	    capability.reject.call(undefined, r);
+	    return capability.promise;
+	  }
+	});
+
+	_export({ target: PROMISE, stat: true, forced: FORCED }, {
+	  // `Promise.resolve` method
+	  // https://tc39.github.io/ecma262/#sec-promise.resolve
+	  resolve: function resolve(x) {
+	    return promiseResolve(this, x);
+	  }
+	});
+
+	_export({ target: PROMISE, stat: true, forced: INCORRECT_ITERATION }, {
+	  // `Promise.all` method
+	  // https://tc39.github.io/ecma262/#sec-promise.all
+	  all: function all(iterable) {
+	    var C = this;
+	    var capability = newPromiseCapability$1(C);
+	    var resolve = capability.resolve;
+	    var reject = capability.reject;
+	    var result = perform(function () {
+	      var $promiseResolve = aFunction$1(C.resolve);
+	      var values = [];
+	      var counter = 0;
+	      var remaining = 1;
+	      iterate_1(iterable, function (promise) {
+	        var index = counter++;
+	        var alreadyCalled = false;
+	        values.push(undefined);
+	        remaining++;
+	        $promiseResolve.call(C, promise).then(function (value) {
+	          if (alreadyCalled) { return; }
+	          alreadyCalled = true;
+	          values[index] = value;
+	          --remaining || resolve(values);
+	        }, reject);
+	      });
+	      --remaining || resolve(values);
+	    });
+	    if (result.error) { reject(result.value); }
+	    return capability.promise;
+	  },
+	  // `Promise.race` method
+	  // https://tc39.github.io/ecma262/#sec-promise.race
+	  race: function race(iterable) {
+	    var C = this;
+	    var capability = newPromiseCapability$1(C);
+	    var reject = capability.reject;
+	    var result = perform(function () {
+	      var $promiseResolve = aFunction$1(C.resolve);
+	      iterate_1(iterable, function (promise) {
+	        $promiseResolve.call(C, promise).then(capability.resolve, reject);
+	      });
+	    });
+	    if (result.error) { reject(result.value); }
+	    return capability.promise;
+	  }
+	});
+
+	// `Promise.allSettled` method
+	// https://github.com/tc39/proposal-promise-allSettled
+	_export({ target: 'Promise', stat: true }, {
+	  allSettled: function allSettled(iterable) {
+	    var C = this;
+	    var capability = newPromiseCapability.f(C);
+	    var resolve = capability.resolve;
+	    var reject = capability.reject;
+	    var result = perform(function () {
+	      var promiseResolve = aFunction$1(C.resolve);
+	      var values = [];
+	      var counter = 0;
+	      var remaining = 1;
+	      iterate_1(iterable, function (promise) {
+	        var index = counter++;
+	        var alreadyCalled = false;
+	        values.push(undefined);
+	        remaining++;
+	        promiseResolve.call(C, promise).then(function (value) {
+	          if (alreadyCalled) { return; }
+	          alreadyCalled = true;
+	          values[index] = { status: 'fulfilled', value: value };
+	          --remaining || resolve(values);
+	        }, function (e) {
+	          if (alreadyCalled) { return; }
+	          alreadyCalled = true;
+	          values[index] = { status: 'rejected', reason: e };
+	          --remaining || resolve(values);
+	        });
+	      });
+	      --remaining || resolve(values);
+	    });
+	    if (result.error) { reject(result.value); }
+	    return capability.promise;
+	  }
+	});
+
+	// Safari bug https://bugs.webkit.org/show_bug.cgi?id=200829
+	var NON_GENERIC = !!nativePromiseConstructor && fails(function () {
+	  nativePromiseConstructor.prototype['finally'].call({ then: function () { /* empty */ } }, function () { /* empty */ });
+	});
+
+	// `Promise.prototype.finally` method
+	// https://tc39.github.io/ecma262/#sec-promise.prototype.finally
+	_export({ target: 'Promise', proto: true, real: true, forced: NON_GENERIC }, {
+	  'finally': function (onFinally) {
+	    var C = speciesConstructor(this, getBuiltIn('Promise'));
+	    var isFunction = typeof onFinally == 'function';
+	    return this.then(
+	      isFunction ? function (x) {
+	        return promiseResolve(C, onFinally()).then(function () { return x; });
+	      } : onFinally,
+	      isFunction ? function (e) {
+	        return promiseResolve(C, onFinally()).then(function () { throw e; });
+	      } : onFinally
+	    );
+	  }
+	});
+
+	// patch native Promise.prototype for native async functions
+	if (typeof nativePromiseConstructor == 'function' && !nativePromiseConstructor.prototype['finally']) {
+	  redefine(nativePromiseConstructor.prototype, 'finally', getBuiltIn('Promise').prototype['finally']);
+	}
+
+	var promise$1 = path.Promise;
+
+	var es2015Promise = createCommonjsModule(function (module, exports) {
+	Object.defineProperty(exports, "__esModule", { value: true });
+	});
+
+	unwrapExports(es2015Promise);
+
+	var freezing = !fails(function () {
+	  return Object.isExtensible(Object.preventExtensions({}));
+	});
+
+	var internalMetadata = createCommonjsModule(function (module) {
+	var defineProperty = objectDefineProperty.f;
+
+
+
+	var METADATA = uid('meta');
+	var id = 0;
+
+	var isExtensible = Object.isExtensible || function () {
+	  return true;
+	};
+
+	var setMetadata = function (it) {
+	  defineProperty(it, METADATA, { value: {
+	    objectID: 'O' + ++id, // object ID
+	    weakData: {}          // weak collections IDs
+	  } });
+	};
+
+	var fastKey = function (it, create) {
+	  // return a primitive with prefix
+	  if (!isObject(it)) { return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it; }
+	  if (!has(it, METADATA)) {
+	    // can't set metadata to uncaught frozen object
+	    if (!isExtensible(it)) { return 'F'; }
+	    // not necessary to add metadata
+	    if (!create) { return 'E'; }
+	    // add missing metadata
+	    setMetadata(it);
+	  // return object ID
+	  } return it[METADATA].objectID;
+	};
+
+	var getWeakData = function (it, create) {
+	  if (!has(it, METADATA)) {
+	    // can't set metadata to uncaught frozen object
+	    if (!isExtensible(it)) { return true; }
+	    // not necessary to add metadata
+	    if (!create) { return false; }
+	    // add missing metadata
+	    setMetadata(it);
+	  // return the store of weak collections IDs
+	  } return it[METADATA].weakData;
+	};
+
+	// add metadata on freeze-family methods calling
+	var onFreeze = function (it) {
+	  if (freezing && meta.REQUIRED && isExtensible(it) && !has(it, METADATA)) { setMetadata(it); }
+	  return it;
+	};
+
+	var meta = module.exports = {
+	  REQUIRED: false,
+	  fastKey: fastKey,
+	  getWeakData: getWeakData,
+	  onFreeze: onFreeze
+	};
+
+	hiddenKeys[METADATA] = true;
+	});
+	var internalMetadata_1 = internalMetadata.REQUIRED;
+	var internalMetadata_2 = internalMetadata.fastKey;
+	var internalMetadata_3 = internalMetadata.getWeakData;
+	var internalMetadata_4 = internalMetadata.onFreeze;
+
+	// makes subclassing work correct for wrapped built-ins
+	var inheritIfRequired = function ($this, dummy, Wrapper) {
+	  var NewTarget, NewTargetPrototype;
+	  if (
+	    // it can work only with native `setPrototypeOf`
+	    objectSetPrototypeOf &&
+	    // we haven't completely correct pre-ES6 way for getting `new.target`, so use this
+	    typeof (NewTarget = dummy.constructor) == 'function' &&
+	    NewTarget !== Wrapper &&
+	    isObject(NewTargetPrototype = NewTarget.prototype) &&
+	    NewTargetPrototype !== Wrapper.prototype
+	  ) { objectSetPrototypeOf($this, NewTargetPrototype); }
+	  return $this;
+	};
+
+	var collection = function (CONSTRUCTOR_NAME, wrapper, common) {
+	  var IS_MAP = CONSTRUCTOR_NAME.indexOf('Map') !== -1;
+	  var IS_WEAK = CONSTRUCTOR_NAME.indexOf('Weak') !== -1;
+	  var ADDER = IS_MAP ? 'set' : 'add';
+	  var NativeConstructor = global_1[CONSTRUCTOR_NAME];
+	  var NativePrototype = NativeConstructor && NativeConstructor.prototype;
+	  var Constructor = NativeConstructor;
+	  var exported = {};
+
+	  var fixMethod = function (KEY) {
+	    var nativeMethod = NativePrototype[KEY];
+	    redefine(NativePrototype, KEY,
+	      KEY == 'add' ? function add(value) {
+	        nativeMethod.call(this, value === 0 ? 0 : value);
+	        return this;
+	      } : KEY == 'delete' ? function (key) {
+	        return IS_WEAK && !isObject(key) ? false : nativeMethod.call(this, key === 0 ? 0 : key);
+	      } : KEY == 'get' ? function get(key) {
+	        return IS_WEAK && !isObject(key) ? undefined : nativeMethod.call(this, key === 0 ? 0 : key);
+	      } : KEY == 'has' ? function has(key) {
+	        return IS_WEAK && !isObject(key) ? false : nativeMethod.call(this, key === 0 ? 0 : key);
+	      } : function set(key, value) {
+	        nativeMethod.call(this, key === 0 ? 0 : key, value);
+	        return this;
+	      }
+	    );
+	  };
+
+	  // eslint-disable-next-line max-len
+	  if (isForced_1(CONSTRUCTOR_NAME, typeof NativeConstructor != 'function' || !(IS_WEAK || NativePrototype.forEach && !fails(function () {
+	    new NativeConstructor().entries().next();
+	  })))) {
+	    // create collection constructor
+	    Constructor = common.getConstructor(wrapper, CONSTRUCTOR_NAME, IS_MAP, ADDER);
+	    internalMetadata.REQUIRED = true;
+	  } else if (isForced_1(CONSTRUCTOR_NAME, true)) {
+	    var instance = new Constructor();
+	    // early implementations not supports chaining
+	    var HASNT_CHAINING = instance[ADDER](IS_WEAK ? {} : -0, 1) != instance;
+	    // V8 ~ Chromium 40- weak-collections throws on primitives, but should return false
+	    var THROWS_ON_PRIMITIVES = fails(function () { instance.has(1); });
+	    // most early implementations doesn't supports iterables, most modern - not close it correctly
+	    // eslint-disable-next-line no-new
+	    var ACCEPT_ITERABLES = checkCorrectnessOfIteration(function (iterable) { new NativeConstructor(iterable); });
+	    // for early implementations -0 and +0 not the same
+	    var BUGGY_ZERO = !IS_WEAK && fails(function () {
+	      // V8 ~ Chromium 42- fails only with 5+ elements
+	      var $instance = new NativeConstructor();
+	      var index = 5;
+	      while (index--) { $instance[ADDER](index, index); }
+	      return !$instance.has(-0);
+	    });
+
+	    if (!ACCEPT_ITERABLES) {
+	      Constructor = wrapper(function (dummy, iterable) {
+	        anInstance(dummy, Constructor, CONSTRUCTOR_NAME);
+	        var that = inheritIfRequired(new NativeConstructor(), dummy, Constructor);
+	        if (iterable != undefined) { iterate_1(iterable, that[ADDER], that, IS_MAP); }
+	        return that;
+	      });
+	      Constructor.prototype = NativePrototype;
+	      NativePrototype.constructor = Constructor;
+	    }
+
+	    if (THROWS_ON_PRIMITIVES || BUGGY_ZERO) {
+	      fixMethod('delete');
+	      fixMethod('has');
+	      IS_MAP && fixMethod('get');
+	    }
+
+	    if (BUGGY_ZERO || HASNT_CHAINING) { fixMethod(ADDER); }
+
+	    // weak collections should not contains .clear method
+	    if (IS_WEAK && NativePrototype.clear) { delete NativePrototype.clear; }
+	  }
+
+	  exported[CONSTRUCTOR_NAME] = Constructor;
+	  _export({ global: true, forced: Constructor != NativeConstructor }, exported);
+
+	  setToStringTag(Constructor, CONSTRUCTOR_NAME);
+
+	  if (!IS_WEAK) { common.setStrong(Constructor, CONSTRUCTOR_NAME, IS_MAP); }
+
+	  return Constructor;
+	};
+
+	var defineProperty$1 = objectDefineProperty.f;
+
+
+
+
+
+
+
+
+	var fastKey = internalMetadata.fastKey;
+
+
+	var setInternalState$3 = internalState.set;
+	var internalStateGetterFor = internalState.getterFor;
+
+	var collectionStrong = {
+	  getConstructor: function (wrapper, CONSTRUCTOR_NAME, IS_MAP, ADDER) {
+	    var C = wrapper(function (that, iterable) {
+	      anInstance(that, C, CONSTRUCTOR_NAME);
+	      setInternalState$3(that, {
+	        type: CONSTRUCTOR_NAME,
+	        index: objectCreate(null),
+	        first: undefined,
+	        last: undefined,
+	        size: 0
+	      });
+	      if (!descriptors) { that.size = 0; }
+	      if (iterable != undefined) { iterate_1(iterable, that[ADDER], that, IS_MAP); }
+	    });
+
+	    var getInternalState = internalStateGetterFor(CONSTRUCTOR_NAME);
+
+	    var define = function (that, key, value) {
+	      var state = getInternalState(that);
+	      var entry = getEntry(that, key);
+	      var previous, index;
+	      // change existing entry
+	      if (entry) {
+	        entry.value = value;
+	      // create new entry
+	      } else {
+	        state.last = entry = {
+	          index: index = fastKey(key, true),
+	          key: key,
+	          value: value,
+	          previous: previous = state.last,
+	          next: undefined,
+	          removed: false
+	        };
+	        if (!state.first) { state.first = entry; }
+	        if (previous) { previous.next = entry; }
+	        if (descriptors) { state.size++; }
+	        else { that.size++; }
+	        // add to index
+	        if (index !== 'F') { state.index[index] = entry; }
+	      } return that;
+	    };
+
+	    var getEntry = function (that, key) {
+	      var state = getInternalState(that);
+	      // fast case
+	      var index = fastKey(key);
+	      var entry;
+	      if (index !== 'F') { return state.index[index]; }
+	      // frozen object case
+	      for (entry = state.first; entry; entry = entry.next) {
+	        if (entry.key == key) { return entry; }
+	      }
+	    };
+
+	    redefineAll(C.prototype, {
+	      // 23.1.3.1 Map.prototype.clear()
+	      // 23.2.3.2 Set.prototype.clear()
+	      clear: function clear() {
+	        var that = this;
+	        var state = getInternalState(that);
+	        var data = state.index;
+	        var entry = state.first;
+	        while (entry) {
+	          entry.removed = true;
+	          if (entry.previous) { entry.previous = entry.previous.next = undefined; }
+	          delete data[entry.index];
+	          entry = entry.next;
+	        }
+	        state.first = state.last = undefined;
+	        if (descriptors) { state.size = 0; }
+	        else { that.size = 0; }
+	      },
+	      // 23.1.3.3 Map.prototype.delete(key)
+	      // 23.2.3.4 Set.prototype.delete(value)
+	      'delete': function (key) {
+	        var that = this;
+	        var state = getInternalState(that);
+	        var entry = getEntry(that, key);
+	        if (entry) {
+	          var next = entry.next;
+	          var prev = entry.previous;
+	          delete state.index[entry.index];
+	          entry.removed = true;
+	          if (prev) { prev.next = next; }
+	          if (next) { next.previous = prev; }
+	          if (state.first == entry) { state.first = next; }
+	          if (state.last == entry) { state.last = prev; }
+	          if (descriptors) { state.size--; }
+	          else { that.size--; }
+	        } return !!entry;
+	      },
+	      // 23.2.3.6 Set.prototype.forEach(callbackfn, thisArg = undefined)
+	      // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
+	      forEach: function forEach(callbackfn /* , that = undefined */) {
+	        var state = getInternalState(this);
+	        var boundFunction = functionBindContext(callbackfn, arguments.length > 1 ? arguments[1] : undefined, 3);
+	        var entry;
+	        while (entry = entry ? entry.next : state.first) {
+	          boundFunction(entry.value, entry.key, this);
+	          // revert to the last existing entry
+	          while (entry && entry.removed) { entry = entry.previous; }
+	        }
+	      },
+	      // 23.1.3.7 Map.prototype.has(key)
+	      // 23.2.3.7 Set.prototype.has(value)
+	      has: function has(key) {
+	        return !!getEntry(this, key);
+	      }
+	    });
+
+	    redefineAll(C.prototype, IS_MAP ? {
+	      // 23.1.3.6 Map.prototype.get(key)
+	      get: function get(key) {
+	        var entry = getEntry(this, key);
+	        return entry && entry.value;
+	      },
+	      // 23.1.3.9 Map.prototype.set(key, value)
+	      set: function set(key, value) {
+	        return define(this, key === 0 ? 0 : key, value);
+	      }
+	    } : {
+	      // 23.2.3.1 Set.prototype.add(value)
+	      add: function add(value) {
+	        return define(this, value = value === 0 ? 0 : value, value);
+	      }
+	    });
+	    if (descriptors) { defineProperty$1(C.prototype, 'size', {
+	      get: function () {
+	        return getInternalState(this).size;
+	      }
+	    }); }
+	    return C;
+	  },
+	  setStrong: function (C, CONSTRUCTOR_NAME, IS_MAP) {
+	    var ITERATOR_NAME = CONSTRUCTOR_NAME + ' Iterator';
+	    var getInternalCollectionState = internalStateGetterFor(CONSTRUCTOR_NAME);
+	    var getInternalIteratorState = internalStateGetterFor(ITERATOR_NAME);
+	    // add .keys, .values, .entries, [@@iterator]
+	    // 23.1.3.4, 23.1.3.8, 23.1.3.11, 23.1.3.12, 23.2.3.5, 23.2.3.8, 23.2.3.10, 23.2.3.11
+	    defineIterator(C, CONSTRUCTOR_NAME, function (iterated, kind) {
+	      setInternalState$3(this, {
+	        type: ITERATOR_NAME,
+	        target: iterated,
+	        state: getInternalCollectionState(iterated),
+	        kind: kind,
+	        last: undefined
+	      });
+	    }, function () {
+	      var state = getInternalIteratorState(this);
+	      var kind = state.kind;
+	      var entry = state.last;
+	      // revert to the last existing entry
+	      while (entry && entry.removed) { entry = entry.previous; }
+	      // get next entry
+	      if (!state.target || !(state.last = entry = entry ? entry.next : state.state.first)) {
+	        // or finish the iteration
+	        state.target = undefined;
+	        return { value: undefined, done: true };
+	      }
+	      // return step by kind
+	      if (kind == 'keys') { return { value: entry.key, done: false }; }
+	      if (kind == 'values') { return { value: entry.value, done: false }; }
+	      return { value: [entry.key, entry.value], done: false };
+	    }, IS_MAP ? 'entries' : 'values', !IS_MAP, true);
+
+	    // add [@@species], 23.1.2.2, 23.2.2.2
+	    setSpecies(CONSTRUCTOR_NAME);
+	  }
+	};
+
+	// `Map` constructor
+	// https://tc39.github.io/ecma262/#sec-map-objects
+	var es_map = collection('Map', function (init) {
+	  return function Map() { return init(this, arguments.length ? arguments[0] : undefined); };
+	}, collectionStrong);
+
+	var map = path.Map;
+
+	// `IsArray` abstract operation
+	// https://tc39.github.io/ecma262/#sec-isarray
+	var isArray = Array.isArray || function isArray(arg) {
+	  return classofRaw(arg) == 'Array';
+	};
+
+	var SPECIES$3 = wellKnownSymbol('species');
+
+	// `ArraySpeciesCreate` abstract operation
+	// https://tc39.github.io/ecma262/#sec-arrayspeciescreate
+	var arraySpeciesCreate = function (originalArray, length) {
+	  var C;
+	  if (isArray(originalArray)) {
+	    C = originalArray.constructor;
+	    // cross-realm fallback
+	    if (typeof C == 'function' && (C === Array || isArray(C.prototype))) { C = undefined; }
+	    else if (isObject(C)) {
+	      C = C[SPECIES$3];
+	      if (C === null) { C = undefined; }
+	    }
+	  } return new (C === undefined ? Array : C)(length === 0 ? 0 : length);
+	};
+
+	var push = [].push;
+
+	// `Array.prototype.{ forEach, map, filter, some, every, find, findIndex }` methods implementation
+	var createMethod$2 = function (TYPE) {
+	  var IS_MAP = TYPE == 1;
+	  var IS_FILTER = TYPE == 2;
+	  var IS_SOME = TYPE == 3;
+	  var IS_EVERY = TYPE == 4;
+	  var IS_FIND_INDEX = TYPE == 6;
+	  var NO_HOLES = TYPE == 5 || IS_FIND_INDEX;
+	  return function ($this, callbackfn, that, specificCreate) {
+	    var O = toObject$1($this);
+	    var self = indexedObject(O);
+	    var boundFunction = functionBindContext(callbackfn, that, 3);
+	    var length = toLength(self.length);
+	    var index = 0;
+	    var create = specificCreate || arraySpeciesCreate;
+	    var target = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined;
+	    var value, result;
+	    for (;length > index; index++) { if (NO_HOLES || index in self) {
+	      value = self[index];
+	      result = boundFunction(value, index, O);
+	      if (TYPE) {
+	        if (IS_MAP) { target[index] = result; } // map
+	        else if (result) { switch (TYPE) {
+	          case 3: return true;              // some
+	          case 5: return value;             // find
+	          case 6: return index;             // findIndex
+	          case 2: push.call(target, value); // filter
+	        } } else if (IS_EVERY) { return false; }  // every
+	      }
+	    } }
+	    return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : target;
+	  };
+	};
+
+	var arrayIteration = {
+	  // `Array.prototype.forEach` method
+	  // https://tc39.github.io/ecma262/#sec-array.prototype.foreach
+	  forEach: createMethod$2(0),
+	  // `Array.prototype.map` method
+	  // https://tc39.github.io/ecma262/#sec-array.prototype.map
+	  map: createMethod$2(1),
+	  // `Array.prototype.filter` method
+	  // https://tc39.github.io/ecma262/#sec-array.prototype.filter
+	  filter: createMethod$2(2),
+	  // `Array.prototype.some` method
+	  // https://tc39.github.io/ecma262/#sec-array.prototype.some
+	  some: createMethod$2(3),
+	  // `Array.prototype.every` method
+	  // https://tc39.github.io/ecma262/#sec-array.prototype.every
+	  every: createMethod$2(4),
+	  // `Array.prototype.find` method
+	  // https://tc39.github.io/ecma262/#sec-array.prototype.find
+	  find: createMethod$2(5),
+	  // `Array.prototype.findIndex` method
+	  // https://tc39.github.io/ecma262/#sec-array.prototype.findIndex
+	  findIndex: createMethod$2(6)
+	};
+
+	var getWeakData = internalMetadata.getWeakData;
+
+
+
+
+
+
+
+
+	var setInternalState$4 = internalState.set;
+	var internalStateGetterFor$1 = internalState.getterFor;
+	var find = arrayIteration.find;
+	var findIndex = arrayIteration.findIndex;
+	var id$1 = 0;
+
+	// fallback for uncaught frozen keys
+	var uncaughtFrozenStore = function (store) {
+	  return store.frozen || (store.frozen = new UncaughtFrozenStore());
+	};
+
+	var UncaughtFrozenStore = function () {
+	  this.entries = [];
+	};
+
+	var findUncaughtFrozen = function (store, key) {
+	  return find(store.entries, function (it) {
+	    return it[0] === key;
+	  });
+	};
+
+	UncaughtFrozenStore.prototype = {
+	  get: function (key) {
+	    var entry = findUncaughtFrozen(this, key);
+	    if (entry) { return entry[1]; }
+	  },
+	  has: function (key) {
+	    return !!findUncaughtFrozen(this, key);
+	  },
+	  set: function (key, value) {
+	    var entry = findUncaughtFrozen(this, key);
+	    if (entry) { entry[1] = value; }
+	    else { this.entries.push([key, value]); }
+	  },
+	  'delete': function (key) {
+	    var index = findIndex(this.entries, function (it) {
+	      return it[0] === key;
+	    });
+	    if (~index) { this.entries.splice(index, 1); }
+	    return !!~index;
+	  }
+	};
+
+	var collectionWeak = {
+	  getConstructor: function (wrapper, CONSTRUCTOR_NAME, IS_MAP, ADDER) {
+	    var C = wrapper(function (that, iterable) {
+	      anInstance(that, C, CONSTRUCTOR_NAME);
+	      setInternalState$4(that, {
+	        type: CONSTRUCTOR_NAME,
+	        id: id$1++,
+	        frozen: undefined
+	      });
+	      if (iterable != undefined) { iterate_1(iterable, that[ADDER], that, IS_MAP); }
+	    });
+
+	    var getInternalState = internalStateGetterFor$1(CONSTRUCTOR_NAME);
+
+	    var define = function (that, key, value) {
+	      var state = getInternalState(that);
+	      var data = getWeakData(anObject(key), true);
+	      if (data === true) { uncaughtFrozenStore(state).set(key, value); }
+	      else { data[state.id] = value; }
+	      return that;
+	    };
+
+	    redefineAll(C.prototype, {
+	      // 23.3.3.2 WeakMap.prototype.delete(key)
+	      // 23.4.3.3 WeakSet.prototype.delete(value)
+	      'delete': function (key) {
+	        var state = getInternalState(this);
+	        if (!isObject(key)) { return false; }
+	        var data = getWeakData(key);
+	        if (data === true) { return uncaughtFrozenStore(state)['delete'](key); }
+	        return data && has(data, state.id) && delete data[state.id];
+	      },
+	      // 23.3.3.4 WeakMap.prototype.has(key)
+	      // 23.4.3.4 WeakSet.prototype.has(value)
+	      has: function has$1(key) {
+	        var state = getInternalState(this);
+	        if (!isObject(key)) { return false; }
+	        var data = getWeakData(key);
+	        if (data === true) { return uncaughtFrozenStore(state).has(key); }
+	        return data && has(data, state.id);
+	      }
+	    });
+
+	    redefineAll(C.prototype, IS_MAP ? {
+	      // 23.3.3.3 WeakMap.prototype.get(key)
+	      get: function get(key) {
+	        var state = getInternalState(this);
+	        if (isObject(key)) {
+	          var data = getWeakData(key);
+	          if (data === true) { return uncaughtFrozenStore(state).get(key); }
+	          return data ? data[state.id] : undefined;
+	        }
+	      },
+	      // 23.3.3.5 WeakMap.prototype.set(key, value)
+	      set: function set(key, value) {
+	        return define(this, key, value);
+	      }
+	    } : {
+	      // 23.4.3.1 WeakSet.prototype.add(value)
+	      add: function add(value) {
+	        return define(this, value, true);
+	      }
+	    });
+
+	    return C;
+	  }
+	};
+
+	var es_weakMap = createCommonjsModule(function (module) {
+
+
+
+
+
+
+	var enforceIternalState = internalState.enforce;
+
+
+	var IS_IE11 = !global_1.ActiveXObject && 'ActiveXObject' in global_1;
+	var isExtensible = Object.isExtensible;
+	var InternalWeakMap;
+
+	var wrapper = function (init) {
+	  return function WeakMap() {
+	    return init(this, arguments.length ? arguments[0] : undefined);
+	  };
+	};
+
+	// `WeakMap` constructor
+	// https://tc39.github.io/ecma262/#sec-weakmap-constructor
+	var $WeakMap = module.exports = collection('WeakMap', wrapper, collectionWeak);
+
+	// IE11 WeakMap frozen keys fix
+	// We can't use feature detection because it crash some old IE builds
+	// https://github.com/zloirock/core-js/issues/485
+	if (nativeWeakMap && IS_IE11) {
+	  InternalWeakMap = collectionWeak.getConstructor(wrapper, 'WeakMap', true);
+	  internalMetadata.REQUIRED = true;
+	  var WeakMapPrototype = $WeakMap.prototype;
+	  var nativeDelete = WeakMapPrototype['delete'];
+	  var nativeHas = WeakMapPrototype.has;
+	  var nativeGet = WeakMapPrototype.get;
+	  var nativeSet = WeakMapPrototype.set;
+	  redefineAll(WeakMapPrototype, {
+	    'delete': function (key) {
+	      if (isObject(key) && !isExtensible(key)) {
+	        var state = enforceIternalState(this);
+	        if (!state.frozen) { state.frozen = new InternalWeakMap(); }
+	        return nativeDelete.call(this, key) || state.frozen['delete'](key);
+	      } return nativeDelete.call(this, key);
+	    },
+	    has: function has(key) {
+	      if (isObject(key) && !isExtensible(key)) {
+	        var state = enforceIternalState(this);
+	        if (!state.frozen) { state.frozen = new InternalWeakMap(); }
+	        return nativeHas.call(this, key) || state.frozen.has(key);
+	      } return nativeHas.call(this, key);
+	    },
+	    get: function get(key) {
+	      if (isObject(key) && !isExtensible(key)) {
+	        var state = enforceIternalState(this);
+	        if (!state.frozen) { state.frozen = new InternalWeakMap(); }
+	        return nativeHas.call(this, key) ? nativeGet.call(this, key) : state.frozen.get(key);
+	      } return nativeGet.call(this, key);
+	    },
+	    set: function set(key, value) {
+	      if (isObject(key) && !isExtensible(key)) {
+	        var state = enforceIternalState(this);
+	        if (!state.frozen) { state.frozen = new InternalWeakMap(); }
+	        nativeHas.call(this, key) ? nativeSet.call(this, key, value) : state.frozen.set(key, value);
+	      } else { nativeSet.call(this, key, value); }
+	      return this;
+	    }
+	  });
+	}
+	});
+
+	var weakMap = path.WeakMap;
+
+	// `Set` constructor
+	// https://tc39.github.io/ecma262/#sec-set-objects
+	var es_set = collection('Set', function (init) {
+	  return function Set() { return init(this, arguments.length ? arguments[0] : undefined); };
+	}, collectionStrong);
+
+	var set$2 = path.Set;
+
+	// `WeakSet` constructor
+	// https://tc39.github.io/ecma262/#sec-weakset-constructor
+	collection('WeakSet', function (init) {
+	  return function WeakSet() { return init(this, arguments.length ? arguments[0] : undefined); };
+	}, collectionWeak);
+
+	var weakSet = path.WeakSet;
+
+	var es2015Collection = createCommonjsModule(function (module, exports) {
+	Object.defineProperty(exports, "__esModule", { value: true });
+	});
+
+	unwrapExports(es2015Collection);
 
 	// References:
 
@@ -490,8 +2674,6 @@ var PIXI = (function (exports) {
 	{
 	    Object.assign = objectAssign;
 	}
-
-	var commonjsGlobal$1 = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 	// References:
 	// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -516,33 +2698,33 @@ var PIXI = (function (exports) {
 	}
 
 	// performance.now
-	if (!(commonjsGlobal$1.performance && commonjsGlobal$1.performance.now))
+	if (!(commonjsGlobal.performance && commonjsGlobal.performance.now))
 	{
 	    var startTime = Date.now();
 
-	    if (!commonjsGlobal$1.performance)
+	    if (!commonjsGlobal.performance)
 	    {
-	        commonjsGlobal$1.performance = {};
+	        commonjsGlobal.performance = {};
 	    }
 
-	    commonjsGlobal$1.performance.now = function () { return Date.now() - startTime; };
+	    commonjsGlobal.performance.now = function () { return Date.now() - startTime; };
 	}
 
 	// requestAnimationFrame
 	var lastTime = Date.now();
 	var vendors = ['ms', 'moz', 'webkit', 'o'];
 
-	for (var x = 0; x < vendors.length && !commonjsGlobal$1.requestAnimationFrame; ++x)
+	for (var x = 0; x < vendors.length && !commonjsGlobal.requestAnimationFrame; ++x)
 	{
 	    var p = vendors[x];
 
-	    commonjsGlobal$1.requestAnimationFrame = commonjsGlobal$1[(p + "RequestAnimationFrame")];
-	    commonjsGlobal$1.cancelAnimationFrame = commonjsGlobal$1[(p + "CancelAnimationFrame")] || commonjsGlobal$1[(p + "CancelRequestAnimationFrame")];
+	    commonjsGlobal.requestAnimationFrame = commonjsGlobal[(p + "RequestAnimationFrame")];
+	    commonjsGlobal.cancelAnimationFrame = commonjsGlobal[(p + "CancelAnimationFrame")] || commonjsGlobal[(p + "CancelRequestAnimationFrame")];
 	}
 
-	if (!commonjsGlobal$1.requestAnimationFrame)
+	if (!commonjsGlobal.requestAnimationFrame)
 	{
-	    commonjsGlobal$1.requestAnimationFrame = function (callback) {
+	    commonjsGlobal.requestAnimationFrame = function (callback) {
 	        if (typeof callback !== 'function')
 	        {
 	            throw new TypeError((callback + "is not a function"));
@@ -565,9 +2747,9 @@ var PIXI = (function (exports) {
 	    };
 	}
 
-	if (!commonjsGlobal$1.cancelAnimationFrame)
+	if (!commonjsGlobal.cancelAnimationFrame)
 	{
-	    commonjsGlobal$1.cancelAnimationFrame = function (id) { return clearTimeout(id); };
+	    commonjsGlobal.cancelAnimationFrame = function (id) { return clearTimeout(id); };
 	}
 
 	// References:
@@ -598,6 +2780,8 @@ var PIXI = (function (exports) {
 	        return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
 	    };
 	}
+
+	//import './Promise';
 
 	if (!window.ArrayBuffer)
 	{
@@ -643,7 +2827,7 @@ var PIXI = (function (exports) {
 	var otherOpera = /Opera Mini/i;
 	var otherChrome = /\b(CriOS|Chrome)(?:.+)Mobile/i;
 	var otherFirefox = /Mobile(?:.+)Firefox\b/i;
-	function match(regex, userAgent) {
+	function match$1(regex, userAgent) {
 	    return regex.test(userAgent);
 	}
 	function isMobile(userAgent) {
@@ -659,51 +2843,51 @@ var PIXI = (function (exports) {
 	    }
 	    var result = {
 	        apple: {
-	            phone: match(appleIphone, userAgent) && !match(windowsPhone, userAgent),
-	            ipod: match(appleIpod, userAgent),
-	            tablet: !match(appleIphone, userAgent) &&
-	                match(appleTablet, userAgent) &&
-	                !match(windowsPhone, userAgent),
-	            device: (match(appleIphone, userAgent) ||
-	                match(appleIpod, userAgent) ||
-	                match(appleTablet, userAgent)) &&
-	                !match(windowsPhone, userAgent),
+	            phone: match$1(appleIphone, userAgent) && !match$1(windowsPhone, userAgent),
+	            ipod: match$1(appleIpod, userAgent),
+	            tablet: !match$1(appleIphone, userAgent) &&
+	                match$1(appleTablet, userAgent) &&
+	                !match$1(windowsPhone, userAgent),
+	            device: (match$1(appleIphone, userAgent) ||
+	                match$1(appleIpod, userAgent) ||
+	                match$1(appleTablet, userAgent)) &&
+	                !match$1(windowsPhone, userAgent),
 	        },
 	        amazon: {
-	            phone: match(amazonPhone, userAgent),
-	            tablet: !match(amazonPhone, userAgent) && match(amazonTablet, userAgent),
-	            device: match(amazonPhone, userAgent) || match(amazonTablet, userAgent),
+	            phone: match$1(amazonPhone, userAgent),
+	            tablet: !match$1(amazonPhone, userAgent) && match$1(amazonTablet, userAgent),
+	            device: match$1(amazonPhone, userAgent) || match$1(amazonTablet, userAgent),
 	        },
 	        android: {
-	            phone: (!match(windowsPhone, userAgent) && match(amazonPhone, userAgent)) ||
-	                (!match(windowsPhone, userAgent) && match(androidPhone, userAgent)),
-	            tablet: !match(windowsPhone, userAgent) &&
-	                !match(amazonPhone, userAgent) &&
-	                !match(androidPhone, userAgent) &&
-	                (match(amazonTablet, userAgent) || match(androidTablet, userAgent)),
-	            device: (!match(windowsPhone, userAgent) &&
-	                (match(amazonPhone, userAgent) ||
-	                    match(amazonTablet, userAgent) ||
-	                    match(androidPhone, userAgent) ||
-	                    match(androidTablet, userAgent))) ||
-	                match(/\bokhttp\b/i, userAgent),
+	            phone: (!match$1(windowsPhone, userAgent) && match$1(amazonPhone, userAgent)) ||
+	                (!match$1(windowsPhone, userAgent) && match$1(androidPhone, userAgent)),
+	            tablet: !match$1(windowsPhone, userAgent) &&
+	                !match$1(amazonPhone, userAgent) &&
+	                !match$1(androidPhone, userAgent) &&
+	                (match$1(amazonTablet, userAgent) || match$1(androidTablet, userAgent)),
+	            device: (!match$1(windowsPhone, userAgent) &&
+	                (match$1(amazonPhone, userAgent) ||
+	                    match$1(amazonTablet, userAgent) ||
+	                    match$1(androidPhone, userAgent) ||
+	                    match$1(androidTablet, userAgent))) ||
+	                match$1(/\bokhttp\b/i, userAgent),
 	        },
 	        windows: {
-	            phone: match(windowsPhone, userAgent),
-	            tablet: match(windowsTablet, userAgent),
-	            device: match(windowsPhone, userAgent) || match(windowsTablet, userAgent),
+	            phone: match$1(windowsPhone, userAgent),
+	            tablet: match$1(windowsTablet, userAgent),
+	            device: match$1(windowsPhone, userAgent) || match$1(windowsTablet, userAgent),
 	        },
 	        other: {
-	            blackberry: match(otherBlackBerry, userAgent),
-	            blackberry10: match(otherBlackBerry10, userAgent),
-	            opera: match(otherOpera, userAgent),
-	            firefox: match(otherFirefox, userAgent),
-	            chrome: match(otherChrome, userAgent),
-	            device: match(otherBlackBerry, userAgent) ||
-	                match(otherBlackBerry10, userAgent) ||
-	                match(otherOpera, userAgent) ||
-	                match(otherFirefox, userAgent) ||
-	                match(otherChrome, userAgent),
+	            blackberry: match$1(otherBlackBerry, userAgent),
+	            blackberry10: match$1(otherBlackBerry10, userAgent),
+	            opera: match$1(otherOpera, userAgent),
+	            firefox: match$1(otherFirefox, userAgent),
+	            chrome: match$1(otherChrome, userAgent),
+	            device: match$1(otherBlackBerry, userAgent) ||
+	                match$1(otherBlackBerry10, userAgent) ||
+	                match$1(otherOpera, userAgent) ||
+	                match$1(otherFirefox, userAgent) ||
+	                match$1(otherChrome, userAgent),
 	        },
 	        any: false,
 	        phone: false,
@@ -723,7 +2907,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/settings - v5.2.1
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/settings is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -1205,7 +3389,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/math - v5.2.1
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/math is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -3105,7 +5289,25 @@ var PIXI = (function (exports) {
 	    return Transform;
 	}());
 
-	var eventemitter3 = createCommonjsModule(function (module) {
+	var commonjsGlobal$1 = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+	function commonjsRequire () {
+		throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
+	}
+
+	function unwrapExports$1 (x) {
+		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+	}
+
+	function createCommonjsModule$1(fn, module) {
+		return module = { exports: {} }, fn(module, module.exports), module.exports;
+	}
+
+	function getCjsExportFromNamespace (n) {
+		return n && n['default'] || n;
+	}
+
+	var eventemitter3 = createCommonjsModule$1(function (module) {
 	'use strict';
 
 	var has = Object.prototype.hasOwnProperty
@@ -4127,7 +6329,7 @@ var PIXI = (function (exports) {
 	};
 	earcut_1.default = default_1;
 
-	var punycode = createCommonjsModule(function (module, exports) {
+	var punycode = createCommonjsModule$1(function (module, exports) {
 	/*! https://mths.be/punycode v1.3.2 by @mathias */
 	;(function(root) {
 
@@ -4136,7 +6338,7 @@ var PIXI = (function (exports) {
 			!exports.nodeType && exports;
 		var freeModule = 'object' == 'object' && module &&
 			!module.nodeType && module;
-		var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal;
+		var freeGlobal = typeof commonjsGlobal$1 == 'object' && commonjsGlobal$1;
 		if (
 			freeGlobal.global === freeGlobal ||
 			freeGlobal.window === freeGlobal ||
@@ -4657,7 +6859,7 @@ var PIXI = (function (exports) {
 			root.punycode = punycode;
 		}
 
-	}(commonjsGlobal));
+	}(commonjsGlobal$1));
 	});
 
 	'use strict';
@@ -4707,7 +6909,7 @@ var PIXI = (function (exports) {
 	// If obj.hasOwnProperty has been overridden, then calling
 	// obj.hasOwnProperty(prop) will break.
 	// See: https://github.com/joyent/node/issues/1707
-	function hasOwnProperty$1(obj, prop) {
+	function hasOwnProperty$2(obj, prop) {
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
@@ -4750,7 +6952,7 @@ var PIXI = (function (exports) {
 	    k = decodeURIComponent(kstr);
 	    v = decodeURIComponent(vstr);
 
-	    if (!hasOwnProperty$1(obj, k)) {
+	    if (!hasOwnProperty$2(obj, k)) {
 	      obj[k] = v;
 	    } else if (Array.isArray(obj[k])) {
 	      obj[k].push(v);
@@ -4827,7 +7029,7 @@ var PIXI = (function (exports) {
 	         encodeURIComponent(stringifyPrimitive(obj));
 	};
 
-	var querystring = createCommonjsModule(function (module, exports) {
+	var querystring = createCommonjsModule$1(function (module, exports) {
 	'use strict';
 
 	exports.decode = exports.parse = decode;
@@ -5580,7 +7782,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/constants - v5.2.1
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/constants is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -6020,7 +8222,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/utils - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/utils is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -6052,7 +8254,7 @@ var PIXI = (function (exports) {
 
 	var saidHello = false;
 	var renderType = 'canvas';
-	var VERSION = '5.2.1-v9';
+	var VERSION = '5.2.1-v11';
 	/**
 	 * 跳过版本说明
 	 *
@@ -6384,7 +8586,7 @@ var PIXI = (function (exports) {
 	}
 
 	/* eslint-disable object-shorthand */
-	var map = { Float32Array: Float32Array, Uint32Array: Uint32Array, Int32Array: Int32Array, Uint8Array: Uint8Array };
+	var map$1 = { Float32Array: Float32Array, Uint32Array: Uint32Array, Int32Array: Int32Array, Uint8Array: Uint8Array };
 	function interleaveTypedArrays(arrays, sizes) {
 	    var outSize = 0;
 	    var stride = 0;
@@ -6405,7 +8607,7 @@ var PIXI = (function (exports) {
 	         */
 	        var type = getBufferType(array);
 	        if (!views[type]) {
-	            views[type] = new map[type](buffer);
+	            views[type] = new map$1[type](buffer);
 	        }
 	        out = views[type];
 	        for (var j = 0; j < array.length; j++) {
@@ -6516,7 +8718,7 @@ var PIXI = (function (exports) {
 	 * @function uid
 	 * @return {number} The next unique identifier to use.
 	 */
-	function uid() {
+	function uid$1() {
 	    return ++nextUid;
 	}
 
@@ -6922,7 +9124,7 @@ var PIXI = (function (exports) {
 		skipHello: skipHello,
 		string2hex: string2hex,
 		trimCanvas: trimCanvas,
-		uid: uid,
+		uid: uid$1,
 		versionPrint: versionPrint,
 		getSystemInfo: getSystemInfo,
 		isMobile: isMobile$1,
@@ -6933,7 +9135,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/display - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/display is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -8583,7 +10785,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/accessibility - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/accessibility is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -9170,7 +11372,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/ticker - v5.2.1
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/ticker is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -10013,7 +12215,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/interaction - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/interaction is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -12610,7 +14812,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/runner - v5.2.1
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/runner is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -12806,7 +15008,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/core - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/core is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -13702,7 +15904,7 @@ var PIXI = (function (exports) {
 	         * @member {number}
 	         * @protected
 	         */
-	        _this.uid = uid();
+	        _this.uid = uid$1();
 	        /**
 	         * Used by automatic texture Garbage Collection, stores last GC tick when it was bound
 	         *
@@ -14044,7 +16246,7 @@ var PIXI = (function (exports) {
 	        }
 	        else {
 	            if (!source._pixiId) {
-	                source._pixiId = "pixiid_" + uid();
+	                source._pixiId = "pixiid_" + uid$1();
 	            }
 	            cacheId = source._pixiId;
 	        }
@@ -14539,7 +16741,7 @@ var PIXI = (function (exports) {
 	            var canvas = _this.source;
 	            canvas.width = width;
 	            canvas.height = height;
-	            canvas._pixiId = "canvas_" + uid();
+	            canvas._pixiId = "canvas_" + uid$1();
 	            // Draw the Svg to the canvas
 	            canvas
 	                .getContext('2d')
@@ -15677,7 +17879,7 @@ var PIXI = (function (exports) {
 	        }
 	        else {
 	            if (!source._pixiId) {
-	                source._pixiId = "pixiid_" + uid();
+	                source._pixiId = "pixiid_" + uid$1();
 	            }
 	            cacheId = source._pixiId;
 	        }
@@ -16419,7 +18621,7 @@ var PIXI = (function (exports) {
 	}
 
 	/* eslint-disable object-shorthand */
-	var map$1 = {
+	var map$2 = {
 	    Float32Array: Float32Array,
 	    Uint32Array: Uint32Array,
 	    Int32Array: Int32Array,
@@ -16441,7 +18643,7 @@ var PIXI = (function (exports) {
 	        var array = arrays[i];
 	        var type = getBufferType$1(array);
 	        if (!views[type]) {
-	            views[type] = new map$1[type](buffer);
+	            views[type] = new map$2[type](buffer);
 	        }
 	        out = views[type];
 	        for (var j = 0; j < array.length; j++) {
@@ -23545,7 +25747,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/app - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/app is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -23816,7 +26018,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/extract - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/extract is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -24062,7 +26264,7 @@ var PIXI = (function (exports) {
 	  return uri
 	};
 
-	var miniSignals = createCommonjsModule(function (module, exports) {
+	var miniSignals = createCommonjsModule$1(function (module, exports) {
 	'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
@@ -24232,7 +26434,7 @@ var PIXI = (function (exports) {
 	module.exports = exports['default'];
 	});
 
-	var Signal = unwrapExports(miniSignals);
+	var Signal = unwrapExports$1(miniSignals);
 
 	/*!
 	 * resource-loader - v3.0.1
@@ -24324,7 +26526,7 @@ var PIXI = (function (exports) {
 	 */
 
 
-	function queue(worker, concurrency) {
+	function queue$1(worker, concurrency) {
 	  if (concurrency == null) {
 	    // eslint-disable-line no-eq-null,eqeqeq
 	    concurrency = 1;
@@ -24463,7 +26665,7 @@ var PIXI = (function (exports) {
 
 	var async = ({
 	    eachSeries: eachSeries,
-	    queue: queue
+	    queue: queue$1
 	});
 
 	// a simple in-memory cache for resources
@@ -25947,7 +28149,7 @@ var PIXI = (function (exports) {
 	     */
 
 
-	    this._queue = queue(this._boundLoadResource, concurrency);
+	    this._queue = queue$1(this._boundLoadResource, concurrency);
 
 	    this._queue.pause();
 	    /**
@@ -26571,7 +28773,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/loaders - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/loaders is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -26888,7 +29090,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/particles - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/particles is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -27691,7 +29893,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/graphics - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/graphics is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -30657,7 +32859,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/sprite is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -31238,7 +33440,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/text - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/text is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -33282,7 +35484,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/prepare - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/prepare is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -33912,7 +36114,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/spritesheet - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/spritesheet is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -34233,7 +36435,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite-tiling - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/sprite-tiling is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -34634,7 +36836,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/text-bitmap - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/text-bitmap is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -35750,7 +37952,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-alpha - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/filter-alpha is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -35836,7 +38038,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-blur - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/filter-blur is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -36227,7 +38429,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-color-matrix - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/filter-color-matrix is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -36756,7 +38958,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-displacement - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/filter-displacement is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -36887,7 +39089,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-fxaa - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/filter-fxaa is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -36948,7 +39150,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-noise - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/filter-noise is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -37049,7 +39251,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-cache-as-bitmap - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/mixin-cache-as-bitmap is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -37241,7 +39443,7 @@ var PIXI = (function (exports) {
 	    // this renderTexture will be used to store the cached DisplayObject
 	    var renderTexture = RenderTexture.create(bounds.width, bounds.height);
 
-	    var textureCacheId = "cacheAsBitmap_" + (uid());
+	    var textureCacheId = "cacheAsBitmap_" + (uid$1());
 
 	    this._cacheData.textureCacheId = textureCacheId;
 
@@ -37356,7 +39558,7 @@ var PIXI = (function (exports) {
 
 	    var renderTexture = RenderTexture.create(bounds.width, bounds.height);
 
-	    var textureCacheId = "cacheAsBitmap_" + (uid());
+	    var textureCacheId = "cacheAsBitmap_" + (uid$1());
 
 	    this._cacheData.textureCacheId = textureCacheId;
 
@@ -37474,7 +39676,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-get-child-by-name - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/mixin-get-child-by-name is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -37511,7 +39713,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-get-global-position - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/mixin-get-global-position is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -37548,7 +39750,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mesh - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/mesh is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38257,7 +40459,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mesh-extras - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/mesh-extras is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38977,7 +41179,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite-animated - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/sprite-animated is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39419,7 +41621,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * pixi.js - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * pixi.js is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -40902,7 +43104,7 @@ var PIXI = (function (exports) {
 	 * @name VERSION
 	 * @type {string}
 	 */
-	var VERSION$1 = '5.2.1-v9';
+	var VERSION$1 = '5.2.1-v11';
 
 	/**
 	 * @namespace PIXI
@@ -40947,7 +43149,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-renderer - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/canvas-renderer is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41811,7 +44013,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-mesh - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/canvas-mesh is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -42302,7 +44504,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-graphics - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/canvas-graphics is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -42763,7 +44965,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-sprite - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/canvas-sprite is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -42968,7 +45170,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-extract - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/canvas-extract is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -43142,7 +45344,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-prepare - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/canvas-prepare is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -43239,7 +45441,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-sprite-tiling - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/canvas-sprite-tiling is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -43328,7 +45530,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-particles - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/canvas-particles is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -43435,7 +45637,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-display - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/canvas-display is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -43497,7 +45699,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-text - v5.2.1-v9
-	 * Compiled Thu, 09 Apr 2020 09:53:32 UTC
+	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
 	 *
 	 * @pixi/canvas-text is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -43523,6 +45725,2482 @@ var PIXI = (function (exports) {
 
 	    Sprite.prototype._renderCanvas.call(this, renderer);
 	};
+
+	/*! *****************************************************************************
+	Copyright (c) Microsoft Corporation. All rights reserved.
+	Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+	this file except in compliance with the License. You may obtain a copy of the
+	License at http://www.apache.org/licenses/LICENSE-2.0
+
+	THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+	WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+	MERCHANTABLITY OR NON-INFRINGEMENT.
+
+	See the Apache Version 2.0 License for specific language governing permissions
+	and limitations under the License.
+	***************************************************************************** */
+	/* global Reflect, Promise */
+
+	var extendStatics$k = function(d, b) {
+	    extendStatics$k = Object.setPrototypeOf ||
+	        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+	        function (d, b) { for (var p in b) { if (b.hasOwnProperty(p)) { d[p] = b[p]; } } };
+	    return extendStatics$k(d, b);
+	};
+
+	function __extends$k(d, b) {
+	    extendStatics$k(d, b);
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	}
+
+	var __assign = function() {
+	    __assign = Object.assign || function __assign(t) {
+	        var arguments$1 = arguments;
+
+	        for (var s, i = 1, n = arguments.length; i < n; i++) {
+	            s = arguments$1[i];
+	            for (var p in s) { if (Object.prototype.hasOwnProperty.call(s, p)) { t[p] = s[p]; } }
+	        }
+	        return t;
+	    };
+	    return __assign.apply(this, arguments);
+	};
+
+	function __rest(s, e) {
+	    var t = {};
+	    for (var p in s) { if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+	        { t[p] = s[p]; } }
+	    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+	        { for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) { if (e.indexOf(p[i]) < 0)
+	            { t[p[i]] = s[p[i]]; } } }
+	    return t;
+	}
+
+	function __decorate(decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") { r = Reflect.decorate(decorators, target, key, desc); }
+	    else { for (var i = decorators.length - 1; i >= 0; i--) { if (d = decorators[i]) { r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r; } } }
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	}
+
+	function __param(paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	}
+
+	function __metadata(metadataKey, metadataValue) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") { return Reflect.metadata(metadataKey, metadataValue); }
+	}
+
+	function __awaiter(thisArg, _arguments, P, generator) {
+	    return new (P || (P = Promise))(function (resolve, reject) {
+	        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+	        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+	        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+	        step((generator = generator.apply(thisArg, _arguments || [])).next());
+	    });
+	}
+
+	function __generator(thisArg, body) {
+	    var _ = { label: 0, sent: function() { if (t[0] & 1) { throw t[1]; } return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+	    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+	    function verb(n) { return function (v) { return step([n, v]); }; }
+	    function step(op) {
+	        if (f) { throw new TypeError("Generator is already executing."); }
+	        while (_) { try {
+	            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) { return t; }
+	            if (y = 0, t) { op = [op[0] & 2, t.value]; }
+	            switch (op[0]) {
+	                case 0: case 1: t = op; break;
+	                case 4: _.label++; return { value: op[1], done: false };
+	                case 5: _.label++; y = op[1]; op = [0]; continue;
+	                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+	                default:
+	                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+	                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+	                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+	                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+	                    if (t[2]) { _.ops.pop(); }
+	                    _.trys.pop(); continue;
+	            }
+	            op = body.call(thisArg, _);
+	        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; } }
+	        if (op[0] & 5) { throw op[1]; } return { value: op[0] ? op[1] : void 0, done: true };
+	    }
+	}
+
+	function __exportStar(m, exports) {
+	    for (var p in m) { if (!exports.hasOwnProperty(p)) { exports[p] = m[p]; } }
+	}
+
+	function __values(o) {
+	    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+	    if (m) { return m.call(o); }
+	    return {
+	        next: function () {
+	            if (o && i >= o.length) { o = void 0; }
+	            return { value: o && o[i++], done: !o };
+	        }
+	    };
+	}
+
+	function __read(o, n) {
+	    var m = typeof Symbol === "function" && o[Symbol.iterator];
+	    if (!m) { return o; }
+	    var i = m.call(o), r, ar = [], e;
+	    try {
+	        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) { ar.push(r.value); }
+	    }
+	    catch (error) { e = { error: error }; }
+	    finally {
+	        try {
+	            if (r && !r.done && (m = i["return"])) { m.call(i); }
+	        }
+	        finally { if (e) { throw e.error; } }
+	    }
+	    return ar;
+	}
+
+	function __spread() {
+	    var arguments$1 = arguments;
+
+	    for (var ar = [], i = 0; i < arguments.length; i++)
+	        { ar = ar.concat(__read(arguments$1[i])); }
+	    return ar;
+	}
+
+	function __await(v) {
+	    return this instanceof __await ? (this.v = v, this) : new __await(v);
+	}
+
+	function __asyncGenerator(thisArg, _arguments, generator) {
+	    if (!Symbol.asyncIterator) { throw new TypeError("Symbol.asyncIterator is not defined."); }
+	    var g = generator.apply(thisArg, _arguments || []), i, q = [];
+	    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+	    function verb(n) { if (g[n]) { i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; } }
+	    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+	    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+	    function fulfill(value) { resume("next", value); }
+	    function reject(value) { resume("throw", value); }
+	    function settle(f, v) { if (f(v), q.shift(), q.length) { resume(q[0][0], q[0][1]); } }
+	}
+
+	function __asyncDelegator(o) {
+	    var i, p;
+	    return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+	    function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; } : f; }
+	}
+
+	function __asyncValues(o) {
+	    if (!Symbol.asyncIterator) { throw new TypeError("Symbol.asyncIterator is not defined."); }
+	    var m = o[Symbol.asyncIterator], i;
+	    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+	    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+	    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+	}
+
+	function __makeTemplateObject(cooked, raw) {
+	    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+	    return cooked;
+	};
+
+	function __importStar(mod) {
+	    if (mod && mod.__esModule) { return mod; }
+	    var result = {};
+	    if (mod != null) { for (var k in mod) { if (Object.hasOwnProperty.call(mod, k)) { result[k] = mod[k]; } } }
+	    result.default = mod;
+	    return result;
+	}
+
+	function __importDefault(mod) {
+	    return (mod && mod.__esModule) ? mod : { default: mod };
+	}
+
+	/**
+	 * Target frames per millisecond.
+	 *
+	 * @static
+	 * @name TARGET_FPMS
+	 * @memberof PIXI.settings
+	 * @type {number}
+	 * @default 0.06
+	 */
+	settings.TARGET_FPMS = 0.06;
+
+	/**
+	 * Represents the update priorities used by internal PIXI classes when registered with
+	 * the {@link PIXI.Ticker} object. Higher priority items are updated first and lower
+	 * priority items, such as render, should go later.
+	 *
+	 * @static
+	 * @constant
+	 * @name UPDATE_PRIORITY
+	 * @memberof PIXI
+	 * @enum {number}
+	 * @property {number} INTERACTION=50 Highest priority, used for {@link PIXI.interaction.InteractionManager}
+	 * @property {number} HIGH=25 High priority updating, {@link PIXI.VideoBaseTexture} and {@link PIXI.AnimatedSprite}
+	 * @property {number} NORMAL=0 Default priority for ticker events, see {@link PIXI.Ticker#add}.
+	 * @property {number} LOW=-25 Low priority used for {@link PIXI.Application} rendering.
+	 * @property {number} UTILITY=-50 Lowest priority used for {@link PIXI.BasePrepare} utility.
+	 */
+	var UPDATE_PRIORITY;
+	(function (UPDATE_PRIORITY) {
+	    UPDATE_PRIORITY[UPDATE_PRIORITY["INTERACTION"] = 50] = "INTERACTION";
+	    UPDATE_PRIORITY[UPDATE_PRIORITY["HIGH"] = 25] = "HIGH";
+	    UPDATE_PRIORITY[UPDATE_PRIORITY["NORMAL"] = 0] = "NORMAL";
+	    UPDATE_PRIORITY[UPDATE_PRIORITY["LOW"] = -25] = "LOW";
+	    UPDATE_PRIORITY[UPDATE_PRIORITY["UTILITY"] = -50] = "UTILITY";
+	})(UPDATE_PRIORITY || (UPDATE_PRIORITY = {}));
+
+	/**
+	 * Internal class for handling the priority sorting of ticker handlers.
+	 *
+	 * @private
+	 * @class
+	 * @memberof PIXI
+	 */
+	var TickerListener$1 = /** @class */ (function () {
+	    /**
+	     * Constructor
+	     * @private
+	     * @param {Function} fn - The listener function to be added for one update
+	     * @param {*} [context=null] - The listener context
+	     * @param {number} [priority=0] - The priority for emitting
+	     * @param {boolean} [once=false] - If the handler should fire once
+	     */
+	    function TickerListener(fn, context, priority, once) {
+	        if (context === void 0) { context = null; }
+	        if (priority === void 0) { priority = 0; }
+	        if (once === void 0) { once = false; }
+	        /**
+	         * The handler function to execute.
+	         * @private
+	         * @member {Function}
+	         */
+	        this.fn = fn;
+	        /**
+	         * The calling to execute.
+	         * @private
+	         * @member {*}
+	         */
+	        this.context = context;
+	        /**
+	         * The current priority.
+	         * @private
+	         * @member {number}
+	         */
+	        this.priority = priority;
+	        /**
+	         * If this should only execute once.
+	         * @private
+	         * @member {boolean}
+	         */
+	        this.once = once;
+	        /**
+	         * The next item in chain.
+	         * @private
+	         * @member {TickerListener}
+	         */
+	        this.next = null;
+	        /**
+	         * The previous item in chain.
+	         * @private
+	         * @member {TickerListener}
+	         */
+	        this.previous = null;
+	        /**
+	         * `true` if this listener has been destroyed already.
+	         * @member {boolean}
+	         * @private
+	         */
+	        this._destroyed = false;
+	    }
+	    /**
+	     * Simple compare function to figure out if a function and context match.
+	     * @private
+	     * @param {Function} fn - The listener function to be added for one update
+	     * @param {any} [context] - The listener context
+	     * @return {boolean} `true` if the listener match the arguments
+	     */
+	    TickerListener.prototype.match = function (fn, context) {
+	        if (context === void 0) { context = null; }
+	        return this.fn === fn && this.context === context;
+	    };
+	    /**
+	     * Emit by calling the current function.
+	     * @private
+	     * @param {number} deltaTime - time since the last emit.
+	     * @return {TickerListener} Next ticker
+	     */
+	    TickerListener.prototype.emit = function (deltaTime) {
+	        if (this.fn) {
+	            if (this.context) {
+	                this.fn.call(this.context, deltaTime);
+	            }
+	            else {
+	                this.fn(deltaTime);
+	            }
+	        }
+	        var redirect = this.next;
+	        if (this.once) {
+	            this.destroy(true);
+	        }
+	        // Soft-destroying should remove
+	        // the next reference
+	        if (this._destroyed) {
+	            this.next = null;
+	        }
+	        return redirect;
+	    };
+	    /**
+	     * Connect to the list.
+	     * @private
+	     * @param {TickerListener} previous - Input node, previous listener
+	     */
+	    TickerListener.prototype.connect = function (previous) {
+	        this.previous = previous;
+	        if (previous.next) {
+	            previous.next.previous = this;
+	        }
+	        this.next = previous.next;
+	        previous.next = this;
+	    };
+	    /**
+	     * Destroy and don't use after this.
+	     * @private
+	     * @param {boolean} [hard = false] `true` to remove the `next` reference, this
+	     *        is considered a hard destroy. Soft destroy maintains the next reference.
+	     * @return {TickerListener} The listener to redirect while emitting or removing.
+	     */
+	    TickerListener.prototype.destroy = function (hard) {
+	        if (hard === void 0) { hard = false; }
+	        this._destroyed = true;
+	        this.fn = null;
+	        this.context = null;
+	        // Disconnect, hook up next and previous
+	        if (this.previous) {
+	            this.previous.next = this.next;
+	        }
+	        if (this.next) {
+	            this.next.previous = this.previous;
+	        }
+	        // Redirect to the next item
+	        var redirect = this.next;
+	        // Remove references
+	        this.next = hard ? null : redirect;
+	        this.previous = null;
+	        return redirect;
+	    };
+	    return TickerListener;
+	}());
+
+	/**
+	 * A Ticker class that runs an update loop that other objects listen to.
+	 *
+	 * This class is composed around listeners meant for execution on the next requested animation frame.
+	 * Animation frames are requested only when necessary, e.g. When the ticker is started and the emitter has listeners.
+	 *
+	 * @class
+	 * @memberof PIXI
+	 */
+	var Ticker$1 = /** @class */ (function () {
+	    function Ticker() {
+	        var _this = this;
+	        /**
+	         * The first listener. All new listeners added are chained on this.
+	         * @private
+	         * @type {TickerListener}
+	         */
+	        this._head = new TickerListener$1(null, null, Infinity);
+	        /**
+	         * Internal current frame request ID
+	         * @type {?number}
+	         * @private
+	         */
+	        this._requestId = null;
+	        /**
+	         * Internal value managed by minFPS property setter and getter.
+	         * This is the maximum allowed milliseconds between updates.
+	         * @type {number}
+	         * @private
+	         */
+	        this._maxElapsedMS = 100;
+	        /**
+	         * Internal value managed by maxFPS property setter and getter.
+	         * This is the minimum allowed milliseconds between updates.
+	         * @type {number}
+	         * @private
+	         */
+	        this._minElapsedMS = 0;
+	        /**
+	         * Whether or not this ticker should invoke the method
+	         * {@link PIXI.Ticker#start} automatically
+	         * when a listener is added.
+	         *
+	         * @member {boolean}
+	         * @default false
+	         */
+	        this.autoStart = false;
+	        /**
+	         * Scalar time value from last frame to this frame.
+	         * This value is capped by setting {@link PIXI.Ticker#minFPS}
+	         * and is scaled with {@link PIXI.Ticker#speed}.
+	         * **Note:** The cap may be exceeded by scaling.
+	         *
+	         * @member {number}
+	         * @default 1
+	         */
+	        this.deltaTime = 1;
+	        /**
+	         * Scaler time elapsed in milliseconds from last frame to this frame.
+	         * This value is capped by setting {@link PIXI.Ticker#minFPS}
+	         * and is scaled with {@link PIXI.Ticker#speed}.
+	         * **Note:** The cap may be exceeded by scaling.
+	         * If the platform supports DOMHighResTimeStamp,
+	         * this value will have a precision of 1 µs.
+	         * Defaults to target frame time
+	         *
+	         * @member {number}
+	         * @default 16.66
+	         */
+	        this.deltaMS = 1 / settings.TARGET_FPMS;
+	        /**
+	         * Time elapsed in milliseconds from last frame to this frame.
+	         * Opposed to what the scalar {@link PIXI.Ticker#deltaTime}
+	         * is based, this value is neither capped nor scaled.
+	         * If the platform supports DOMHighResTimeStamp,
+	         * this value will have a precision of 1 µs.
+	         * Defaults to target frame time
+	         *
+	         * @member {number}
+	         * @default 16.66
+	         */
+	        this.elapsedMS = 1 / settings.TARGET_FPMS;
+	        /**
+	         * The last time {@link PIXI.Ticker#update} was invoked.
+	         * This value is also reset internally outside of invoking
+	         * update, but only when a new animation frame is requested.
+	         * If the platform supports DOMHighResTimeStamp,
+	         * this value will have a precision of 1 µs.
+	         *
+	         * @member {number}
+	         * @default -1
+	         */
+	        this.lastTime = -1;
+	        /**
+	         * Factor of current {@link PIXI.Ticker#deltaTime}.
+	         * @example
+	         * // Scales ticker.deltaTime to what would be
+	         * // the equivalent of approximately 120 FPS
+	         * ticker.speed = 2;
+	         *
+	         * @member {number}
+	         * @default 1
+	         */
+	        this.speed = 1;
+	        /**
+	         * Whether or not this ticker has been started.
+	         * `true` if {@link PIXI.Ticker#start} has been called.
+	         * `false` if {@link PIXI.Ticker#stop} has been called.
+	         * While `false`, this value may change to `true` in the
+	         * event of {@link PIXI.Ticker#autoStart} being `true`
+	         * and a listener is added.
+	         *
+	         * @member {boolean}
+	         * @default false
+	         */
+	        this.started = false;
+	        /**
+	         * If enabled, deleting is disabled.
+	         * @member {boolean}
+	         * @default false
+	         * @private
+	         */
+	        this._protected = false;
+	        /**
+	         * The last time keyframe was executed.
+	         * Maintains a relatively fixed interval with the previous value.
+	         * @member {number}
+	         * @default -1
+	         * @private
+	         */
+	        this._lastFrame = -1;
+	        /**
+	         * Internal tick method bound to ticker instance.
+	         * This is because in early 2015, Function.bind
+	         * is still 60% slower in high performance scenarios.
+	         * Also separating frame requests from update method
+	         * so listeners may be called at any time and with
+	         * any animation API, just invoke ticker.update(time).
+	         *
+	         * @private
+	         * @param {number} time - Time since last tick.
+	         */
+	        this._tick = function (time) {
+	            _this._requestId = null;
+	            if (_this.started) {
+	                // Invoke listeners now
+	                _this.update(time);
+	                // Listener side effects may have modified ticker state.
+	                if (_this.started && _this._requestId === null && _this._head.next) {
+	                    _this._requestId = requestAnimationFrame(_this._tick);
+	                }
+	            }
+	        };
+	    }
+	    /**
+	     * Conditionally requests a new animation frame.
+	     * If a frame has not already been requested, and if the internal
+	     * emitter has listeners, a new frame is requested.
+	     *
+	     * @private
+	     */
+	    Ticker.prototype._requestIfNeeded = function () {
+	        if (this._requestId === null && this._head.next) {
+	            // ensure callbacks get correct delta
+	            this.lastTime = performance.now();
+	            this._lastFrame = this.lastTime;
+	            this._requestId = requestAnimationFrame(this._tick);
+	        }
+	    };
+	    /**
+	     * Conditionally cancels a pending animation frame.
+	     *
+	     * @private
+	     */
+	    Ticker.prototype._cancelIfNeeded = function () {
+	        if (this._requestId !== null) {
+	            cancelAnimationFrame(this._requestId);
+	            this._requestId = null;
+	        }
+	    };
+	    /**
+	     * Conditionally requests a new animation frame.
+	     * If the ticker has been started it checks if a frame has not already
+	     * been requested, and if the internal emitter has listeners. If these
+	     * conditions are met, a new frame is requested. If the ticker has not
+	     * been started, but autoStart is `true`, then the ticker starts now,
+	     * and continues with the previous conditions to request a new frame.
+	     *
+	     * @private
+	     */
+	    Ticker.prototype._startIfPossible = function () {
+	        if (this.started) {
+	            this._requestIfNeeded();
+	        }
+	        else if (this.autoStart) {
+	            this.start();
+	        }
+	    };
+	    /**
+	     * Register a handler for tick events. Calls continuously unless
+	     * it is removed or the ticker is stopped.
+	     *
+	     * @param {Function} fn - The listener function to be added for updates
+	     * @param {*} [context] - The listener context
+	     * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
+	     * @returns {PIXI.Ticker} This instance of a ticker
+	     */
+	    Ticker.prototype.add = function (fn, context, priority) {
+	        if (priority === void 0) { priority = UPDATE_PRIORITY.NORMAL; }
+	        return this._addListener(new TickerListener$1(fn, context, priority));
+	    };
+	    /**
+	     * Add a handler for the tick event which is only execute once.
+	     *
+	     * @param {Function} fn - The listener function to be added for one update
+	     * @param {*} [context] - The listener context
+	     * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
+	     * @returns {PIXI.Ticker} This instance of a ticker
+	     */
+	    Ticker.prototype.addOnce = function (fn, context, priority) {
+	        if (priority === void 0) { priority = UPDATE_PRIORITY.NORMAL; }
+	        return this._addListener(new TickerListener$1(fn, context, priority, true));
+	    };
+	    /**
+	     * Internally adds the event handler so that it can be sorted by priority.
+	     * Priority allows certain handler (user, AnimatedSprite, Interaction) to be run
+	     * before the rendering.
+	     *
+	     * @private
+	     * @param {TickerListener} listener - Current listener being added.
+	     * @returns {PIXI.Ticker} This instance of a ticker
+	     */
+	    Ticker.prototype._addListener = function (listener) {
+	        // For attaching to head
+	        var current = this._head.next;
+	        var previous = this._head;
+	        // Add the first item
+	        if (!current) {
+	            listener.connect(previous);
+	        }
+	        else {
+	            // Go from highest to lowest priority
+	            while (current) {
+	                if (listener.priority > current.priority) {
+	                    listener.connect(previous);
+	                    break;
+	                }
+	                previous = current;
+	                current = current.next;
+	            }
+	            // Not yet connected
+	            if (!listener.previous) {
+	                listener.connect(previous);
+	            }
+	        }
+	        this._startIfPossible();
+	        return this;
+	    };
+	    /**
+	     * Removes any handlers matching the function and context parameters.
+	     * If no handlers are left after removing, then it cancels the animation frame.
+	     *
+	     * @param {Function} fn - The listener function to be removed
+	     * @param {*} [context] - The listener context to be removed
+	     * @returns {PIXI.Ticker} This instance of a ticker
+	     */
+	    Ticker.prototype.remove = function (fn, context) {
+	        var listener = this._head.next;
+	        while (listener) {
+	            // We found a match, lets remove it
+	            // no break to delete all possible matches
+	            // incase a listener was added 2+ times
+	            if (listener.match(fn, context)) {
+	                listener = listener.destroy();
+	            }
+	            else {
+	                listener = listener.next;
+	            }
+	        }
+	        if (!this._head.next) {
+	            this._cancelIfNeeded();
+	        }
+	        return this;
+	    };
+	    Object.defineProperty(Ticker.prototype, "count", {
+	        /**
+	         * The number of listeners on this ticker, calculated by walking through linked list
+	         *
+	         * @readonly
+	         * @member {number}
+	         */
+	        get: function () {
+	            if (!this._head) {
+	                return 0;
+	            }
+	            var count = 0;
+	            var current = this._head;
+	            while ((current = current.next)) {
+	                count++;
+	            }
+	            return count;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * Starts the ticker. If the ticker has listeners
+	     * a new animation frame is requested at this point.
+	     */
+	    Ticker.prototype.start = function () {
+	        if (!this.started) {
+	            this.started = true;
+	            this._requestIfNeeded();
+	        }
+	    };
+	    /**
+	     * Stops the ticker. If the ticker has requested
+	     * an animation frame it is canceled at this point.
+	     */
+	    Ticker.prototype.stop = function () {
+	        if (this.started) {
+	            this.started = false;
+	            this._cancelIfNeeded();
+	        }
+	    };
+	    /**
+	     * Destroy the ticker and don't use after this. Calling
+	     * this method removes all references to internal events.
+	     */
+	    Ticker.prototype.destroy = function () {
+	        if (!this._protected) {
+	            this.stop();
+	            var listener = this._head.next;
+	            while (listener) {
+	                listener = listener.destroy(true);
+	            }
+	            this._head.destroy();
+	            this._head = null;
+	        }
+	    };
+	    /**
+	     * Triggers an update. An update entails setting the
+	     * current {@link PIXI.Ticker#elapsedMS},
+	     * the current {@link PIXI.Ticker#deltaTime},
+	     * invoking all listeners with current deltaTime,
+	     * and then finally setting {@link PIXI.Ticker#lastTime}
+	     * with the value of currentTime that was provided.
+	     * This method will be called automatically by animation
+	     * frame callbacks if the ticker instance has been started
+	     * and listeners are added.
+	     *
+	     * @param {number} [currentTime=performance.now()] - the current time of execution
+	     */
+	    Ticker.prototype.update = function (currentTime) {
+	        if (currentTime === void 0) { currentTime = performance.now(); }
+	        var elapsedMS;
+	        // If the difference in time is zero or negative, we ignore most of the work done here.
+	        // If there is no valid difference, then should be no reason to let anyone know about it.
+	        // A zero delta, is exactly that, nothing should update.
+	        //
+	        // The difference in time can be negative, and no this does not mean time traveling.
+	        // This can be the result of a race condition between when an animation frame is requested
+	        // on the current JavaScript engine event loop, and when the ticker's start method is invoked
+	        // (which invokes the internal _requestIfNeeded method). If a frame is requested before
+	        // _requestIfNeeded is invoked, then the callback for the animation frame the ticker requests,
+	        // can receive a time argument that can be less than the lastTime value that was set within
+	        // _requestIfNeeded. This difference is in microseconds, but this is enough to cause problems.
+	        //
+	        // This check covers this browser engine timing issue, as well as if consumers pass an invalid
+	        // currentTime value. This may happen if consumers opt-out of the autoStart, and update themselves.
+	        if (currentTime > this.lastTime) {
+	            // Save uncapped elapsedMS for measurement
+	            elapsedMS = this.elapsedMS = currentTime - this.lastTime;
+	            // cap the milliseconds elapsed used for deltaTime
+	            if (elapsedMS > this._maxElapsedMS) {
+	                elapsedMS = this._maxElapsedMS;
+	            }
+	            elapsedMS *= this.speed;
+	            // If not enough time has passed, exit the function.
+	            // Get ready for next frame by setting _lastFrame, but based on _minElapsedMS
+	            // adjustment to ensure a relatively stable interval.
+	            if (this._minElapsedMS) {
+	                var delta = currentTime - this._lastFrame | 0;
+	                if (delta < this._minElapsedMS) {
+	                    return;
+	                }
+	                this._lastFrame = currentTime - (delta % this._minElapsedMS);
+	            }
+	            this.deltaMS = elapsedMS;
+	            this.deltaTime = this.deltaMS * settings.TARGET_FPMS;
+	            // Cache a local reference, in-case ticker is destroyed
+	            // during the emit, we can still check for head.next
+	            var head = this._head;
+	            // Invoke listeners added to internal emitter
+	            var listener = head.next;
+	            while (listener) {
+	                listener = listener.emit(this.deltaTime);
+	            }
+	            if (!head.next) {
+	                this._cancelIfNeeded();
+	            }
+	        }
+	        else {
+	            this.deltaTime = this.deltaMS = this.elapsedMS = 0;
+	        }
+	        this.lastTime = currentTime;
+	    };
+	    Object.defineProperty(Ticker.prototype, "FPS", {
+	        /**
+	         * The frames per second at which this ticker is running.
+	         * The default is approximately 60 in most modern browsers.
+	         * **Note:** This does not factor in the value of
+	         * {@link PIXI.Ticker#speed}, which is specific
+	         * to scaling {@link PIXI.Ticker#deltaTime}.
+	         *
+	         * @member {number}
+	         * @readonly
+	         */
+	        get: function () {
+	            return 1000 / this.elapsedMS;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Ticker.prototype, "minFPS", {
+	        /**
+	         * Manages the maximum amount of milliseconds allowed to
+	         * elapse between invoking {@link PIXI.Ticker#update}.
+	         * This value is used to cap {@link PIXI.Ticker#deltaTime},
+	         * but does not effect the measured value of {@link PIXI.Ticker#FPS}.
+	         * When setting this property it is clamped to a value between
+	         * `0` and `PIXI.settings.TARGET_FPMS * 1000`.
+	         *
+	         * @member {number}
+	         * @default 10
+	         */
+	        get: function () {
+	            return 1000 / this._maxElapsedMS;
+	        },
+	        set: function (fps) {
+	            // Minimum must be below the maxFPS
+	            var minFPS = Math.min(this.maxFPS, fps);
+	            // Must be at least 0, but below 1 / settings.TARGET_FPMS
+	            var minFPMS = Math.min(Math.max(0, minFPS) / 1000, settings.TARGET_FPMS);
+	            this._maxElapsedMS = 1 / minFPMS;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Ticker.prototype, "maxFPS", {
+	        /**
+	         * Manages the minimum amount of milliseconds required to
+	         * elapse between invoking {@link PIXI.Ticker#update}.
+	         * This will effect the measured value of {@link PIXI.Ticker#FPS}.
+	         * If it is set to `0`, then there is no limit; PixiJS will render as many frames as it can.
+	         * Otherwise it will be at least `minFPS`
+	         *
+	         * @member {number}
+	         * @default 0
+	         */
+	        get: function () {
+	            if (this._minElapsedMS) {
+	                return Math.round(1000 / this._minElapsedMS);
+	            }
+	            return 0;
+	        },
+	        set: function (fps) {
+	            if (fps === 0) {
+	                this._minElapsedMS = 0;
+	            }
+	            else {
+	                // Max must be at least the minFPS
+	                var maxFPS = Math.max(this.minFPS, fps);
+	                this._minElapsedMS = 1 / (maxFPS / 1000);
+	            }
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Ticker, "shared", {
+	        /**
+	         * The shared ticker instance used by {@link PIXI.AnimatedSprite} and by
+	         * {@link PIXI.VideoResource} to update animation frames / video textures.
+	         *
+	         * It may also be used by {@link PIXI.Application} if created with the `sharedTicker` option property set to true.
+	         *
+	         * The property {@link PIXI.Ticker#autoStart} is set to `true` for this instance.
+	         * Please follow the examples for usage, including how to opt-out of auto-starting the shared ticker.
+	         *
+	         * @example
+	         * let ticker = PIXI.Ticker.shared;
+	         * // Set this to prevent starting this ticker when listeners are added.
+	         * // By default this is true only for the PIXI.Ticker.shared instance.
+	         * ticker.autoStart = false;
+	         * // FYI, call this to ensure the ticker is stopped. It should be stopped
+	         * // if you have not attempted to render anything yet.
+	         * ticker.stop();
+	         * // Call this when you are ready for a running shared ticker.
+	         * ticker.start();
+	         *
+	         * @example
+	         * // You may use the shared ticker to render...
+	         * let renderer = PIXI.autoDetectRenderer();
+	         * let stage = new PIXI.Container();
+	         * document.body.appendChild(renderer.view);
+	         * ticker.add(function (time) {
+	         *     renderer.render(stage);
+	         * });
+	         *
+	         * @example
+	         * // Or you can just update it manually.
+	         * ticker.autoStart = false;
+	         * ticker.stop();
+	         * function animate(time) {
+	         *     ticker.update(time);
+	         *     renderer.render(stage);
+	         *     requestAnimationFrame(animate);
+	         * }
+	         * animate(performance.now());
+	         *
+	         * @member {PIXI.Ticker}
+	         * @static
+	         */
+	        get: function () {
+	            if (!Ticker._shared) {
+	                var shared = Ticker._shared = new Ticker();
+	                shared.autoStart = true;
+	                shared._protected = true;
+	            }
+	            return Ticker._shared;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Ticker, "system", {
+	        /**
+	         * The system ticker instance used by {@link PIXI.interaction.InteractionManager} and by
+	         * {@link PIXI.BasePrepare} for core timing functionality that shouldn't usually need to be paused,
+	         * unlike the `shared` ticker which drives visual animations and rendering which may want to be paused.
+	         *
+	         * The property {@link PIXI.Ticker#autoStart} is set to `true` for this instance.
+	         *
+	         * @member {PIXI.Ticker}
+	         * @static
+	         */
+	        get: function () {
+	            if (!Ticker._system) {
+	                var system = Ticker._system = new Ticker();
+	                system.autoStart = true;
+	                system._protected = true;
+	            }
+	            return Ticker._system;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    return Ticker;
+	}());
+
+	/**
+	 * Middleware for for Application Ticker.
+	 *
+	 * @example
+	 * import {TickerPlugin} from '@pixi/ticker';
+	 * import {Application} from '@pixi/app';
+	 * Application.registerPlugin(TickerPlugin);
+	 *
+	 * @class
+	 * @memberof PIXI
+	 */
+	var TickerPlugin$1 = /** @class */ (function () {
+	    function TickerPlugin() {
+	    }
+	    /**
+	     * Initialize the plugin with scope of application instance
+	     *
+	     * @static
+	     * @private
+	     * @param {object} [options] - See application options
+	     */
+	    TickerPlugin.init = function (options) {
+	        var _this = this;
+	        // Set default
+	        options = Object.assign({
+	            autoStart: true,
+	            sharedTicker: false,
+	        }, options);
+	        // Create ticker setter
+	        Object.defineProperty(this, 'ticker', {
+	            set: function (ticker) {
+	                if (this._ticker) {
+	                    this._ticker.remove(this.render, this);
+	                }
+	                this._ticker = ticker;
+	                if (ticker) {
+	                    ticker.add(this.render, this, UPDATE_PRIORITY.LOW);
+	                }
+	            },
+	            get: function () {
+	                return this._ticker;
+	            },
+	        });
+	        /**
+	         * Convenience method for stopping the render.
+	         *
+	         * @method PIXI.Application#stop
+	         */
+	        this.stop = function () {
+	            _this._ticker.stop();
+	        };
+	        /**
+	         * Convenience method for starting the render.
+	         *
+	         * @method PIXI.Application#start
+	         */
+	        this.start = function () {
+	            _this._ticker.start();
+	        };
+	        /**
+	         * Internal reference to the ticker.
+	         *
+	         * @type {PIXI.Ticker}
+	         * @name _ticker
+	         * @memberof PIXI.Application#
+	         * @private
+	         */
+	        this._ticker = null;
+	        /**
+	         * Ticker for doing render updates.
+	         *
+	         * @type {PIXI.Ticker}
+	         * @name ticker
+	         * @memberof PIXI.Application#
+	         * @default PIXI.Ticker.shared
+	         */
+	        this.ticker = options.sharedTicker ? Ticker$1.shared : new Ticker$1();
+	        // Start the rendering
+	        if (options.autoStart) {
+	            this.start();
+	        }
+	    };
+	    /**
+	     * Clean up the ticker, scoped to application.
+	     *
+	     * @static
+	     * @private
+	     */
+	    TickerPlugin.destroy = function () {
+	        if (this._ticker) {
+	            var oldTicker = this._ticker;
+	            this.ticker = null;
+	            oldTicker.destroy();
+	        }
+	    };
+	    return TickerPlugin;
+	}());
+
+	/**
+	 * The prefix that denotes a URL is for a retina asset.
+	 *
+	 * @static
+	 * @name RETINA_PREFIX
+	 * @memberof PIXI.settings
+	 * @type {RegExp}
+	 * @default /@([0-9\.]+)x/
+	 * @example `@2x`
+	 */
+	settings.RETINA_PREFIX = /@([0-9\.]+)x/;
+	/**
+	 * Should the `failIfMajorPerformanceCaveat` flag be enabled as a context option used in the `isWebGLSupported` function.
+	 * For most scenarios this should be left as true, as otherwise the user may have a poor experience.
+	 * However, it can be useful to disable under certain scenarios, such as headless unit tests.
+	 *
+	 * @static
+	 * @name FAIL_IF_MAJOR_PERFORMANCE_CAVEAT
+	 * @memberof PIXI.settings
+	 * @type {boolean}
+	 * @default true
+	 */
+	settings.FAIL_IF_MAJOR_PERFORMANCE_CAVEAT = true;
+
+	var saidHello$1 = false;
+	var renderType$1 = 'canvas';
+	var VERSION$2 = '5.2.1-v11';
+	/**
+	 * 跳过版本说明
+	 *
+	 * @function skipHello
+	 * @memberof PIXI.utils
+	 */
+	function skipHello$1() {
+	    saidHello$1 = true;
+	}
+	/**
+	 * 输出引擎版本信息
+	 *
+	 * @static
+	 * @function versionPrint
+	 * @memberof PIXI.utils
+	 * @param {string} version - 版本号 (gui 1.1.1).
+	 * @param {string} [docsSite=‘’] - 可访问文档地址.
+	 */
+	function versionPrint$1(version, docsSite) {
+	    var _a;
+	    if (docsSite === void 0) { docsSite = 'https://github.com/vipkid-edu/vf-docs'; }
+	    if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
+	        var args = [
+	            "\n %c %c %c VFJS " + version + " - \u2730 " + renderType$1 + " \u2730  %c  %c  " + docsSite + "  %c  %c \n\n",
+	            'background: #ff9932; padding:5px 0;',
+	            'background: #ff9932; padding:5px 0;',
+	            'color: #ff66a5; background: #030307; padding:5px 0;',
+	            'background: #ff9932; padding:5px 0;',
+	            'background: #ff9932; padding:5px 0;',
+	            'background: #ff9932; padding:5px 0;',
+	            'color: #ff2424; background: #fff; padding:5px 0;' ];
+	        (_a = window.console).log.apply(_a, args);
+	    }
+	    else if (window.console) {
+	        window.console.log("VFJS " + version + " - " + renderType$1 + " - " + docsSite);
+	    }
+	}
+	/**
+	 * 欢迎日志输出，输出版本信息与配置信息
+	 *
+	 * @static
+	 * @function sayHello
+	 * @memberof PIXI.utils
+	 * @param {string} type - The string renderer type to log.
+	 */
+	function sayHello$1(type) {
+	    renderType$1 = type;
+	    if (saidHello$1) {
+	        return;
+	    }
+	    versionPrint$1("engine " + VERSION$2);
+	    saidHello$1 = true;
+	}
+
+	var supported$1;
+	/**
+	 * Helper for checking for WebGL support.
+	 *
+	 * @memberof PIXI.utils
+	 * @function isWebGLSupported
+	 * @return {boolean} Is WebGL supported.
+	 */
+	function isWebGLSupported$1() {
+	    if (typeof supported$1 === 'undefined') {
+	        supported$1 = (function supported() {
+	            var contextOptions = {
+	                stencil: true,
+	                failIfMajorPerformanceCaveat: settings.FAIL_IF_MAJOR_PERFORMANCE_CAVEAT,
+	            };
+	            try {
+	                if (!window.WebGLRenderingContext) {
+	                    return false;
+	                }
+	                var canvas = document.createElement('canvas');
+	                var gl = (canvas.getContext('webgl', contextOptions)
+	                    || canvas.getContext('experimental-webgl', contextOptions));
+	                var success = !!(gl && gl.getContextAttributes().stencil);
+	                if (gl) {
+	                    var loseContext = gl.getExtension('WEBGL_lose_context');
+	                    if (loseContext) {
+	                        loseContext.loseContext();
+	                    }
+	                }
+	                gl = null;
+	                return success;
+	            }
+	            catch (e) {
+	                return false;
+	            }
+	        })();
+	    }
+	    return supported$1;
+	}
+
+	/**
+	 * Converts a hexadecimal color number to an [R, G, B] array of normalized floats (numbers from 0.0 to 1.0).
+	 *
+	 * @example
+	 * PIXI.utils.hex2rgb(0xffffff); // returns [1, 1, 1]
+	 * @memberof PIXI.utils
+	 * @function hex2rgb
+	 * @param {number} hex - The hexadecimal number to convert
+	 * @param  {number[]} [out=[]] If supplied, this array will be used rather than returning a new one
+	 * @return {number[]} An array representing the [R, G, B] of the color where all values are floats.
+	 */
+	function hex2rgb$1(hex, out) {
+	    if (out === void 0) { out = []; }
+	    out[0] = ((hex >> 16) & 0xFF) / 255;
+	    out[1] = ((hex >> 8) & 0xFF) / 255;
+	    out[2] = (hex & 0xFF) / 255;
+	    return out;
+	}
+	/**
+	 * Converts a hexadecimal color number to a string.
+	 *
+	 * @example
+	 * PIXI.utils.hex2string(0xffffff); // returns "#ffffff"
+	 * @memberof PIXI.utils
+	 * @function hex2string
+	 * @param {number} hex - Number in hex (e.g., `0xffffff`)
+	 * @return {string} The string color (e.g., `"#ffffff"`).
+	 */
+	function hex2string$1(hex) {
+	    var hexString = hex.toString(16);
+	    hexString = '000000'.substr(0, 6 - hexString.length) + hexString;
+	    return "#" + hexString;
+	}
+	/**
+	 * Converts a hexadecimal string to a hexadecimal color number.
+	 *
+	 * @example
+	 * PIXI.utils.string2hex("#ffffff"); // returns 0xffffff
+	 * @memberof PIXI.utils
+	 * @function string2hex
+	 * @param {string} The string color (e.g., `"#ffffff"`)
+	 * @return {number} Number in hexadecimal.
+	 */
+	function string2hex$1(string) {
+	    if (typeof string === 'string' && string[0] === '#') {
+	        string = string.substr(1);
+	    }
+	    return parseInt(string, 16);
+	}
+	/**
+	 * Converts a color as an [R, G, B] array of normalized floats to a hexadecimal number.
+	 *
+	 * @example
+	 * PIXI.utils.rgb2hex([1, 1, 1]); // returns 0xffffff
+	 * @memberof PIXI.utils
+	 * @function rgb2hex
+	 * @param {number[]} rgb - Array of numbers where all values are normalized floats from 0.0 to 1.0.
+	 * @return {number} Number in hexadecimal.
+	 */
+	function rgb2hex$1(rgb) {
+	    return (((rgb[0] * 255) << 16) + ((rgb[1] * 255) << 8) + (rgb[2] * 255 | 0));
+	}
+
+	/**
+	 * Corrects PixiJS blend, takes premultiplied alpha into account
+	 *
+	 * @memberof PIXI.utils
+	 * @function mapPremultipliedBlendModes
+	 * @private
+	 * @return {Array<number[]>} Mapped modes.
+	 */
+	function mapPremultipliedBlendModes$1() {
+	    var pm = [];
+	    var npm = [];
+	    for (var i = 0; i < 32; i++) {
+	        pm[i] = i;
+	        npm[i] = i;
+	    }
+	    pm[exports.BLEND_MODES.NORMAL_NPM] = exports.BLEND_MODES.NORMAL;
+	    pm[exports.BLEND_MODES.ADD_NPM] = exports.BLEND_MODES.ADD;
+	    pm[exports.BLEND_MODES.SCREEN_NPM] = exports.BLEND_MODES.SCREEN;
+	    npm[exports.BLEND_MODES.NORMAL] = exports.BLEND_MODES.NORMAL_NPM;
+	    npm[exports.BLEND_MODES.ADD] = exports.BLEND_MODES.ADD_NPM;
+	    npm[exports.BLEND_MODES.SCREEN] = exports.BLEND_MODES.SCREEN_NPM;
+	    var array = [];
+	    array.push(npm);
+	    array.push(pm);
+	    return array;
+	}
+	/**
+	 * maps premultiply flag and blendMode to adjusted blendMode
+	 * @memberof PIXI.utils
+	 * @const premultiplyBlendMode
+	 * @type {Array<number[]>}
+	 */
+	var premultiplyBlendMode$1 = mapPremultipliedBlendModes$1();
+	/**
+	 * changes blendMode according to texture format
+	 *
+	 * @memberof PIXI.utils
+	 * @function correctBlendMode
+	 * @param {number} blendMode supposed blend mode
+	 * @param {boolean} premultiplied  whether source is premultiplied
+	 * @returns {number} true blend mode for this texture
+	 */
+	function correctBlendMode$1(blendMode, premultiplied) {
+	    return premultiplyBlendMode$1[premultiplied ? 1 : 0][blendMode];
+	}
+	/**
+	 * combines rgb and alpha to out array
+	 *
+	 * @memberof PIXI.utils
+	 * @function premultiplyRgba
+	 * @param {Float32Array|number[]} rgb input rgb
+	 * @param {number} alpha alpha param
+	 * @param {Float32Array} [out] output
+	 * @param {boolean} [premultiply=true] do premultiply it
+	 * @returns {Float32Array} vec4 rgba
+	 */
+	function premultiplyRgba$1(rgb, alpha, out, premultiply) {
+	    out = out || new Float32Array(4);
+	    if (premultiply || premultiply === undefined) {
+	        out[0] = rgb[0] * alpha;
+	        out[1] = rgb[1] * alpha;
+	        out[2] = rgb[2] * alpha;
+	    }
+	    else {
+	        out[0] = rgb[0];
+	        out[1] = rgb[1];
+	        out[2] = rgb[2];
+	    }
+	    out[3] = alpha;
+	    return out;
+	}
+	/**
+	 * premultiplies tint
+	 *
+	 * @memberof PIXI.utils
+	 * @function premultiplyTint
+	 * @param {number} tint integer RGB
+	 * @param {number} alpha floating point alpha (0.0-1.0)
+	 * @returns {number} tint multiplied by alpha
+	 */
+	function premultiplyTint$1(tint, alpha) {
+	    if (alpha === 1.0) {
+	        return (alpha * 255 << 24) + tint;
+	    }
+	    if (alpha === 0.0) {
+	        return 0;
+	    }
+	    var R = ((tint >> 16) & 0xFF);
+	    var G = ((tint >> 8) & 0xFF);
+	    var B = (tint & 0xFF);
+	    R = ((R * alpha) + 0.5) | 0;
+	    G = ((G * alpha) + 0.5) | 0;
+	    B = ((B * alpha) + 0.5) | 0;
+	    return (alpha * 255 << 24) + (R << 16) + (G << 8) + B;
+	}
+	/**
+	 * converts integer tint and float alpha to vec4 form, premultiplies by default
+	 *
+	 * @memberof PIXI.utils
+	 * @function premultiplyTintToRgba
+	 * @param {number} tint input tint
+	 * @param {number} alpha alpha param
+	 * @param {Float32Array} [out] output
+	 * @param {boolean} [premultiply=true] do premultiply it
+	 * @returns {Float32Array} vec4 rgba
+	 */
+	function premultiplyTintToRgba$1(tint, alpha, out, premultiply) {
+	    out = out || new Float32Array(4);
+	    out[0] = ((tint >> 16) & 0xFF) / 255.0;
+	    out[1] = ((tint >> 8) & 0xFF) / 255.0;
+	    out[2] = (tint & 0xFF) / 255.0;
+	    if (premultiply || premultiply === undefined) {
+	        out[0] *= alpha;
+	        out[1] *= alpha;
+	        out[2] *= alpha;
+	    }
+	    out[3] = alpha;
+	    return out;
+	}
+
+	/**
+	 * Generic Mask Stack data structure
+	 *
+	 * @memberof PIXI.utils
+	 * @function createIndicesForQuads
+	 * @param {number} size - Number of quads
+	 * @param {Uint16Array|Uint32Array} [outBuffer] - Buffer for output, length has to be `6 * size`
+	 * @return {Uint16Array|Uint32Array} - Resulting index buffer
+	 */
+	function createIndicesForQuads$1(size, outBuffer) {
+	    if (outBuffer === void 0) { outBuffer = null; }
+	    // the total number of indices in our array, there are 6 points per quad.
+	    var totalIndices = size * 6;
+	    outBuffer = outBuffer || new Uint16Array(totalIndices);
+	    if (outBuffer.length !== totalIndices) {
+	        throw new Error("Out buffer length is incorrect, got " + outBuffer.length + " and expected " + totalIndices);
+	    }
+	    // fill the indices with the quads to draw
+	    for (var i = 0, j = 0; i < totalIndices; i += 6, j += 4) {
+	        outBuffer[i + 0] = j + 0;
+	        outBuffer[i + 1] = j + 1;
+	        outBuffer[i + 2] = j + 2;
+	        outBuffer[i + 3] = j + 0;
+	        outBuffer[i + 4] = j + 2;
+	        outBuffer[i + 5] = j + 3;
+	    }
+	    return outBuffer;
+	}
+
+	function getBufferType$2(array) {
+	    if (array.BYTES_PER_ELEMENT === 4) {
+	        if (array instanceof Float32Array) {
+	            return 'Float32Array';
+	        }
+	        else if (array instanceof Uint32Array) {
+	            return 'Uint32Array';
+	        }
+	        return 'Int32Array';
+	    }
+	    else if (array.BYTES_PER_ELEMENT === 2) {
+	        if (array instanceof Uint16Array) {
+	            return 'Uint16Array';
+	        }
+	    }
+	    else if (array.BYTES_PER_ELEMENT === 1) {
+	        if (array instanceof Uint8Array) {
+	            return 'Uint8Array';
+	        }
+	    }
+	    // TODO map out the rest of the array elements!
+	    return null;
+	}
+
+	/* eslint-disable object-shorthand */
+	var map$3 = { Float32Array: Float32Array, Uint32Array: Uint32Array, Int32Array: Int32Array, Uint8Array: Uint8Array };
+	function interleaveTypedArrays$2(arrays, sizes) {
+	    var outSize = 0;
+	    var stride = 0;
+	    var views = {};
+	    for (var i = 0; i < arrays.length; i++) {
+	        stride += sizes[i];
+	        outSize += arrays[i].length;
+	    }
+	    var buffer = new ArrayBuffer(outSize * 4);
+	    var out = null;
+	    var littleOffset = 0;
+	    for (var i = 0; i < arrays.length; i++) {
+	        var size = sizes[i];
+	        var array = arrays[i];
+	        /*
+	        @todo This is unsafe casting but consistent with how the code worked previously. Should it stay this way
+	              or should and `getBufferTypeUnsafe` function be exposed that throws an Error if unsupported type is passed?
+	         */
+	        var type = getBufferType$2(array);
+	        if (!views[type]) {
+	            views[type] = new map$3[type](buffer);
+	        }
+	        out = views[type];
+	        for (var j = 0; j < array.length; j++) {
+	            var indexStart = ((j / size | 0) * stride) + littleOffset;
+	            var index = j % size;
+	            out[indexStart + index] = array[j];
+	        }
+	        littleOffset += size;
+	    }
+	    return new Float32Array(buffer);
+	}
+
+	// Taken from the bit-twiddle package
+	/**
+	 * Rounds to next power of two.
+	 *
+	 * @function nextPow2
+	 * @memberof PIXI.utils
+	 * @param {number} v input value
+	 * @return {number}
+	 */
+	function nextPow2$1(v) {
+	    v += v === 0 ? 1 : 0;
+	    --v;
+	    v |= v >>> 1;
+	    v |= v >>> 2;
+	    v |= v >>> 4;
+	    v |= v >>> 8;
+	    v |= v >>> 16;
+	    return v + 1;
+	}
+	/**
+	 * Checks if a number is a power of two.
+	 *
+	 * @function isPow2
+	 * @memberof PIXI.utils
+	 * @param {number} v input value
+	 * @return {boolean} `true` if value is power of two
+	 */
+	function isPow2$1(v) {
+	    return !(v & (v - 1)) && (!!v);
+	}
+	/**
+	 * Computes ceil of log base 2
+	 *
+	 * @function log2
+	 * @memberof PIXI.utils
+	 * @param {number} v input value
+	 * @return {number} logarithm base 2
+	 */
+	function log2$1(v) {
+	    var r = (v > 0xFFFF ? 1 : 0) << 4;
+	    v >>>= r;
+	    var shift = (v > 0xFF ? 1 : 0) << 3;
+	    v >>>= shift;
+	    r |= shift;
+	    shift = (v > 0xF ? 1 : 0) << 2;
+	    v >>>= shift;
+	    r |= shift;
+	    shift = (v > 0x3 ? 1 : 0) << 1;
+	    v >>>= shift;
+	    r |= shift;
+	    return r | (v >> 1);
+	}
+
+	/**
+	 * Remove items from a javascript array without generating garbage
+	 *
+	 * @function removeItems
+	 * @memberof PIXI.utils
+	 * @param {Array<any>} arr Array to remove elements from
+	 * @param {number} startIdx starting index
+	 * @param {number} removeCount how many to remove
+	 */
+	function removeItems$1(arr, startIdx, removeCount) {
+	    var length = arr.length;
+	    var i;
+	    if (startIdx >= length || removeCount === 0) {
+	        return;
+	    }
+	    removeCount = (startIdx + removeCount > length ? length - startIdx : removeCount);
+	    var len = length - removeCount;
+	    for (i = startIdx; i < len; ++i) {
+	        arr[i] = arr[i + removeCount];
+	    }
+	    arr.length = len;
+	}
+
+	/**
+	 * Returns sign of number
+	 *
+	 * @memberof PIXI.utils
+	 * @function sign
+	 * @param {number} n - the number to check the sign of
+	 * @returns {number} 0 if `n` is 0, -1 if `n` is negative, 1 if `n` is positive
+	 */
+	function sign$2(n) {
+	    if (n === 0)
+	        { return 0; }
+	    return n < 0 ? -1 : 1;
+	}
+
+	var nextUid$1 = 0;
+	/**
+	 * Gets the next unique identifier
+	 *
+	 * @memberof PIXI.utils
+	 * @function uid
+	 * @return {number} The next unique identifier to use.
+	 */
+	function uid$2() {
+	    return ++nextUid$1;
+	}
+
+	// A map of warning messages already fired
+	var warnings$1 = {};
+	/**
+	 * 输出日志，格式化提示
+	 * 提示已经不推荐的类，属性等.
+	 * 提供简单的堆栈查看.
+	 *
+	 * @memberof PIXI.utils
+	 * @function deprecation
+	 * @param {string} version - 不推荐使用改功能的版本
+	 * @param {string} message - 输出消息
+	 * @param {number} [ignoreDepth=3] - 堆栈的调用步骤数.
+	 */
+	function deprecation$1(version, message, ignoreDepth) {
+	    if (ignoreDepth === void 0) { ignoreDepth = 3; }
+	    // Ignore duplicat
+	    if (warnings$1[message]) {
+	        return;
+	    }
+	    /* eslint-disable no-console */
+	    var stack = new Error().stack;
+	    // Handle IE < 10 and Safari < 6
+	    if (typeof stack === 'undefined') {
+	        console.warn('VF Deprecation Warning: ', message + "\nDeprecated since v" + version);
+	    }
+	    else {
+	        // chop off the stack trace which includes PixiJS internal calls
+	        stack = stack.split('\n').splice(ignoreDepth).join('\n');
+	        if (console.groupCollapsed) {
+	            console.groupCollapsed('%cVF Deprecation Warning: %c%s', 'color:#614108;background:#fffbe6', 'font-weight:normal;color:#614108;background:#fffbe6', message + "\nDeprecated since v" + version);
+	            console.warn(stack);
+	            console.groupEnd();
+	        }
+	        else {
+	            console.warn('VF Deprecation Warning: ', message + "\nDeprecated since v" + version);
+	            console.warn(stack);
+	        }
+	    }
+	    /* eslint-enable no-console */
+	    warnings$1[message] = true;
+	}
+
+	/**
+	 * @todo Describe property usage
+	 *
+	 * @static
+	 * @name ProgramCache
+	 * @memberof PIXI.utils
+	 * @type {Object}
+	 */
+	var ProgramCache$1 = {};
+	/**
+	 * @todo Describe property usage
+	 *
+	 * @static
+	 * @name TextureCache
+	 * @memberof PIXI.utils
+	 * @type {Object}
+	 */
+	var TextureCache$1 = Object.create(null);
+	/**
+	 * @todo Describe property usage
+	 *
+	 * @static
+	 * @name BaseTextureCache
+	 * @memberof PIXI.utils
+	 * @type {Object}
+	 */
+	var BaseTextureCache$1 = Object.create(null);
+	/**
+	 * Destroys all texture in the cache
+	 *
+	 * @memberof PIXI.utils
+	 * @function destroyTextureCache
+	 */
+	function destroyTextureCache$1() {
+	    var key;
+	    for (key in TextureCache$1) {
+	        TextureCache$1[key].destroy();
+	    }
+	    for (key in BaseTextureCache$1) {
+	        BaseTextureCache$1[key].destroy();
+	    }
+	}
+	/**
+	 * Removes all textures from cache, but does not destroy them
+	 *
+	 * @memberof PIXI.utils
+	 * @function clearTextureCache
+	 */
+	function clearTextureCache$1() {
+	    var key;
+	    for (key in TextureCache$1) {
+	        delete TextureCache$1[key];
+	    }
+	    for (key in BaseTextureCache$1) {
+	        delete BaseTextureCache$1[key];
+	    }
+	}
+
+	/**
+	 * Creates a Canvas element of the given size to be used as a target for rendering to.
+	 *
+	 * @class
+	 * @memberof PIXI.utils
+	 */
+	var CanvasRenderTarget$1 = /** @class */ (function () {
+	    /**
+	     * @param {number} width - the width for the newly created canvas
+	     * @param {number} height - the height for the newly created canvas
+	     * @param {number} [resolution=1] - The resolution / device pixel ratio of the canvas
+	     */
+	    function CanvasRenderTarget(width, height, resolution) {
+	        /**
+	         * The Canvas object that belongs to this CanvasRenderTarget.
+	         *
+	         * @member {HTMLCanvasElement}
+	         */
+	        this.canvas = document.createElement('canvas');
+	        /**
+	         * A CanvasRenderingContext2D object representing a two-dimensional rendering context.
+	         *
+	         * @member {CanvasRenderingContext2D}
+	         */
+	        this.context = this.canvas.getContext('2d');
+	        this.resolution = resolution || settings.RESOLUTION;
+	        this.resize(width, height);
+	    }
+	    /**
+	     * Clears the canvas that was created by the CanvasRenderTarget class.
+	     *
+	     * @private
+	     */
+	    CanvasRenderTarget.prototype.clear = function () {
+	        this.context.setTransform(1, 0, 0, 1, 0, 0);
+	        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	    };
+	    /**
+	     * Resizes the canvas to the specified width and height.
+	     *
+	     * @param {number} width - the new width of the canvas
+	     * @param {number} height - the new height of the canvas
+	     */
+	    CanvasRenderTarget.prototype.resize = function (width, height) {
+	        this.canvas.width = width * this.resolution;
+	        this.canvas.height = height * this.resolution;
+	    };
+	    /**
+	     * Destroys this canvas.
+	     *
+	     */
+	    CanvasRenderTarget.prototype.destroy = function () {
+	        this.context = null;
+	        this.canvas = null;
+	    };
+	    Object.defineProperty(CanvasRenderTarget.prototype, "width", {
+	        /**
+	         * The width of the canvas buffer in pixels.
+	         *
+	         * @member {number}
+	         */
+	        get: function () {
+	            return this.canvas.width;
+	        },
+	        set: function (val) {
+	            this.canvas.width = val;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(CanvasRenderTarget.prototype, "height", {
+	        /**
+	         * The height of the canvas buffer in pixels.
+	         *
+	         * @member {number}
+	         */
+	        get: function () {
+	            return this.canvas.height;
+	        },
+	        set: function (val) {
+	            this.canvas.height = val;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    return CanvasRenderTarget;
+	}());
+
+	/**
+	 * Trim transparent borders from a canvas
+	 *
+	 * @memberof PIXI.utils
+	 * @function trimCanvas
+	 * @param {HTMLCanvasElement} canvas - the canvas to trim
+	 * @returns {object} Trim data
+	 */
+	function trimCanvas$1(canvas) {
+	    // https://gist.github.com/remy/784508
+	    var width = canvas.width;
+	    var height = canvas.height;
+	    var context = canvas.getContext('2d');
+	    var imageData = context.getImageData(0, 0, width, height);
+	    var pixels = imageData.data;
+	    var len = pixels.length;
+	    var bound = {
+	        top: null,
+	        left: null,
+	        right: null,
+	        bottom: null,
+	    };
+	    var data = null;
+	    var i;
+	    var x;
+	    var y;
+	    for (i = 0; i < len; i += 4) {
+	        if (pixels[i + 3] !== 0) {
+	            x = (i / 4) % width;
+	            y = ~~((i / 4) / width);
+	            if (bound.top === null) {
+	                bound.top = y;
+	            }
+	            if (bound.left === null) {
+	                bound.left = x;
+	            }
+	            else if (x < bound.left) {
+	                bound.left = x;
+	            }
+	            if (bound.right === null) {
+	                bound.right = x + 1;
+	            }
+	            else if (bound.right < x) {
+	                bound.right = x + 1;
+	            }
+	            if (bound.bottom === null) {
+	                bound.bottom = y;
+	            }
+	            else if (bound.bottom < y) {
+	                bound.bottom = y;
+	            }
+	        }
+	    }
+	    if (bound.top !== null) {
+	        width = bound.right - bound.left;
+	        height = bound.bottom - bound.top + 1;
+	        data = context.getImageData(bound.left, bound.top, width, height);
+	    }
+	    return {
+	        height: height,
+	        width: width,
+	        data: data,
+	    };
+	}
+
+	/**
+	 * Regexp for data URI.
+	 * Based on: {@link https://github.com/ragingwind/data-uri-regex}
+	 *
+	 * @static
+	 * @constant {RegExp|string} DATA_URI
+	 * @memberof PIXI
+	 * @example data:image/png;base64
+	 */
+	var DATA_URI$1 = /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;charset=([\w-]+))?(?:;(base64))?,(.*)/i;
+
+	/**
+	 * @memberof PIXI.utils
+	 * @interface DecomposedDataUri
+	 */
+	/**
+	 * type, eg. `image`
+	 * @memberof PIXI.utils.DecomposedDataUri#
+	 * @member {string} mediaType
+	 */
+	/**
+	 * Sub type, eg. `png`
+	 * @memberof PIXI.utils.DecomposedDataUri#
+	 * @member {string} subType
+	 */
+	/**
+	 * @memberof PIXI.utils.DecomposedDataUri#
+	 * @member {string} charset
+	 */
+	/**
+	 * Data encoding, eg. `base64`
+	 * @memberof PIXI.utils.DecomposedDataUri#
+	 * @member {string} encoding
+	 */
+	/**
+	 * The actual data
+	 * @memberof PIXI.utils.DecomposedDataUri#
+	 * @member {string} data
+	 */
+	/**
+	 * Split a data URI into components. Returns undefined if
+	 * parameter `dataUri` is not a valid data URI.
+	 *
+	 * @memberof PIXI.utils
+	 * @function decomposeDataUri
+	 * @param {string} dataUri - the data URI to check
+	 * @return {PIXI.utils.DecomposedDataUri|undefined} The decomposed data uri or undefined
+	 */
+	function decomposeDataUri$1(dataUri) {
+	    var dataUriMatch = DATA_URI$1.exec(dataUri);
+	    if (dataUriMatch) {
+	        return {
+	            mediaType: dataUriMatch[1] ? dataUriMatch[1].toLowerCase() : undefined,
+	            subType: dataUriMatch[2] ? dataUriMatch[2].toLowerCase() : undefined,
+	            charset: dataUriMatch[3] ? dataUriMatch[3].toLowerCase() : undefined,
+	            encoding: dataUriMatch[4] ? dataUriMatch[4].toLowerCase() : undefined,
+	            data: dataUriMatch[5],
+	        };
+	    }
+	    return undefined;
+	}
+
+	var tempAnchor$2;
+	/**
+	 * Sets the `crossOrigin` property for this resource based on if the url
+	 * for this resource is cross-origin. If crossOrigin was manually set, this
+	 * function does nothing.
+	 * Nipped from the resource loader!
+	 *
+	 * @ignore
+	 * @param {string} url - The url to test.
+	 * @param {object} [loc=window.location] - The location object to test against.
+	 * @return {string} The crossOrigin value to use (or empty string for none).
+	 */
+	function determineCrossOrigin$1(url, loc) {
+	    if (loc === void 0) { loc = window.location; }
+	    // data: and javascript: urls are considered same-origin
+	    if (url.indexOf('data:') === 0) {
+	        return '';
+	    }
+	    // default is window.location
+	    loc = loc || window.location;
+	    if (!tempAnchor$2) {
+	        tempAnchor$2 = document.createElement('a');
+	    }
+	    // let the browser determine the full href for the url of this resource and then
+	    // parse with the node url lib, we can't use the properties of the anchor element
+	    // because they don't work in IE9 :(
+	    tempAnchor$2.href = url;
+	    var parsedUrl = parse(tempAnchor$2.href);
+	    var samePort = (!parsedUrl.port && loc.port === '') || (parsedUrl.port === loc.port);
+	    // if cross origin
+	    if (parsedUrl.hostname !== loc.hostname || !samePort || parsedUrl.protocol !== loc.protocol) {
+	        return 'anonymous';
+	    }
+	    return '';
+	}
+
+	/**
+	 * get the resolution / device pixel ratio of an asset by looking for the prefix
+	 * used by spritesheets and image urls
+	 *
+	 * @memberof PIXI.utils
+	 * @function getResolutionOfUrl
+	 * @param {string} url - the image path
+	 * @param {number} [defaultValue=1] - the defaultValue if no filename prefix is set.
+	 * @return {number} resolution / device pixel ratio of an asset
+	 */
+	function getResolutionOfUrl$1(url, defaultValue) {
+	    var resolution = settings.RETINA_PREFIX.exec(url);
+	    if (resolution) {
+	        return parseFloat(resolution[1]);
+	    }
+	    return defaultValue !== undefined ? defaultValue : 1;
+	}
+
+	/**
+	 * Generalized convenience utilities for PIXI.
+	 * @example
+	 * // Extend PIXI's internal Event Emitter.
+	 * class MyEmitter extends PIXI.utils.EventEmitter {
+	 *   constructor() {
+	 *      super();
+	 *      console.log("Emitter created!");
+	 *   }
+	 * }
+	 *
+	 * // Get info on current device
+	 * console.log(PIXI.utils.isMobile);
+	 *
+	 * // Convert hex color to string
+	 * console.log(PIXI.utils.hex2string(0xff00ff)); // returns: "#ff00ff"
+	 * @namespace PIXI.utils
+	 */
+
+	/**
+	 * 负责在整个应用程序中播放，同步和分析声音。
+	 * @class
+	 * @extends PIXI.utils.EventEmitter
+	 * @memberof PIXI
+	 */
+	var AudioEngine = /** @class */ (function (_super) {
+	    __extends$k(AudioEngine, _super);
+	    function AudioEngine() {
+	        var _this = _super.call(this) || this;
+	        _this._audioContext = null; // AudioContext
+	        _this._audioContextInitialized = false;
+	        _this._muteButton = null;
+	        _this.map = new Map();
+	        /**
+	         * 获取当前主机是否支持Web Audio，从而可以创建AudioContexts。
+	         */
+	        _this.canUseWebAudio = false;
+	        /**
+	         * 定义如果不支持WebAudio，Babylon是否应发出警告。
+	         * @ignoreNaming
+	         */
+	        _this.WarnedWebAudioUnsupported = false;
+	        /**
+	         * 获取您的浏览器是否支持mp3。
+	         */
+	        _this.isMP3supported = false;
+	        /**
+	         * 获取浏览器是否支持ogg。
+	         */
+	        _this.isOGGsupported = false;
+	        /**
+	        * 获取音频是否已在设备上解锁。
+	        * 有些浏览器对音频有很强的限制，除非是自动播放
+	        * 用户互动已经发生。
+	            */
+	        _this.unlocked = true;
+	        /**
+	         * 定义音频引擎是否依赖于自定义解锁按钮。
+	         * 在这种情况下，不会显示嵌入按钮。
+	         */
+	        _this.useCustomUnlockedButton = false;
+	        /** 音效被中断 */
+	        _this.ononAudioLockedInterrupted = "ononAudioLockedInterrupted";
+	        /**
+	         * 在浏览器上解锁音频时引发的事件。
+	         */
+	        _this.onAudioUnlockedObservable = "onAudioUnlockedObservable";
+	        /**
+	         * 音频锁定在浏览器上时引发的事件。
+	         */
+	        _this.onAudioLockedObservable = "onAudioLockedObservable";
+	        _this._tryToRun = false;
+	        if (AudioEngine.type === 'audio' || AudioEngine.type === 'webaudio') {
+	            var w = window;
+	            if (typeof w.AudioContext !== 'undefined' || typeof w.webkitAudioContext !== 'undefined') {
+	                w.AudioContext = w.AudioContext || w.webkitAudioContext;
+	                _this.canUseWebAudio = true;
+	            }
+	        }
+	        var audioElem = document.createElement('audio');
+	        try {
+	            // eslint-disable-next-line max-len
+	            if (audioElem && !!audioElem.canPlayType && audioElem.canPlayType('audio/mpeg; codecs="mp3"').replace(/^no$/, '')) {
+	                _this.isMP3supported = true;
+	            }
+	        }
+	        catch (e) {
+	            // 功能检查异常.
+	        }
+	        try {
+	            // eslint-disable-next-line max-len
+	            if (audioElem && !!audioElem.canPlayType && audioElem.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/, '')) {
+	                _this.isOGGsupported = true;
+	            }
+	        }
+	        catch (e) {
+	            // 功能检查异常.
+	        }
+	        return _this;
+	    }
+	    Object.defineProperty(AudioEngine, "ins", {
+	        get: function () {
+	            var share = AudioEngine.share = AudioEngine.share || new AudioEngine();
+	            return share;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(AudioEngine.prototype, "audioContext", {
+	        /**
+	         * 获取当前的AudioContext（如果可用）。
+	         */
+	        get: function () {
+	            if (!this._audioContextInitialized) {
+	                this._init();
+	            }
+	            else if (!this.unlocked && !this._muteButton) {
+	                this._displayMuteButton();
+	            }
+	            return this._audioContext;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * 标记处于锁定状态的音频引擎 (浏览器阻止音频自动播放)。
+	     */
+	    AudioEngine.prototype.lock = function () {
+	        this._triggerSuspendedState();
+	    };
+	    /**
+	    * 在dom上完成用户操作后，解锁音频引擎。
+	    */
+	    AudioEngine.prototype.unlock = function () {
+	        this._triggerRunningState();
+	    };
+	    AudioEngine.prototype.resumeAudioContext = function () {
+	        var result;
+	        if (this._audioContext.resume) {
+	            result = this._audioContext.resume();
+	        }
+	        return result || Promise.resolve();
+	    };
+	    AudioEngine.prototype._init = function () {
+	        try {
+	            if (this.canUseWebAudio) {
+	                this._audioContext = new AudioContext();
+	                // create a global volume gain node
+	                this.masterGain = this._audioContext.createGain();
+	                this.masterGain.gain.value = 1;
+	                this.masterGain.connect(this._audioContext.destination);
+	                this._audioContextInitialized = true;
+	                if (this._audioContext.state === 'running') {
+	                    this._triggerRunningState();
+	                }
+	            }
+	        }
+	        catch (e) {
+	            this.canUseWebAudio = false;
+	            // eslint-disable-next-line no-console
+	            console.log("Web Audio: " + e.message);
+	        }
+	    };
+	    AudioEngine.prototype._triggerRunningState = function () {
+	        var _this = this;
+	        if (this._tryToRun) {
+	            return;
+	        }
+	        this._tryToRun = true;
+	        this.resumeAudioContext()
+	            .then(function () {
+	            _this._tryToRun = false;
+	            if (_this._muteButton) {
+	                _this._hideMuteButton();
+	            }
+	        }).catch(function () {
+	            _this._tryToRun = false;
+	            _this.unlocked = false;
+	        });
+	        // Notify users that the audio stack is unlocked/unmuted
+	        this.unlocked = true;
+	        this.emit(this.onAudioUnlockedObservable, this);
+	    };
+	    AudioEngine.prototype._triggerSuspendedState = function () {
+	        this.unlocked = false;
+	        this.emit(this.onAudioLockedObservable, this);
+	    };
+	    /**
+	     * 销毁并释放与音频ccontext相关的资源。
+	     */
+	    AudioEngine.prototype.dispose = function () {
+	        if (this.canUseWebAudio && this._audioContextInitialized) {
+	            if (this._audioContext) {
+	                this.masterGain.disconnect();
+	                this.masterGain.connect(this._audioContext.destination);
+	            }
+	            this.masterGain.gain.value = 1;
+	        }
+	        this.WarnedWebAudioUnsupported = false;
+	        this._hideMuteButton();
+	        this.removeAllListeners();
+	    };
+	    /**
+	     * 获取主增益上的全局音量。
+	     * @returns 不存在返回-1
+	     */
+	    AudioEngine.prototype.getGlobalVolume = function () {
+	        if (this.canUseWebAudio && this._audioContextInitialized) {
+	            return this.masterGain.gain.value;
+	        }
+	        return -1;
+	    };
+	    /**
+	     * 设置全音局量（设置主增益）。
+	     * @param newVolume newVolume定义应用程序的新全局卷
+	     */
+	    AudioEngine.prototype.setGlobalVolume = function (newVolume) {
+	        if (this.canUseWebAudio && this._audioContextInitialized) {
+	            this.masterGain.gain.value = newVolume;
+	        }
+	    };
+	    AudioEngine.prototype._displayMuteButton = function () {
+	        var _this = this;
+	        if (this.useCustomUnlockedButton || this._muteButton) {
+	            return;
+	        }
+	        this._muteButton = document.createElement('button');
+	        this._muteButton.className = 'vfUnmuteIcon';
+	        this._muteButton.id = 'vfUnmuteIconBtn';
+	        this._muteButton.title = 'Unmute';
+	        // eslint-disable-next-line max-len
+	        var imageUrl = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2239%22%20height%3D%2232%22%20viewBox%3D%220%200%2039%2032%22%3E%3Cpath%20fill%3D%22white%22%20d%3D%22M9.625%2018.938l-0.031%200.016h-4.953q-0.016%200-0.031-0.016v-12.453q0-0.016%200.031-0.016h4.953q0.031%200%200.031%200.016v12.453zM12.125%207.688l8.719-8.703v27.453l-8.719-8.719-0.016-0.047v-9.938zM23.359%207.875l1.406-1.406%204.219%204.203%204.203-4.203%201.422%201.406-4.219%204.219%204.219%204.203-1.484%201.359-4.141-4.156-4.219%204.219-1.406-1.422%204.219-4.203z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E';
+	        // eslint-disable-next-line max-len
+	        var css = ".vfUnmuteIcon { position: absolute; left: 20px; top: 20px; height: 40px; width: 60px; background-color: rgba(51,51,51,0.7); background-image: url(" + imageUrl + ");  background-size: 80%; background-repeat:no-repeat; background-position: center; background-position-y: 4px; border: none; outline: none; transition: transform 0.125s ease-out; cursor: pointer; z-index: 9999; } .vfUnmuteIcon:hover { transform: scale(1.05) } .vfUnmuteIcon:active { background-color: rgba(51,51,51,1) }";
+	        var style = document.createElement('style');
+	        style.appendChild(document.createTextNode(css));
+	        document.getElementsByTagName('head')[0].appendChild(style);
+	        document.body.appendChild(this._muteButton);
+	        this._muteButton.addEventListener('touchend', function () {
+	            _this._triggerRunningState();
+	        }, true);
+	        this._muteButton.addEventListener('click', function () {
+	            _this._triggerRunningState();
+	        }, true);
+	    };
+	    AudioEngine.prototype._hideMuteButton = function () {
+	        if (this._muteButton) {
+	            document.body.removeChild(this._muteButton);
+	            this._muteButton = null;
+	        }
+	    };
+	    /**
+	     * 检测当前音频是否支持
+	     * @param url {number} 需要检测URL
+	     */
+	    AudioEngine.prototype.checkCanPlayType = function (url) {
+	        var codecSupportedFound = false;
+	        if (url.substr(0, 4) === 'data') {
+	            url = url.substr(0, 15).replace('/', '.');
+	        }
+	        if (url.indexOf('.mp3') !== -1 && this.isMP3supported) {
+	            codecSupportedFound = true;
+	        }
+	        if (url.indexOf('.ogg') !== -1 && this.isOGGsupported) {
+	            codecSupportedFound = true;
+	        }
+	        if (url.indexOf('.wav') !== -1) {
+	            codecSupportedFound = true;
+	        }
+	        if (url.indexOf('blob:') !== -1) {
+	            codecSupportedFound = true;
+	        }
+	        return codecSupportedFound;
+	    };
+	    AudioEngine.type = 'auto';
+	    return AudioEngine;
+	}(eventemitter3));
+
+	/**
+	 * baseAudioClass
+	 *
+	 * 准备完成 canplaythrough
+	 *
+	 * 播放事件 play
+	 *
+	 * 暂停事件 pause
+	 *
+	 * 错误事件 error
+	 *
+	 *
+	 *
+	 * @class
+	 * @extends PIXI.utils.EventEmitter
+	 * @memberof PIXI
+	 */
+	var HtmlAudio = /** @class */ (function (_super) {
+	    __extends$k(HtmlAudio, _super);
+	    function HtmlAudio(name, urlOrArrayBuffer, option) {
+	        var _this = _super.call(this) || this;
+	        _this._autoplay = false;
+	        _this._isReadyToPlay = false;
+	        _this._isPlaying = false;
+	        _this._isPause = false;
+	        _this._startOffset = 0;
+	        _this._playLength = 0;
+	        _this._stopTime = 0;
+	        _this._isDispose = false;
+	        _this._name = name;
+	        _this._source = urlOrArrayBuffer;
+	        _this._audio = new Audio(urlOrArrayBuffer);
+	        var audio = _this._audio;
+	        if (!AudioEngine.ins.checkCanPlayType(urlOrArrayBuffer)) {
+	            audio.remove();
+	            throw new Error("not support type " + urlOrArrayBuffer);
+	        }
+	        if (option) {
+	            audio.loop = option.loop || false;
+	            audio.volume = option.volume || 1;
+	            audio.playbackRate = option.playbackRate || 1;
+	        }
+	        audio.autoplay = false;
+	        audio.controls = false;
+	        audio.preload = 'auto';
+	        audio.src = urlOrArrayBuffer;
+	        var onCanplaythrough = _this.onCanplaythrough.bind(_this);
+	        var onError = _this.onError.bind(_this);
+	        var onPause = _this.onPause.bind(_this);
+	        audio.oncanplaythrough = onCanplaythrough;
+	        audio.onerror = onError;
+	        audio.onpaste = onPause;
+	        document.body.appendChild(audio);
+	        if (_this.autoplay) {
+	            _this.play();
+	        }
+	        return _this;
+	    }
+	    Object.defineProperty(HtmlAudio.prototype, "name", {
+	        /**
+	         * 声音名称。
+	         * @member {string}
+	         */
+	        get: function () {
+	            return this._name;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(HtmlAudio.prototype, "autoplay", {
+	        /**
+	         * 自动播放声音
+	         * @default false
+	         * @member {boolean}
+	         */
+	        get: function () {
+	            return this._autoplay;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(HtmlAudio.prototype, "loop", {
+	        /**
+	         * 完成播放一次后声音是否循环播放。
+	         * @default false
+	         * @member {boolean}
+	         */
+	        get: function () {
+	            return this._audio.loop;
+	        },
+	        set: function (value) {
+	            this._audio.loop = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(HtmlAudio.prototype, "playbackRate", {
+	        /**
+	         * 播放的速率
+	         * @default 1
+	         * @member {number}
+	         */
+	        get: function () {
+	            return this._audio.playbackRate;
+	        },
+	        set: function (value) {
+	            this._audio.playbackRate = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(HtmlAudio.prototype, "volume", {
+	        /**
+	         * 音量(0.0 - 1.0)
+	         * @default 1
+	         * @member {number}
+	         */
+	        get: function () {
+	            return this._audio.volume;
+	        },
+	        set: function (value) {
+	            this._audio.volume = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(HtmlAudio.prototype, "duration", {
+	        /**
+	         * 获取当前音频的长度
+	         * @readonly
+	         * @default 0
+	         * @member {number}
+	         */
+	        get: function () {
+	            return this._audio.duration;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(HtmlAudio.prototype, "paused", {
+	        /**
+	         * 获取当前音频的暂停状态
+	         * @readonly
+	         * @default 1
+	         * @member {number}
+	         */
+	        get: function () {
+	            return this._audio.paused;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(HtmlAudio.prototype, "currentTime", {
+	        /**
+	         * 获取当前音频播放的时间
+	         * @readonly
+	         * @default 1
+	         * @member {number}
+	         */
+	        get: function () {
+	            return this._audio.currentTime;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    HtmlAudio.prototype.onCanplaythrough = function () {
+	        // eslint-disable-next-line no-console
+	        console.log('onCanplaythrough');
+	        this._audio.oncanplaythrough = undefined;
+	        this._isReadyToPlay = true;
+	        if (this._isPlaying) {
+	            this.play(this._startOffset, this._playLength);
+	        }
+	        this.emit('canplaythrough', this);
+	    };
+	    HtmlAudio.prototype.onError = function (event, source, lineno, colno, error) {
+	        if (error) {
+	            console.error(error.message);
+	        }
+	        this.emit('error', this, event);
+	    };
+	    HtmlAudio.prototype.onPause = function () {
+	        this.emit('pause', this, this.paused);
+	    };
+	    HtmlAudio.prototype.removeUpdateEvent = function () {
+	        Ticker$1.shared.remove(this.onStopUpdate, this);
+	        Ticker$1.shared.remove(this.onPlayLength, this);
+	    };
+	    HtmlAudio.prototype.onStopUpdate = function () {
+	        var audio = this._audio;
+	        var stopTime = this._stopTime;
+	        if (stopTime !== 0) {
+	            if (audio.currentTime >= stopTime) {
+	                audio.pause();
+	                this._stopTime = 0;
+	                this.removeUpdateEvent();
+	            }
+	        }
+	    };
+	    HtmlAudio.prototype.onPlayLength = function () {
+	        var playLength = this._playLength;
+	        var audio = this._audio;
+	        if (playLength !== 0) {
+	            if (audio.currentTime >= (playLength + this._startOffset)) {
+	                audio.pause();
+	                this._playLength = 0;
+	                this.removeUpdateEvent();
+	            }
+	        }
+	    };
+	    /**
+	     * 声音播放接口
+	     *
+	     *  await sound.play()
+	     *
+	     * @param {number} [offset] - 声音的开始偏移值
+	     * @param {number} [length] - 持续时间（以秒为单位）
+	     */
+	    HtmlAudio.prototype.play = function (offset, length) {
+	        if (this._isDispose) {
+	            throw new Error('has been unloaded htmlaudio!');
+	        }
+	        if (!this._isPause) {
+	            this._startOffset = offset || 0;
+	            this._playLength = length || 0;
+	        }
+	        this._isPause = false;
+	        this._isPlaying = true;
+	        if (this._isReadyToPlay) {
+	            try {
+	                this._audio.currentTime = this._startOffset;
+	            }
+	            catch (e) {
+	                //
+	            }
+	            finally {
+	                if (this._playLength) {
+	                    Ticker$1.shared.add(this.onPlayLength, this);
+	                }
+	                this._audio.play();
+	                this.emit('play', this);
+	            }
+	        }
+	        else {
+	            this._audio.load();
+	        }
+	    };
+	    /**
+	    * 停止声音
+	    * @param time (optional) X秒后停止声音。默认情况下立即停止
+	    */
+	    HtmlAudio.prototype.stop = function (time) {
+	        if (this._isDispose) {
+	            throw new Error('has been unloaded htmlaudio!');
+	        }
+	        if (!this._isPlaying) {
+	            return;
+	        }
+	        var audio = this._audio;
+	        this.removeUpdateEvent();
+	        this._isPlaying = false;
+	        this._startOffset = 0;
+	        this._playLength = 0;
+	        this._stopTime = time || 0;
+	        if (time) {
+	            this._stopTime = audio.currentTime + time;
+	            Ticker$1.shared.add(this.onStopUpdate, this);
+	        }
+	        else {
+	            audio.currentTime = 0;
+	            audio.pause();
+	        }
+	    };
+	    /**
+	     * 暂停声音
+	     */
+	    HtmlAudio.prototype.pause = function () {
+	        this.removeUpdateEvent();
+	        this._isPlaying = false;
+	        this._isPause = true;
+	        this._startOffset = this._audio.currentTime;
+	        this._audio.pause();
+	    };
+	    /**
+	     * 释放
+	     */
+	    HtmlAudio.prototype.dispose = function () {
+	        this.removeUpdateEvent();
+	        this._isDispose = true;
+	        var audio = this._audio;
+	        if (this._isReadyToPlay) {
+	            audio.pause();
+	            audio.src = '';
+	        }
+	        audio.oncanplaythrough = undefined;
+	        audio.onerror = undefined;
+	        audio.onpaste = undefined;
+	        audio.remove();
+	        this._audio = null;
+	    };
+	    /**
+	     * 获取包含数据的当前基础音频缓冲区
+	     */
+	    HtmlAudio.prototype.getAudioBuffer = function () {
+	        return undefined;
+	    };
+	    return HtmlAudio;
+	}(eventemitter3));
 
 	CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
 	CanvasRenderer.registerPlugin('extract', CanvasExtract);
@@ -43578,6 +48256,7 @@ var PIXI = (function (exports) {
 	exports.Graphics = Graphics;
 	exports.GraphicsData = GraphicsData;
 	exports.GraphicsGeometry = GraphicsGeometry;
+	exports.HtmlAudio = HtmlAudio;
 	exports.IGLUniformData = IGLUniformData;
 	exports.LineStyle = LineStyle;
 	exports.Loader = Loader$1;

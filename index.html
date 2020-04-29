@@ -38,56 +38,46 @@
         <button>switchToPrevScene</button>
         <button param='2'>switchToSceneId</button>
     </div>
-    <!-- <script src='./packages/launcher/dist/launcher.js'></script> -->
-    <script type="module">
+    <script src='./packages/launcher/dist/launcher.js'></script>
+    <script>
         
-        import './packages/launcher/dist/launcher.js';
+        // import './packages/launcher/dist/launcher.js';
 
-        if (location.href.indexOf("#path") === -1) {
+        if (location.href.indexOf("#") === -1) {
             location.hash = "path/test/" + 'data/gotoPlay.json';
             //location.reload();
         }
 
-        /** option:
-            container: document.getElementById("vf-container"), 
-            bgcolor: '0xffffff',
-            debug: true,
-            language: 'zh-CN',
-            // wmode : "transparent", /不填写，不会处理透明，默认白色背景
-            // scaleMode: 'showAll'//不填写，根据配置数据读取 'showAll', 'noScale','cover','contain'
-            vfvars: {
-                useNativeAudio: false, //业务线动态设置,是否使用原生播放
-            }
-            plugs: [
-
-            ]
-            libs: [
-
-            ]
-        */
         createVF({ container: document.getElementById("vf-container") , debug: true}, function (player) {
 
-            player.onReady = () => {
+            player.onReady = function() {
                 console.log("onReady"); //初始化完成
             }
 
-            player.onSceneCreate = () => {
+            player.onSceneCreate = function() {
                 console.log("onSceneCreate"); //资源加载完成
             }
 
-            player.onMessage = (msg) => {
+            player.onMessage = function(msg) {
                 console.log("onMessage ==>", msg);
             }
 
-            player.onError = (evt) => {
+            player.onError = function(evt) {
                 console.log("onError ==>", evt);
             }
 
-            player.onDispose = () => {
+            player.onDispose = function() {
                 console.log("onDispose");
             }
 
-            player.play(location.hash.substr(5));
+            if (location.hash.indexOf('http')!==-1) {
+                player.play(location.hash.substr(1));
+            }else{
+                player.play(location.hash.substr(5));
+            }
+            
+            //player.play('test/VF_IC019/index.json');
+            //player.play('https://s.vipkidstatic.com/fe-static/learning-stages/static/assets/CDNFiles/VF_IC035/index_v1.json?v=1');
 
             // ========  测试代码 ==============
             test(player);
@@ -99,13 +89,13 @@
     <script>
         function test(player){
             // ========  测试代码 ==============
-            const buttons = document.getElementById('buttons').children;
-            for (let i = 0; i < buttons.length; i++) {
-                let button = buttons[i];
-                let name = button.innerHTML;
-                let paramType = button.getAttribute('param-type') || "string";
-                let param = paramType === "string" ? button.getAttribute('param') : JSON.parse(button.getAttribute('param'));
-                button.addEventListener("click", () => {
+            var buttons = document.getElementById('buttons').children;
+            for (var i = 0; i < buttons.length; i++) {
+                var button = buttons[i];
+                var name = button.innerHTML;
+                var paramType = button.getAttribute('param-type') || "string";
+                var param = paramType === "string" ? button.getAttribute('param') : JSON.parse(button.getAttribute('param'));
+                button.addEventListener("click", function() {
                     console.clear();
                     if(param){
                         console.log(`执行方法:${name}(${param})`);

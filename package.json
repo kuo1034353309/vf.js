@@ -1,9 +1,10 @@
 {
-  "name": "@vf/player",
+  "name": "player",
   "scripts": {
     "dev": "webpack --config config/webpack.dev.js --watch",
     "start": "node config/dev-server.js & npm run watch",
-    "prod": "node config/build.js && webpack --config config/webpack.prod.js --verbose"
+    "prod": "node config/build.js && webpack --config config/webpack.prod.js --verbose",
+    "test": "jest --config jest.config.js"
   },
   "repository": {
     "type": "git",
@@ -18,19 +19,22 @@
   "author": "VIPKID EDU XYZ",
   "license": "MIT",
   "devDependencies": {
+    "@babel/preset-env": "^7.9.5",
     "@types/node": "^13.11.1",
     "@types/webpack": "^4.41.11",
-    "eslint": "6.6.0",
     "@typescript-eslint/eslint-plugin": "2.6.1",
     "@typescript-eslint/parser": "2.6.1",
+    "copy-webpack-plugin": "5.0.5",
     "cross-env": "^6.0.3",
+    "eslint": "6.6.0",
     "filemanager-webpack-plugin": "^2.0.5",
     "html-webpack-plugin": "3.2.0",
-    "copy-webpack-plugin": "5.0.5",
+    "jest": "^25.4.0",
     "ts-loader": "6.1.0",
     "ts-node": "^8.8.2",
     "typescript": "^3.7.2",
     "url-loader": "^3.0.0",
+    "vconsole": "^3.3.4",
     "webpack": "4.41.2",
     "webpack-bundle-analyzer": "^3.6.1",
     "webpack-cli": "3.1.2",

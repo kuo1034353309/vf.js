@@ -1927,7 +1927,7 @@ var RES = /** @class */ (function (_super) {
                             this.stage.systemEvent.emitError('E0003', [id], "warning" /* WARNING */);
                             continue;
                         }
-                        if (assetsItem.type === "sound" /* SOUND */ && this.stage.config.vfvars.useNativeAudio) {
+                        if (assetsItem.type === "audio" /* AUDIO */ && this.stage.config.vfvars.useNativeAudio) {
                             this.stage.systemEvent.emitError('S0004', [id], "warning" /* WARNING */);
                             continue;
                         }
@@ -4183,8 +4183,9 @@ var BreakTask = /** @class */ (function (_super) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CallFunctionTask", function() { return CallFunctionTask; });
 /* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-/* harmony import */ var _VariableManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../VariableManager */ "./packages/player/src/core/VariableManager.ts");
-/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+/* harmony import */ var _display_VFComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../display/VFComponent */ "./packages/player/src/display/VFComponent.ts");
+/* harmony import */ var _VariableManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../VariableManager */ "./packages/player/src/core/VariableManager.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -4201,6 +4202,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var CallFunctionTask = /** @class */ (function (_super) {
     __extends(CallFunctionTask, _super);
     function CallFunctionTask(compontent, funName, data) {
@@ -4214,8 +4216,8 @@ var CallFunctionTask = /** @class */ (function (_super) {
     }
     CallFunctionTask.prototype.run = function () {
         _super.prototype.run.call(this);
-        this._component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_2__["getTargetComponent"])(this.component, this.data.target);
-        if (this._component && this._component.vfStage) {
+        this._component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__["getTargetComponent"])(this.component, this.data.target);
+        if (this._component instanceof _display_VFComponent__WEBPACK_IMPORTED_MODULE_1__["VFComponent"] && this._component && this._component.vfStage) {
             var variableManager = this._component.vfStage.variableManager;
             var funId = this.funName;
             this.runId = variableManager.getFunctionId();
@@ -4236,10 +4238,10 @@ var CallFunctionTask = /** @class */ (function (_super) {
                 for (var i = 0, len = paramValues.length; i < len; i++) {
                     var paramId = funId + this.runId + 'param_' + i;
                     this.paramIds.push(paramId);
-                    if (!variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_1__["VariableManager"].GLOBAL_ID]) {
-                        variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_1__["VariableManager"].GLOBAL_ID] = {};
+                    if (!variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID]) {
+                        variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID] = {};
                     }
-                    variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_1__["VariableManager"].GLOBAL_ID][paramId] = {
+                    variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID][paramId] = {
                         id: paramId,
                         type: "object" /* OBJECT */,
                         value: paramValues[i],
@@ -4260,6 +4262,25 @@ var CallFunctionTask = /** @class */ (function (_super) {
             }
         }
         else {
+            if (this.component.vfStage) {
+                var variableManager = this.component.vfStage.variableManager;
+                var runTarget = this._component;
+                var funName = this.data.name;
+                if (Array.isArray(funName)) {
+                    funName = variableManager.getExpressItemValue(this.component, funName);
+                }
+                var funParam = [];
+                if (this.data.params) {
+                    for (var i = 0, len = this.data.params.length; i < len; i++) {
+                        var param = variableManager.getExpressItemValue(this.component, this.data.params[i]);
+                        funParam.push(param);
+                    }
+                }
+                if (runTarget && funName && runTarget[funName]) {
+                    // tslint:disable-next-line: ban-types
+                    runTarget[funName].apply(runTarget, funParam);
+                }
+            }
             this.complete();
         }
     };
@@ -4288,7 +4309,7 @@ var CallFunctionTask = /** @class */ (function (_super) {
                 var variableManager = this.component.vfStage.variableManager;
                 for (var i = 0, len = this.paramIds.length; i < len; i++) {
                     var paramId = this.paramIds[i];
-                    delete variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_1__["VariableManager"].GLOBAL_ID][paramId];
+                    delete variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID][paramId];
                 }
             }
         }
@@ -9817,21 +9838,6 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
     }
 };
 
-function checkModule() {
-    var w = window;
-    if (w.require === undefined) {
-        w.require = function () { };
-    }
-    if (w.exports === undefined) {
-        w.exports = {};
-    }
-    if (w.module === undefined) {
-        w.module = {};
-    }
-    if (w.module.exports === undefined) {
-        w.module.exports = {};
-    }
-}
 /**
  * 加载script js 或js模块
  * 1. 支持普通的全局js加载，常规script标签方式引入
@@ -9847,12 +9853,11 @@ function checkModule() {
  */
 function importScript(url, cdns, moduleName, loadCompleteCallBack) {
     return __awaiter(this, void 0, void 0, function () {
-        var _namespace, errorUrls;
+        var gui, errorUrls;
         return __generator(this, function (_a) {
-            checkModule();
-            _namespace = vf.gui;
-            if (moduleName && _namespace[moduleName]) {
-                return [2 /*return*/, _namespace[moduleName]];
+            gui = vf.gui;
+            if (moduleName && gui[moduleName]) {
+                return [2 /*return*/, gui[moduleName]];
             }
             errorUrls = [];
             return [2 /*return*/, new Promise(function (resolve, reject) {
@@ -9871,11 +9876,10 @@ function importScript(url, cdns, moduleName, loadCompleteCallBack) {
                             loadCompleteCallBack();
                         }
                         if (moduleName) {
-                            var w = window;
-                            var exports_1 = w.module.exports;
-                            if (exports_1.hasOwnProperty(moduleName)) {
-                                _namespace[moduleName] = exports_1[moduleName];
-                                return resolve(_namespace[moduleName]);
+                            if (gui.module.hasOwnProperty(moduleName)) {
+                                gui[moduleName] = gui.module[moduleName];
+                                gui.module = null;
+                                return resolve(gui[moduleName]);
                             }
                             return resolve(false);
                         }
