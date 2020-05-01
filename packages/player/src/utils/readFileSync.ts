@@ -52,7 +52,7 @@ function geXHRtData(target: XMLHttpRequest): IEvent | undefined {
         msg.code = 'S0002';
         msg.level = EventLevel.ERROR;
         msg.data = `${xhr.responseURL} , ${error}`;
-
+        
         return msg;
     }
 }

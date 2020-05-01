@@ -260,8 +260,8 @@ export interface IScene {
 }
 export interface ISoundTrackMedia {
     id: string;
-    media: vf.sound.IMediaInstance;
-    sound: vf.sound.Sound;
+    assetId: string;
+    sound: vf.IAudio;
 }
 export type AllComponent = (IComponent | IDisplayComponent | ICustomComponent |
     IRadio | IImage | IText | IRect);
@@ -420,8 +420,11 @@ export interface IActionCallFunction extends IAction {
         params?: ExpressItem[];
     }
 export interface IActionPlaySound extends IAction {
-        trackId?: string;
-        useNative?: boolean; 
+        assetId: string;
+        trackId: string;
+        time?: number;
+        offset?: number;
+        length?: number;
         mode?: 'sound' | 'effect';
     }
 export interface IActionGoto extends IAction {

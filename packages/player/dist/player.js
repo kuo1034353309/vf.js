@@ -10659,7 +10659,11 @@ function readFileSync(url, options, listener) {
                 return resolve(msg.data);
             }
         };
+        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
         xhr.onreadystatechange = function (evt) {
+            if (evt === undefined) {
+                return;
+            }
             var xhr = evt.currentTarget;
             if ((xhr.readyState === 2 || xhr.readyState === 4) && xhr.status >= 400) {
                 if (errorCount.cur >= errorCount.max) {
