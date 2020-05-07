@@ -7,11 +7,22 @@ export class SoundTask extends BaseTask {
         public readonly data: IActionSound;
         public readonly dataType: number;
 
-        constructor(compontent: VFComponent, data: IActionSound) {
+        constructor(compontent: VFComponent, actionData: IActionSound) {
             super();
             this.component = compontent;
-            this.data = data.value[1];
-            this.dataType = data.type;
+            if (typeof actionData.value[1] === 'string' || typeof actionData.value[1] === 'number') {
+                // 兼容久版本
+                actionData.assetId = actionData.value[1] as string;
+                this.data = actionData;
+                vf.utils.deprecation('5.2.1-v14', 'Please use the new sound API');
+            }
+            else {
+                this.data = actionData.value[1];
+            }
+
+            const data = this.data;
+
+            this.dataType = actionData.type;
             if (data.assetId === undefined) {
                 console.log('execute sound failed, missing assetId');
 
@@ -22,7 +33,7 @@ export class SoundTask extends BaseTask {
 
                 return;
             }
-            data.mode = data.mode || 'sound';
+            data.mode = actionData.mode || 'sound';
         }
 
         public run(): void {
@@ -31,7 +42,7 @@ export class SoundTask extends BaseTask {
                 const soundManager = this.component.vfStage.soundManager;
                 const variableManager = this.component.vfStage.variableManager;
                 const data = this.data;
-                let soundId: number | undefined;
+                let soundId: number | string | undefined;
 
                 if (Array.isArray(data.assetId)) {
                     const soundIdVar = variableManager.getExpressItemValue(this.component, data.assetId);

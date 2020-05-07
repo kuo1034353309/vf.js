@@ -5796,11 +5796,20 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 var SoundTask = /** @class */ (function (_super) {
     __extends(SoundTask, _super);
-    function SoundTask(compontent, data) {
+    function SoundTask(compontent, actionData) {
         var _this = _super.call(this) || this;
         _this.component = compontent;
-        _this.data = data.value[1];
-        _this.dataType = data.type;
+        if (typeof actionData.value[1] === 'string' || typeof actionData.value[1] === 'number') {
+            // 兼容久版本
+            actionData.assetId = actionData.value[1];
+            _this.data = actionData;
+            vf.utils.deprecation('5.2.1-v14', 'Please use the new sound API');
+        }
+        else {
+            _this.data = actionData.value[1];
+        }
+        var data = _this.data;
+        _this.dataType = actionData.type;
         if (data.assetId === undefined) {
             console.log('execute sound failed, missing assetId');
             return _this;
@@ -5809,7 +5818,7 @@ var SoundTask = /** @class */ (function (_super) {
             console.log('execute sound failed, missing trackId');
             return _this;
         }
-        data.mode = data.mode || 'sound';
+        data.mode = actionData.mode || 'sound';
         return _this;
     }
     SoundTask.prototype.run = function () {
@@ -10186,32 +10195,17 @@ function getFileExtension(url) {
 /*!*********************************************!*\
   !*** ./packages/player/src/utils/getUrl.ts ***!
   \*********************************************/
-/*! exports provided: getUrl, getCdnUrl */
+/*! exports provided: getCdnUrl, getUrl */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUrl", function() { return getUrl; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCdnUrl", function() { return getCdnUrl; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUrl", function() { return getUrl; });
 /* harmony import */ var _getFileExtension__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFileExtension */ "./packages/player/src/utils/getFileExtension.ts");
 /* harmony import */ var _assets_Assets__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../assets/Assets */ "./packages/assets/Assets.ts");
 
 
-function getUrl(url, baseUrl, cdns, index) {
-    if (baseUrl === void 0) { baseUrl = ''; }
-    if (index === void 0) { index = 0; }
-    if (baseUrl) {
-        if (url.indexOf('http') === -1 && url.indexOf('//') === -1) {
-            url = baseUrl + url;
-        }
-    }
-    else if (cdns) {
-        url = getCdnUrl(url, cdns, index);
-    }
-    else {
-    }
-    return url;
-}
 function getCdnUrl(url, cdns, index) {
     if (index === void 0) { index = 0; }
     if (url.indexOf('data:') === 0) {
@@ -10238,6 +10232,22 @@ function getCdnUrl(url, cdns, index) {
         cdn += url;
     }
     return cdn;
+}
+function getUrl(url, baseUrl, cdns, index) {
+    if (baseUrl === void 0) { baseUrl = ''; }
+    if (index === void 0) { index = 0; }
+    if (baseUrl) {
+        if (url.indexOf('http') === -1 && url.indexOf('//') === -1) {
+            url = baseUrl + url;
+        }
+    }
+    else if (cdns) {
+        url = getCdnUrl(url, cdns, index);
+    }
+    else {
+        // 根据index.json的路径选择host，同时判断是否本地数据
+    }
+    return url;
 }
 
 

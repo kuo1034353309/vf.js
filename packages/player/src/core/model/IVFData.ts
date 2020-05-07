@@ -413,7 +413,7 @@ export interface IActionCallFunction extends IAction {
         params?: ExpressItem[];
     }
 export interface IActionSound extends IAction {
-        assetId: number | any[];
+        assetId: number | string | any[];
         trackId: string;
         time?: number;
         offset?: number;
