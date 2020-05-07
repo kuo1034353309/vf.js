@@ -96,19 +96,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "./assets/empty-audio.mp3":
-/*!********************************!*\
-  !*** ./assets/empty-audio.mp3 ***!
-  \********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ("data:audio/mpeg;base64,//tQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAAoAAAREAAMDAwMDAwMDAwMDAwMDBAQEBYWHR0dIyMpKSkvLzU1NTs7QUFBR0dNTU1TU1lZWWBgZmZmbGxycnJ4eH5+foSEioqKkJCWlpadnaOjo6mpr6+vtbW7u7vBwcfHx83N09PT2dkAAAAsTEFNRTMuODIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/6EMSYTQADwAABpBwAAAAAADSAAAAATEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxEJiKIPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjgyVVVVVVVVVVVVVVVVVVVVVVX/+hDE0RlRA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVf/6EMSgMHmDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxHfqogPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjgyVVVVVVVVVVVVVVVVVVVVVVX/+hDEg8XKg8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxE9o1wPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjgyVVVVVVVVVVVVVVVVVVVVVVX/+hDET2jXA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxE9o1wPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjgyVVVVVVVVVVVVVVVVVVVVVVX/+hDET2jXA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxE9o1wPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjgyVVVVVVVVVVVVVVVVVVVVVVX/+hDET2jXA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxE9o1wPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjgyVVVVVVVVVVVVVVVVVVVVVVX/+hDET2jXA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxE9o1wPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjgyVVVVVVVVVVVVVVVVVVVVVVX/+hDET2jXA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxE9o1wPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjgyVVVVVVVVVVVVVVVVVVVVVVX/+hDET2jXA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxE9o1wPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjgyVVVVVVVVVVVVVVVVVVVVVVX/+hDET2jXA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxE9o1wPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjgyVVVVVVVVVVVVVVVVVVVVVVX/+hDET2jXA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxE9o1wPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjgyVVVVVVVVVVVVVVVVVVVVVVX/+hDET2jXA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuODJVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy44MlVVVVVVVVVVVVVVVVVVVVVV//oQxE9o1wPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+hDET2jXA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//oQxE9o1wPAAAGkAAAAAAAANIAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+hDET2jXA8AAAaQAAAAAAAA0gAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/6EMRPaNcDwAABpAAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=");
-
-/***/ }),
-
 /***/ "./node_modules/eventemitter3/index.js":
 /*!*********************************************!*\
   !*** ./node_modules/eventemitter3/index.js ***!
@@ -1082,6 +1069,7 @@ var Config = /** @class */ (function (_super) {
         _this._vfvars = {};
         _this._plugs = [];
         _this._container = options.container;
+        _this.uuid = vf.utils.uid();
         _this._id = options.id || _this.createRandomId();
         _this._src = options.src || undefined;
         _this._play = options.play === undefined ? true : Boolean(options.play);
@@ -1865,13 +1853,6 @@ var RES = /** @class */ (function (_super) {
             return undefined;
         }
         return this.pixiResources[assetData.id.toString()];
-    };
-    RES.prototype.getSoundAsset = function (index) {
-        var assetData = this.getAsset(index);
-        if (assetData) {
-            return assetData.sound;
-        }
-        return undefined;
     };
     RES.prototype.loadAllScript = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -2991,7 +2972,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _FunctionTask__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./FunctionTask */ "./packages/player/src/core/actionTask/FunctionTask.ts");
 /* harmony import */ var _CallFunctionTask__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./CallFunctionTask */ "./packages/player/src/core/actionTask/CallFunctionTask.ts");
 /* harmony import */ var _PrintTask__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./PrintTask */ "./packages/player/src/core/actionTask/PrintTask.ts");
-/* harmony import */ var _PlaySoundTask__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./PlaySoundTask */ "./packages/player/src/core/actionTask/PlaySoundTask.ts");
+/* harmony import */ var _SoundTask__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./SoundTask */ "./packages/player/src/core/actionTask/SoundTask.ts");
 /* harmony import */ var _PlayAnimationTask__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./PlayAnimationTask */ "./packages/player/src/core/actionTask/PlayAnimationTask.ts");
 /* harmony import */ var _JumpToNextSceneTask__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./JumpToNextSceneTask */ "./packages/player/src/core/actionTask/JumpToNextSceneTask.ts");
 /* harmony import */ var _JumpToPrevSceneTask__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./JumpToPrevSceneTask */ "./packages/player/src/core/actionTask/JumpToPrevSceneTask.ts");
@@ -3008,17 +2989,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EmitEventTask__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./EmitEventTask */ "./packages/player/src/core/actionTask/EmitEventTask.ts");
 /* harmony import */ var _DefineVariableTask__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./DefineVariableTask */ "./packages/player/src/core/actionTask/DefineVariableTask.ts");
 /* harmony import */ var _CallProtoFunctionTask__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./CallProtoFunctionTask */ "./packages/player/src/core/actionTask/CallProtoFunctionTask.ts");
-/* harmony import */ var _PauseSoundTask__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./PauseSoundTask */ "./packages/player/src/core/actionTask/PauseSoundTask.ts");
-/* harmony import */ var _ResumeSoundTask__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./ResumeSoundTask */ "./packages/player/src/core/actionTask/ResumeSoundTask.ts");
-/* harmony import */ var _RemoveListenerTask__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./RemoveListenerTask */ "./packages/player/src/core/actionTask/RemoveListenerTask.ts");
-/* harmony import */ var _ForTask__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./ForTask */ "./packages/player/src/core/actionTask/ForTask.ts");
-/* harmony import */ var _BreakTask__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./BreakTask */ "./packages/player/src/core/actionTask/BreakTask.ts");
-/* harmony import */ var _WaitTask__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./WaitTask */ "./packages/player/src/core/actionTask/WaitTask.ts");
-/* harmony import */ var _SetTimeoutTask__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./SetTimeoutTask */ "./packages/player/src/core/actionTask/SetTimeoutTask.ts");
-/* harmony import */ var _SetIntervalTask__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./SetIntervalTask */ "./packages/player/src/core/actionTask/SetIntervalTask.ts");
-/* harmony import */ var _EnterFrameTask__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./EnterFrameTask */ "./packages/player/src/core/actionTask/EnterFrameTask.ts");
-
-
+/* harmony import */ var _RemoveListenerTask__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./RemoveListenerTask */ "./packages/player/src/core/actionTask/RemoveListenerTask.ts");
+/* harmony import */ var _ForTask__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./ForTask */ "./packages/player/src/core/actionTask/ForTask.ts");
+/* harmony import */ var _BreakTask__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./BreakTask */ "./packages/player/src/core/actionTask/BreakTask.ts");
+/* harmony import */ var _WaitTask__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./WaitTask */ "./packages/player/src/core/actionTask/WaitTask.ts");
+/* harmony import */ var _SetTimeoutTask__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./SetTimeoutTask */ "./packages/player/src/core/actionTask/SetTimeoutTask.ts");
+/* harmony import */ var _SetIntervalTask__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./SetIntervalTask */ "./packages/player/src/core/actionTask/SetIntervalTask.ts");
+/* harmony import */ var _EnterFrameTask__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./EnterFrameTask */ "./packages/player/src/core/actionTask/EnterFrameTask.ts");
 
 
 
@@ -3154,13 +3131,9 @@ var ActionList = /** @class */ (function () {
                 task = this.parseEmitEvent(data);
                 break;
             case 16 /* PlaySound */:
-                task = this.parsePlaySound(data);
-                break;
             case 33 /* PauseSound */:
-                task = this.parsePauseSound(data);
-                break;
             case 34 /* ResumeSound */:
-                task = this.parseResumeSound(data);
+                task = this.parseSound(data);
                 break;
             case 17 /* PlayAnimation */:
                 task = this.parsePlayAnimation(data);
@@ -3261,10 +3234,10 @@ var ActionList = /** @class */ (function () {
                 task = this.parseFor(data);
                 break;
             case 39 /* Break */:
-                task = new _BreakTask__WEBPACK_IMPORTED_MODULE_30__["BreakTask"]();
+                task = new _BreakTask__WEBPACK_IMPORTED_MODULE_28__["BreakTask"]();
                 break;
             case 40 /* Wait */:
-                task = new _WaitTask__WEBPACK_IMPORTED_MODULE_31__["WaitTask"](this.component, data);
+                task = new _WaitTask__WEBPACK_IMPORTED_MODULE_29__["WaitTask"](this.component, data);
                 break;
             case 41 /* SetTimeout */:
                 task = this.parseSetTimeout(data);
@@ -3334,9 +3307,9 @@ var ActionList = /** @class */ (function () {
         if (data.execute) {
             for (var i = 0, len = data.execute.length; i < len; i++) {
                 var ifPart = data.execute[i];
-                if (ifPart.type === 8 /* If */ ||
-                    ifPart.type === 9 /* ElseIf */ ||
-                    ifPart.type === 10 /* Else */) {
+                if (ifPart.type === 8 /* If */
+                    || ifPart.type === 9 /* ElseIf */
+                    || ifPart.type === 10 /* Else */) {
                     var condition = ifPart.condition;
                     var conditionQue = new _core_QueueTask__WEBPACK_IMPORTED_MODULE_4__["QueueTask"]();
                     if (ifPart.execute) {
@@ -3373,7 +3346,7 @@ var ActionList = /** @class */ (function () {
         return task;
     };
     ActionList.prototype.parseRemoveEventListener = function (data) {
-        var task = new _RemoveListenerTask__WEBPACK_IMPORTED_MODULE_28__["RemoveListenerTask"](this.component, data);
+        var task = new _RemoveListenerTask__WEBPACK_IMPORTED_MODULE_26__["RemoveListenerTask"](this.component, data);
         return task;
     };
     ActionList.prototype.parseEmitEvent = function (data) {
@@ -3386,16 +3359,8 @@ var ActionList = /** @class */ (function () {
             return task;
         }
     };
-    ActionList.prototype.parsePlaySound = function (data) {
-        var task = new _PlaySoundTask__WEBPACK_IMPORTED_MODULE_9__["PlaySoundTask"](this.component, data.value, data.trackId, data);
-        return task;
-    };
-    ActionList.prototype.parsePauseSound = function (data) {
-        var task = new _PauseSoundTask__WEBPACK_IMPORTED_MODULE_26__["PauseSoundTask"](this.component, data.value, data.trackId, data);
-        return task;
-    };
-    ActionList.prototype.parseResumeSound = function (data) {
-        var task = new _ResumeSoundTask__WEBPACK_IMPORTED_MODULE_27__["ResumeSoundTask"](this.component, data.value, data.trackId, data);
+    ActionList.prototype.parseSound = function (data) {
+        var task = new _SoundTask__WEBPACK_IMPORTED_MODULE_9__["SoundTask"](this.component, data);
         return task;
     };
     ActionList.prototype.parsePlayAnimation = function (data) {
@@ -3415,22 +3380,22 @@ var ActionList = /** @class */ (function () {
         return task;
     };
     ActionList.prototype.parseFor = function (data) {
-        var task = new _ForTask__WEBPACK_IMPORTED_MODULE_29__["ForTask"](this.component, data);
+        var task = new _ForTask__WEBPACK_IMPORTED_MODULE_27__["ForTask"](this.component, data);
         this.parseSubTask(task, data);
         return task;
     };
     ActionList.prototype.parseSetTimeout = function (data) {
-        var task = new _SetTimeoutTask__WEBPACK_IMPORTED_MODULE_32__["SetTimeoutTask"](this.component, data);
+        var task = new _SetTimeoutTask__WEBPACK_IMPORTED_MODULE_30__["SetTimeoutTask"](this.component, data);
         this.parseSubTask(task, data);
         return task;
     };
     ActionList.prototype.parseSetInterval = function (data) {
-        var task = new _SetIntervalTask__WEBPACK_IMPORTED_MODULE_33__["SetIntervalTask"](this.component, data);
+        var task = new _SetIntervalTask__WEBPACK_IMPORTED_MODULE_31__["SetIntervalTask"](this.component, data);
         this.parseSubTask(task, data);
         return task;
     };
     ActionList.prototype.parseEnterFrame = function (data) {
-        var task = new _EnterFrameTask__WEBPACK_IMPORTED_MODULE_34__["EnterFrameTask"](this.component, data);
+        var task = new _EnterFrameTask__WEBPACK_IMPORTED_MODULE_32__["EnterFrameTask"](this.component, data);
         this.parseSubTask(task, data);
         return task;
     };
@@ -5289,76 +5254,6 @@ var JumpToSceneTask = /** @class */ (function (_super) {
 
 /***/ }),
 
-/***/ "./packages/player/src/core/actionTask/PauseSoundTask.ts":
-/*!***************************************************************!*\
-  !*** ./packages/player/src/core/actionTask/PauseSoundTask.ts ***!
-  \***************************************************************/
-/*! exports provided: PauseSoundTask */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PauseSoundTask", function() { return PauseSoundTask; });
-/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var PauseSoundTask = /** @class */ (function (_super) {
-    __extends(PauseSoundTask, _super);
-    function PauseSoundTask(compontent, soundId, trackId, data) {
-        var _this = _super.call(this) || this;
-        _this.trackId = '-1';
-        _this.component = compontent;
-        _this.soundId = soundId;
-        _this.data = data;
-        if (trackId) {
-            _this.trackId = trackId;
-        }
-        return _this;
-    }
-    PauseSoundTask.prototype.run = function () {
-        _super.prototype.run.call(this);
-        if (this.component.vfStage) {
-            var soundManager = this.component.vfStage.soundManager;
-            var variableManager = this.component.vfStage.variableManager;
-            var soundId = 0;
-            if (Array.isArray(this.soundId)) {
-                var soundIdVar = variableManager.getExpressItemValue(this.component, this.soundId);
-                if (soundIdVar && soundIdVar.value) {
-                    soundId = soundIdVar.value;
-                }
-                else {
-                    soundId = soundIdVar;
-                }
-            }
-            else {
-                soundId = this.soundId;
-            }
-            soundManager.pauseSound(soundId, this.trackId, this.data);
-            this.complete();
-        }
-        else {
-            this.complete();
-        }
-    };
-    return PauseSoundTask;
-}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
-
-
-
-/***/ }),
-
 /***/ "./packages/player/src/core/actionTask/PlayAnimationTask.ts":
 /*!******************************************************************!*\
   !*** ./packages/player/src/core/actionTask/PlayAnimationTask.ts ***!
@@ -5423,78 +5318,6 @@ var PlayAnimationTask = /** @class */ (function (_super) {
         return this.data.times;
     };
     return PlayAnimationTask;
-}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
-
-
-
-/***/ }),
-
-/***/ "./packages/player/src/core/actionTask/PlaySoundTask.ts":
-/*!**************************************************************!*\
-  !*** ./packages/player/src/core/actionTask/PlaySoundTask.ts ***!
-  \**************************************************************/
-/*! exports provided: PlaySoundTask */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PlaySoundTask", function() { return PlaySoundTask; });
-/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var PlaySoundTask = /** @class */ (function (_super) {
-    __extends(PlaySoundTask, _super);
-    function PlaySoundTask(compontent, soundId, trackId, data) {
-        var _this = _super.call(this) || this;
-        _this.trackId = '-1';
-        _this.component = compontent;
-        _this.soundId = soundId;
-        _this.data = data;
-        if (trackId) {
-            _this.trackId = trackId;
-        }
-        return _this;
-    }
-    PlaySoundTask.prototype.run = function () {
-        _super.prototype.run.call(this);
-        if (this.component.vfStage) {
-            var soundManager = this.component.vfStage.soundManager;
-            var variableManager = this.component.vfStage.variableManager;
-            var soundId = void 0;
-            if (Array.isArray(this.soundId)) {
-                var soundIdVar = variableManager.getExpressItemValue(this.component, this.soundId);
-                if (soundIdVar && soundIdVar.value !== undefined) {
-                    soundId = soundIdVar.value;
-                }
-                else {
-                    soundId = soundIdVar;
-                }
-            }
-            else {
-                soundId = this.soundId;
-            }
-            if (soundId !== undefined) {
-                soundManager.playSound(soundId, this.trackId, this.data);
-            }
-            this.complete();
-        }
-        else {
-            this.complete();
-        }
-    };
-    return PlaySoundTask;
 }(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
 
 
@@ -5623,76 +5446,6 @@ var RemoveListenerTask = /** @class */ (function (_super) {
         this.complete();
     };
     return RemoveListenerTask;
-}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
-
-
-
-/***/ }),
-
-/***/ "./packages/player/src/core/actionTask/ResumeSoundTask.ts":
-/*!****************************************************************!*\
-  !*** ./packages/player/src/core/actionTask/ResumeSoundTask.ts ***!
-  \****************************************************************/
-/*! exports provided: ResumeSoundTask */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ResumeSoundTask", function() { return ResumeSoundTask; });
-/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
-var __extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var ResumeSoundTask = /** @class */ (function (_super) {
-    __extends(ResumeSoundTask, _super);
-    function ResumeSoundTask(compontent, soundId, trackId, data) {
-        var _this = _super.call(this) || this;
-        _this.trackId = '-1';
-        _this.component = compontent;
-        _this.soundId = soundId;
-        _this.data = data;
-        if (trackId) {
-            _this.trackId = trackId;
-        }
-        return _this;
-    }
-    ResumeSoundTask.prototype.run = function () {
-        _super.prototype.run.call(this);
-        if (this.component.vfStage) {
-            var soundManager = this.component.vfStage.soundManager;
-            var variableManager = this.component.vfStage.variableManager;
-            var soundId = 0;
-            if (Array.isArray(this.soundId)) {
-                var soundIdVar = variableManager.getExpressItemValue(this.component, this.soundId);
-                if (soundIdVar && soundIdVar.value) {
-                    soundId = soundIdVar.value;
-                }
-                else {
-                    soundId = soundIdVar;
-                }
-            }
-            else {
-                soundId = this.soundId;
-            }
-            soundManager.resumeSound(soundId, this.trackId, this.data);
-            this.complete();
-        }
-        else {
-            this.complete();
-        }
-    };
-    return ResumeSoundTask;
 }(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
 
 
@@ -6016,6 +5769,102 @@ var SetTimeoutTask = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ "./packages/player/src/core/actionTask/SoundTask.ts":
+/*!**********************************************************!*\
+  !*** ./packages/player/src/core/actionTask/SoundTask.ts ***!
+  \**********************************************************/
+/*! exports provided: SoundTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SoundTask", function() { return SoundTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var SoundTask = /** @class */ (function (_super) {
+    __extends(SoundTask, _super);
+    function SoundTask(compontent, actionData) {
+        var _this = _super.call(this) || this;
+        _this.component = compontent;
+        if (typeof actionData.value[1] === 'string' || typeof actionData.value[1] === 'number') {
+            // 兼容久版本
+            actionData.assetId = actionData.value[1];
+            _this.data = actionData;
+            vf.utils.deprecation('5.2.1-v14', 'Please use the new sound API');
+        }
+        else {
+            _this.data = actionData.value[1];
+        }
+        var data = _this.data;
+        _this.dataType = actionData.type;
+        if (data.assetId === undefined) {
+            console.log('execute sound failed, missing assetId');
+            return _this;
+        }
+        if (data.trackId === undefined) {
+            console.log('execute sound failed, missing trackId');
+            return _this;
+        }
+        data.mode = actionData.mode || 'sound';
+        return _this;
+    }
+    SoundTask.prototype.run = function () {
+        _super.prototype.run.call(this);
+        if (this.component.vfStage) {
+            var soundManager = this.component.vfStage.soundManager;
+            var variableManager = this.component.vfStage.variableManager;
+            var data = this.data;
+            var soundId = void 0;
+            if (Array.isArray(data.assetId)) {
+                var soundIdVar = variableManager.getExpressItemValue(this.component, data.assetId);
+                if (soundIdVar && soundIdVar.value !== undefined) {
+                    soundId = soundIdVar.value;
+                }
+                else {
+                    soundId = soundIdVar;
+                }
+            }
+            else {
+                soundId = data.assetId;
+            }
+            data.assetId = soundId;
+            switch (this.dataType) {
+                case 16 /* PlaySound */:
+                    soundManager.playSound(this.data);
+                    break;
+                case 33 /* PauseSound */:
+                    soundManager.pauseSound(this.data);
+                    break;
+                case 34 /* ResumeSound */:
+                    soundManager.resumeSound(this.data);
+                    break;
+            }
+            this.complete();
+        }
+        else {
+            this.complete();
+        }
+    };
+    return SoundTask;
+}(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["BaseTask"]));
+
+
+
+/***/ }),
+
 /***/ "./packages/player/src/core/actionTask/WaitTask.ts":
 /*!*********************************************************!*\
   !*** ./packages/player/src/core/actionTask/WaitTask.ts ***!
@@ -6104,7 +5953,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _IfTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../IfTask */ "./packages/player/src/core/actionTask/IfTask.ts");
 /* harmony import */ var _SetPropertyTask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../SetPropertyTask */ "./packages/player/src/core/actionTask/SetPropertyTask.ts");
 /* harmony import */ var _PlayAnimationTask__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../PlayAnimationTask */ "./packages/player/src/core/actionTask/PlayAnimationTask.ts");
-/* harmony import */ var _PlaySoundTask__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../PlaySoundTask */ "./packages/player/src/core/actionTask/PlaySoundTask.ts");
+/* harmony import */ var _SoundTask__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../SoundTask */ "./packages/player/src/core/actionTask/SoundTask.ts");
 /* harmony import */ var _CallFunctionTask__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../CallFunctionTask */ "./packages/player/src/core/actionTask/CallFunctionTask.ts");
 /* harmony import */ var _PrintTask__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../PrintTask */ "./packages/player/src/core/actionTask/PrintTask.ts");
 /* harmony import */ var _model_IVFData__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../model/IVFData */ "./packages/player/src/core/model/IVFData.ts");
@@ -6171,9 +6020,9 @@ function injectParamsToTask(task, paramIds) {
             modiyExpressItemParamValue(task.data.target, paramIds);
         }
     }
-    else if (task instanceof _PlaySoundTask__WEBPACK_IMPORTED_MODULE_4__["PlaySoundTask"]) {
-        if (task.soundId && Array.isArray(task.soundId)) {
-            modiyExpressItemParamValue(task.soundId, paramIds);
+    else if (task instanceof _SoundTask__WEBPACK_IMPORTED_MODULE_4__["SoundTask"]) {
+        if (task.data.assetId && Array.isArray(task.data.assetId)) {
+            modiyExpressItemParamValue(task.data.assetId, paramIds);
         }
     }
     else if (task instanceof _CallFunctionTask__WEBPACK_IMPORTED_MODULE_5__["CallFunctionTask"]) {
@@ -9374,232 +9223,107 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SoundManager", function() { return SoundManager; });
-/* harmony import */ var _assets_empty_audio_mp3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../assets/empty-audio.mp3 */ "./assets/empty-audio.mp3");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-
 var SoundManager = /** @class */ (function () {
     function SoundManager(res, vfStage) {
-        this.trackMap = {};
+        this.trackIdMap = [];
         this.res = res;
-        this.vfStage = vfStage;
-        if (vfStage.config.vfvars.useNativeAudio) {
-            return; // 如果使用了native播放，不要加载和设置PIXI.sound， 在互动课件中会有问题，教室中使用audioContext会出错。
-        }
-        // webAudio 在ipad下有时播放会有杂音， 该用Audio 模式
-        // vf.sound.useLegacy = true; 
-        /*
-        TODO:
-            1、使用空音频文件探测容器环境是否支持音频自动播放，如果支持就不用管了。
-            2、如不支持捕获一次全局页面点击，用于触发音频自动播放。
-         */
+        this.stage = vfStage;
+        // vfStage.config.vfvars.useNativeAudio // 如果使用了native播放，不要加载和设置PIXI.sound， 在互动课件中会有问题，教室中使用audioContext会出错。
     }
-    /*
-        public async audioPlayplaySound(assetId: number) {
-            const s = this.res.getSoundAsset(assetId);
-            if (s) {
-                const media = await s.play();
-                media.volume = 0.5;
-            }
+    SoundManager.prototype.getAudio = function (trackId) {
+        var ae = vf.AudioEngine.Ins();
+        if (trackId === undefined) {
+            return undefined;
         }
-    */
+        return ae.map.get(this.stage.config.uuid.toString() + trackId);
+    };
     SoundManager.prototype.clear = function () {
         this.pause();
-        this.trackMap = {};
+        var trackMap = this.trackIdMap;
+        var audio;
+        while (trackMap.length > 0) {
+            audio = this.getAudio(trackMap.shift());
+            if (audio) {
+                audio.dispose();
+            }
+        }
     };
     SoundManager.prototype.pause = function () {
-        for (var id in this.trackMap) {
-            if (this.trackMap[id]) {
-                var track = this.trackMap[id];
-                if (track.sound && track.sound.isPlaying) {
-                    track.sound.pause();
-                }
+        var _this = this;
+        var audio;
+        this.trackIdMap.forEach(function (trackId) {
+            audio = _this.getAudio(trackId);
+            if (audio) {
+                audio.pause();
             }
-        }
+        });
     };
     SoundManager.prototype.resume = function () {
-        for (var id in this.trackMap) {
-            if (this.trackMap[id]) {
-                var track = this.trackMap[id];
-                if (track.sound && track.sound.paused) {
-                    track.sound.resume();
-                }
+        var _this = this;
+        var audio;
+        this.trackIdMap.forEach(function (trackId) {
+            audio = _this.getAudio(trackId);
+            if (audio) {
+                audio.play();
             }
-        }
+        });
     };
-    SoundManager.prototype.pauseSound = function (assetId, trackId, data) {
+    SoundManager.prototype.pauseSound = function (data) {
         if (data === void 0) { data = {}; }
-        if (typeof assetId === 'string' && assetId === '') {
-            return;
-        }
-        var asset = this.res.getAsset(assetId);
-        if (asset === undefined || asset.url === undefined || asset.url === '') {
-            return;
-        }
-        if (this.nativeEmit(assetId, 'pauseAudio', data)) {
+        if (this.nativeEmit(data.assetId, 'pauseAudio', data)) {
             return;
         }
         if (this.weixinEmit()) {
             return;
         }
-        var audio = this.res.getSoundAsset(assetId);
-        if (!audio) {
-            return;
-        } // TODO: throw error
-        var trackMedia = this.trackMap[trackId];
-        if (trackMedia) {
-            // tslint:disable-next-line: no-string-literal
-            if (trackMedia.sound && trackMedia.sound.isPlaying) {
-                trackMedia.sound.pause();
-            }
+        var audio = this.getAudio(data.trackId);
+        if (audio) {
+            audio.pause();
         }
     };
-    SoundManager.prototype.resumeSound = function (assetId, trackId, data) {
-        if (data === void 0) { data = {}; }
-        var asset = this.res.getAsset(assetId);
-        if (asset === undefined || asset.url === undefined || asset.url === '') {
-            return;
-        }
-        if (this.nativeEmit(assetId, 'resumeAudio', data)) {
+    SoundManager.prototype.resumeSound = function (data) {
+        if (this.nativeEmit(data.assetId, 'resumeAudio', data)) {
             return;
         }
         if (this.weixinEmit()) {
             return;
         }
-        var audio = this.res.getSoundAsset(assetId);
-        if (!audio) {
-            return;
-        } // TODO: throw error
-        var trackMedia = this.trackMap[trackId];
-        if (trackMedia) {
-            // tslint:disable-next-line: no-string-literal
-            if (trackMedia.sound && trackMedia.sound.paused) {
-                trackMedia.sound.resume();
-            }
+        var audio = this.getAudio(data.trackId);
+        if (audio && audio.paused) {
+            audio.play();
         }
     };
     // tslint:disable-next-line: max-line-length
-    SoundManager.prototype.playSound = function (assetId, trackId, data) {
-        if (data === void 0) { data = {}; }
-        return __awaiter(this, void 0, void 0, function () {
-            var asset, audio, trackMedia, soundTrackMedia;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        asset = this.res.getAsset(assetId);
-                        if (asset === undefined || asset.url === undefined || asset.url === '') {
-                            return [2 /*return*/];
-                        }
-                        if (this.nativeEmit(assetId, 'playAudio', data)) {
-                            return [2 /*return*/];
-                        }
-                        if (this.weixinEmit()) {
-                            return [2 /*return*/];
-                        }
-                        audio = this.res.getSoundAsset(assetId);
-                        if (!audio) {
-                            return [2 /*return*/];
-                        } // TODO: throw error
-                        trackMedia = this.trackMap[trackId];
-                        if (trackMedia) {
-                            trackMedia.sound.stop();
-                            delete this.trackMap[trackId];
-                        }
-                        return [4 /*yield*/, this.createSoundTrackMedia(audio, trackId)];
-                    case 1:
-                        soundTrackMedia = _a.sent();
-                        this.trackMap[trackId] = soundTrackMedia;
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    SoundManager.prototype.createSoundTrackMedia = function (audio, trackId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var audioM;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        audio.autoPlay = false;
-                        return [4 /*yield*/, audio.play()];
-                    case 1:
-                        audioM = _a.sent();
-                        this.vfStage.systemEvent.emitExt("SoundStart" /* SoundStart */, trackId);
-                        audioM.once('end', function () {
-                            _this.vfStage.systemEvent.emitExt("SoundEnd" /* SoundEnd */, trackId);
-                        }, this);
-                        return [2 /*return*/, {
-                                id: trackId,
-                                media: audioM,
-                                sound: audio,
-                            }];
-                }
-            });
-        });
+    SoundManager.prototype.playSound = function (data) {
+        var asset = this.res.getAsset(data.assetId);
+        if (asset === undefined || asset.url === undefined || asset.url === '') {
+            console.warn('playback failed,missing assetId!', data);
+            return;
+        }
+        if (this.nativeEmit(data.assetId, 'playAudio', data)) {
+            return;
+        }
+        if (this.weixinEmit()) {
+            return;
+        }
+        var audio = this.getAudio(data.trackId);
+        if (audio) {
+            audio.play();
+        }
+        else {
+            // eslint-disable-next-line max-len
+            audio = vf.AudioEngine.Ins().createAudio(this.stage.config.uuid.toString() + data.trackId, asset.url, { autoplay: false });
+            audio.play(data.time, data.offset, data.length);
+            this.trackIdMap.push(data.trackId);
+        }
     };
     SoundManager.prototype.isWeixin = function () {
         var ua = window.navigator.userAgent.toLowerCase();
-        return /micromessenger/.test(ua);
-    };
-    SoundManager.prototype.testAutoPlay = function () {
-        return new Promise(function (resolve) {
-            var audio = document.createElement('audio');
-            audio.src = _assets_empty_audio_mp3__WEBPACK_IMPORTED_MODULE_0__["default"];
-            document.body.appendChild(audio);
-            var autoplay = true;
-            audio.play().then(function () {
-                autoplay = true;
-                audio.remove();
-                resolve(autoplay);
-            }).catch(function () {
-                autoplay = false;
-                audio.remove();
-                resolve(autoplay);
-            });
-            /* mark: es2018才支持
-            .finally(() => {
-                audio.remove();
-                resolve(autoplay);
-            });*/
-        });
+        return (/micromessenger/).test(ua);
     };
     SoundManager.prototype.weixinEmit = function () {
         return false;
+        // eslint-disable-next-line no-unreachable
         if (this.isWeixin()) {
             // document.addEventListener('WeixinJSBridgeReady', () => {audio.play(); }, false);
             // if (( window as any).WeixinJSBridge &&
@@ -9611,13 +9335,10 @@ var SoundManager = /** @class */ (function () {
     };
     SoundManager.prototype.nativeEmit = function (assetId, typeTag, data) {
         if (data === void 0) { data = {}; }
-        var useNative = this.vfStage.config.vfvars.useNativeAudio;
-        if (data.useNative) {
-            useNative = data.useNative;
-        }
+        var useNative = this.stage.config.vfvars.useNativeAudio;
         if (useNative) { // 先放这里，后期soundManager完成后，合并
             var asset = this.res.getAsset(assetId);
-            this.vfStage.systemEvent.emit("message" /* MESSAGE */, {
+            this.stage.systemEvent.emit("message" /* MESSAGE */, {
                 code: "native" /* NATIVE */,
                 type: "native" /* NATIVE */,
                 level: "command" /* COMMAND */,
@@ -10474,30 +10195,17 @@ function getFileExtension(url) {
 /*!*********************************************!*\
   !*** ./packages/player/src/utils/getUrl.ts ***!
   \*********************************************/
-/*! exports provided: getUrl, getCdnUrl */
+/*! exports provided: getCdnUrl, getUrl */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUrl", function() { return getUrl; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCdnUrl", function() { return getCdnUrl; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUrl", function() { return getUrl; });
 /* harmony import */ var _getFileExtension__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getFileExtension */ "./packages/player/src/utils/getFileExtension.ts");
 /* harmony import */ var _assets_Assets__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../assets/Assets */ "./packages/assets/Assets.ts");
 
 
-function getUrl(url, baseUrl, cdns, index) {
-    if (baseUrl === void 0) { baseUrl = ''; }
-    if (index === void 0) { index = 0; }
-    if (baseUrl !== '') {
-        if (url.indexOf('http') === -1 && url.indexOf('//') === -1) {
-            url = baseUrl + url;
-        }
-    }
-    if (cdns) {
-        url = getCdnUrl(url, cdns, index);
-    }
-    return url;
-}
 function getCdnUrl(url, cdns, index) {
     if (index === void 0) { index = 0; }
     if (url.indexOf('data:') === 0) {
@@ -10524,6 +10232,22 @@ function getCdnUrl(url, cdns, index) {
         cdn += url;
     }
     return cdn;
+}
+function getUrl(url, baseUrl, cdns, index) {
+    if (baseUrl === void 0) { baseUrl = ''; }
+    if (index === void 0) { index = 0; }
+    if (baseUrl) {
+        if (url.indexOf('http') === -1 && url.indexOf('//') === -1) {
+            url = baseUrl + url;
+        }
+    }
+    else if (cdns) {
+        url = getCdnUrl(url, cdns, index);
+    }
+    else {
+        // 根据index.json的路径选择host，同时判断是否本地数据
+    }
+    return url;
 }
 
 
@@ -10659,7 +10383,11 @@ function readFileSync(url, options, listener) {
                 return resolve(msg.data);
             }
         };
+        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
         xhr.onreadystatechange = function (evt) {
+            if (evt === undefined) {
+                return;
+            }
             var xhr = evt.currentTarget;
             if ((xhr.readyState === 2 || xhr.readyState === 4) && xhr.status >= 400) {
                 if (errorCount.cur >= errorCount.max) {

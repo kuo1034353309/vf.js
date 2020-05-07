@@ -19,6 +19,8 @@ export default class Config extends BaseInfo {
 
     private _container: HTMLElement;
 
+    public readonly uuid: number;
+
     private _id: string;
 
     private _src?: string;
@@ -70,6 +72,7 @@ export default class Config extends BaseInfo {
     constructor(options: IVFOptions) {
         super();
         this._container = options.container;
+        this.uuid = vf.utils.uid();
         this._id = options.id || this.createRandomId();
         this._src = options.src || undefined;
         this._play = options.play === undefined ? true : Boolean(options.play);
