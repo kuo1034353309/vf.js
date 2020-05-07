@@ -1053,7 +1053,7 @@ declare namespace vf {
     class AudioEngine extends vf.utils.EventEmitter {
         /**
          * 当前存放的音频列表
-         * @type {Map}
+         * @type {Map<string, vf.IAudio>}
          */
         map: Map<string, vf.IAudio>;
         /**
@@ -1196,10 +1196,11 @@ declare namespace vf {
          *
          *  await sound.play()
          *
-         * @param {number} [offset] - 声音的开始偏移值
-         * @param {number} [length] - 持续时间（以秒为单位）
-         */
-        play(offset?: number, length?: number): void;
+        * @param {number} [time] - 等待播放时间
+        * @param {number} [offset] - 声音的开始偏移值
+        * @param {number} [length] - 声音持续时间
+        */
+        play(time?: number, offset?: number, length?: number): void;
         /**
          * 停止声音
          * @param time (optional) X秒后停止声音。默认情况下立即停止
@@ -24967,15 +24968,14 @@ export interface IAudio extends PIXI.utils.EventEmitter{
      */
     readonly paused: boolean;
     /**
-     * 声音播放接口 （以秒为单位）
+     * 声音播放接口
      *
      *  await sound.play()
      *
-     * @param {number} [time] - 等待播放时间
      * @param {number} [offset] - 声音的开始偏移值
-     * @param {number} [length] - 声音持续时间
+     * @param {number} [length] - 声音持续时间（以秒为单位）
      */
-    play(time?: number, offset?: number, length?: number): void;
+    play(offset?: number, length?: number): void;
     /**
     * 停止声音
     * @param time (optional) X秒后停止声音。默认情况下立即停止

@@ -4,7 +4,7 @@ import { ExpressTask } from '../ExpressTask';
 import { IfTask } from '../IfTask';
 import { SetPropertyTask } from '../SetPropertyTask';
 import { PlayAnimationTask } from '../PlayAnimationTask';
-import { PlaySoundTask } from '../PlaySoundTask';
+import { SoundTask } from '../SoundTask';
 import { CallFunctionTask } from '../CallFunctionTask';
 import { PrintTask } from '../PrintTask';
 import { ExpressType, ExpressItem, ExpressItemType } from '../../model/IVFData';
@@ -29,7 +29,7 @@ function injectParamsToTask(task: BaseTask, paramIds: string[]): void {
         modifyParamValue(express, paramIds);
     } else if (task instanceof IfTask) {
         const conditions = task.conditions;
-        for (let j: number = 0, jlen: number = conditions.length; j < jlen; j++)  {
+        for (let j: number = 0, jlen: number = conditions.length; j < jlen; j++) {
             const exp = conditions[j];
             modifyParamValue(exp, paramIds);
         }
@@ -54,29 +54,29 @@ function injectParamsToTask(task: BaseTask, paramIds: string[]): void {
         if (task.data && task.data.target) {
             modiyExpressItemParamValue(task.data.target, paramIds);
         }
-    } else if (task instanceof PlaySoundTask) {
-        if (task.soundId && Array.isArray(task.soundId)) {
-            modiyExpressItemParamValue(task.soundId, paramIds);
+    } else if (task instanceof SoundTask) {
+        if (task.data.assetId && Array.isArray(task.data.assetId)) {
+            modiyExpressItemParamValue(task.data.assetId, paramIds);
         }
-    } else if ( task instanceof CallFunctionTask) {
+    } else if (task instanceof CallFunctionTask) {
         if (task.data && task.data.params) {
             modifyParamValue(task.data.params, paramIds);
         }
         if (task.data && task.data.target) {
             modiyExpressItemParamValue(task.data.target, paramIds);
         }
-    } else if ( task instanceof PrintTask) {
+    } else if (task instanceof PrintTask) {
         if (task.data && task.data.value) {
             modiyExpressItemParamValue(task.data.value, paramIds);
         }
     } else if (task instanceof ForTask) {
         task.injectParams(paramIds);
-    } else if (task instanceof AddListenerTask || 
-               task instanceof AddListenerCallTask ||
-               task instanceof RemoveListenerTask ||
-               task instanceof EmitEventTask || 
-               task instanceof CallProtoFunctionTask) {
-            
+    } else if (task instanceof AddListenerTask ||
+        task instanceof AddListenerCallTask ||
+        task instanceof RemoveListenerTask ||
+        task instanceof EmitEventTask ||
+        task instanceof CallProtoFunctionTask) {
+
         if (task.data && task.data.target) {
             modiyExpressItemParamValue(task.data.target, paramIds);
         }
@@ -86,7 +86,7 @@ function modifyParamValue(express: ExpressType, paramIds: any[]): void {
     if (!express || !Array.isArray(express)) {
         return;
     }
-    for (let j: number = 0, jlen: number = express.length; j < jlen; j++) { 
+    for (let j: number = 0, jlen: number = express.length; j < jlen; j++) {
         const expressItem = express[j];
         modiyExpressItemParamValue(expressItem, paramIds);
     }

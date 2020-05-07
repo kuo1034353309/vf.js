@@ -199,16 +199,6 @@ export class RES extends vf.utils.EventEmitter {
         return this.pixiResources[assetData.id.toString()];
     }
 
-    public getSoundAsset(index: number): vf.sound.Sound | undefined {
-        const assetData = this.getAsset(index);
-
-        if (assetData) {
-            return assetData.sound as vf.sound.Sound;
-        }
-
-        return undefined;
-    }
-
     private async loadAllScript(): Promise<void> {
         const assets = this.data.assets;
         const cdns = this.stage.config.cdns;

@@ -258,11 +258,7 @@ export interface IScene {
     libId: string;
     transition?: ITransitionData;
 }
-export interface ISoundTrackMedia {
-    id: string;
-    assetId: string;
-    sound: vf.IAudio;
-}
+
 export type AllComponent = (IComponent | IDisplayComponent | ICustomComponent |
     IRadio | IImage | IText | IRect);
 
@@ -366,10 +362,7 @@ export const enum AnimationEvent {
     AnimationComplete = 'AnimationComplete',
     AnimationLoopComplete = 'AnimationLoopComplete',
 }
-export const enum SoundEvent {
-    SoundEnd = 'SoundEnd',
-    SoundStart = 'SoundStart',
-}
+
 export const enum AnimationStatus {
     STOP,
     PLAYING,
@@ -419,8 +412,8 @@ export interface IActionCallFunction extends IAction {
         name: string | ExpressItem;
         params?: ExpressItem[];
     }
-export interface IActionPlaySound extends IAction {
-        assetId: string;
+export interface IActionSound extends IAction {
+        assetId: number | any[];
         trackId: string;
         time?: number;
         offset?: number;
@@ -491,11 +484,6 @@ export interface IActionArrayConcat extends IAction {
 export interface IActionCallFunction extends IAction {
     name: string | ExpressItem;
     params?: ExpressItem[];
-}
-export interface IActionPlaySound extends IAction {
-    trackId?: string;
-    useNative?: boolean;
-    mode?: 'sound' | 'effect';
 }
 export interface IActionGoto extends IAction {
     name: string | ExpressItem;

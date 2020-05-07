@@ -135,7 +135,7 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._errorLoadMaxCount = 10;
         this.version = "0.3.14";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "2020-4-29 6:51:36 PM";
+        this.buildInfo = "2020-5-7 11:30:11 AM";
         this._extendsLibsUrl = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
@@ -213,7 +213,7 @@ var VIPKIDLauncher = /** @class */ (function () {
         if (this._config.debug) {
             libs.push(this.getLibUrl("https://s.vipkidstatic.com/vf/engine/debug/vconsole.min.js"));
         }
-        libs.push(this.getLibUrl("vf-v5.2.21-v11", cdn, 'vf'));
+        libs.push(this.getLibUrl("vf-v5.2.21-v14", cdn, 'vf'));
         extendsLibsUrl.forEach(function (value) {
             libs.push(_this.getLibUrl(value));
         });
