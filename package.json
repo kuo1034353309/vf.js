@@ -2,7 +2,7 @@
   "name": "player",
   "scripts": {
     "dev": "webpack --config config/webpack.dev.js --watch",
-    "start": "node config/dev-server.js & npm run watch",
+    "start": "node config/dev-server.js & npm run dev",
     "prod": "node config/build.js && webpack --config config/webpack.prod.js --verbose",
     "test": "jest --config jest.config.js"
   },

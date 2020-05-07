@@ -52,7 +52,7 @@ function geXHRtData(target: XMLHttpRequest): IEvent | undefined {
         msg.code = 'S0002';
         msg.level = EventLevel.ERROR;
         msg.data = `${xhr.responseURL} , ${error}`;
-
+        
         return msg;
     }
 }
@@ -106,7 +106,11 @@ export default function readFileSync<K extends keyof XMLHttpRequestEventTargetEv
             }
         };
 
+        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
         xhr.onreadystatechange = (evt: Event) => {
+            if (evt === undefined) {
+                return;
+            }
             const xhr = evt.currentTarget as XMLHttpRequest;
 
             if ((xhr.readyState === 2 || xhr.readyState === 4) && xhr.status >= 400) {

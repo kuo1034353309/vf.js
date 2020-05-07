@@ -1,8 +1,8 @@
 import { VFComponent } from '../../display/VFComponent';
-import { IAction, ActionType, ComponentEvent, IActionSetProperty, IActionExpress, 
-         IActionIFPart, IActionFunction, IActionAddEventListener, IActionPlayAnimation, 
-         IActionJump, IActionArraySplice, IActionArrayConcat, IActionEmitEvent, 
-         IActionPlaySound, IActionDefineVariable, IVariableData, IActionGoto, IActionCallFunction, IActionFor } from '../model/IVFData';
+import { IAction, ActionType, ComponentEvent, IActionSetProperty, IActionExpress,
+    IActionIFPart, IActionFunction, IActionAddEventListener, IActionPlayAnimation,
+    IActionJump, IActionArraySplice, IActionArrayConcat, IActionEmitEvent,
+    IActionSound, IActionDefineVariable, IVariableData, IActionGoto, IActionCallFunction, IActionFor } from '../model/IVFData';
 import { BaseTask } from './core/BaseTask';
 import { AddListenerTask } from './AddListenerTask';
 import { SetPropertyTask } from './SetPropertyTask';
@@ -13,7 +13,7 @@ import { DefineFunctionTask } from './DefineFunctionTask';
 import { FunctionTask } from './FunctionTask';
 import { CallFunctionTask } from './CallFunctionTask';
 import { PrintTask } from './PrintTask';
-import { PlaySoundTask } from './PlaySoundTask';
+import { SoundTask } from './SoundTask';
 import { PlayAnimationTask } from './PlayAnimationTask';
 import { JumpToNextSceneTask } from './JumpToNextSceneTask';
 import { JumpToPrevSceneTask } from './JumpToPrevSceneTask';
@@ -30,8 +30,6 @@ import { AddListenerCallTask } from './AddListenerCallTask';
 import { EmitEventTask } from './EmitEventTask';
 import { DefineVariableTask } from './DefineVariableTask';
 import { CallProtoFunctionTask } from './CallProtoFunctionTask';
-import { PauseSoundTask } from './PauseSoundTask';
-import { ResumeSoundTask } from './ResumeSoundTask';
 import { RemoveListenerTask } from './RemoveListenerTask';
 import { ForTask } from './ForTask';
 import { BreakTask } from './BreakTask';
@@ -41,14 +39,13 @@ import { ContainerTask } from './core/ContainerTask';
 import { SetIntervalTask } from './SetIntervalTask';
 import { EnterFrameTask } from './EnterFrameTask';
 
-
 export class ActionList {
         public component: VFComponent;
         public data: IAction[] | string;
 
         private _actionList: BaseTask[] = [];
 
-        constructor(component: VFComponent, data: IAction[] | string)  {
+        constructor(component: VFComponent, data: IAction[] | string) {
             this.component = component;
             this.data = data;
             this.parseData();
@@ -56,8 +53,9 @@ export class ActionList {
 
         public run(): void {
             if (this._actionList && this._actionList.length) {
-                for ( let i: number = 0, len: number = this._actionList.length; i < len; i++) {
+                for (let i = 0, len: number = this._actionList.length; i < len; i++) {
                     const task = this._actionList[i];
+
                     task.run();
                 }
             }
@@ -65,8 +63,9 @@ export class ActionList {
 
         public stop(): void {
             if (this._actionList && this._actionList.length) {
-                for ( let i: number = 0, len: number = this._actionList.length; i < len; i++) {
+                for (let i = 0, len: number = this._actionList.length; i < len; i++) {
                     const task = this._actionList[i];
+
                     task.stop();
                 }
             }
@@ -74,8 +73,9 @@ export class ActionList {
 
         public pause(): void {
             if (this._actionList && this._actionList.length) {
-                for ( let i: number = 0, len: number = this._actionList.length; i < len; i++) {
+                for (let i = 0, len: number = this._actionList.length; i < len; i++) {
                     const task = this._actionList[i];
+
                     task.pause();
                 }
             }
@@ -83,8 +83,9 @@ export class ActionList {
 
         public resume(): void {
             if (this._actionList && this._actionList.length) {
-                for ( let i: number = 0, len: number = this._actionList.length; i < len; i++) {
+                for (let i = 0, len: number = this._actionList.length; i < len; i++) {
                     const task = this._actionList[i];
+
                     task.resume();
                 }
             }
@@ -95,19 +96,21 @@ export class ActionList {
                 if (Array.isArray(this.data)) {
                     this.parseAST(this.data);
                 }
-            } 
+            }
         }
 
         private addGlobalVariable(action: IActionDefineVariable): void {
             if (this.component && this.component.vfStage) {
                 const variableManager = this.component.vfStage.variableManager;
+
                 variableManager.addVariableDataToGlobal(action.varId, action.variableType, action.value);
             }
         }
         private parseAST(actions: IAction[]): void {
             if (actions) {
-                for (let i: number = 0, len: number = actions.length; i < len; i++) {
+                for (let i = 0, len: number = actions.length; i < len; i++) {
                     const task = this.parseAction(actions[i]);
+
                     if (task) {
                         this._actionList.push(task);
                     }
@@ -115,8 +118,8 @@ export class ActionList {
             }
         }
         private parseAction(data: IAction): BaseTask | undefined {
-
             let task: BaseTask | undefined;
+
             switch (data.type) {
                 case ActionType.Add:
                     task = this.parseAddToStageBefore(data);
@@ -155,13 +158,9 @@ export class ActionList {
                     task = this.parseEmitEvent(data as IActionEmitEvent);
                     break;
                 case ActionType.PlaySound:
-                    task = this.parsePlaySound(data);
-                    break;
                 case ActionType.PauseSound:
-                    task = this.parsePauseSound(data);
-                    break;
                 case ActionType.ResumeSound:
-                    task = this.parseResumeSound(data);
+                    task = this.parseSound(data as IActionSound);
                     break;
                 case ActionType.PlayAnimation:
                     task = this.parsePlayAnimation(data as any);
@@ -215,20 +214,24 @@ export class ActionList {
                         target: gotoData0.target,
                         name: 'gotoPlay',
                     };
+
                     gotoPlayData.params = [];
                     if (Array.isArray(gotoData0.name)) {
                         gotoPlayData.params.push(gotoData0.name);
-                    } else {
+                    }
+                    else {
                         gotoPlayData.params.push([0, gotoData0.name]);
                     }
                     if (Array.isArray(gotoData0.frame)) {
                         gotoPlayData.params.push(gotoData0.frame);
-                    } else {
+                    }
+                    else {
                         gotoPlayData.params.push([0, gotoData0.frame]);
                     }
                     if (Array.isArray(gotoData0.times)) {
                         gotoPlayData.params.push(gotoData0.times);
-                    } else {
+                    }
+                    else {
                         gotoPlayData.params.push([0, gotoData0.times]);
                     }
                     task = new CallProtoFunctionTask(this.component, gotoPlayData);
@@ -240,15 +243,18 @@ export class ActionList {
                         target: gotoData1.target,
                         name: 'gotoStop',
                     };
+
                     gotoStopData.params = [];
                     if (Array.isArray(gotoData1.name)) {
                         gotoStopData.params.push(gotoData1.name);
-                    } else {
+                    }
+                    else {
                         gotoStopData.params.push([0, gotoData1.name]);
                     }
                     if (Array.isArray(gotoData1.frame)) {
                         gotoStopData.params.push(gotoData1.frame);
-                    } else {
+                    }
+                    else {
                         gotoStopData.params.push([0, gotoData1.frame]);
                     }
                     task = new CallProtoFunctionTask(this.component, gotoStopData);
@@ -274,14 +280,16 @@ export class ActionList {
                 default:
                     break;
             }
+
             return task;
         }
 
         private parseSubTask(task: ContainerTask, data: IAction): void {
             if (data.execute) {
-                for (let i: number = 0, len: number = data.execute.length; i < len; i++) {
+                for (let i = 0, len: number = data.execute.length; i < len; i++) {
                     const taskData = data.execute[i];
                     const subTask = this.parseAction(taskData);
+
                     if (subTask) {
                         task.addSubTask(subTask);
                     }
@@ -296,7 +304,9 @@ export class ActionList {
                 target: [],
             };
             const task: AddListenerTask = new AddListenerTask(this.component, addAction);
+
             this.parseSubTask(task, data);
+
             return task;
         }
         private parseAddToStage(data: IAction): AddListenerTask {
@@ -306,45 +316,54 @@ export class ActionList {
                 target: [],
             };
             const task: AddListenerTask = new AddListenerTask(this.component, addedAction);
+
             this.parseSubTask(task, data);
+
             return task;
         }
 
         private parseSetProperty(data: IActionSetProperty): SetPropertyTask {
             const task: SetPropertyTask = new SetPropertyTask(this.component, data);
+
             return task;
         }
 
         private parseClick(data: IAction): AddListenerTask | undefined {
-
             const addlistenerAction: IActionAddEventListener = {
                 event: ComponentEvent.Click,
                 type: ActionType.AddEventListener,
                 target: data.target,
             };
             const task: AddListenerTask = new AddListenerTask(this.component, addlistenerAction);
+
             this.parseSubTask(task, data);
+
             return task;
         }
-        
+
         private parseExpress(data: IActionExpress): ExpressTask {
             const task: ExpressTask = new ExpressTask(this.component, data);
+
             return task;
         }
 
         private parseIf(data: IAction): IfTask {
             const task: IfTask = new IfTask(this.component);
+
             if (data.execute) {
-                for (let i: number = 0, len: number = data.execute.length; i < len; i++) {
+                for (let i = 0, len: number = data.execute.length; i < len; i++) {
                     const ifPart = data.execute[i];
-                    if (ifPart.type === ActionType.If ||
-                        ifPart.type === ActionType.ElseIf || 
-                        ifPart.type === ActionType.Else) {
+
+                    if (ifPart.type === ActionType.If
+                        || ifPart.type === ActionType.ElseIf
+                        || ifPart.type === ActionType.Else) {
                         const condition = (ifPart as IActionIFPart).condition;
                         const conditionQue = new QueueTask();
+
                         if (ifPart.execute) {
-                            for (let j: number = 0, jlen: number = ifPart.execute.length; j < jlen; j++) {
+                            for (let j = 0, jlen: number = ifPart.execute.length; j < jlen; j++) {
                                 const subTask = this.parseAction(ifPart.execute[j]);
+
                                 if (subTask) {
                                     conditionQue.addTask(subTask);
                                 }
@@ -354,98 +373,112 @@ export class ActionList {
                     }
                 }
             }
+
             return task;
         }
 
         private parseDefineFunction(data: IActionFunction): DefineFunctionTask {
             const funTask: FunctionTask = new FunctionTask(this.component, data.name);
+
             this.parseSubTask(funTask, data);
             const task: DefineFunctionTask = new DefineFunctionTask(this.component, data.name, data, funTask);
+
             return task;
         }
 
         private parseCallFunction(data: IActionFunction): CallFunctionTask | undefined {
             const task: CallFunctionTask = new CallFunctionTask(this.component, data.name, data);
+
             return task;
         }
 
         private parsePrint(data: IAction): PrintTask {
             const task: PrintTask = new PrintTask(this.component, data);
+
             return task;
         }
 
         private parseAddEventListener(data: IActionAddEventListener): AddListenerTask | undefined {
             const task: AddListenerTask = new AddListenerTask(this.component, data);
+
             this.parseSubTask(task, data);
+
             return task;
         }
 
         private parseRemoveEventListener(data: IActionAddEventListener): RemoveListenerTask | undefined {
-
             const task: RemoveListenerTask = new RemoveListenerTask(this.component, data);
+
             return task;
         }
 
         private parseEmitEvent(data: IActionEmitEvent): EmitEventTask | undefined {
             const task: EmitEventTask = new EmitEventTask(this.component, data);
+
             return task;
         }
         private parseAddEventListenerCall(data: IActionAddEventListener): AddListenerCallTask | undefined {
             if (data.funName) {
-                const task: AddListenerCallTask = 
-                    new AddListenerCallTask(this.component, data);
+                const task: AddListenerCallTask
+                    = new AddListenerCallTask(this.component, data);
+
                 return task;
             }
         }
-        private parsePlaySound(data: IActionPlaySound): PlaySoundTask {
-            const task: PlaySoundTask = new PlaySoundTask(this.component, data.value, data.trackId, data);
-            return task;
-        }
-        private parsePauseSound(data: IActionPlaySound): PauseSoundTask {
-            const task: PauseSoundTask = new PauseSoundTask(this.component, data.value, data.trackId, data);
-            return task;
-        }
-        private parseResumeSound(data: IActionPlaySound): ResumeSoundTask {
-            const task: ResumeSoundTask = new ResumeSoundTask(this.component, data.value, data.trackId, data);
+        private parseSound(data: IActionSound): SoundTask {
+            const task = new SoundTask(this.component, data);
+
             return task;
         }
         private parsePlayAnimation(data: IActionPlayAnimation): PlayAnimationTask | undefined {
             const task: PlayAnimationTask = new PlayAnimationTask(this.component, data);
+
             return task;
         }
         private parseJumpToNextScene(data: IActionJump): JumpToNextSceneTask {
             const task: JumpToNextSceneTask = new JumpToNextSceneTask(this.component, data.transition);
+
             return task;
         }
         private parseJumpToPrevScene(data: IActionJump): JumpToPrevSceneTask {
             const task: JumpToPrevSceneTask = new JumpToPrevSceneTask(this.component, data.transition);
+
             return task;
         }
         private parseJumpToScene(data: IActionJump): JumpToSceneTask {
             const task: JumpToSceneTask = new JumpToSceneTask(this.component, data.value, data.transition);
+
             return task;
         }
 
         private parseFor(data: IActionFor): ForTask {
             const task = new ForTask(this.component, data);
+
             this.parseSubTask(task, data);
+
             return task;
-        }  
+        }
         private parseSetTimeout(data: IAction): SetTimeoutTask {
             const task: SetTimeoutTask = new SetTimeoutTask(this.component, data);
+
             this.parseSubTask(task, data);
+
             return task;
         }
 
         private parseSetInterval(data: IAction): SetIntervalTask {
             const task: SetIntervalTask = new SetIntervalTask(this.component, data);
+
             this.parseSubTask(task, data);
+
             return task;
         }
         private parseEnterFrame(data: IAction): EnterFrameTask {
             const task: EnterFrameTask = new EnterFrameTask(this.component, data);
+
             this.parseSubTask(task, data);
+
             return task;
         }
-    }
+}
 

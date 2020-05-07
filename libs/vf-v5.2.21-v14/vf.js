@@ -1,6 +1,6 @@
 /*!
- * @vf.js/vf - v5.2.1-v11
- * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+ * @vf.js/vf - v5.2.1-v14
+ * Compiled Thu, 07 May 2020 02:38:36 UTC
  *
  * @vf.js/vf is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -103,7 +103,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/polyfill - v5.2.1
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/polyfill is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -2781,7 +2781,7 @@ var PIXI = (function (exports) {
 	    };
 	}
 
-	//import './Promise';
+	// import './Promise';
 
 	if (!window.ArrayBuffer)
 	{
@@ -2907,7 +2907,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/settings - v5.2.1
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/settings is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -3389,7 +3389,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/math - v5.2.1
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/math is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -7782,7 +7782,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/constants - v5.2.1
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/constants is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -8222,7 +8222,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/utils - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/utils is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -8254,7 +8254,7 @@ var PIXI = (function (exports) {
 
 	var saidHello = false;
 	var renderType = 'canvas';
-	var VERSION = '5.2.1-v11';
+	var VERSION = '5.2.1-v14';
 	/**
 	 * 跳过版本说明
 	 *
@@ -8722,6 +8722,36 @@ var PIXI = (function (exports) {
 	    return ++nextUid;
 	}
 
+	function arraybuffToBase64(buffer) {
+	    var binary = '';
+	    var bytes = new Uint8Array(buffer);
+	    var len = bytes.byteLength;
+	    for (var i = 0; i < len; i++) {
+	        binary += String.fromCharCode(bytes[i]);
+	    }
+	    return window.btoa(binary);
+	}
+	function arraybuffToBase64Sync(buffer) {
+	    return new Promise(function (resolve, reject) {
+	        if (window.Blob && window.FileReader) {
+	            var blob = new Blob([buffer], { type: 'application/octet-binary' });
+	            var fileReader_1 = new FileReader();
+	            fileReader_1.onerror = function (e) {
+	                reject(e);
+	            };
+	            fileReader_1.onload = function () {
+	                var dataUrl = fileReader_1.result;
+	                var base64 = dataUrl.substr(dataUrl.indexOf(',') + 1);
+	                resolve(base64);
+	            };
+	            fileReader_1.readAsDataURL(blob);
+	        }
+	        else {
+	            resolve(arraybuffToBase64(buffer));
+	        }
+	    });
+	}
+
 	// A map of warning messages already fired
 	var warnings = {};
 	/**
@@ -9091,12 +9121,134 @@ var PIXI = (function (exports) {
 	    return defaultValue !== undefined ? defaultValue : 1;
 	}
 
+	var Code;
+	(function (Code) {
+	    Code[Code["ok"] = 1] = "ok";
+	    Code[Code["jsonParseError"] = 2] = "jsonParseError";
+	    Code[Code["NetWorrError"] = 3] = "NetWorrError";
+	})(Code || (Code = {}));
+	// eslint-disable-next-line max-len
+	function removeEventListener(xhr, listener) {
+	    if (listener) {
+	        listener.forEach(function (value) {
+	            xhr.removeEventListener(value[0], value[1]);
+	        });
+	        listener.length = 0;
+	    }
+	    xhr.onload = null;
+	    xhr.onerror = null;
+	    xhr.onreadystatechange = null;
+	}
+	function format$1(code, data, message, level) {
+	    if (level === void 0) { level = 'error'; }
+	    if (Code.ok === code) {
+	        level = 'info';
+	    }
+	    code = code.toString();
+	    return { code: code, level: level, data: data, message: message };
+	}
+	function parseJson(text) {
+	    try {
+	        var data = ((typeof text) === 'string') ? JSON.parse(text) : text;
+	        return format$1(Code.ok, data, 'ok');
+	    }
+	    catch (e) {
+	        return format$1(Code.jsonParseError, e, e.message || '');
+	    }
+	}
+	function geXHRtData(target) {
+	    var xhr = target;
+	    if (xhr.readyState === 4 && xhr.status >= 400) {
+	        return undefined;
+	    }
+	    try {
+	        var response = xhr.response || xhr.responseText;
+	        var msg = void 0;
+	        switch (xhr.responseType) {
+	            case 'json':
+	                msg = parseJson(response);
+	                break;
+	            default:
+	                msg = format$1(Code.ok, response, 'ok');
+	        }
+	        return msg;
+	    }
+	    catch (e) {
+	        return format$1(Code.NetWorrError, e, "" + xhr.responseURL);
+	    }
+	}
+	/**
+	 * 读取文件
+	 *
+	 * @memberof PIXI.utils
+	 * @function readFileSync
+	 * @param {string} url - 文件网络路径
+	 * @param {object} options - the defaultValue if no filename prefix is set.
+	 * @param {array} listener - resolution / device pixel ratio of an asset
+	 * @return {object|undefined}
+	 */
+	function readFileSync(url, options, listener) {
+	    if (options === void 0) { options = {}; }
+	    // eslint-disable-next-line
+	    return new Promise(function (resolve, reject) {
+	        var errorCount = { cur: 0, max: options.errorCount || 1 };
+	        var xhr = new XMLHttpRequest();
+	        var method = options.method || 'GET';
+	        xhr.timeout = options.timeout || 0;
+	        xhr.responseType = options.responseType || 'text';
+	        if (listener) {
+	            listener.forEach(function (value) {
+	                xhr.addEventListener(value[0], value[1]);
+	            });
+	        }
+	        // eslint-disable-next-line
+	        xhr.onload = function (evt) {
+	            var msg = geXHRtData(evt.target);
+	            if (msg.code === Code.ok.toString()) {
+	                removeEventListener(xhr, listener);
+	                return resolve(msg.data);
+	            }
+	            return reject(msg);
+	        };
+	        // eslint-disable-next-line
+	        xhr.onreadystatechange = function (evt) {
+	            var xhr = evt.currentTarget;
+	            if ((xhr.readyState === 2 || xhr.readyState === 4) && xhr.status >= 400) {
+	                if (errorCount.cur >= errorCount.max) {
+	                    removeEventListener(xhr, listener);
+	                    return reject(format$1(Code.NetWorrError, evt, (xhr.responseURL || url) + " " + xhr.status));
+	                }
+	                errorCount.cur++;
+	                xhr.abort();
+	                xhr.open(method, url, true);
+	                xhr.send();
+	            }
+	        };
+	        // eslint-disable-next-line
+	        xhr.onerror = function (evt) {
+	            var xhr = evt.currentTarget;
+	            if (errorCount.cur >= errorCount.max) {
+	                removeEventListener(xhr, listener);
+	                return reject(format$1(Code.NetWorrError, evt, (xhr.responseURL || url) + " " + xhr.status));
+	            }
+	            errorCount.cur++;
+	            xhr.abort();
+	            xhr.open(method, url, true);
+	            xhr.send();
+	        };
+	        xhr.open(method, url, true);
+	        xhr.send();
+	    });
+	}
+
 	var utils_es = ({
 		BaseTextureCache: BaseTextureCache,
 		CanvasRenderTarget: CanvasRenderTarget,
+		get Code () { return Code; },
 		DATA_URI: DATA_URI,
 		ProgramCache: ProgramCache,
 		TextureCache: TextureCache,
+		arraybuffToBase64Sync: arraybuffToBase64Sync,
 		clearTextureCache: clearTextureCache,
 		correctBlendMode: correctBlendMode,
 		createIndicesForQuads: createIndicesForQuads,
@@ -9104,6 +9256,8 @@ var PIXI = (function (exports) {
 		deprecation: deprecation,
 		destroyTextureCache: destroyTextureCache,
 		determineCrossOrigin: determineCrossOrigin,
+		format: format$1,
+		geXHRtData: geXHRtData,
 		getBufferType: getBufferType,
 		getResolutionOfUrl: getResolutionOfUrl,
 		hex2rgb: hex2rgb,
@@ -9113,10 +9267,12 @@ var PIXI = (function (exports) {
 		isWebGLSupported: isWebGLSupported,
 		log2: log2,
 		nextPow2: nextPow2,
+		parseJson: parseJson,
 		premultiplyBlendMode: premultiplyBlendMode,
 		premultiplyRgba: premultiplyRgba,
 		premultiplyTint: premultiplyTint,
 		premultiplyTintToRgba: premultiplyTintToRgba,
+		readFileSync: readFileSync,
 		removeItems: removeItems,
 		rgb2hex: rgb2hex,
 		sayHello: sayHello,
@@ -9135,7 +9291,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/display - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/display is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -10785,7 +10941,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/accessibility - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/accessibility is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -11372,7 +11528,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/ticker - v5.2.1
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/ticker is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -12215,7 +12371,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/interaction - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/interaction is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -14812,7 +14968,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/runner - v5.2.1
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/runner is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -15008,7 +15164,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/core - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/core is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -25747,7 +25903,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/app - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/app is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -26018,7 +26174,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/extract - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/extract is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -28773,7 +28929,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/loaders - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/loaders is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -29090,7 +29246,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/particles - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/particles is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -29893,7 +30049,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/graphics - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/graphics is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -32859,7 +33015,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/sprite is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -33440,7 +33596,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/text - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/text is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -35484,7 +35640,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/prepare - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/prepare is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -36114,7 +36270,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/spritesheet - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/spritesheet is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -36435,7 +36591,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite-tiling - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/sprite-tiling is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -36836,7 +36992,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/text-bitmap - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/text-bitmap is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -37952,7 +38108,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-alpha - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/filter-alpha is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38038,7 +38194,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-blur - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/filter-blur is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38429,7 +38585,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-color-matrix - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/filter-color-matrix is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38958,7 +39114,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-displacement - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/filter-displacement is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39089,7 +39245,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-fxaa - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/filter-fxaa is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39150,7 +39306,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-noise - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/filter-noise is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39251,7 +39407,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-cache-as-bitmap - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/mixin-cache-as-bitmap is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39676,7 +39832,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-get-child-by-name - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/mixin-get-child-by-name is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39713,7 +39869,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-get-global-position - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/mixin-get-global-position is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39750,7 +39906,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mesh - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/mesh is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -40459,7 +40615,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mesh-extras - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/mesh-extras is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41179,7 +41335,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite-animated - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/sprite-animated is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41621,7 +41777,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * pixi.js - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * pixi.js is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -43104,7 +43260,7 @@ var PIXI = (function (exports) {
 	 * @name VERSION
 	 * @type {string}
 	 */
-	var VERSION$1 = '5.2.1-v11';
+	var VERSION$1 = '5.2.1-v14';
 
 	/**
 	 * @namespace PIXI
@@ -43149,7 +43305,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-renderer - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/canvas-renderer is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -44013,7 +44169,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-mesh - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/canvas-mesh is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -44504,7 +44660,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-graphics - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/canvas-graphics is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -44965,7 +45121,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-sprite - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/canvas-sprite is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45170,7 +45326,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-extract - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/canvas-extract is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45344,7 +45500,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-prepare - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/canvas-prepare is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45441,7 +45597,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-sprite-tiling - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/canvas-sprite-tiling is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45530,7 +45686,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-particles - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/canvas-particles is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45637,7 +45793,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-display - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/canvas-display is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45699,7 +45855,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-text - v5.2.1-v9
-	 * Compiled Tue, 28 Apr 2020 09:44:15 UTC
+	 * Compiled Thu, 07 May 2020 02:38:36 UTC
 	 *
 	 * @pixi/canvas-text is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -46778,7 +46934,7 @@ var PIXI = (function (exports) {
 
 	var saidHello$1 = false;
 	var renderType$1 = 'canvas';
-	var VERSION$2 = '5.2.1-v11';
+	var VERSION$2 = '5.2.1-v14';
 	/**
 	 * 跳过版本说明
 	 *
@@ -47246,6 +47402,36 @@ var PIXI = (function (exports) {
 	    return ++nextUid$1;
 	}
 
+	function arraybuffToBase64$1(buffer) {
+	    var binary = '';
+	    var bytes = new Uint8Array(buffer);
+	    var len = bytes.byteLength;
+	    for (var i = 0; i < len; i++) {
+	        binary += String.fromCharCode(bytes[i]);
+	    }
+	    return window.btoa(binary);
+	}
+	function arraybuffToBase64Sync$1(buffer) {
+	    return new Promise(function (resolve, reject) {
+	        if (window.Blob && window.FileReader) {
+	            var blob = new Blob([buffer], { type: 'application/octet-binary' });
+	            var fileReader_1 = new FileReader();
+	            fileReader_1.onerror = function (e) {
+	                reject(e);
+	            };
+	            fileReader_1.onload = function () {
+	                var dataUrl = fileReader_1.result;
+	                var base64 = dataUrl.substr(dataUrl.indexOf(',') + 1);
+	                resolve(base64);
+	            };
+	            fileReader_1.readAsDataURL(blob);
+	        }
+	        else {
+	            resolve(arraybuffToBase64$1(buffer));
+	        }
+	    });
+	}
+
 	// A map of warning messages already fired
 	var warnings$1 = {};
 	/**
@@ -47615,6 +47801,126 @@ var PIXI = (function (exports) {
 	    return defaultValue !== undefined ? defaultValue : 1;
 	}
 
+	var Code$1;
+	(function (Code) {
+	    Code[Code["ok"] = 1] = "ok";
+	    Code[Code["jsonParseError"] = 2] = "jsonParseError";
+	    Code[Code["NetWorrError"] = 3] = "NetWorrError";
+	})(Code$1 || (Code$1 = {}));
+	// eslint-disable-next-line max-len
+	function removeEventListener$1(xhr, listener) {
+	    if (listener) {
+	        listener.forEach(function (value) {
+	            xhr.removeEventListener(value[0], value[1]);
+	        });
+	        listener.length = 0;
+	    }
+	    xhr.onload = null;
+	    xhr.onerror = null;
+	    xhr.onreadystatechange = null;
+	}
+	function format$2(code, data, message, level) {
+	    if (level === void 0) { level = 'error'; }
+	    if (Code$1.ok === code) {
+	        level = 'info';
+	    }
+	    code = code.toString();
+	    return { code: code, level: level, data: data, message: message };
+	}
+	function parseJson$1(text) {
+	    try {
+	        var data = ((typeof text) === 'string') ? JSON.parse(text) : text;
+	        return format$2(Code$1.ok, data, 'ok');
+	    }
+	    catch (e) {
+	        return format$2(Code$1.jsonParseError, e, e.message || '');
+	    }
+	}
+	function geXHRtData$1(target) {
+	    var xhr = target;
+	    if (xhr.readyState === 4 && xhr.status >= 400) {
+	        return undefined;
+	    }
+	    try {
+	        var response = xhr.response || xhr.responseText;
+	        var msg = void 0;
+	        switch (xhr.responseType) {
+	            case 'json':
+	                msg = parseJson$1(response);
+	                break;
+	            default:
+	                msg = format$2(Code$1.ok, response, 'ok');
+	        }
+	        return msg;
+	    }
+	    catch (e) {
+	        return format$2(Code$1.NetWorrError, e, "" + xhr.responseURL);
+	    }
+	}
+	/**
+	 * 读取文件
+	 *
+	 * @memberof PIXI.utils
+	 * @function readFileSync
+	 * @param {string} url - 文件网络路径
+	 * @param {object} options - the defaultValue if no filename prefix is set.
+	 * @param {array} listener - resolution / device pixel ratio of an asset
+	 * @return {object|undefined}
+	 */
+	function readFileSync$1(url, options, listener) {
+	    if (options === void 0) { options = {}; }
+	    // eslint-disable-next-line
+	    return new Promise(function (resolve, reject) {
+	        var errorCount = { cur: 0, max: options.errorCount || 1 };
+	        var xhr = new XMLHttpRequest();
+	        var method = options.method || 'GET';
+	        xhr.timeout = options.timeout || 0;
+	        xhr.responseType = options.responseType || 'text';
+	        if (listener) {
+	            listener.forEach(function (value) {
+	                xhr.addEventListener(value[0], value[1]);
+	            });
+	        }
+	        // eslint-disable-next-line
+	        xhr.onload = function (evt) {
+	            var msg = geXHRtData$1(evt.target);
+	            if (msg.code === Code$1.ok.toString()) {
+	                removeEventListener$1(xhr, listener);
+	                return resolve(msg.data);
+	            }
+	            return reject(msg);
+	        };
+	        // eslint-disable-next-line
+	        xhr.onreadystatechange = function (evt) {
+	            var xhr = evt.currentTarget;
+	            if ((xhr.readyState === 2 || xhr.readyState === 4) && xhr.status >= 400) {
+	                if (errorCount.cur >= errorCount.max) {
+	                    removeEventListener$1(xhr, listener);
+	                    return reject(format$2(Code$1.NetWorrError, evt, (xhr.responseURL || url) + " " + xhr.status));
+	                }
+	                errorCount.cur++;
+	                xhr.abort();
+	                xhr.open(method, url, true);
+	                xhr.send();
+	            }
+	        };
+	        // eslint-disable-next-line
+	        xhr.onerror = function (evt) {
+	            var xhr = evt.currentTarget;
+	            if (errorCount.cur >= errorCount.max) {
+	                removeEventListener$1(xhr, listener);
+	                return reject(format$2(Code$1.NetWorrError, evt, (xhr.responseURL || url) + " " + xhr.status));
+	            }
+	            errorCount.cur++;
+	            xhr.abort();
+	            xhr.open(method, url, true);
+	            xhr.send();
+	        };
+	        xhr.open(method, url, true);
+	        xhr.send();
+	    });
+	}
+
 	/**
 	 * Generalized convenience utilities for PIXI.
 	 * @example
@@ -47635,6 +47941,384 @@ var PIXI = (function (exports) {
 	 */
 
 	/**
+	 * WebAudio
+	 *
+	 * @class
+	 * @extends PIXI.utils.EventEmitter
+	 * @memberof PIXI
+	 */
+	var WebAudio = /** @class */ (function (_super) {
+	    __extends$k(WebAudio, _super);
+	    function WebAudio(name, urlOrArrayBuffer, options) {
+	        var _this = _super.call(this) || this;
+	        /**
+	         * 完成播放一次后声音是否循环播放。
+	         */
+	        _this.loop = false;
+	        /**
+	         * 此声音当前是否播放。
+	         */
+	        _this._isPlaying = false;
+	        _this._isPause = false;
+	        _this._playbackRate = 1;
+	        _this._startTime = 0;
+	        _this._startOffset = 0;
+	        _this._playLength = 0;
+	        _this._isReadyToPlay = false;
+	        _this._volume = 1;
+	        _this._isOutputConnected = false;
+	        _this._playTimeId = -1;
+	        var audioEngine = _this._ae = AudioEngine.Ins();
+	        // eslint-disable-next-line no-eq-null
+	        if (!audioEngine.canUseWebAudio || audioEngine.audioContext == null) {
+	            // eslint-disable-next-line no-console
+	            console.log('Web Audio is not supported by your browser.');
+	            audioEngine.WarnedWebAudioUnsupported = true;
+	            return _this;
+	        }
+	        _this.name = name;
+	        if (options) {
+	            _this.autoplay = options.autoplay || false;
+	            _this.loop = options.loop || false;
+	            _this._volume = options.volume || 0.7;
+	            _this._playbackRate = options.playbackRate || 1;
+	        }
+	        _this._soundGain = audioEngine.audioContext.createGain();
+	        _this._soundGain.gain.value = _this._volume;
+	        _this._inputAudioNode = _this._soundGain;
+	        _this._outputAudioNode = _this._soundGain;
+	        _this.init(urlOrArrayBuffer);
+	        return _this;
+	    }
+	    Object.defineProperty(WebAudio.prototype, "duration", {
+	        /**
+	         * 获取当前音频的长度
+	         * @readonly
+	         * @default 0
+	         * @member {number}
+	         */
+	        get: function () {
+	            if (this._audioBuffer) {
+	                return this._audioBuffer.duration;
+	            }
+	            return 0;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(WebAudio.prototype, "paused", {
+	        /**
+	         * 获取当前音频的暂停状态
+	         * @readonly
+	         * @default 1
+	         * @member {number}
+	         */
+	        get: function () {
+	            return this._isPause;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(WebAudio.prototype, "playbackRate", {
+	        /**
+	         * 播放的速率
+	         * @default 1
+	         * @member {number}
+	         */
+	        get: function () {
+	            return this._playbackRate;
+	        },
+	        set: function (value) {
+	            this._playbackRate = value;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    WebAudio.prototype.onTimeupdate = function () {
+	        var audioContext = this._ae.audioContext;
+	        if (this._isReadyToPlay && this._isPlaying && audioContext) {
+	            // eslint-disable-next-line max-len
+	            this.emit('timeupdate', this, this._startOffset + (audioContext.currentTime - this._startTime));
+	        }
+	    };
+	    WebAudio.prototype.init = function (urlOrArrayBuffer) {
+	        return __awaiter(this, void 0, Promise, function () {
+	            var validParameter, audioEngine, urlType, data, start, base64Data, urlData, buffer, ex_1;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0:
+	                        validParameter = true;
+	                        audioEngine = this._ae;
+	                        if (!urlOrArrayBuffer) { return [3 /*break*/, 9]; }
+	                        _a.label = 1;
+	                    case 1:
+	                        _a.trys.push([1, 8, , 9]);
+	                        if (!(typeof (urlOrArrayBuffer) === 'string' && audioEngine.checkCanPlayType(urlOrArrayBuffer))) { return [3 /*break*/, 6]; }
+	                        urlType = urlOrArrayBuffer.substr(0, 10);
+	                        if (!(urlType.indexOf('data:') === -1 || urlType.indexOf('http') > -1)) { return [3 /*break*/, 3]; }
+	                        return [4 /*yield*/, readFileSync$1(urlOrArrayBuffer, { responseType: 'arraybuffer' }).catch(function (e) { console.error(e); })];
+	                    case 2:
+	                        data = _a.sent();
+	                        if (data) {
+	                            this._soundLoaded(data);
+	                        }
+	                        else {
+	                            validParameter = false;
+	                        }
+	                        return [3 /*break*/, 5];
+	                    case 3:
+	                        start = urlOrArrayBuffer.indexOf(',') + 1;
+	                        base64Data = urlOrArrayBuffer.substr(start);
+	                        urlData = "data:application/octet-binary;base64," + base64Data;
+	                        return [4 /*yield*/, readFileSync$1(urlData, { responseType: 'arraybuffer' }).catch(function (e) { console.error(e); })];
+	                    case 4:
+	                        buffer = _a.sent();
+	                        this._soundLoaded(buffer);
+	                        _a.label = 5;
+	                    case 5: return [3 /*break*/, 7];
+	                    case 6:
+	                        if (urlOrArrayBuffer instanceof ArrayBuffer && urlOrArrayBuffer.byteLength > 0) {
+	                            if (urlOrArrayBuffer.byteLength > 0) {
+	                                this._soundLoaded(urlOrArrayBuffer);
+	                            }
+	                        }
+	                        else {
+	                            validParameter = false;
+	                        }
+	                        _a.label = 7;
+	                    case 7:
+	                        if (!validParameter) {
+	                            // eslint-disable-next-line max-len
+	                            console.error('Parameter must be a URL to the sound, an Array of URLs (.mp3 & .ogg) or an ArrayBuffer of the sound.');
+	                        }
+	                        return [3 /*break*/, 9];
+	                    case 8:
+	                        ex_1 = _a.sent();
+	                        // eslint-disable-next-line no-console
+	                        console.log('Unexpected error. Sound creation aborted.');
+	                        return [3 /*break*/, 9];
+	                    case 9: return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
+	    WebAudio.prototype._soundLoaded = function (audioData) {
+	        if (!this._ae.audioContext) {
+	            return;
+	        }
+	        var onCanplaythrough = this.onCanplaythrough.bind(this);
+	        var onError = this.onError.bind(this);
+	        this._ae.audioContext.decodeAudioData(audioData, onCanplaythrough, onError);
+	    };
+	    WebAudio.prototype.onCanplaythrough = function (buffer) {
+	        this._audioBuffer = buffer;
+	        this._isReadyToPlay = true;
+	        this.emit('canplaythrough', this);
+	        if (this.autoplay) {
+	            this.play();
+	        }
+	    };
+	    WebAudio.prototype.onError = function (error) {
+	        error = "Error while decoding audio data for: " + this.name + " / Error: " + error;
+	        if (error) {
+	            console.error(error);
+	        }
+	        this.emit('error', this, error);
+	    };
+	    /**
+	     * 声音播放接口
+	     *
+	     *  await sound.play()
+	     *
+	     * @param {number} [offset] - 声音的开始偏移值
+	     * @param {number} [length] - 持续时间（以秒为单位）
+	     */
+	    WebAudio.prototype.play = function (when, offset, length) {
+	        var _this = this;
+	        var audioContext = this._ae.audioContext;
+	        if (this._isReadyToPlay && audioContext) {
+	            if (!this._isPause) {
+	                this._startOffset = offset || 0;
+	                this._playLength = length || 0;
+	            }
+	            try {
+	                var tryToPlay_1 = function () {
+	                    var soundSource = _this._soundSource;
+	                    if (soundSource) {
+	                        soundSource.stop();
+	                        soundSource.disconnect();
+	                    }
+	                    if (audioContext) {
+	                        var time = _this._startOffset;
+	                        var playLength = _this._playLength;
+	                        soundSource = audioContext.createBufferSource();
+	                        soundSource.buffer = _this._audioBuffer;
+	                        soundSource.connect(_this._inputAudioNode);
+	                        // soundSource.connect(audioContext.destination);
+	                        soundSource.loop = _this.loop;
+	                        soundSource.playbackRate.value = _this._playbackRate;
+	                        soundSource.onended = function () { _this.onended(); };
+	                        soundSource.start(when, time, playLength || soundSource.buffer.duration);
+	                        _this._soundSource = soundSource;
+	                        _this._startTime = audioContext.currentTime;
+	                        _this.emit('play', _this);
+	                        if (_this.listeners('timeupdate').length > 0) {
+	                            Ticker$1.shared.remove(_this.onTimeupdate, _this);
+	                            Ticker$1.shared.add(_this.onTimeupdate, _this);
+	                        }
+	                    }
+	                };
+	                var state1 = '';
+	                if (audioContext.state) {
+	                    state1 = audioContext.state.toString();
+	                }
+	                if (state1.indexOf('interrupted') !== -1) {
+	                    this._ae.emit(this._ae.audioLockedInterrupted, this);
+	                }
+	                else if (audioContext.state === 'suspended') {
+	                    window.clearTimeout(this._playTimeId);
+	                    // Wait a bit for FF as context seems late to be ready.
+	                    this._playTimeId = window.setTimeout(function () {
+	                        // eslint-disable-next-line
+	                        if (audioContext.state === 'suspended') {
+	                            if (!_this._ae.unlocked) {
+	                                _this._ae.lock();
+	                                if (_this.loop || _this.autoplay) {
+	                                    _this._ae.once(_this._ae.audioUnlockedObservable, function () {
+	                                        tryToPlay_1();
+	                                    }, _this);
+	                                }
+	                            }
+	                            else if (_this.loop || _this.autoplay) {
+	                                tryToPlay_1();
+	                            }
+	                        }
+	                        else {
+	                            tryToPlay_1();
+	                        }
+	                    }, 500);
+	                }
+	                else {
+	                    tryToPlay_1();
+	                }
+	                this._isPlaying = true;
+	                this._isPause = false;
+	            }
+	            catch (e) {
+	                // eslint-disable-next-line no-console
+	                console.log("Error while trying to play audio: " + this.name + ", " + e.message);
+	            }
+	        }
+	    };
+	    WebAudio.prototype.onended = function () {
+	        this._isPlaying = false;
+	        this.emit('ended', this);
+	    };
+	    /**
+	    * 停止声音
+	    * @param time (optional) X秒后停止声音。默认情况下立即停止
+	    */
+	    WebAudio.prototype.stop = function (time) {
+	        Ticker$1.shared.remove(this.onTimeupdate, this);
+	        if (this._isPlaying) {
+	            var audioEngine = this._ae;
+	            this._startOffset = 0;
+	            this._playLength = 0;
+	            if (audioEngine.audioContext && this._soundSource && this._soundSource.buffer) {
+	                try {
+	                    // eslint-disable-next-line max-len
+	                    var stopTime = time ? audioEngine.audioContext.currentTime + time : audioEngine.audioContext.currentTime;
+	                    this._soundSource.stop(stopTime);
+	                    if (!this._isPause) {
+	                        this._startOffset = 0;
+	                    }
+	                }
+	                catch (ex) {
+	                    // eslint-disable-next-line no-console
+	                    console.log("Error sound to stop: " + this.name + ", " + ex.message);
+	                }
+	            }
+	        }
+	    };
+	    /**
+	     * 暂停声音
+	     */
+	    WebAudio.prototype.pause = function () {
+	        Ticker$1.shared.remove(this.onTimeupdate, this);
+	        if (this._isPlaying) {
+	            var audioContext = this._ae.audioContext;
+	            this._isPause = true;
+	            if (audioContext) {
+	                var startOffset = this._startOffset;
+	                this.stop(0);
+	                this._startOffset = startOffset + audioContext.currentTime - this._startTime;
+	            }
+	            this.emit('pause', this, this.paused);
+	        }
+	    };
+	    Object.defineProperty(WebAudio.prototype, "volume", {
+	        /**
+	         * 音量(0.0 - 1.0)
+	         * @default 1
+	         * @member {number}
+	         */
+	        get: function () {
+	            return this._volume;
+	        },
+	        set: function (newVolume) {
+	            var audioEngine = this._ae;
+	            if (audioEngine.canUseWebAudio && this._soundGain) {
+	                this._soundGain.gain.value = newVolume;
+	            }
+	            this._volume = newVolume;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * 释放
+	     */
+	    WebAudio.prototype.dispose = function () {
+	        this.removeAllListeners();
+	        Ticker$1.shared.remove(this.onTimeupdate, this);
+	        if (this._ae.canUseWebAudio) {
+	            if (this._isPlaying) {
+	                this.stop();
+	            }
+	            this._isReadyToPlay = false;
+	            if (this._soundSource) {
+	                this._soundSource.disconnect();
+	                this._soundSource = null;
+	            }
+	            this._audioBuffer = null;
+	        }
+	        this._ae.map.delete(this.name);
+	        this._ae = undefined;
+	        AudioEngine.Ins().map.delete(this.name);
+	    };
+	    /**
+	     * 获取包含数据的当前基础音频缓冲区
+	     */
+	    WebAudio.prototype.getAudioBuffer = function () {
+	        return this._audioBuffer;
+	    };
+	    /**
+	     * 将此声音连接到声音轨道音频节点，如增益...
+	     * @param soundTrackAudioNode 要连接的音轨音频节点
+	     */
+	    WebAudio.prototype.connectToSoundTrackAudioNode = function (soundTrackAudioNode) {
+	        if (this._ae.canUseWebAudio) {
+	            if (this._isOutputConnected) {
+	                this._outputAudioNode.disconnect();
+	            }
+	            this._outputAudioNode.connect(soundTrackAudioNode);
+	            this._isOutputConnected = true;
+	        }
+	    };
+	    return WebAudio;
+	}(eventemitter3));
+
+	/**
 	 * 负责在整个应用程序中播放，同步和分析声音。
 	 * @class
 	 * @extends PIXI.utils.EventEmitter
@@ -47642,11 +48326,18 @@ var PIXI = (function (exports) {
 	 */
 	var AudioEngine = /** @class */ (function (_super) {
 	    __extends$k(AudioEngine, _super);
+	    /**
+	     * 不可实例化
+	     */
 	    function AudioEngine() {
 	        var _this = _super.call(this) || this;
 	        _this._audioContext = null; // AudioContext
 	        _this._audioContextInitialized = false;
 	        _this._muteButton = null;
+	        /**
+	         * 当前存放的音频列表
+	         * @type {Map<string, vf.IAudio>}
+	         */
 	        _this.map = new Map();
 	        /**
 	         * 获取当前主机是否支持Web Audio，从而可以创建AudioContexts。
@@ -47658,14 +48349,6 @@ var PIXI = (function (exports) {
 	         */
 	        _this.WarnedWebAudioUnsupported = false;
 	        /**
-	         * 获取您的浏览器是否支持mp3。
-	         */
-	        _this.isMP3supported = false;
-	        /**
-	         * 获取浏览器是否支持ogg。
-	         */
-	        _this.isOGGsupported = false;
-	        /**
 	        * 获取音频是否已在设备上解锁。
 	        * 有些浏览器对音频有很强的限制，除非是自动播放
 	        * 用户互动已经发生。
@@ -47676,24 +48359,22 @@ var PIXI = (function (exports) {
 	         * 在这种情况下，不会显示嵌入按钮。
 	         */
 	        _this.useCustomUnlockedButton = false;
-	        /** 音效被中断 */
-	        _this.ononAudioLockedInterrupted = "ononAudioLockedInterrupted";
+	        /**
+	         * 音效被中断
+	         * @default 'audioLockedInterrupted'
+	         */
+	        _this.audioLockedInterrupted = 'audioLockedInterrupted';
 	        /**
 	         * 在浏览器上解锁音频时引发的事件。
+	         * @default 'audioUnlockedObservable'
 	         */
-	        _this.onAudioUnlockedObservable = "onAudioUnlockedObservable";
+	        _this.audioUnlockedObservable = 'audioUnlockedObservable';
 	        /**
 	         * 音频锁定在浏览器上时引发的事件。
+	         * @default 'audioLockedObservable'
 	         */
-	        _this.onAudioLockedObservable = "onAudioLockedObservable";
+	        _this.audioLockedObservable = 'audioLockedObservable';
 	        _this._tryToRun = false;
-	        if (AudioEngine.type === 'audio' || AudioEngine.type === 'webaudio') {
-	            var w = window;
-	            if (typeof w.AudioContext !== 'undefined' || typeof w.webkitAudioContext !== 'undefined') {
-	                w.AudioContext = w.AudioContext || w.webkitAudioContext;
-	                _this.canUseWebAudio = true;
-	            }
-	        }
 	        var audioElem = document.createElement('audio');
 	        try {
 	            // eslint-disable-next-line max-len
@@ -47715,14 +48396,65 @@ var PIXI = (function (exports) {
 	        }
 	        return _this;
 	    }
-	    Object.defineProperty(AudioEngine, "ins", {
-	        get: function () {
-	            var share = AudioEngine.share = AudioEngine.share || new AudioEngine();
-	            return share;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
+	    /**
+	     * 定义音频使用的类型
+	     *
+	     * @static
+	     * @memberof PIXI.AudioEngine
+	     * @function Ins
+	     * @returns {PIXI.AudioEngine}
+	     */
+	    AudioEngine.Ins = function () {
+	        if (AudioEngine.share) {
+	            return AudioEngine.share;
+	        }
+	        AudioEngine.share = new AudioEngine();
+	        return AudioEngine.share;
+	    };
+	    /**
+	    * 建立音频
+	    * vf.AudioEngine.type = 'audio｜webaudio|auto'; // 设置音频类型
+	    * vf.AudioEngine.Ins().useCustomUnlockedButton = true | false; // 默认false开启
+	    * const audio = new vf.AudioEngine.Ins().createAudio('audioName', audioUrl,{autoplay:true});
+	    * audio.play();
+	    * @param {string} name - 全局唯一名
+	    * @param {string | ArrayBuffer} [urlOrArrayBuffer] - url音频路径
+	    * @param {vf.IAudioOption} [options] 配置
+	    * @return {vf.IAudio}
+	    */
+	    AudioEngine.prototype.createAudio = function (name, urlOrArrayBuffer, options) {
+	        if (this.map.get(name)) {
+	            return this.map.get(name);
+	        }
+	        var type = AudioEngine.type;
+	        if (type === 'auto') {
+	            if (this.canUseWebAudio) {
+	                type = 'webaudio';
+	            }
+	            else {
+	                type = 'auto';
+	            }
+	        }
+	        var auido;
+	        var w = window;
+	        switch (type) {
+	            case 'audio':
+	                auido = new HtmlAudio(name, urlOrArrayBuffer, options);
+	                break;
+	            case 'webaudio':
+	                if (typeof w.AudioContext !== 'undefined' || typeof w.webkitAudioContext !== 'undefined') {
+	                    w.AudioContext = w.AudioContext || w.webkitAudioContext;
+	                    this.canUseWebAudio = true;
+	                }
+	                auido = new WebAudio(name, urlOrArrayBuffer, options);
+	                auido.connectToSoundTrackAudioNode(this.masterGain);
+	                break;
+	            default:
+	                auido = new HtmlAudio(name, urlOrArrayBuffer, options);
+	        }
+	        this.map.set(name, auido);
+	        return auido;
+	    };
 	    Object.defineProperty(AudioEngine.prototype, "audioContext", {
 	        /**
 	         * 获取当前的AudioContext（如果可用）。
@@ -47730,9 +48462,6 @@ var PIXI = (function (exports) {
 	        get: function () {
 	            if (!this._audioContextInitialized) {
 	                this._init();
-	            }
-	            else if (!this.unlocked && !this._muteButton) {
-	                this._displayMuteButton();
 	            }
 	            return this._audioContext;
 	        },
@@ -47744,6 +48473,9 @@ var PIXI = (function (exports) {
 	     */
 	    AudioEngine.prototype.lock = function () {
 	        this._triggerSuspendedState();
+	        if (!this.unlocked && !this._muteButton) {
+	            this._displayMuteButton();
+	        }
 	    };
 	    /**
 	    * 在dom上完成用户操作后，解锁音频引擎。
@@ -47756,18 +48488,18 @@ var PIXI = (function (exports) {
 	        if (this._audioContext.resume) {
 	            result = this._audioContext.resume();
 	        }
+	        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	        return result || Promise.resolve();
 	    };
 	    AudioEngine.prototype._init = function () {
 	        try {
 	            if (this.canUseWebAudio) {
-	                this._audioContext = new AudioContext();
-	                // create a global volume gain node
-	                this.masterGain = this._audioContext.createGain();
-	                this.masterGain.gain.value = 1;
-	                this.masterGain.connect(this._audioContext.destination);
+	                var audioContext = this._audioContext = new AudioContext();
+	                var masterGain = this.masterGain = audioContext.createGain();
+	                masterGain.gain.value = 1;
+	                masterGain.connect(audioContext.destination);
 	                this._audioContextInitialized = true;
-	                if (this._audioContext.state === 'running') {
+	                if (audioContext.state === 'running') {
 	                    this._triggerRunningState();
 	                }
 	            }
@@ -47784,23 +48516,28 @@ var PIXI = (function (exports) {
 	            return;
 	        }
 	        this._tryToRun = true;
-	        this.resumeAudioContext()
-	            .then(function () {
-	            _this._tryToRun = false;
-	            if (_this._muteButton) {
-	                _this._hideMuteButton();
-	            }
-	        }).catch(function () {
-	            _this._tryToRun = false;
-	            _this.unlocked = false;
-	        });
+	        if (this.audioContext) {
+	            this.resumeAudioContext()
+	                .then(function () {
+	                _this._tryToRun = false;
+	                if (_this._muteButton) {
+	                    _this._hideMuteButton();
+	                }
+	            }).catch(function () {
+	                _this._tryToRun = false;
+	                _this.unlocked = false;
+	            });
+	        }
+	        else if (this._muteButton) {
+	            this._hideMuteButton();
+	        }
 	        // Notify users that the audio stack is unlocked/unmuted
 	        this.unlocked = true;
-	        this.emit(this.onAudioUnlockedObservable, this);
+	        this.emit(this.audioUnlockedObservable, this);
 	    };
 	    AudioEngine.prototype._triggerSuspendedState = function () {
 	        this.unlocked = false;
-	        this.emit(this.onAudioLockedObservable, this);
+	        this.emit(this.audioLockedObservable, this);
 	    };
 	    /**
 	     * 销毁并释放与音频ccontext相关的资源。
@@ -47873,7 +48610,8 @@ var PIXI = (function (exports) {
 	    AudioEngine.prototype.checkCanPlayType = function (url) {
 	        var codecSupportedFound = false;
 	        if (url.substr(0, 4) === 'data') {
-	            url = url.substr(0, 15).replace('/', '.');
+	            codecSupportedFound = true;
+	            return codecSupportedFound;
 	        }
 	        if (url.indexOf('.mp3') !== -1 && this.isMP3supported) {
 	            codecSupportedFound = true;
@@ -47889,21 +48627,18 @@ var PIXI = (function (exports) {
 	        }
 	        return codecSupportedFound;
 	    };
+	    /**
+	     * 定义音频使用的类型
+	     *
+	     * @static
+	     * @default 'auto'
+	     */
 	    AudioEngine.type = 'auto';
 	    return AudioEngine;
 	}(eventemitter3));
 
 	/**
-	 * baseAudioClass
-	 *
-	 * 准备完成 canplaythrough
-	 *
-	 * 播放事件 play
-	 *
-	 * 暂停事件 pause
-	 *
-	 * 错误事件 error
-	 *
+	 * HtmlAudio
 	 *
 	 *
 	 * @class
@@ -47914,7 +48649,6 @@ var PIXI = (function (exports) {
 	    __extends$k(HtmlAudio, _super);
 	    function HtmlAudio(name, urlOrArrayBuffer, option) {
 	        var _this = _super.call(this) || this;
-	        _this._autoplay = false;
 	        _this._isReadyToPlay = false;
 	        _this._isPlaying = false;
 	        _this._isPause = false;
@@ -47922,58 +48656,12 @@ var PIXI = (function (exports) {
 	        _this._playLength = 0;
 	        _this._stopTime = 0;
 	        _this._isDispose = false;
-	        _this._name = name;
-	        _this._source = urlOrArrayBuffer;
-	        _this._audio = new Audio(urlOrArrayBuffer);
-	        var audio = _this._audio;
-	        if (!AudioEngine.ins.checkCanPlayType(urlOrArrayBuffer)) {
-	            audio.remove();
-	            throw new Error("not support type " + urlOrArrayBuffer);
-	        }
-	        if (option) {
-	            audio.loop = option.loop || false;
-	            audio.volume = option.volume || 1;
-	            audio.playbackRate = option.playbackRate || 1;
-	        }
-	        audio.autoplay = false;
-	        audio.controls = false;
-	        audio.preload = 'auto';
-	        audio.src = urlOrArrayBuffer;
-	        var onCanplaythrough = _this.onCanplaythrough.bind(_this);
-	        var onError = _this.onError.bind(_this);
-	        var onPause = _this.onPause.bind(_this);
-	        audio.oncanplaythrough = onCanplaythrough;
-	        audio.onerror = onError;
-	        audio.onpaste = onPause;
-	        document.body.appendChild(audio);
-	        if (_this.autoplay) {
-	            _this.play();
-	        }
+	        _this.playTime = 0;
+	        _this.name = name;
+	        _this.autoplay = option.autoplay || false;
+	        _this.init(urlOrArrayBuffer, option);
 	        return _this;
 	    }
-	    Object.defineProperty(HtmlAudio.prototype, "name", {
-	        /**
-	         * 声音名称。
-	         * @member {string}
-	         */
-	        get: function () {
-	            return this._name;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(HtmlAudio.prototype, "autoplay", {
-	        /**
-	         * 自动播放声音
-	         * @default false
-	         * @member {boolean}
-	         */
-	        get: function () {
-	            return this._autoplay;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
 	    Object.defineProperty(HtmlAudio.prototype, "loop", {
 	        /**
 	         * 完成播放一次后声音是否循环播放。
@@ -48040,7 +48728,7 @@ var PIXI = (function (exports) {
 	         * @member {number}
 	         */
 	        get: function () {
-	            return this._audio.paused;
+	            return this._isPause;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -48058,9 +48746,56 @@ var PIXI = (function (exports) {
 	        enumerable: true,
 	        configurable: true
 	    });
+	    HtmlAudio.prototype.init = function (urlOrArrayBuffer, option) {
+	        return __awaiter(this, void 0, Promise, function () {
+	            var audio, onCanplaythrough, onError, onPause, onTimeupdate;
+	            var _this = this;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0:
+	                        if (!(typeof urlOrArrayBuffer !== 'string')) { return [3 /*break*/, 2]; }
+	                        return [4 /*yield*/, arraybuffToBase64Sync$1(urlOrArrayBuffer)];
+	                    case 1:
+	                        urlOrArrayBuffer = _a.sent();
+	                        urlOrArrayBuffer = "data:audio/mp3;base64," + urlOrArrayBuffer;
+	                        _a.label = 2;
+	                    case 2:
+	                        this._audio = new Audio(urlOrArrayBuffer);
+	                        audio = this._audio;
+	                        if (!AudioEngine.Ins().checkCanPlayType(urlOrArrayBuffer)) {
+	                            audio.remove();
+	                            throw new Error("not support type " + urlOrArrayBuffer);
+	                        }
+	                        if (option) {
+	                            audio.loop = option.loop || false;
+	                            audio.volume = option.volume || 1;
+	                            audio.playbackRate = option.playbackRate || 1;
+	                        }
+	                        audio.autoplay = false;
+	                        audio.controls = false;
+	                        audio.preload = 'auto';
+	                        onCanplaythrough = this.onCanplaythrough.bind(this);
+	                        onError = this.onError.bind(this);
+	                        onPause = this.onPause.bind(this);
+	                        onTimeupdate = this.onTimeupdate.bind(this);
+	                        audio.oncanplaythrough = onCanplaythrough;
+	                        audio.onerror = onError;
+	                        audio.onpaste = onPause;
+	                        audio.ontimeupdate = onTimeupdate;
+	                        audio.onended = function () {
+	                            _this._isPlaying = true;
+	                            _this.emit('ended', _this);
+	                        };
+	                        document.body.appendChild(audio);
+	                        if (this.autoplay) {
+	                            this.play();
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
 	    HtmlAudio.prototype.onCanplaythrough = function () {
-	        // eslint-disable-next-line no-console
-	        console.log('onCanplaythrough');
 	        this._audio.oncanplaythrough = undefined;
 	        this._isReadyToPlay = true;
 	        if (this._isPlaying) {
@@ -48070,16 +48805,24 @@ var PIXI = (function (exports) {
 	    };
 	    HtmlAudio.prototype.onError = function (event, source, lineno, colno, error) {
 	        if (error) {
-	            console.error(error.message);
+	            console.error(source, lineno, colno, error.message);
+	        }
+	        if (error && error.message) {
+	            this.emit('error', this, event);
+	            return;
 	        }
 	        this.emit('error', this, event);
 	    };
 	    HtmlAudio.prototype.onPause = function () {
 	        this.emit('pause', this, this.paused);
 	    };
+	    HtmlAudio.prototype.onTimeupdate = function () {
+	        this.emit('timeupdate', this, this._audio.currentTime);
+	    };
 	    HtmlAudio.prototype.removeUpdateEvent = function () {
 	        Ticker$1.shared.remove(this.onStopUpdate, this);
 	        Ticker$1.shared.remove(this.onPlayLength, this);
+	        Ticker$1.shared.remove(this.onDelayPlay, this);
 	    };
 	    HtmlAudio.prototype.onStopUpdate = function () {
 	        var audio = this._audio;
@@ -48090,6 +48833,12 @@ var PIXI = (function (exports) {
 	                this._stopTime = 0;
 	                this.removeUpdateEvent();
 	            }
+	        }
+	    };
+	    HtmlAudio.prototype.onDelayPlay = function () {
+	        if (performance.now() > this.playTime) {
+	            Ticker$1.shared.remove(this.onDelayPlay, this);
+	            this.play(0, this._startOffset, this._playLength);
 	        }
 	    };
 	    HtmlAudio.prototype.onPlayLength = function () {
@@ -48111,7 +48860,8 @@ var PIXI = (function (exports) {
 	     * @param {number} [offset] - 声音的开始偏移值
 	     * @param {number} [length] - 持续时间（以秒为单位）
 	     */
-	    HtmlAudio.prototype.play = function (offset, length) {
+	    HtmlAudio.prototype.play = function (time, offset, length) {
+	        var _this = this;
 	        if (this._isDispose) {
 	            throw new Error('has been unloaded htmlaudio!');
 	        }
@@ -48119,6 +48869,13 @@ var PIXI = (function (exports) {
 	            this._startOffset = offset || 0;
 	            this._playLength = length || 0;
 	        }
+	        if (time) {
+	            this.playTime = performance.now() + (time * 1000);
+	            Ticker$1.shared.remove(this.onDelayPlay, this);
+	            Ticker$1.shared.add(this.onDelayPlay, this);
+	            return;
+	        }
+	        this.playTime = 0;
 	        this._isPause = false;
 	        this._isPlaying = true;
 	        if (this._isReadyToPlay) {
@@ -48130,10 +48887,25 @@ var PIXI = (function (exports) {
 	            }
 	            finally {
 	                if (this._playLength) {
+	                    Ticker$1.shared.remove(this.onPlayLength, this);
 	                    Ticker$1.shared.add(this.onPlayLength, this);
 	                }
-	                this._audio.play();
-	                this.emit('play', this);
+	                var promise = this._audio.play();
+	                if (promise !== undefined) {
+	                    // eslint-disable-next-line
+	                    promise.then(function (_) {
+	                        _this.emit('play', _this);
+	                    }).catch(function () {
+	                        var ae = AudioEngine.Ins();
+	                        ae.once(ae.audioUnlockedObservable, function () {
+	                            _this.play(time, offset, length);
+	                        }, _this);
+	                        ae.lock();
+	                    });
+	                }
+	                else {
+	                    this.emit('play', this);
+	                }
 	            }
 	        }
 	        else {
@@ -48190,8 +48962,11 @@ var PIXI = (function (exports) {
 	        audio.oncanplaythrough = undefined;
 	        audio.onerror = undefined;
 	        audio.onpaste = undefined;
+	        audio.ontimeupdate = undefined;
+	        audio.onended = undefined;
 	        audio.remove();
 	        this._audio = null;
+	        AudioEngine.Ins().map.delete(this.name);
 	    };
 	    /**
 	     * 获取包含数据的当前基础音频缓冲区
@@ -48216,6 +48991,7 @@ var PIXI = (function (exports) {
 	exports.AppLoaderPlugin = AppLoaderPlugin;
 	exports.Application = Application;
 	exports.Attribute = Attribute;
+	exports.AudioEngine = AudioEngine;
 	exports.BasePrepare = BasePrepare;
 	exports.BaseRenderTexture = BaseRenderTexture;
 	exports.BaseTexture = BaseTexture;
@@ -48256,7 +49032,6 @@ var PIXI = (function (exports) {
 	exports.Graphics = Graphics;
 	exports.GraphicsData = GraphicsData;
 	exports.GraphicsGeometry = GraphicsGeometry;
-	exports.HtmlAudio = HtmlAudio;
 	exports.IGLUniformData = IGLUniformData;
 	exports.LineStyle = LineStyle;
 	exports.Loader = Loader$1;

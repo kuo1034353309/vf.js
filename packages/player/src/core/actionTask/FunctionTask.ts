@@ -6,7 +6,7 @@ import { IfTask } from './IfTask';
 import { QueueTask } from './core/QueueTask';
 import { SetPropertyTask } from './SetPropertyTask';
 import { PlayAnimationTask } from './PlayAnimationTask';
-import { PlaySoundTask } from './PlaySoundTask';
+import { SoundTask } from './SoundTask';
 import { CallFunctionTask } from './CallFunctionTask';
 import { PrintTask } from './PrintTask';
 import { injectParamsToQueueTask } from './core/ActionListUtils';

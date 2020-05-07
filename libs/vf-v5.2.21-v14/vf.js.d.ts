@@ -1048,6 +1048,246 @@ declare namespace vf {
         };
     }
     /**
+     * 不可实例化
+     */
+    class AudioEngine extends vf.utils.EventEmitter {
+        /**
+         * 当前存放的音频列表
+         * @type {Map<string, vf.IAudio>}
+         */
+        map: Map<string, vf.IAudio>;
+        /**
+         * 获取当前主机是否支持Web Audio，从而可以创建AudioContexts。
+         */
+        canUseWebAudio: any;
+        /**
+         * 定义如果不支持WebAudio，Babylon是否应发出警告。
+         * @ignoreNaming
+         */
+        WarnedWebAudioUnsupported: any;
+        /**
+         * 获取音频是否已在设备上解锁。
+         * 有些浏览器对音频有很强的限制，除非是自动播放
+         * 用户互动已经发生。
+         */
+        unlocked: any;
+        /**
+         * 定义音频引擎是否依赖于自定义解锁按钮。
+         * 在这种情况下，不会显示嵌入按钮。
+         */
+        useCustomUnlockedButton: any;
+        /**
+         * 音效被中断
+         * @default 'audioLockedInterrupted'
+         */
+        audioLockedInterrupted: any;
+        /**
+         * 在浏览器上解锁音频时引发的事件。
+         * @default 'audioUnlockedObservable'
+         */
+        audioUnlockedObservable: any;
+        /**
+         * 音频锁定在浏览器上时引发的事件。
+         * @default 'audioLockedObservable'
+         */
+        audioLockedObservable: any;
+        /**
+         * 定义音频使用的类型
+         *
+         * @static
+         * @memberof vf.AudioEngine
+         * @function Ins
+         * @returns {vf.AudioEngine}
+         */
+        static Ins(): vf.AudioEngine;
+        /**
+         * 建立音频
+         * vf.AudioEngine.type = 'audio｜webaudio|auto'; // 设置音频类型
+         * vf.AudioEngine.Ins().useCustomUnlockedButton = true | false; // 默认false开启
+         * const audio = new vf.AudioEngine.Ins().createAudio('audioName', audioUrl,{autoplay:true});
+         * audio.play();
+         * @param {string} name - 全局唯一名
+         * @param {string | ArrayBuffer} [urlOrArrayBuffer] - url音频路径
+         * @param {vf.IAudioOption} [options] 配置
+         * @return {vf.IAudio}
+         */
+        createAudio(name: string, urlOrArrayBuffer?: string | ArrayBuffer, options?: vf.IAudioOption): vf.IAudio;
+        /**
+         * 获取当前的AudioContext（如果可用）。
+         */
+        audioContext: any;
+        /**
+         * 标记处于锁定状态的音频引擎 (浏览器阻止音频自动播放)。
+         */
+        lock(): void;
+        /**
+         * 在dom上完成用户操作后，解锁音频引擎。
+         */
+        unlock(): void;
+        /**
+         * 销毁并释放与音频ccontext相关的资源。
+         */
+        dispose(): void;
+        /**
+         * 获取主增益上的全局音量。
+         * @returns 不存在返回-1
+         */
+        getGlobalVolume(): any;
+        /**
+         * 设置全音局量（设置主增益）。
+         * @param newVolume newVolume定义应用程序的新全局卷
+         */
+        setGlobalVolume(newVolume: any): void;
+        /**
+         * 检测当前音频是否支持
+         * @param url {number} 需要检测URL
+         */
+        checkCanPlayType(url: number): void;
+        /**
+         * 定义音频使用的类型
+         *
+         * @static
+         * @default 'auto'
+         */
+        static type: any;
+    }
+    class HtmlAudio extends vf.utils.EventEmitter {
+        /**
+         * 完成播放一次后声音是否循环播放。
+         * @default false
+         * @member {boolean}
+         */
+        loop: boolean;
+        /**
+         * 播放的速率
+         * @default 1
+         * @member {number}
+         */
+        playbackRate: number;
+        /**
+         * 音量(0.0 - 1.0)
+         * @default 1
+         * @member {number}
+         */
+        volume: number;
+        /**
+         * 获取当前音频的长度
+         * @readonly
+         * @default 0
+         * @member {number}
+         */
+        readonly duration: number;
+        /**
+         * 获取当前音频的暂停状态
+         * @readonly
+         * @default 1
+         * @member {number}
+         */
+        readonly paused: number;
+        /**
+         * 获取当前音频播放的时间
+         * @readonly
+         * @default 1
+         * @member {number}
+         */
+        readonly currentTime: number;
+        /**
+         * 声音播放接口
+         *
+         *  await sound.play()
+         *
+        * @param {number} [time] - 等待播放时间
+        * @param {number} [offset] - 声音的开始偏移值
+        * @param {number} [length] - 声音持续时间 
+        */
+        play(time?: number, offset?: number, length?: number): void;
+        /**
+         * 停止声音
+         * @param time (optional) X秒后停止声音。默认情况下立即停止
+         */
+        stop(time: any): void;
+        /**
+         * 暂停声音
+         */
+        pause(): void;
+        /**
+         * 释放
+         */
+        dispose(): void;
+        /**
+         * 获取包含数据的当前基础音频缓冲区
+         */
+        getAudioBuffer(): void;
+    }
+    class WebAudio extends vf.utils.EventEmitter {
+        /**
+         * 完成播放一次后声音是否循环播放。
+         */
+        loop: any;
+        /**
+         * 此声音当前是否播放。
+         */
+        _isPlaying: any;
+        /**
+         * 获取当前音频的长度
+         * @readonly
+         * @default 0
+         * @member {number}
+         */
+        readonly duration: number;
+        /**
+         * 获取当前音频的暂停状态
+         * @readonly
+         * @default 1
+         * @member {number}
+         */
+        readonly paused: number;
+        /**
+         * 播放的速率
+         * @default 1
+         * @member {number}
+         */
+        playbackRate: number;
+        /**
+         * 声音播放接口
+         *
+         *  await sound.play()
+         *
+        * @param {number} [time] - 等待播放时间
+        * @param {number} [offset] - 声音的开始偏移值
+        * @param {number} [length] - 声音持续时间 
+        */
+       play(time?: number, offset?: number, length?: number): void;
+        /**
+         * 停止声音
+         * @param time (optional) X秒后停止声音。默认情况下立即停止
+         */
+        stop(time: any): void;
+        /**
+         * 暂停声音
+         */
+        pause(): void;
+        /**
+         * 音量(0.0 - 1.0)
+         * @default 1
+         * @member {number}
+         */
+        volume: number;
+        /**
+         * 释放
+         */
+        dispose(): void;
+        /**
+         * 获取包含数据的当前基础音频缓冲区
+         */
+        getAudioBuffer(): void;
+        /**
+         * 将此声音连接到声音轨道音频节点，如增益...
+         * @param soundTrackAudioNode 要连接的音轨音频节点
+         */
+        connectToSoundTrackAudioNode(soundTrackAudioNode: any): void;
+    }
+    /**
      * @param {vf.CanvasRenderer} renderer - A reference to the current renderer
      */
     class CanvasExtract {
@@ -18580,21 +18820,6 @@ declare namespace vf {
         var FAIL_IF_MAJOR_PERFORMANCE_CAVEAT: boolean;
     }
     /**
-     * Constants that define the type of gradient on text.
-     *
-     * @static
-     * @constant
-     * @name TEXT_GRADIENT
-     * @memberof vf
-     * @type {object}
-     * @property {number} LINEAR_VERTICAL Vertical gradient
-     * @property {number} LINEAR_HORIZONTAL Linear gradient
-     */
-    var TEXT_GRADIENT: {
-        LINEAR_VERTICAL: number;
-        LINEAR_HORIZONTAL: number;
-    };
-    /**
      * @param {vf.Texture} [texture] - The texture for this sprite.
      */
     class Sprite extends vf.Container {
@@ -24354,6 +24579,17 @@ declare namespace vf {
          * @return {number} resolution / device pixel ratio of an asset
          */
         function getResolutionOfUrl(url: string, defaultValue?: number): number;
+        /**
+         * 读取文件
+         *
+         * @memberof vf.utils
+         * @function readFileSync
+         * @param {string} url - 文件网络路径
+         * @param {object} options - the defaultValue if no filename prefix is set.
+         * @param {array} listener - resolution / device pixel ratio of an asset
+         * @return {object|undefined}
+         */
+        function readFileSync(url: string, options: any, listener: array): any | undefined;
     }
 }
 
@@ -24672,23 +24908,142 @@ export interface ISystemInfo {
     browser: { name: string; version: string };
 }
 
+/**
+ * IAudio
+ *
+ * 准备完成 canplaythrough
+ *
+ * 播放事件 play
+ *
+ * 暂停事件 pause
+ *
+ * 错误事件 error
+ *
+ * 播放时间改变 timeupdate
+ *
+ * 播放完成 ended
+ *
+ */
+export interface IAudio extends PIXI.utils.EventEmitter{
 
-    }
-
-declare namespace vf{
-    module sound{
-        let useLegacy = true;
-        class IMediaInstance{
-
-        }
-        class Sound{
-            pause():void;
-            paused = false;
-            isPlaying = false; 
-            autoPlay = true;
-            resume();
-            stop();
-            play();
-        }
-    }
+    /**
+     * 声音名称。
+     * @member {string}
+     */
+    readonly name: string;
+    /**
+     * 自动播放声音
+     * @default false
+     * @member {boolean}
+     */
+    autoplay: boolean;
+    /**
+     * 完成播放一次后声音是否循环播放。
+     * @default false
+     * @member {boolean}
+     */
+    loop: boolean;
+    /**
+     * 播放的速率
+     * @default 1
+     * @member {number}
+     */
+    playbackRate: number;
+    /**
+     * 设置或返回音频的音量。
+     * @default 1
+     * @member {number}
+     */
+    volume: number;
+    /**
+     * 只读，音效的长度,如果未加载或音频加载未完成时调用，触发异常
+     * throw new Error("sound not loaded!");
+     * @default 0
+     * @member {number}
+     */
+    readonly duration: number;
+    /**
+     * 此声音是否暂停。
+     * @default false
+     * @member {boolean}
+     */
+    readonly paused: boolean;
+    /**
+     * 声音播放接口
+     *
+     *  await sound.play()
+     *
+    * @param {number} [time] - 等待播放时间
+    * @param {number} [offset] - 声音的开始偏移值
+    * @param {number} [length] - 声音持续时间 
+    */
+    play(time?: number, offset?: number, length?: number): void;
+    /**
+    * 停止声音
+    * @param time (optional) X秒后停止声音。默认情况下立即停止
+    */
+    stop(time?: number): void;
+    /**
+     * 暂停声音
+     */
+    pause(): void;
+    /**
+     * 释放
+     */
+    dispose(): void;
+    /**
+     * 获取包含数据的当前基础音频缓冲区
+     */
+    getAudioBuffer(): AudioBuffer | undefined;
 }
+
+/**
+ * 准备完成 canplaythrough
+ *
+ * 播放事件 play
+ *
+ * 暂停事件 pause
+ *
+ * 错误事件 error
+ *
+ * 播放时间改变 timeupdate
+ *
+ * 播放完成 ended
+ */
+export const enum IAudioEvent{
+    canplaythrough = 'canplaythrough',
+    play = 'play',
+    pause = 'pause',
+    error = 'error',
+    timeupdate = 'timeupdate',
+    ended = 'ended',
+}
+
+export interface IAudioOption{
+    /**
+     * 自动播放声音
+     * @default false
+     * @member {boolean}
+     */
+    autoplay: boolean;
+    /**
+     * 完成播放一次后声音是否循环播放。
+     * @default false
+     * @member {boolean}
+     */
+    loop: boolean;
+        /**
+     * 播放的速率
+     * @default 1
+     * @member {number}
+     */
+    playbackRate: number;
+    /**
+     * 设置或返回音频的音量。
+     * @default 1
+     * @member {number}
+     */
+    volume: number;
+}
+
+    }
