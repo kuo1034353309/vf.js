@@ -74,34 +74,12 @@ export interface IAssetFail {
     count:number;
 }
 
+/**
+ * 其他类型查阅 https://vipkid-edu.github.io/vf-gui/play/#example/TestLabel 控件
+ */
 export const enum ComponentType {
-    // UI
-    CONTAINER = 'container',
-    TABLE = 'table',
-    IMAGE = 'Image',
-    BUTTON = 'Button',
-    RADIO = 'CheckBox',
-    CHECKBOX = 'CheckBox',
-    INPUT = 'input',
-    SLIDER = 'slider',
-    TEXT = 'Text',
-    RECT = 'Rect',
-    CIRCLE = 'Circle',
-    // ANI
-    DRAGONBONES = 'dragonbones',
-    PARTICLE = 'particle',
-    SHEET = 'sheet',
-    // MEDIA
-    VIDEO = 'video',
-    AUDIO = 'audio',
-    MICROPHONE = 'microphone',
-    // NPM
-    NPM = 'npm',
-    // VECTOR
-    SVG = 'svg',
-    GRAPHIC = 'graphic',
     // CUSTOM
-    CUSTOM = 'custom',
+    Custom = 'custom',
 }
 export interface IComponent {
     id: string;

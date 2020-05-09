@@ -236,10 +236,12 @@ export class Player implements EngineAPI {
         if (!this._data) { return; }
         const config = this.config;
         const data = this._data;
-        // 0、更新配置
 
-        config.width = data.width; // 设计尺寸
-        config.height = data.height; // 设计尺寸
+        // 0、更新配置
+        if (data.width && data.height) {
+            config.width = data.width; // 设计尺寸
+            config.height = data.height; // 设计尺寸
+        }
         if (config.scaleMode === undefined) {
             config.scaleMode = this._data.scaleMode || ScaleMode.NO_SCALE;
         }

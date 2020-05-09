@@ -312,7 +312,7 @@ export class RES extends vf.utils.EventEmitter {
 
         if (componentData) {
             switch (componentData.type) {
-                case ComponentType.CUSTOM:
+                case ComponentType.Custom:
                     component = this.createCustomComponent(libId, id);
                     if (componentData.interactabled !== undefined) {
                         component.interactabled = componentData.interactabled; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
