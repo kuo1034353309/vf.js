@@ -755,8 +755,10 @@ var Player = /** @class */ (function () {
                 config = this.config;
                 data = this._data;
                 // 0、更新配置
-                config.width = data.width; // 设计尺寸
-                config.height = data.height; // 设计尺寸
+                if (data.width && data.height) {
+                    config.width = data.width; // 设计尺寸
+                    config.height = data.height; // 设计尺寸
+                }
                 if (config.scaleMode === undefined) {
                     config.scaleMode = this._data.scaleMode || "noScale" /* NO_SCALE */;
                 }
