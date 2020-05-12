@@ -73,6 +73,7 @@ export class Player implements EngineAPI {
             backgroundColor: parseInt(config.bgcolor || '0', 16),
             transparent: config.wmode === 'transparent',
             antialias: true,
+            resolution: options.resolution,
         });
 
         this._errpanel = new ErrorDisplay(this.config);

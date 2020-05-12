@@ -635,6 +635,7 @@ var Player = /** @class */ (function () {
             backgroundColor: parseInt(config.bgcolor || '0', 16),
             transparent: config.wmode === 'transparent',
             antialias: true,
+            resolution: options.resolution,
         });
         this._errpanel = new _error_ErrorDisplay__WEBPACK_IMPORTED_MODULE_4__["default"](this.config);
         this.initSystemEvent();
@@ -1980,7 +1981,7 @@ var RES = /** @class */ (function (_super) {
         var component = null;
         if (componentData) {
             switch (componentData.type) {
-                case "custom" /* CUSTOM */:
+                case "custom" /* Custom */:
                     component = this.createCustomComponent(libId, id);
                     if (componentData.interactabled !== undefined) {
                         component.interactabled = componentData.interactabled; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用

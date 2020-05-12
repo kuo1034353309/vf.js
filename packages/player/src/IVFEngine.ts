@@ -129,4 +129,8 @@ export interface IVFOptions {
      */
     // eslint-disable-next-line max-len
     loadingPostion?: 'leftTop' | 'centerTop' | 'rightTop' | 'leftCenter' | 'center' | 'rightCenter' | 'leftBottom' | 'centerBottom' | 'rightBottom' | number[];
+    /**
+     * 分辨率 devicePixelRatio
+     */
+    resolution?: number;
 }
