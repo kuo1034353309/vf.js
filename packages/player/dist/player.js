@@ -5802,26 +5802,8 @@ var SoundTask = /** @class */ (function (_super) {
     function SoundTask(compontent, actionData) {
         var _this = _super.call(this) || this;
         _this.component = compontent;
-        if (typeof actionData.value[1] === 'string' || typeof actionData.value[1] === 'number') {
-            // 兼容久版本
-            actionData.assetId = actionData.value[1];
-            _this.data = actionData;
-            vf.utils.deprecation('5.2.1-v14', 'Please use the new sound API');
-        }
-        else {
-            _this.data = actionData.value[1];
-        }
-        var data = _this.data;
         _this.dataType = actionData.type;
-        if (data.assetId === undefined) {
-            console.log('execute sound failed, missing assetId');
-            return _this;
-        }
-        if (data.trackId === undefined) {
-            console.log('execute sound failed, missing trackId');
-            return _this;
-        }
-        data.mode = actionData.mode || 'sound';
+        _this.data = actionData;
         return _this;
     }
     SoundTask.prototype.run = function () {
@@ -5829,7 +5811,22 @@ var SoundTask = /** @class */ (function (_super) {
         if (this.component.vfStage) {
             var soundManager = this.component.vfStage.soundManager;
             var variableManager = this.component.vfStage.variableManager;
-            var data = this.data;
+            var data = void 0;
+            try {
+                data = variableManager.getExpressItemValue(this.component, this.data.value);
+            }
+            catch (e) {
+                vf.utils.deprecation('5.2.1-v14', 'Please use the new sound API');
+            }
+            if (data.assetId === undefined) {
+                console.log('execute sound failed, missing assetId');
+                return;
+            }
+            if (data.trackId === undefined) {
+                console.log('execute sound failed, missing trackId');
+                return;
+            }
+            data.mode = data.mode || 'sound';
             var soundId = void 0;
             if (Array.isArray(data.assetId)) {
                 var soundIdVar = variableManager.getExpressItemValue(this.component, data.assetId);
@@ -5846,13 +5843,13 @@ var SoundTask = /** @class */ (function (_super) {
             data.assetId = soundId;
             switch (this.dataType) {
                 case 16 /* PlaySound */:
-                    soundManager.playSound(this.data);
+                    soundManager.playSound(data);
                     break;
                 case 33 /* PauseSound */:
-                    soundManager.pauseSound(this.data);
+                    soundManager.pauseSound(data);
                     break;
                 case 34 /* ResumeSound */:
-                    soundManager.resumeSound(this.data);
+                    soundManager.resumeSound(data);
                     break;
             }
             this.complete();
