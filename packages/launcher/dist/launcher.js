@@ -135,7 +135,7 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._errorLoadMaxCount = 10;
         this.version = "0.3.20";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "2020-5-14 4:27:02 PM";
+        this.buildInfo = "2020-5-14 9:02:07 PM";
         this._extendsLibsUrl = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
@@ -198,6 +198,9 @@ var VIPKIDLauncher = /** @class */ (function () {
                 default:
                     url = "./libs/" + version + "/" + name + ".js";
             }
+        }
+        if (name === 'gui' && this.debugGuiPath) {
+            url = this.debugGuiPath;
         }
         return { url: url, version: version };
     };
@@ -386,7 +389,8 @@ function createVF(options, completeCall, errorCall) {
         delete window.vf;
     }
     // eslint-disable-next-line no-new
-    new VIPKIDLauncher(options, completeCall, errorCall);
+    var launcher = new VIPKIDLauncher(options, completeCall, errorCall);
+    launcher.debugGuiPath = options.debugGuiPath;
 }
 
 

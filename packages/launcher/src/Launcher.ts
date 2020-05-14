@@ -44,6 +44,8 @@ class VIPKIDLauncher {
     private _loadcount = 0;
     private _loadMaxCount = 40;
 
+    public debugGuiPath?: string;
+
     /**
      * 对外接口 IVFEngineAPI
      */
@@ -114,6 +116,9 @@ class VIPKIDLauncher {
                 default:
                     url = `./libs/${version}/${name}.js`;
             }
+        }
+        if (name === 'gui' && this.debugGuiPath) {
+            url = this.debugGuiPath;
         }
 
         return { url, version };
@@ -339,5 +344,7 @@ export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) 
     }
 
     // eslint-disable-next-line no-new
-    new VIPKIDLauncher(options, completeCall, errorCall);
+    const launcher = new VIPKIDLauncher(options, completeCall, errorCall);
+
+    launcher.debugGuiPath = (options as any).debugGuiPath;
 }
