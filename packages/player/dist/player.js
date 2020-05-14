@@ -8441,7 +8441,7 @@ var VFComponent = /** @class */ (function (_super) {
     };
     VFComponent.maxHashCode = 10000;
     return VFComponent;
-}(vf.gui.Container));
+}(vf.gui.ScrollingContainer));
 
 
 
