@@ -488,16 +488,25 @@ export class RES extends vf.utils.EventEmitter {
                 urls[res.url].push(res.id);
                 continue;
             }
-            loader.add(id, getUrl(res.url, this.data.baseUrl));
+
+            if (res.type === 'audio') {
+                // 微信wechat不能直接加载audio类型
+                // eslint-disable-next-line max-len
+                loader.add(id, getUrl(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuff' });
+            }
+            else {
+                loader.add(id, getUrl(res.url, this.data.baseUrl));
+            }
+
             urls[res.url] = [id];
         }
         let progressId = 0;
         let completeId = 0;
         let errorId = 0;
 
-        progressId = loader.onProgress.add(() => {
+        progressId = loader.onProgress.add((loader2: vf.Loader, resources: any) => {
             this._loadNum++;
-            this.emit(SceneEvent.LoadProgress, [this._loadNum / (this._resources.length), this._resources.length]);
+            this.emit(SceneEvent.LoadProgress, [loader2.progress, this._loadNum, this._resources.length, resources]);
         });
         completeId = loader.onComplete.add((loader2: vf.Loader, resources: any) => {
             this.pixiResources = resources;
@@ -512,7 +521,7 @@ export class RES extends vf.utils.EventEmitter {
                 loader.onComplete.detach(progressId);
                 loader.onComplete.detach(completeId);
                 loader.onComplete.detach(errorId);
-                this.emit(SceneEvent.LoadComplete, null);
+                this.emit(SceneEvent.LoadComplete, [loader2, resources]);
             }
         });
         errorId = loader.onError.add((error: Error, loader2: vf.Loader, loaderResource: vf.LoaderResource)=>{

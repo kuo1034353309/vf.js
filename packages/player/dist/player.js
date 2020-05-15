@@ -2134,15 +2134,22 @@ var RES = /** @class */ (function (_super) {
                 urls[res.url].push(res.id);
                 continue;
             }
-            loader.add(id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl));
+            if (res.type === 'audio') {
+                // 微信wechat不能直接加载audio类型
+                // eslint-disable-next-line max-len
+                loader.add(id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuff' });
+            }
+            else {
+                loader.add(id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl));
+            }
             urls[res.url] = [id];
         }
         var progressId = 0;
         var completeId = 0;
         var errorId = 0;
-        progressId = loader.onProgress.add(function () {
+        progressId = loader.onProgress.add(function (loader2, resources) {
             _this._loadNum++;
-            _this.emit("LoadProgress" /* LoadProgress */, [_this._loadNum / (_this._resources.length), _this._resources.length]);
+            _this.emit("LoadProgress" /* LoadProgress */, [loader2.progress, _this._loadNum, _this._resources.length, resources]);
         });
         completeId = loader.onComplete.add(function (loader2, resources) {
             _this.pixiResources = resources;
@@ -2156,7 +2163,7 @@ var RES = /** @class */ (function (_super) {
                 loader.onComplete.detach(progressId);
                 loader.onComplete.detach(completeId);
                 loader.onComplete.detach(errorId);
-                _this.emit("LoadComplete" /* LoadComplete */, null);
+                _this.emit("LoadComplete" /* LoadComplete */, [loader2, resources]);
             }
         });
         errorId = loader.onError.add(function (error, loader2, loaderResource) {
@@ -9295,7 +9302,7 @@ var SoundManager = /** @class */ (function () {
     };
     // tslint:disable-next-line: max-line-length
     SoundManager.prototype.playSound = function (data) {
-        var asset = this.res.getAsset(data.assetId);
+        var asset = this.res.data.assets[data.assetId.toString()];
         if (asset === undefined || asset.url === undefined || asset.url === '') {
             console.warn('playback failed,missing assetId!', data);
             return;

@@ -98,7 +98,7 @@ export class SoundManager {
 
     // tslint:disable-next-line: max-line-length
     public playSound(data: IActionSound): void {
-        const asset = this.res.getAsset(data.assetId as number);
+        const asset = this.res.data.assets[data.assetId.toString()];
 
         if (asset === undefined || asset.url === undefined || asset.url === '') {
             console.warn('playback failed,missing assetId!', data);
