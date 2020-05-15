@@ -8989,6 +8989,7 @@ var SliderEditorPlug = /** @class */ (function (_super) {
     __extends(SliderEditorPlug, _super);
     function SliderEditorPlug(className, parent) {
         var _this = _super.call(this, className, parent) || this;
+        parent.originalEventPreventDefault = true;
         var element = document.getElementById('drawCanvas');
         // eslint-disable-next-line no-eq-null
         if (element == null) {
@@ -9315,7 +9316,7 @@ var SoundManager = /** @class */ (function () {
         }
         var audio = this.getAudio(data.trackId);
         if (audio) {
-            audio.play();
+            audio.play(0, 0);
         }
         else {
             // eslint-disable-next-line max-len

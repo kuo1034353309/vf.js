@@ -117,7 +117,7 @@ export class SoundManager {
         let audio = this.getAudio(data.trackId);
 
         if (audio) {
-            audio.play();
+            audio.play(0, 0);
         }
         else {
             // eslint-disable-next-line max-len
