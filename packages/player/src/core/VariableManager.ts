@@ -11,10 +11,10 @@ export class VariableManager {
 
         public static OPERATE_PRIORITY = {
             '*' : 100,
-            '/' : 99,
+            '/' : 100,
             '%' : 98,
             '+' : 97,
-            '-' : 96,
+            '-' : 97,
             '>=' : 95,
             '<=' : 94,
             '>' : 93,
@@ -213,7 +213,7 @@ export class VariableManager {
                                         if (curPriority > topOperatePriority) {
                                             stackOperate.push(expressItem);
                                         } else {
-                                            while (curPriority < topOperatePriority) {
+                                            while (curPriority <= topOperatePriority) {
                                                 stackOut.push(topOperate);
                                                 stackOperate.pop();
                                                 if (stackOperate.length > 0) {
