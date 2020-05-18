@@ -1,91 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ScaleMode } from '../core/model/IVFData';
 import { VFStage } from '../display/VFStage';
-
-/**
- * @private
- * 
- * 更新播放器视口尺寸
- * 
- * noScale 不对内容进行任何缩放，保持原始的1:1比例。如果播放器窗口比内容小，则可能进行一些裁切。
- * 
- * showAll 非溢出居中，显示全部内容。水平或垂直“两侧”可能会不够宽而留有黑边。
- * 
- * contain 非溢出，显示全部内容，水平或垂直“一侧”方向有黑边。
- * 
- * cover 溢出居中，某些部分也许无法显示在播放器视口。
- */
-// tslint:disable-next-line: max-line-length
-export default function calculateUpdatePlayerSize(canvas: HTMLCanvasElement, stage: VFStage, scaleMode: ScaleMode, appParentDivName = '', canvasScaleFactor = 1, isWebGl = true) {
-    const top = 0;
-
-    let parentWidth = window.innerWidth;
-    let parentHeight = window.innerHeight;
-
-    if (canvas.parentNode != null) {
-        parentWidth = (canvas.parentNode as HTMLElement).offsetWidth;
-        parentHeight = (canvas.parentNode as HTMLElement).offsetHeight;
-    }
-
-    if (appParentDivName !== '') {
-        if (document.getElementById(appParentDivName) == null) {
-            throw new Error(`Error No find appParentDivName(${appParentDivName})`);
-        }
-        parentWidth = (document.getElementById(appParentDivName) as HTMLElement).offsetWidth;
-        parentHeight = (document.getElementById(appParentDivName) as HTMLElement).offsetHeight;
-    }
-
-    const boundingClientWidth = parentWidth;
-    const boundingClientHeight = parentHeight;
-
-    const screenWidth = boundingClientWidth;
-    const screenHeight = boundingClientHeight;
-
-    const stageSize = calculateStageSize(scaleMode, screenWidth, screenHeight, canvas.width, canvas.height);
-
-    const stageWidth = stageSize.stageWidth;
-    const stageHeight = stageSize.stageHeight;
-    const displayWidth = stageSize.displayWidth;
-    const displayHeight = stageSize.displayHeight;
-
-    canvas.style.transformOrigin = '0% 0% 0px';
-
-    if (canvas.width !== stageWidth) {
-        canvas.width = stageWidth;
-    }
-    if (canvas.height !== stageHeight) {
-        canvas.height = stageHeight;
-    }
-
-    const rotation = 0;
-    canvas.style.top = top + (boundingClientHeight - displayHeight) / 2 + 'px';
-    canvas.style.left = (boundingClientWidth - displayWidth) / 2 + 'px';
-
-    const scalex = displayWidth / stageWidth;
-    const scaley = displayHeight / stageHeight;
-
-    let canvasScaleX = scalex * canvasScaleFactor;
-    let canvasScaleY = scaley * canvasScaleFactor;
-
-    if (!isWebGl) {
-        canvasScaleX = Math.ceil(canvasScaleX);
-        canvasScaleY = Math.ceil(canvasScaleY);
-    }
-
-    const m = new vf.Matrix();
-    m.identity();
-    m.scale(scalex / canvasScaleX, scaley / canvasScaleY);
-    m.rotate(rotation * Math.PI / 180);
-
-    canvas.style.position = 'absolute';
-    canvas.style.transform = `matrix(${m.a},${m.b},${m.c},${m.d},${m.tx},${m.ty})`;
-    canvas.width = stageWidth * canvasScaleX;
-    canvas.height = stageHeight * canvasScaleY;
-
-    stage.scaleX = canvasScaleX;
-    stage.scaleY = canvasScaleY;
-
-    return { width: canvas.width, height: canvas.height, scaleX: canvasScaleX, scaleY: canvasScaleY };
-}
 
 /**
  * @private
@@ -102,7 +17,6 @@ function calculateStageSize(
     screenHeight: number,
     contentWidth: number,
     contentHeight: number) {
-
     let displayWidth = screenWidth;
     let displayHeight = screenHeight;
     let stageWidth = contentWidth;
@@ -114,21 +28,24 @@ function calculateStageSize(
         case 'showAll':
             if (scaleX > scaleY) {
                 displayWidth = Math.round(stageWidth * scaleY);
-            } else {
+            }
+            else {
                 displayHeight = Math.round(stageHeight * scaleX);
             }
             break;
         case 'cover':
             if (scaleX > scaleY) {
                 displayHeight = Math.round(stageHeight * scaleX);
-            } else {
+            }
+            else {
                 displayWidth = Math.round(stageWidth * scaleY);
             }
             break;
         case 'contain':
             if (scaleX > scaleY) {
                 stageWidth = Math.round(screenWidth / scaleY);
-            } else {
+            }
+            else {
                 stageHeight = Math.round(screenHeight / scaleX);
             }
             break;
@@ -150,10 +67,92 @@ function calculateStageSize(
     if (displayHeight % 2 !== 0) {
         displayHeight += 1;
     }
+
     return {
         stageWidth,
         stageHeight,
         displayWidth,
         displayHeight,
     };
+}
+
+export function getBoundingClientRect(dom: HTMLElement): DOMRect {
+    if (dom === null) {
+        throw new Error(`Error No find canvas parent dom`);
+    }
+
+    return dom.getBoundingClientRect();
+}
+/**
+ * @private
+ *
+ * 更新播放器视口尺寸
+ *
+ * noScale 不对内容进行任何缩放，保持原始的1:1比例。如果播放器窗口比内容小，则可能进行一些裁切。
+ *
+ * showAll 非溢出居中，显示全部内容。水平或垂直“两侧”可能会不够宽而留有黑边。
+ *
+ * contain 非溢出，显示全部内容，水平或垂直“一侧”方向有黑边。
+ *
+ * cover 溢出居中，某些部分也许无法显示在播放器视口。
+ */
+// eslint-disable-next-line max-len
+export function calculateUpdatePlayerSize(player: HTMLElement, canvas: HTMLCanvasElement, stage: VFStage, scaleMode: ScaleMode, canvasScaleFactor = 1, isWebGl = true) {
+    const top = 0;
+
+    const clientRect = getBoundingClientRect(player);
+
+    const boundingClientWidth = clientRect.width;
+    const boundingClientHeight = clientRect.height;
+
+    const screenWidth = boundingClientWidth;
+    const screenHeight = boundingClientHeight;
+
+    const stageSize = calculateStageSize(scaleMode, screenWidth, screenHeight, stage.width, stage.height);
+
+    const stageWidth = stageSize.stageWidth;
+    const stageHeight = stageSize.stageHeight;
+    const displayWidth = stageSize.displayWidth;
+    const displayHeight = stageSize.displayHeight;
+
+    canvas.style.transformOrigin = '0% 0% 0px';
+
+    if (canvas.width !== stageWidth) {
+        canvas.width = stageWidth;
+    }
+    if (canvas.height !== stageHeight) {
+        canvas.height = stageHeight;
+    }
+
+    const rotation = 0;
+
+    canvas.style.top = `${top + (boundingClientHeight - displayHeight) / 2}px`;
+    canvas.style.left = `${(boundingClientWidth - displayWidth) / 2}px`;
+
+    const scalex = displayWidth / stageWidth;
+    const scaley = displayHeight / stageHeight;
+
+    let canvasScaleX = scalex * canvasScaleFactor;
+    let canvasScaleY = scaley * canvasScaleFactor;
+
+    if (!isWebGl) {
+        canvasScaleX = Math.ceil(canvasScaleX);
+        canvasScaleY = Math.ceil(canvasScaleY);
+    }
+
+    const m = new vf.Matrix();
+
+    m.identity();
+    m.scale(scalex / canvasScaleX, scaley / canvasScaleY);
+    m.rotate(rotation * Math.PI / 180);
+
+    canvas.style.position = 'absolute';
+    canvas.style.transform = `matrix(${m.a},${m.b},${m.c},${m.d},${m.tx},${m.ty})`;
+    canvas.width = stageWidth * canvasScaleX;
+    canvas.height = stageHeight * canvasScaleY;
+
+    stage.scaleX = canvasScaleX / canvasScaleFactor;
+    stage.scaleY = canvasScaleY / canvasScaleFactor;
+
+    return { width: canvas.width, height: canvas.height, scaleX: canvasScaleX, scaleY: canvasScaleY };
 }

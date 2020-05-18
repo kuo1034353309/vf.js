@@ -11,10 +11,10 @@ export class VariableManager {
 
         public static OPERATE_PRIORITY = {
             '*' : 100,
-            '/' : 99,
+            '/' : 100,
             '%' : 98,
             '+' : 97,
-            '-' : 96,
+            '-' : 97,
             '>=' : 95,
             '<=' : 94,
             '>' : 93,
@@ -213,7 +213,7 @@ export class VariableManager {
                                         if (curPriority > topOperatePriority) {
                                             stackOperate.push(expressItem);
                                         } else {
-                                            while (curPriority < topOperatePriority) {
+                                            while (curPriority <= topOperatePriority) {
                                                 stackOut.push(topOperate);
                                                 stackOperate.pop();
                                                 if (stackOperate.length > 0) {
@@ -307,10 +307,18 @@ export class VariableManager {
                     break;
                 case ExpressItemType.PROPERTY:
                     const targetArr = expressItem[1];
-                    const targetProperty = expressItem[2];
                     const targetComponent = getTargetComponent(component, targetArr);
-                    if (targetComponent) {
-                        result = (targetComponent as any)[targetProperty];
+                    let componentProperty: any = targetComponent;
+                    if (componentProperty && expressItem.length >= 3) {
+                        for (let i: number = 2, len: number = expressItem.length; i < len; i++) {
+                            const key = expressItem[i];
+                            if (componentProperty && key !== undefined) {
+                                componentProperty = componentProperty[key];
+                            }
+                        }
+                        result = componentProperty;
+                    } else {
+                        result = undefined;
                     }
                     break;
                 case ExpressItemType.ARRAY_LEN:

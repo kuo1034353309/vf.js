@@ -635,6 +635,7 @@ var Player = /** @class */ (function () {
             backgroundColor: parseInt(config.bgcolor || '0', 16),
             transparent: config.wmode === 'transparent',
             antialias: true,
+            resolution: options.resolution,
         });
         this._errpanel = new _error_ErrorDisplay__WEBPACK_IMPORTED_MODULE_4__["default"](this.config);
         this.initSystemEvent();
@@ -747,16 +748,18 @@ var Player = /** @class */ (function () {
      */
     Player.prototype.start = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var config, data, view;
+            var config, data, container, clientRect, view;
             return __generator(this, function (_a) {
                 if (!this._data) {
                     return [2 /*return*/];
                 }
                 config = this.config;
                 data = this._data;
+                container = this.config.container;
+                clientRect = Object(_utils_CalculatePlayerSize__WEBPACK_IMPORTED_MODULE_1__["getBoundingClientRect"])(container);
                 // 0、更新配置
-                config.width = data.width; // 设计尺寸
-                config.height = data.height; // 设计尺寸
+                config.width = vf.gui.Utils.formatRelative(data.width, clientRect.width);
+                config.height = vf.gui.Utils.formatRelative(data.height, clientRect.height);
                 if (config.scaleMode === undefined) {
                     config.scaleMode = this._data.scaleMode || "noScale" /* NO_SCALE */;
                 }
@@ -765,13 +768,14 @@ var Player = /** @class */ (function () {
                 view.width = config.width;
                 view.height = config.height;
                 view.style.zIndex = '0';
-                this.config.container.appendChild(this.app.view);
+                container.appendChild(this.app.view);
                 // 3、初始化基于PX容器的VF场景
                 this.stage = new _display_VFStage__WEBPACK_IMPORTED_MODULE_0__["VFStage"](this._data, this.config, this);
                 this.stage.app = this.app;
                 this.app.stage.addChild(this.stage.container);
                 // 4、 适配处理
-                Object(_utils_CalculatePlayerSize__WEBPACK_IMPORTED_MODULE_1__["default"])(this.app.view, this.stage, this.config.scaleMode);
+                // eslint-disable-next-line max-len
+                Object(_utils_CalculatePlayerSize__WEBPACK_IMPORTED_MODULE_1__["calculateUpdatePlayerSize"])(container, this.app.view, this.stage, this.config.scaleMode, this.app.renderer.resolution);
                 // 5、初始化API模块，并通知外部'vf[hashid] api is ready'
                 this.readyState = "ready" /* READY */;
                 // 6、加载场景资源
@@ -1978,7 +1982,7 @@ var RES = /** @class */ (function (_super) {
         var component = null;
         if (componentData) {
             switch (componentData.type) {
-                case "custom" /* CUSTOM */:
+                case "custom" /* Custom */:
                     component = this.createCustomComponent(libId, id);
                     if (componentData.interactabled !== undefined) {
                         component.interactabled = componentData.interactabled; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
@@ -2131,15 +2135,22 @@ var RES = /** @class */ (function (_super) {
                 urls[res.url].push(res.id);
                 continue;
             }
-            loader.add(id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl));
+            if (res.type === 'audio') {
+                // 微信wechat不能直接加载audio类型
+                // eslint-disable-next-line max-len
+                loader.add(id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuff' });
+            }
+            else {
+                loader.add(id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl));
+            }
             urls[res.url] = [id];
         }
         var progressId = 0;
         var completeId = 0;
         var errorId = 0;
-        progressId = loader.onProgress.add(function () {
+        progressId = loader.onProgress.add(function (loader2, resources) {
             _this._loadNum++;
-            _this.emit("LoadProgress" /* LoadProgress */, [_this._loadNum / (_this._resources.length), _this._resources.length]);
+            _this.emit("LoadProgress" /* LoadProgress */, [loader2.progress, _this._loadNum, _this._resources.length, resources]);
         });
         completeId = loader.onComplete.add(function (loader2, resources) {
             _this.pixiResources = resources;
@@ -2153,7 +2164,7 @@ var RES = /** @class */ (function (_super) {
                 loader.onComplete.detach(progressId);
                 loader.onComplete.detach(completeId);
                 loader.onComplete.detach(errorId);
-                _this.emit("LoadComplete" /* LoadComplete */, null);
+                _this.emit("LoadComplete" /* LoadComplete */, [loader2, resources]);
             }
         });
         errorId = loader.onError.add(function (error, loader2, loaderResource) {
@@ -2411,7 +2422,7 @@ var VariableManager = /** @class */ (function () {
                                         stackOperate.push(expressItem);
                                     }
                                     else {
-                                        while (curPriority < topOperatePriority) {
+                                        while (curPriority <= topOperatePriority) {
                                             stackOut.push(topOperate);
                                             stackOperate.pop();
                                             if (stackOperate.length > 0) {
@@ -2929,10 +2940,10 @@ var VariableManager = /** @class */ (function () {
     VariableManager.GLOBAL_ID = 'global';
     VariableManager.OPERATE_PRIORITY = {
         '*': 100,
-        '/': 99,
+        '/': 100,
         '%': 98,
         '+': 97,
-        '-': 96,
+        '-': 97,
         '>=': 95,
         '<=': 94,
         '>': 93,
@@ -5799,26 +5810,8 @@ var SoundTask = /** @class */ (function (_super) {
     function SoundTask(compontent, actionData) {
         var _this = _super.call(this) || this;
         _this.component = compontent;
-        if (typeof actionData.value[1] === 'string' || typeof actionData.value[1] === 'number') {
-            // 兼容久版本
-            actionData.assetId = actionData.value[1];
-            _this.data = actionData;
-            vf.utils.deprecation('5.2.1-v14', 'Please use the new sound API');
-        }
-        else {
-            _this.data = actionData.value[1];
-        }
-        var data = _this.data;
         _this.dataType = actionData.type;
-        if (data.assetId === undefined) {
-            console.log('execute sound failed, missing assetId');
-            return _this;
-        }
-        if (data.trackId === undefined) {
-            console.log('execute sound failed, missing trackId');
-            return _this;
-        }
-        data.mode = actionData.mode || 'sound';
+        _this.data = actionData;
         return _this;
     }
     SoundTask.prototype.run = function () {
@@ -5826,7 +5819,22 @@ var SoundTask = /** @class */ (function (_super) {
         if (this.component.vfStage) {
             var soundManager = this.component.vfStage.soundManager;
             var variableManager = this.component.vfStage.variableManager;
-            var data = this.data;
+            var data = void 0;
+            try {
+                data = variableManager.getExpressItemValue(this.component, this.data.value);
+            }
+            catch (e) {
+                vf.utils.deprecation('5.2.1-v14', 'Please use the new sound API');
+            }
+            if (data.assetId === undefined) {
+                console.log('execute sound failed, missing assetId');
+                return;
+            }
+            if (data.trackId === undefined) {
+                console.log('execute sound failed, missing trackId');
+                return;
+            }
+            data.mode = data.mode || 'sound';
             var soundId = void 0;
             if (Array.isArray(data.assetId)) {
                 var soundIdVar = variableManager.getExpressItemValue(this.component, data.assetId);
@@ -5843,13 +5851,13 @@ var SoundTask = /** @class */ (function (_super) {
             data.assetId = soundId;
             switch (this.dataType) {
                 case 16 /* PlaySound */:
-                    soundManager.playSound(this.data);
+                    soundManager.playSound(data);
                     break;
                 case 33 /* PauseSound */:
-                    soundManager.pauseSound(this.data);
+                    soundManager.pauseSound(data);
                     break;
                 case 34 /* ResumeSound */:
-                    soundManager.resumeSound(this.data);
+                    soundManager.resumeSound(data);
                     break;
             }
             this.complete();
@@ -8441,7 +8449,7 @@ var VFComponent = /** @class */ (function (_super) {
     };
     VFComponent.maxHashCode = 10000;
     return VFComponent;
-}(vf.gui.Container));
+}(vf.gui.ScrollingContainer));
 
 
 
@@ -8863,6 +8871,60 @@ var BoardDrawPlug = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ "./packages/player/src/display/plugs/DigitalLibraryPlug.ts":
+/*!*****************************************************************!*\
+  !*** ./packages/player/src/display/plugs/DigitalLibraryPlug.ts ***!
+  \*****************************************************************/
+/*! exports provided: DigitalLibraryPlug */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DigitalLibraryPlug", function() { return DigitalLibraryPlug; });
+/* harmony import */ var _Plug__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Plug */ "./packages/player/src/display/plugs/Plug.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * 数字图书馆
+ * @author yangxiao
+ */
+var DigitalLibraryPlug = /** @class */ (function (_super) {
+    __extends(DigitalLibraryPlug, _super);
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+    function DigitalLibraryPlug(className, parent) {
+        var _this = _super.call(this, className, parent) || this;
+        console.log(className);
+        return _this;
+    }
+    DigitalLibraryPlug.prototype.onLoad = function () {
+        var _a;
+        var parent = this.parent;
+        // eslint-disable-next-line no-undef
+        var interaction = ((_a = parent.app) === null || _a === void 0 ? void 0 : _a.renderer).plugins.interaction;
+        interaction.autoPreventDefault = false;
+    };
+    DigitalLibraryPlug.prototype.onRelease = function () {
+        //
+    };
+    return DigitalLibraryPlug;
+}(_Plug__WEBPACK_IMPORTED_MODULE_0__["Plug"]));
+
+
+
+/***/ }),
+
 /***/ "./packages/player/src/display/plugs/Plug.ts":
 /*!***************************************************!*\
   !*** ./packages/player/src/display/plugs/Plug.ts ***!
@@ -8924,7 +8986,7 @@ var Plug = /** @class */ (function () {
 /*!********************************************************!*\
   !*** ./packages/player/src/display/plugs/PlugIndex.ts ***!
   \********************************************************/
-/*! exports provided: BoardDrawPlug, SliderEditorPlug, PlugIndex */
+/*! exports provided: BoardDrawPlug, SliderEditorPlug, DigitalLibraryPlug, PlugIndex */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8936,9 +8998,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SliderEditorPlug__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SliderEditorPlug */ "./packages/player/src/display/plugs/SliderEditorPlug.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SliderEditorPlug", function() { return _SliderEditorPlug__WEBPACK_IMPORTED_MODULE_1__["SliderEditorPlug"]; });
 
+/* harmony import */ var _DigitalLibraryPlug__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DigitalLibraryPlug */ "./packages/player/src/display/plugs/DigitalLibraryPlug.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DigitalLibraryPlug", function() { return _DigitalLibraryPlug__WEBPACK_IMPORTED_MODULE_2__["DigitalLibraryPlug"]; });
+
+
 
 
 var PlugIndex = /** @class */ (function () {
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     function PlugIndex() {
         //
     }
@@ -8982,6 +9049,7 @@ var SliderEditorPlug = /** @class */ (function (_super) {
     __extends(SliderEditorPlug, _super);
     function SliderEditorPlug(className, parent) {
         var _this = _super.call(this, className, parent) || this;
+        parent.originalEventPreventDefault = true;
         var element = document.getElementById('drawCanvas');
         // eslint-disable-next-line no-eq-null
         if (element == null) {
@@ -9295,7 +9363,7 @@ var SoundManager = /** @class */ (function () {
     };
     // tslint:disable-next-line: max-line-length
     SoundManager.prototype.playSound = function (data) {
-        var asset = this.res.getAsset(data.assetId);
+        var asset = this.res.data.assets[data.assetId.toString()];
         if (asset === undefined || asset.url === undefined || asset.url === '') {
             console.warn('playback failed,missing assetId!', data);
             return;
@@ -9308,7 +9376,7 @@ var SoundManager = /** @class */ (function () {
         }
         var audio = this.getAudio(data.trackId);
         if (audio) {
-            audio.play();
+            audio.play(0, 0);
         }
         else {
             // eslint-disable-next-line max-len
@@ -9364,83 +9432,13 @@ var SoundManager = /** @class */ (function () {
 /*!**********************************************************!*\
   !*** ./packages/player/src/utils/CalculatePlayerSize.ts ***!
   \**********************************************************/
-/*! exports provided: default */
+/*! exports provided: getBoundingClientRect, calculateUpdatePlayerSize */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return calculateUpdatePlayerSize; });
-/**
- * @private
- *
- * 更新播放器视口尺寸
- *
- * noScale 不对内容进行任何缩放，保持原始的1:1比例。如果播放器窗口比内容小，则可能进行一些裁切。
- *
- * showAll 非溢出居中，显示全部内容。水平或垂直“两侧”可能会不够宽而留有黑边。
- *
- * contain 非溢出，显示全部内容，水平或垂直“一侧”方向有黑边。
- *
- * cover 溢出居中，某些部分也许无法显示在播放器视口。
- */
-// tslint:disable-next-line: max-line-length
-function calculateUpdatePlayerSize(canvas, stage, scaleMode, appParentDivName, canvasScaleFactor, isWebGl) {
-    if (appParentDivName === void 0) { appParentDivName = ''; }
-    if (canvasScaleFactor === void 0) { canvasScaleFactor = 1; }
-    if (isWebGl === void 0) { isWebGl = true; }
-    var top = 0;
-    var parentWidth = window.innerWidth;
-    var parentHeight = window.innerHeight;
-    if (canvas.parentNode != null) {
-        parentWidth = canvas.parentNode.offsetWidth;
-        parentHeight = canvas.parentNode.offsetHeight;
-    }
-    if (appParentDivName !== '') {
-        if (document.getElementById(appParentDivName) == null) {
-            throw new Error("Error No find appParentDivName(" + appParentDivName + ")");
-        }
-        parentWidth = document.getElementById(appParentDivName).offsetWidth;
-        parentHeight = document.getElementById(appParentDivName).offsetHeight;
-    }
-    var boundingClientWidth = parentWidth;
-    var boundingClientHeight = parentHeight;
-    var screenWidth = boundingClientWidth;
-    var screenHeight = boundingClientHeight;
-    var stageSize = calculateStageSize(scaleMode, screenWidth, screenHeight, canvas.width, canvas.height);
-    var stageWidth = stageSize.stageWidth;
-    var stageHeight = stageSize.stageHeight;
-    var displayWidth = stageSize.displayWidth;
-    var displayHeight = stageSize.displayHeight;
-    canvas.style.transformOrigin = '0% 0% 0px';
-    if (canvas.width !== stageWidth) {
-        canvas.width = stageWidth;
-    }
-    if (canvas.height !== stageHeight) {
-        canvas.height = stageHeight;
-    }
-    var rotation = 0;
-    canvas.style.top = top + (boundingClientHeight - displayHeight) / 2 + 'px';
-    canvas.style.left = (boundingClientWidth - displayWidth) / 2 + 'px';
-    var scalex = displayWidth / stageWidth;
-    var scaley = displayHeight / stageHeight;
-    var canvasScaleX = scalex * canvasScaleFactor;
-    var canvasScaleY = scaley * canvasScaleFactor;
-    if (!isWebGl) {
-        canvasScaleX = Math.ceil(canvasScaleX);
-        canvasScaleY = Math.ceil(canvasScaleY);
-    }
-    var m = new vf.Matrix();
-    m.identity();
-    m.scale(scalex / canvasScaleX, scaley / canvasScaleY);
-    m.rotate(rotation * Math.PI / 180);
-    canvas.style.position = 'absolute';
-    canvas.style.transform = "matrix(" + m.a + "," + m.b + "," + m.c + "," + m.d + "," + m.tx + "," + m.ty + ")";
-    canvas.width = stageWidth * canvasScaleX;
-    canvas.height = stageHeight * canvasScaleY;
-    stage.scaleX = canvasScaleX;
-    stage.scaleY = canvasScaleY;
-    return { width: canvas.width, height: canvas.height, scaleX: canvasScaleX, scaleY: canvasScaleY };
-}
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBoundingClientRect", function() { return getBoundingClientRect; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "calculateUpdatePlayerSize", function() { return calculateUpdatePlayerSize; });
 /**
  * @private
  * 计算舞台显示尺寸
@@ -9506,6 +9504,70 @@ function calculateStageSize(scaleMode, screenWidth, screenHeight, contentWidth, 
         displayWidth: displayWidth,
         displayHeight: displayHeight,
     };
+}
+function getBoundingClientRect(dom) {
+    if (dom === null) {
+        throw new Error("Error No find canvas parent dom");
+    }
+    return dom.getBoundingClientRect();
+}
+/**
+ * @private
+ *
+ * 更新播放器视口尺寸
+ *
+ * noScale 不对内容进行任何缩放，保持原始的1:1比例。如果播放器窗口比内容小，则可能进行一些裁切。
+ *
+ * showAll 非溢出居中，显示全部内容。水平或垂直“两侧”可能会不够宽而留有黑边。
+ *
+ * contain 非溢出，显示全部内容，水平或垂直“一侧”方向有黑边。
+ *
+ * cover 溢出居中，某些部分也许无法显示在播放器视口。
+ */
+// eslint-disable-next-line max-len
+function calculateUpdatePlayerSize(player, canvas, stage, scaleMode, canvasScaleFactor, isWebGl) {
+    if (canvasScaleFactor === void 0) { canvasScaleFactor = 1; }
+    if (isWebGl === void 0) { isWebGl = true; }
+    var top = 0;
+    var clientRect = getBoundingClientRect(player);
+    var boundingClientWidth = clientRect.width;
+    var boundingClientHeight = clientRect.height;
+    var screenWidth = boundingClientWidth;
+    var screenHeight = boundingClientHeight;
+    var stageSize = calculateStageSize(scaleMode, screenWidth, screenHeight, stage.width, stage.height);
+    var stageWidth = stageSize.stageWidth;
+    var stageHeight = stageSize.stageHeight;
+    var displayWidth = stageSize.displayWidth;
+    var displayHeight = stageSize.displayHeight;
+    canvas.style.transformOrigin = '0% 0% 0px';
+    if (canvas.width !== stageWidth) {
+        canvas.width = stageWidth;
+    }
+    if (canvas.height !== stageHeight) {
+        canvas.height = stageHeight;
+    }
+    var rotation = 0;
+    canvas.style.top = top + (boundingClientHeight - displayHeight) / 2 + "px";
+    canvas.style.left = (boundingClientWidth - displayWidth) / 2 + "px";
+    var scalex = displayWidth / stageWidth;
+    var scaley = displayHeight / stageHeight;
+    var canvasScaleX = scalex * canvasScaleFactor;
+    var canvasScaleY = scaley * canvasScaleFactor;
+    if (!isWebGl) {
+        canvasScaleX = Math.ceil(canvasScaleX);
+        canvasScaleY = Math.ceil(canvasScaleY);
+    }
+    var m = new vf.Matrix();
+    m.identity();
+    m.scale(scalex / canvasScaleX, scaley / canvasScaleY);
+    m.rotate(rotation * Math.PI / 180);
+    canvas.style.position = 'absolute';
+    canvas.style.transform = "matrix(" + m.a + "," + m.b + "," + m.c + "," + m.d + "," + m.tx + "," + m.ty + ")";
+    canvas.width = stageWidth * canvasScaleX;
+    canvas.height = stageHeight * canvasScaleY;
+    stage.scaleX = canvasScaleX / canvasScaleFactor;
+    stage.scaleY = canvasScaleY / canvasScaleFactor;
+    return { width: canvas.width, height: canvas.height, scaleX: canvasScaleX, scaleY: canvasScaleY };
 }
 
 

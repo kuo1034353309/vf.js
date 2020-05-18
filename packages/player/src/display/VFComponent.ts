@@ -5,7 +5,7 @@ import { VFStage } from './VFStage';
 import { IVariableData, ComponentEvent } from '../core/model/IVFData';
 import { DisplayObjectAbstract } from 'src/core/DisplayObjectAbstract';
 
-export class VFComponent extends vf.gui.Container {
+export class VFComponent extends vf.gui.ScrollingContainer {
 
         public static maxHashCode: number = 10000;
         public hashCode: number = ++VFComponent.maxHashCode;

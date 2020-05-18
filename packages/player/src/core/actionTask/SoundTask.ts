@@ -10,30 +10,8 @@ export class SoundTask extends BaseTask {
         constructor(compontent: VFComponent, actionData: IActionSound) {
             super();
             this.component = compontent;
-            if (typeof actionData.value[1] === 'string' || typeof actionData.value[1] === 'number') {
-                // 兼容久版本
-                actionData.assetId = actionData.value[1] as string;
-                this.data = actionData;
-                vf.utils.deprecation('5.2.1-v14', 'Please use the new sound API');
-            }
-            else {
-                this.data = actionData.value[1];
-            }
-
-            const data = this.data;
-
             this.dataType = actionData.type;
-            if (data.assetId === undefined) {
-                console.log('execute sound failed, missing assetId');
-
-                return;
-            }
-            if (data.trackId === undefined) {
-                console.log('execute sound failed, missing trackId');
-
-                return;
-            }
-            data.mode = actionData.mode || 'sound';
+            this.data = actionData;
         }
 
         public run(): void {
@@ -41,7 +19,26 @@ export class SoundTask extends BaseTask {
             if (this.component.vfStage) {
                 const soundManager = this.component.vfStage.soundManager;
                 const variableManager = this.component.vfStage.variableManager;
-                const data = this.data;
+                let data: any;
+
+                try {
+                    data = variableManager.getExpressItemValue(this.component, this.data.value);
+                }
+                catch (e) {
+                    vf.utils.deprecation('5.2.1-v14', 'Please use the new sound API');
+                }
+
+                if (data.assetId === undefined) {
+                    console.log('execute sound failed, missing assetId');
+
+                    return;
+                }
+                if (data.trackId === undefined) {
+                    console.log('execute sound failed, missing trackId');
+
+                    return;
+                }
+                data.mode = data.mode || 'sound';
                 let soundId: number | string | undefined;
 
                 if (Array.isArray(data.assetId)) {
@@ -60,13 +57,13 @@ export class SoundTask extends BaseTask {
                 data.assetId = soundId as number;
                 switch (this.dataType) {
                     case ActionType.PlaySound:
-                        soundManager.playSound(this.data);
+                        soundManager.playSound(data);
                         break;
                     case ActionType.PauseSound:
-                        soundManager.pauseSound(this.data);
+                        soundManager.pauseSound(data);
                         break;
                     case ActionType.ResumeSound:
-                        soundManager.resumeSound(this.data);
+                        soundManager.resumeSound(data);
                         break;
                 }
                 this.complete();
