@@ -748,18 +748,18 @@ var Player = /** @class */ (function () {
      */
     Player.prototype.start = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var config, data, view;
+            var config, data, container, clientRect, view;
             return __generator(this, function (_a) {
                 if (!this._data) {
                     return [2 /*return*/];
                 }
                 config = this.config;
                 data = this._data;
+                container = this.config.container;
+                clientRect = Object(_utils_CalculatePlayerSize__WEBPACK_IMPORTED_MODULE_1__["getBoundingClientRect"])(container);
                 // 0、更新配置
-                if (data.width && data.height) {
-                    config.width = data.width; // 设计尺寸
-                    config.height = data.height; // 设计尺寸
-                }
+                config.width = vf.gui.Utils.formatRelative(data.width, clientRect.width);
+                config.height = vf.gui.Utils.formatRelative(data.height, clientRect.height);
                 if (config.scaleMode === undefined) {
                     config.scaleMode = this._data.scaleMode || "noScale" /* NO_SCALE */;
                 }
@@ -768,13 +768,14 @@ var Player = /** @class */ (function () {
                 view.width = config.width;
                 view.height = config.height;
                 view.style.zIndex = '0';
-                this.config.container.appendChild(this.app.view);
+                container.appendChild(this.app.view);
                 // 3、初始化基于PX容器的VF场景
                 this.stage = new _display_VFStage__WEBPACK_IMPORTED_MODULE_0__["VFStage"](this._data, this.config, this);
                 this.stage.app = this.app;
                 this.app.stage.addChild(this.stage.container);
                 // 4、 适配处理
-                Object(_utils_CalculatePlayerSize__WEBPACK_IMPORTED_MODULE_1__["default"])(this.app.view, this.stage, this.config.scaleMode);
+                // eslint-disable-next-line max-len
+                Object(_utils_CalculatePlayerSize__WEBPACK_IMPORTED_MODULE_1__["calculateUpdatePlayerSize"])(container, this.app.view, this.stage, this.config.scaleMode, this.app.renderer.resolution);
                 // 5、初始化API模块，并通知外部'vf[hashid] api is ready'
                 this.readyState = "ready" /* READY */;
                 // 6、加载场景资源
@@ -2421,7 +2422,7 @@ var VariableManager = /** @class */ (function () {
                                         stackOperate.push(expressItem);
                                     }
                                     else {
-                                        while (curPriority < topOperatePriority) {
+                                        while (curPriority <= topOperatePriority) {
                                             stackOut.push(topOperate);
                                             stackOperate.pop();
                                             if (stackOperate.length > 0) {
@@ -2939,10 +2940,10 @@ var VariableManager = /** @class */ (function () {
     VariableManager.GLOBAL_ID = 'global';
     VariableManager.OPERATE_PRIORITY = {
         '*': 100,
-        '/': 99,
+        '/': 100,
         '%': 98,
         '+': 97,
-        '-': 96,
+        '-': 97,
         '>=': 95,
         '<=': 94,
         '>': 93,
@@ -9372,83 +9373,13 @@ var SoundManager = /** @class */ (function () {
 /*!**********************************************************!*\
   !*** ./packages/player/src/utils/CalculatePlayerSize.ts ***!
   \**********************************************************/
-/*! exports provided: default */
+/*! exports provided: getBoundingClientRect, calculateUpdatePlayerSize */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return calculateUpdatePlayerSize; });
-/**
- * @private
- *
- * 更新播放器视口尺寸
- *
- * noScale 不对内容进行任何缩放，保持原始的1:1比例。如果播放器窗口比内容小，则可能进行一些裁切。
- *
- * showAll 非溢出居中，显示全部内容。水平或垂直“两侧”可能会不够宽而留有黑边。
- *
- * contain 非溢出，显示全部内容，水平或垂直“一侧”方向有黑边。
- *
- * cover 溢出居中，某些部分也许无法显示在播放器视口。
- */
-// tslint:disable-next-line: max-line-length
-function calculateUpdatePlayerSize(canvas, stage, scaleMode, appParentDivName, canvasScaleFactor, isWebGl) {
-    if (appParentDivName === void 0) { appParentDivName = ''; }
-    if (canvasScaleFactor === void 0) { canvasScaleFactor = 1; }
-    if (isWebGl === void 0) { isWebGl = true; }
-    var top = 0;
-    var parentWidth = window.innerWidth;
-    var parentHeight = window.innerHeight;
-    if (canvas.parentNode != null) {
-        parentWidth = canvas.parentNode.offsetWidth;
-        parentHeight = canvas.parentNode.offsetHeight;
-    }
-    if (appParentDivName !== '') {
-        if (document.getElementById(appParentDivName) == null) {
-            throw new Error("Error No find appParentDivName(" + appParentDivName + ")");
-        }
-        parentWidth = document.getElementById(appParentDivName).offsetWidth;
-        parentHeight = document.getElementById(appParentDivName).offsetHeight;
-    }
-    var boundingClientWidth = parentWidth;
-    var boundingClientHeight = parentHeight;
-    var screenWidth = boundingClientWidth;
-    var screenHeight = boundingClientHeight;
-    var stageSize = calculateStageSize(scaleMode, screenWidth, screenHeight, canvas.width, canvas.height);
-    var stageWidth = stageSize.stageWidth;
-    var stageHeight = stageSize.stageHeight;
-    var displayWidth = stageSize.displayWidth;
-    var displayHeight = stageSize.displayHeight;
-    canvas.style.transformOrigin = '0% 0% 0px';
-    if (canvas.width !== stageWidth) {
-        canvas.width = stageWidth;
-    }
-    if (canvas.height !== stageHeight) {
-        canvas.height = stageHeight;
-    }
-    var rotation = 0;
-    canvas.style.top = top + (boundingClientHeight - displayHeight) / 2 + 'px';
-    canvas.style.left = (boundingClientWidth - displayWidth) / 2 + 'px';
-    var scalex = displayWidth / stageWidth;
-    var scaley = displayHeight / stageHeight;
-    var canvasScaleX = scalex * canvasScaleFactor;
-    var canvasScaleY = scaley * canvasScaleFactor;
-    if (!isWebGl) {
-        canvasScaleX = Math.ceil(canvasScaleX);
-        canvasScaleY = Math.ceil(canvasScaleY);
-    }
-    var m = new vf.Matrix();
-    m.identity();
-    m.scale(scalex / canvasScaleX, scaley / canvasScaleY);
-    m.rotate(rotation * Math.PI / 180);
-    canvas.style.position = 'absolute';
-    canvas.style.transform = "matrix(" + m.a + "," + m.b + "," + m.c + "," + m.d + "," + m.tx + "," + m.ty + ")";
-    canvas.width = stageWidth * canvasScaleX;
-    canvas.height = stageHeight * canvasScaleY;
-    stage.scaleX = canvasScaleX;
-    stage.scaleY = canvasScaleY;
-    return { width: canvas.width, height: canvas.height, scaleX: canvasScaleX, scaleY: canvasScaleY };
-}
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBoundingClientRect", function() { return getBoundingClientRect; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "calculateUpdatePlayerSize", function() { return calculateUpdatePlayerSize; });
 /**
  * @private
  * 计算舞台显示尺寸
@@ -9514,6 +9445,70 @@ function calculateStageSize(scaleMode, screenWidth, screenHeight, contentWidth, 
         displayWidth: displayWidth,
         displayHeight: displayHeight,
     };
+}
+function getBoundingClientRect(dom) {
+    if (dom === null) {
+        throw new Error("Error No find canvas parent dom");
+    }
+    return dom.getBoundingClientRect();
+}
+/**
+ * @private
+ *
+ * 更新播放器视口尺寸
+ *
+ * noScale 不对内容进行任何缩放，保持原始的1:1比例。如果播放器窗口比内容小，则可能进行一些裁切。
+ *
+ * showAll 非溢出居中，显示全部内容。水平或垂直“两侧”可能会不够宽而留有黑边。
+ *
+ * contain 非溢出，显示全部内容，水平或垂直“一侧”方向有黑边。
+ *
+ * cover 溢出居中，某些部分也许无法显示在播放器视口。
+ */
+// eslint-disable-next-line max-len
+function calculateUpdatePlayerSize(player, canvas, stage, scaleMode, canvasScaleFactor, isWebGl) {
+    if (canvasScaleFactor === void 0) { canvasScaleFactor = 1; }
+    if (isWebGl === void 0) { isWebGl = true; }
+    var top = 0;
+    var clientRect = getBoundingClientRect(player);
+    var boundingClientWidth = clientRect.width;
+    var boundingClientHeight = clientRect.height;
+    var screenWidth = boundingClientWidth;
+    var screenHeight = boundingClientHeight;
+    var stageSize = calculateStageSize(scaleMode, screenWidth, screenHeight, stage.width, stage.height);
+    var stageWidth = stageSize.stageWidth;
+    var stageHeight = stageSize.stageHeight;
+    var displayWidth = stageSize.displayWidth;
+    var displayHeight = stageSize.displayHeight;
+    canvas.style.transformOrigin = '0% 0% 0px';
+    if (canvas.width !== stageWidth) {
+        canvas.width = stageWidth;
+    }
+    if (canvas.height !== stageHeight) {
+        canvas.height = stageHeight;
+    }
+    var rotation = 0;
+    canvas.style.top = top + (boundingClientHeight - displayHeight) / 2 + "px";
+    canvas.style.left = (boundingClientWidth - displayWidth) / 2 + "px";
+    var scalex = displayWidth / stageWidth;
+    var scaley = displayHeight / stageHeight;
+    var canvasScaleX = scalex * canvasScaleFactor;
+    var canvasScaleY = scaley * canvasScaleFactor;
+    if (!isWebGl) {
+        canvasScaleX = Math.ceil(canvasScaleX);
+        canvasScaleY = Math.ceil(canvasScaleY);
+    }
+    var m = new vf.Matrix();
+    m.identity();
+    m.scale(scalex / canvasScaleX, scaley / canvasScaleY);
+    m.rotate(rotation * Math.PI / 180);
+    canvas.style.position = 'absolute';
+    canvas.style.transform = "matrix(" + m.a + "," + m.b + "," + m.c + "," + m.d + "," + m.tx + "," + m.ty + ")";
+    canvas.width = stageWidth * canvasScaleX;
+    canvas.height = stageHeight * canvasScaleY;
+    stage.scaleX = canvasScaleX / canvasScaleFactor;
+    stage.scaleY = canvasScaleY / canvasScaleFactor;
+    return { width: canvas.width, height: canvas.height, scaleX: canvasScaleX, scaleY: canvasScaleY };
 }
 
 

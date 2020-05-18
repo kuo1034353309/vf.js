@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
 import { VFStage } from './display/VFStage';
-import calculateUpdatePlayerSize from './utils/CalculatePlayerSize';
+import {calculateUpdatePlayerSize, getBoundingClientRect } from './utils/CalculatePlayerSize';
 import importScript from './utils/ImportScript';
 import IEvent from './event/IEvent';
 import { IVFOptions, EngineAPI } from './IVFEngine';
@@ -237,12 +237,13 @@ export class Player implements EngineAPI {
         if (!this._data) { return; }
         const config = this.config;
         const data = this._data;
+        const container = this.config.container;
+
+        const clientRect = getBoundingClientRect(container);
 
         // 0、更新配置
-        if (data.width && data.height) {
-            config.width = data.width; // 设计尺寸
-            config.height = data.height; // 设计尺寸
-        }
+        config.width = vf.gui.Utils.formatRelative(data.width, clientRect.width);
+        config.height = vf.gui.Utils.formatRelative(data.height, clientRect.height);
         if (config.scaleMode === undefined) {
             config.scaleMode = this._data.scaleMode || ScaleMode.NO_SCALE;
         }
@@ -253,7 +254,8 @@ export class Player implements EngineAPI {
         view.width = config.width;
         view.height = config.height;
         view.style.zIndex = '0';
-        this.config.container.appendChild(this.app.view);
+
+        container.appendChild(this.app.view);
 
         // 3、初始化基于PX容器的VF场景
         this.stage = new VFStage(this._data, this.config, this);
@@ -261,8 +263,8 @@ export class Player implements EngineAPI {
         this.app.stage.addChild(this.stage.container);
 
         // 4、 适配处理
-        calculateUpdatePlayerSize(this.app.view, this.stage, this.config.scaleMode as any);
-
+        // eslint-disable-next-line max-len
+        calculateUpdatePlayerSize(container, this.app.view, this.stage, this.config.scaleMode as any, this.app.renderer.resolution);
         // 5、初始化API模块，并通知外部'vf[hashid] api is ready'
         this.readyState = VFStateCode.READY;
 
