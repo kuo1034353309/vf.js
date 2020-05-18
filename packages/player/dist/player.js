@@ -8871,6 +8871,60 @@ var BoardDrawPlug = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ "./packages/player/src/display/plugs/DigitalLibraryPlug.ts":
+/*!*****************************************************************!*\
+  !*** ./packages/player/src/display/plugs/DigitalLibraryPlug.ts ***!
+  \*****************************************************************/
+/*! exports provided: DigitalLibraryPlug */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DigitalLibraryPlug", function() { return DigitalLibraryPlug; });
+/* harmony import */ var _Plug__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Plug */ "./packages/player/src/display/plugs/Plug.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * 数字图书馆
+ * @author yangxiao
+ */
+var DigitalLibraryPlug = /** @class */ (function (_super) {
+    __extends(DigitalLibraryPlug, _super);
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+    function DigitalLibraryPlug(className, parent) {
+        var _this = _super.call(this, className, parent) || this;
+        console.log(className);
+        return _this;
+    }
+    DigitalLibraryPlug.prototype.onLoad = function () {
+        var _a;
+        var parent = this.parent;
+        // eslint-disable-next-line no-undef
+        var interaction = ((_a = parent.app) === null || _a === void 0 ? void 0 : _a.renderer).plugins.interaction;
+        interaction.autoPreventDefault = false;
+    };
+    DigitalLibraryPlug.prototype.onRelease = function () {
+        //
+    };
+    return DigitalLibraryPlug;
+}(_Plug__WEBPACK_IMPORTED_MODULE_0__["Plug"]));
+
+
+
+/***/ }),
+
 /***/ "./packages/player/src/display/plugs/Plug.ts":
 /*!***************************************************!*\
   !*** ./packages/player/src/display/plugs/Plug.ts ***!
@@ -8932,7 +8986,7 @@ var Plug = /** @class */ (function () {
 /*!********************************************************!*\
   !*** ./packages/player/src/display/plugs/PlugIndex.ts ***!
   \********************************************************/
-/*! exports provided: BoardDrawPlug, SliderEditorPlug, PlugIndex */
+/*! exports provided: BoardDrawPlug, SliderEditorPlug, DigitalLibraryPlug, PlugIndex */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -8944,9 +8998,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SliderEditorPlug__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SliderEditorPlug */ "./packages/player/src/display/plugs/SliderEditorPlug.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SliderEditorPlug", function() { return _SliderEditorPlug__WEBPACK_IMPORTED_MODULE_1__["SliderEditorPlug"]; });
 
+/* harmony import */ var _DigitalLibraryPlug__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DigitalLibraryPlug */ "./packages/player/src/display/plugs/DigitalLibraryPlug.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DigitalLibraryPlug", function() { return _DigitalLibraryPlug__WEBPACK_IMPORTED_MODULE_2__["DigitalLibraryPlug"]; });
+
+
 
 
 var PlugIndex = /** @class */ (function () {
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     function PlugIndex() {
         //
     }
