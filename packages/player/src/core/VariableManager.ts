@@ -307,10 +307,18 @@ export class VariableManager {
                     break;
                 case ExpressItemType.PROPERTY:
                     const targetArr = expressItem[1];
-                    const targetProperty = expressItem[2];
                     const targetComponent = getTargetComponent(component, targetArr);
-                    if (targetComponent) {
-                        result = (targetComponent as any)[targetProperty];
+                    let componentProperty: any = targetComponent;
+                    if (componentProperty && expressItem.length >= 3) {
+                        for (let i: number = 2, len: number = expressItem.length; i < len; i++) {
+                            const key = expressItem[i];
+                            if (componentProperty && key !== undefined) {
+                                componentProperty = componentProperty[key];
+                            }
+                        }
+                        result = componentProperty;
+                    } else {
+                        result = undefined;
                     }
                     break;
                 case ExpressItemType.ARRAY_LEN:
