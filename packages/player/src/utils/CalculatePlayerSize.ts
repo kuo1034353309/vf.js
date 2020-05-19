@@ -80,8 +80,13 @@ export function getBoundingClientRect(dom: HTMLElement): DOMRect {
     if (dom === null) {
         throw new Error(`Error No find canvas parent dom`);
     }
+    const rect = dom.getBoundingClientRect();
 
-    return dom.getBoundingClientRect();
+    rect.width = dom.offsetWidth;
+    rect.height = dom.offsetHeight;
+    //console.log(rect, dom.offsetWidth, dom.offsetHeight);
+
+    return rect;
 }
 /**
  * @private
