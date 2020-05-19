@@ -1987,6 +1987,9 @@ var RES = /** @class */ (function (_super) {
                     if (componentData.interactabled !== undefined) {
                         component.interactabled = componentData.interactabled; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
                     }
+                    if (componentData.style !== undefined) {
+                        component.style = componentData.style; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
+                    }
                     break;
                 default:
                     component = this.creategui(libId);
