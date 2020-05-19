@@ -2518,10 +2518,19 @@ var VariableManager = /** @class */ (function () {
                 break;
             case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PROPERTY:
                 var targetArr = expressItem[1];
-                var targetProperty = expressItem[2];
                 var targetComponent = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(component, targetArr);
-                if (targetComponent) {
-                    result = targetComponent[targetProperty];
+                var componentProperty = targetComponent;
+                if (componentProperty && expressItem.length >= 3) {
+                    for (var i = 2, len = expressItem.length; i < len; i++) {
+                        var key = expressItem[i];
+                        if (componentProperty && key !== undefined) {
+                            componentProperty = componentProperty[key];
+                        }
+                    }
+                    result = componentProperty;
+                }
+                else {
+                    result = undefined;
                 }
                 break;
             case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_LEN:
