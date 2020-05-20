@@ -156,8 +156,11 @@ export function calculateUpdatePlayerSize(player: HTMLElement, canvas: HTMLCanva
     canvas.width = stageWidth * canvasScaleX;
     canvas.height = stageHeight * canvasScaleY;
 
+    stage.container.hitArea = new vf.Rectangle(0,0, stageWidth, stageHeight);
     stage.scaleX = canvasScaleX / canvasScaleFactor;
     stage.scaleY = canvasScaleY / canvasScaleFactor;
+    stage._stageWidth = canvas.width / canvasScaleFactor;
+    stage._stageHeight = canvas.height / canvasScaleFactor;
 
     return { width: canvas.width, height: canvas.height, scaleX: canvasScaleX, scaleY: canvasScaleY };
 }

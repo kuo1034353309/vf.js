@@ -8595,8 +8595,6 @@ var VFStage = /** @class */ (function (_super) {
         _this.plugs = new Map();
         _this.status = STAGE_STATUS.NONE;
         _this.data = data;
-        _this.width = config.width;
-        _this.height = config.height;
         _this.config = config;
         _this.player = player;
         vf.gui.Utils.debug = config.debug;
@@ -8605,7 +8603,7 @@ var VFStage = /** @class */ (function (_super) {
         _this.variableManager = new _core_VariableManager__WEBPACK_IMPORTED_MODULE_0__["VariableManager"]();
         _this.soundManager = new _sound_SoundManager__WEBPACK_IMPORTED_MODULE_1__["SoundManager"](_this.res, _this);
         _this.tween = new vf.gui.Tween();
-        // tslint:disable-next-line: no-unused-expression
+        // eslint-disable-next-line no-new
         new _plugs_PlugIndex__WEBPACK_IMPORTED_MODULE_4__["PlugIndex"]();
         return _this;
     }
@@ -9581,8 +9579,11 @@ function calculateUpdatePlayerSize(player, canvas, stage, scaleMode, canvasScale
     canvas.style.transform = "matrix(" + m.a + "," + m.b + "," + m.c + "," + m.d + "," + m.tx + "," + m.ty + ")";
     canvas.width = stageWidth * canvasScaleX;
     canvas.height = stageHeight * canvasScaleY;
+    stage.container.hitArea = new vf.Rectangle(0, 0, stageWidth, stageHeight);
     stage.scaleX = canvasScaleX / canvasScaleFactor;
     stage.scaleY = canvasScaleY / canvasScaleFactor;
+    stage._stageWidth = canvas.width / canvasScaleFactor;
+    stage._stageHeight = canvas.height / canvasScaleFactor;
     return { width: canvas.width, height: canvas.height, scaleX: canvasScaleX, scaleY: canvasScaleY };
 }
 

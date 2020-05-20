@@ -11,6 +11,7 @@ import { EventLevel } from '../event/EventLevel';
 import { EventType } from '../event/EventType';
 import { Player } from '../Player';
 import IEvent from '../event/IEvent';
+import StateEvent from '@player/event/StateEvent';
 
 enum STAGE_STATUS {
     NONE,
@@ -26,9 +27,9 @@ export class VFStage extends vf.gui.Stage {
     public variableManager: VariableManager;
     public soundManager: SoundManager;
     public tween: vf.gui.Tween;
-    public fps: number = 30;
+    public fps = 30;
     public readonly config: Config;
-    public readonly player:Player;
+    public readonly player: Player;
     /**
      * 插件列表 
      */
@@ -40,14 +41,11 @@ export class VFStage extends vf.gui.Stage {
 
     private res: RES;
 
+    constructor(data: IVFDataV1, config: Config, player: Player) {
 
-    constructor(data: IVFDataV1, config: Config, player:Player) {
-        
         super(config.width, config.height);
         this.data = data;
-        this.width = config.width;
-        this.height = config.height;
-        this.config = config; 
+        this.config = config;
         this.player = player;
         vf.gui.Utils.debug = config.debug;
         // 配置数据后，创建各种管理器
@@ -55,24 +53,24 @@ export class VFStage extends vf.gui.Stage {
         this.variableManager = new VariableManager();
         this.soundManager = new SoundManager(this.res, this);
         this.tween = new vf.gui.Tween();
-        // tslint:disable-next-line: no-unused-expression
+        // eslint-disable-next-line no-new
         new Plugs.PlugIndex();
     }
 
-    public get systemEvent() {
-       return this.config.systemEvent;
+    public get systemEvent(): StateEvent {
+        return this.config.systemEvent;
     }
 
     /**
      * 即使没有引用也不要删除这个接口，GUI在调用
      * @param msg 
      */
-    public inputLog(msg: IEvent){
-        if(msg.message === undefined){
+    public inputLog(msg: IEvent): void {
+        if (msg.message === undefined) {
             msg.message = '';
         }
-        if(msg.target && msg.target['libId']){
-            msg.message +=  `, id = ${ msg.target['id']} , libId = ${ msg.target['libId']}`;
+        if (msg.target && msg.target['libId']) {
+            msg.message += `, id = ${msg.target['id']} , libId = ${msg.target['libId']}`;
         }
         this.player.runtimeLog(msg);
     }
@@ -82,7 +80,7 @@ export class VFStage extends vf.gui.Stage {
         if (this.app) {
             this.app.ticker.add(this.onGUITickerUpdata, this);
         }
-        
+
         // TODO: 适配
         // 初始化加载界面
         this.status = STAGE_STATUS.LOADING;
@@ -104,7 +102,6 @@ export class VFStage extends vf.gui.Stage {
             this.soundManager.resume();
             this.status = STAGE_STATUS.PLAYING;
         }
-
     }
     public reset(): void {
         if (this.status === STAGE_STATUS.NONE ||
@@ -120,16 +117,15 @@ export class VFStage extends vf.gui.Stage {
         this.createScene();
     }
     public dispose(): void {
-
         this.releaseAll();
-        
+
         if (this.curScene) {
             this.curScene.dispose();
         }
         if (this.tween) {
             this.tween.release();
         }
-        
+
         // this.removeChildren();
 
         if (this.app && this.app.ticker) {
@@ -144,12 +140,12 @@ export class VFStage extends vf.gui.Stage {
             this.res = null as any;
         }
         this.plugs.forEach((value) => {
-            value.release();  
+            value.release();
         });
     }
 
     /** 获取当前的场景 */
-    public getCurScene() {
+    public getCurScene(): VFScene | undefined {
         return this.curScene;
     }
 
@@ -157,6 +153,7 @@ export class VFStage extends vf.gui.Stage {
         if (this.curScene) {
             const curSceneId = this.curScene.id;
             const nextScene = this.res.createNextScene(curSceneId, this);
+
             if (nextScene) {
                 this.switchToScene(nextScene, transition);
             }
@@ -167,6 +164,7 @@ export class VFStage extends vf.gui.Stage {
         if (this.curScene) {
             const curSceneId = this.curScene.id;
             const prevScene = this.res.createPrevScene(curSceneId, this);
+
             if (prevScene) {
                 this.switchToScene(prevScene, transition);
             }
@@ -175,6 +173,7 @@ export class VFStage extends vf.gui.Stage {
 
     public switchToSceneId(sceneId: string, transition?: ITransitionData): void {
         const scene = this.res.createScene(sceneId, this);
+
         if (scene) {
             this.switchToScene(scene, transition);
         }
@@ -184,6 +183,7 @@ export class VFStage extends vf.gui.Stage {
         if (scene && this.app) {
             let transitionData = transition;
             let prevTexture: vf.RenderTexture | undefined;
+
             if (this.curScene) {
                 if (this.curScene.transition || transitionData) {
                     if (transitionData == null) {
@@ -220,27 +220,30 @@ export class VFStage extends vf.gui.Stage {
         });
     }
 
-    private loadProgress(e: any): void {  
+    private loadProgress(e: any): void {
         this.systemEvent.emit(EventType.STATUS, {
             code: SceneEvent.LoadProgress, level: EventLevel.STATUS, data: e,
         });
     }
-    
-    private createPlugs() {
-        const plugsData =  this.config.plugs;
+
+    private createPlugs(): void {
+        const plugsData = this.config.plugs;
+
         for (const value of plugsData) {
             const PlugsClass = ((Plugs as any)[value.id]);
-            if (PlugsClass) { 
+
+            if (PlugsClass) {
                 const plug: IPlug = new PlugsClass(value.id, this);
+
                 plug.load(value);
             }
-
         }
     }
 
     private createScene(): void {
         // 创建场景
         const scene = this.res.createFirstScene(this);
+
         if (scene) {
             this.curScene = scene;
             this.addChild(scene);
@@ -248,13 +251,13 @@ export class VFStage extends vf.gui.Stage {
         this.status = STAGE_STATUS.PLAYING;
     }
 
-    private onGUITickerUpdata(deltaTime: number) {
+    private onGUITickerUpdata(deltaTime: number): void {
         if (this.app) {
-            vf.gui.TickerShared.update(deltaTime, 
+            vf.gui.TickerShared.update(deltaTime,
                 this.app.ticker.lastTime,
                 this.app.ticker.elapsedMS);
         }
-        
+
     }
 }
 

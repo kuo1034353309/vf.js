@@ -312,7 +312,7 @@ class VIPKIDLauncher {
      */
     private createEngine() {
         if (this.completeCall) {
-            if (this._config.debug) {
+            if (this._config.debug && vf.utils.getSystemInfo().device.type === 'mobile') {
                 // eslint-disable-next-line no-new
                 new (window as any).VConsole();
             }
