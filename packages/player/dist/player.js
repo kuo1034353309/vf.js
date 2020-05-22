@@ -9560,7 +9560,7 @@ function calculateUpdatePlayerSize(player, canvas, stage, scaleMode, canvasScale
         canvas.height = stageHeight;
     }
     var rotation = 0;
-    canvas.style.top = top + (boundingClientHeight - displayHeight) / 2 + "px";
+    canvas.style.top = top + ((boundingClientHeight - displayHeight) / 2) + "px";
     canvas.style.left = (boundingClientWidth - displayWidth) / 2 + "px";
     var scalex = displayWidth / stageWidth;
     var scaley = displayHeight / stageHeight;
