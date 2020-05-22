@@ -211,6 +211,7 @@ export interface ICustomComponent extends IDisplayComponent {
     animations?: IAnimation[];
     props?: { [id: string]: IVariableData };
     actionList?: AllAction[] | string;
+    style?: any;
 }
 
 export const enum TransitionType {

@@ -20,7 +20,7 @@ export class Player implements EngineAPI {
      * @private
      * @type {vf.Application}
      */
-    private app: vf.Application;
+    public app: vf.Application;
 
     /**
      * @private
@@ -265,6 +265,7 @@ export class Player implements EngineAPI {
         // 4、 适配处理
         // eslint-disable-next-line max-len
         calculateUpdatePlayerSize(container, this.app.view, this.stage, this.config.scaleMode as any, this.app.renderer.resolution);
+
         // 5、初始化API模块，并通知外部'vf[hashid] api is ready'
         this.readyState = VFStateCode.READY;
 

@@ -1987,6 +1987,9 @@ var RES = /** @class */ (function (_super) {
                     if (componentData.interactabled !== undefined) {
                         component.interactabled = componentData.interactabled; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
                     }
+                    if (componentData.style !== undefined) {
+                        component.style = componentData.style; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
+                    }
                     break;
                 default:
                     component = this.creategui(libId);
@@ -2518,10 +2521,19 @@ var VariableManager = /** @class */ (function () {
                 break;
             case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PROPERTY:
                 var targetArr = expressItem[1];
-                var targetProperty = expressItem[2];
                 var targetComponent = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(component, targetArr);
-                if (targetComponent) {
-                    result = targetComponent[targetProperty];
+                var componentProperty = targetComponent;
+                if (componentProperty && expressItem.length >= 3) {
+                    for (var i = 2, len = expressItem.length; i < len; i++) {
+                        var key = expressItem[i];
+                        if (componentProperty && key !== undefined) {
+                            componentProperty = componentProperty[key];
+                        }
+                    }
+                    result = componentProperty;
+                }
+                else {
+                    result = undefined;
                 }
                 break;
             case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_LEN:
@@ -8583,8 +8595,6 @@ var VFStage = /** @class */ (function (_super) {
         _this.plugs = new Map();
         _this.status = STAGE_STATUS.NONE;
         _this.data = data;
-        _this.width = config.width;
-        _this.height = config.height;
         _this.config = config;
         _this.player = player;
         vf.gui.Utils.debug = config.debug;
@@ -8593,7 +8603,7 @@ var VFStage = /** @class */ (function (_super) {
         _this.variableManager = new _core_VariableManager__WEBPACK_IMPORTED_MODULE_0__["VariableManager"]();
         _this.soundManager = new _sound_SoundManager__WEBPACK_IMPORTED_MODULE_1__["SoundManager"](_this.res, _this);
         _this.tween = new vf.gui.Tween();
-        // tslint:disable-next-line: no-unused-expression
+        // eslint-disable-next-line no-new
         new _plugs_PlugIndex__WEBPACK_IMPORTED_MODULE_4__["PlugIndex"]();
         return _this;
     }
@@ -9509,7 +9519,10 @@ function getBoundingClientRect(dom) {
     if (dom === null) {
         throw new Error("Error No find canvas parent dom");
     }
-    return dom.getBoundingClientRect();
+    var rect = {};
+    rect.width = dom.offsetWidth;
+    rect.height = dom.offsetHeight;
+    return rect;
 }
 /**
  * @private
@@ -9565,8 +9578,11 @@ function calculateUpdatePlayerSize(player, canvas, stage, scaleMode, canvasScale
     canvas.style.transform = "matrix(" + m.a + "," + m.b + "," + m.c + "," + m.d + "," + m.tx + "," + m.ty + ")";
     canvas.width = stageWidth * canvasScaleX;
     canvas.height = stageHeight * canvasScaleY;
+    stage.container.hitArea = new vf.Rectangle(0, 0, stageWidth, stageHeight);
     stage.scaleX = canvasScaleX / canvasScaleFactor;
     stage.scaleY = canvasScaleY / canvasScaleFactor;
+    stage._stageWidth = canvas.width / canvasScaleFactor;
+    stage._stageHeight = canvas.height / canvasScaleFactor;
     return { width: canvas.width, height: canvas.height, scaleX: canvasScaleX, scaleY: canvasScaleY };
 }
 
