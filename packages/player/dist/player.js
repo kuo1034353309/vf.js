@@ -9519,10 +9519,9 @@ function getBoundingClientRect(dom) {
     if (dom === null) {
         throw new Error("Error No find canvas parent dom");
     }
-    var rect = dom.getBoundingClientRect();
+    var rect = {};
     rect.width = dom.offsetWidth;
     rect.height = dom.offsetHeight;
-    //console.log(rect, dom.offsetWidth, dom.offsetHeight);
     return rect;
 }
 /**
