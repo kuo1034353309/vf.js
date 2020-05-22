@@ -1,0 +1,3 @@
+./libs
+packages/player/src/core/model/IVFData.ts
+packages/*/dist

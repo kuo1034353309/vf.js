@@ -6,7 +6,8 @@
         "mocha": true
     },
     "globals": {
-        "global": false
+        "global": false,
+        "vf":true
     },
     "parser": "@typescript-eslint/parser",
     "parserOptions": {

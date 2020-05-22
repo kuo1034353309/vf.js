@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ScaleMode } from '../core/model/IVFData';
 import { VFStage } from '../display/VFStage';
@@ -77,7 +78,6 @@ function calculateStageSize(
 }
 
 export function getBoundingClientRect(dom: HTMLElement): DOMRect {
-
     if (dom === null) {
         throw new Error(`Error No find canvas parent dom`);
     }
@@ -132,7 +132,7 @@ export function calculateUpdatePlayerSize(player: HTMLElement, canvas: HTMLCanva
 
     const rotation = 0;
 
-    canvas.style.top = `${top + (boundingClientHeight - displayHeight) / 2}px`;
+    canvas.style.top = `${top + ((boundingClientHeight - displayHeight) / 2)}px`;
     canvas.style.left = `${(boundingClientWidth - displayWidth) / 2}px`;
 
     const scalex = displayWidth / stageWidth;
@@ -157,7 +157,7 @@ export function calculateUpdatePlayerSize(player: HTMLElement, canvas: HTMLCanva
     canvas.width = stageWidth * canvasScaleX;
     canvas.height = stageHeight * canvasScaleY;
 
-    stage.container.hitArea = new vf.Rectangle(0,0, stageWidth, stageHeight);
+    stage.container.hitArea = new vf.Rectangle(0, 0, stageWidth, stageHeight);
     stage.scaleX = canvasScaleX / canvasScaleFactor;
     stage.scaleY = canvasScaleY / canvasScaleFactor;
     stage._stageWidth = canvas.width / canvasScaleFactor;
