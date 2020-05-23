@@ -133,9 +133,9 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
-        this.version = "0.3.32";
+        this.version = "0.3.33";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "2020-5-22 5:01:06 PM";
+        this.buildInfo = "2020-5-23 10:02:37 AM";
         this._extendsLibsUrl = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
@@ -215,6 +215,9 @@ var VIPKIDLauncher = /** @class */ (function () {
         var extendsLibsUrl = this._extendsLibsUrl;
         if (this._config.debug) {
             libs.push(this.getLibUrl("https://s.vipkidstatic.com/vf/engine/debug/vconsole.min.js"));
+        }
+        if (this._config.showFPS) {
+            libs.push(this.getLibUrl("https://s.vipkidstatic.com/vf/engine/debug/stats.min.js"));
         }
         libs.push(this.getLibUrl("vf-v5.2.21-v14", cdn, 'vf'));
         extendsLibsUrl.forEach(function (value) {
@@ -313,7 +316,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             script.setAttribute('name', 'vf-script');
             script.type = 'text/javascript';
             script.id = item.version;
-            script.title = "0.3.32";
+            script.title = "0.3.33";
             script.async = false;
             script.src = item.url;
             script.addEventListener('load', this.onJsComplete.bind(this), false);
@@ -364,6 +367,18 @@ var VIPKIDLauncher = /** @class */ (function () {
                 // eslint-disable-next-line no-new
                 new window.VConsole();
             }
+            if (this._config.showFPS) {
+                var stats_1 = new window.Stats();
+                stats_1.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+                document.body.appendChild(stats_1.dom);
+                var animate_1 = function () {
+                    stats_1.begin();
+                    // monitored code goes here
+                    stats_1.end();
+                    requestAnimationFrame(animate_1);
+                };
+                requestAnimationFrame(animate_1);
+            }
             // eslint-disable-next-line no-undef
             vf.utils.skipHello();
             var player = new window['vf']['player']['Player'](this._config);
@@ -379,7 +394,7 @@ var VIPKIDLauncher = /** @class */ (function () {
 }());
 function createVF(options, completeCall, errorCall) {
     var scripts = document.getElementsByName('vf-script');
-    var version = "0.3.32";
+    var version = "0.3.33";
     if (scripts.length > 0 && scripts[0].title !== version) {
         scripts.forEach(function (value) {
             if (value.parentNode) {

@@ -136,6 +136,10 @@ class VIPKIDLauncher {
             libs.push(this.getLibUrl(`https://s.vipkidstatic.com/vf/engine/debug/vconsole.min.js`));
         }
 
+        if (this._config.showFPS) {
+            libs.push(this.getLibUrl(`https://s.vipkidstatic.com/vf/engine/debug/stats.min.js`));
+        }
+
         libs.push(this.getLibUrl(VFVERSION, cdn, 'vf'));
 
         extendsLibsUrl.forEach((value) => {
@@ -315,6 +319,21 @@ class VIPKIDLauncher {
             if (this._config.debug && vf.utils.getSystemInfo().device.type === 'mobile') {
                 // eslint-disable-next-line no-new
                 new (window as any).VConsole();
+            }
+            if (this._config.showFPS) {
+                const stats = new (window as any).Stats();
+
+                stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+                document.body.appendChild(stats.dom);
+
+                const animate = () => {
+                    stats.begin();
+                    // monitored code goes here
+                    stats.end();
+                    requestAnimationFrame(animate);
+                };
+
+                requestAnimationFrame(animate);
             }
             // eslint-disable-next-line no-undef
             vf.utils.skipHello();
