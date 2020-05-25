@@ -1,6 +1,6 @@
 /*!
- * @vf.js/vf - v5.2.1-v14
- * Compiled Thu, 07 May 2020 02:38:36 UTC
+ * @vf.js/vf - v5.2.1-v15
+ * Compiled Mon, 25 May 2020 07:45:20 UTC
  *
  * @vf.js/vf is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -103,7 +103,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/polyfill - v5.2.1
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/polyfill is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -2907,7 +2907,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/settings - v5.2.1
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/settings is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -3389,7 +3389,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/math - v5.2.1
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/math is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -7782,7 +7782,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/constants - v5.2.1
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/constants is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -8222,7 +8222,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/utils - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/utils is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -8254,7 +8254,7 @@ var PIXI = (function (exports) {
 
 	var saidHello = false;
 	var renderType = 'canvas';
-	var VERSION = '5.2.1-v14';
+	var VERSION = '5.2.1-v15';
 	/**
 	 * 跳过版本说明
 	 *
@@ -9291,7 +9291,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/display - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/display is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -10941,7 +10941,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/accessibility - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/accessibility is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -11528,7 +11528,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/ticker - v5.2.1
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/ticker is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -12371,7 +12371,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/interaction - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/interaction is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -14968,7 +14968,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/runner - v5.2.1
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/runner is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -15164,7 +15164,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/core - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/core is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -25903,7 +25903,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/app - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/app is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -26174,7 +26174,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/extract - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/extract is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -28929,7 +28929,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/loaders - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/loaders is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -29246,7 +29246,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/particles - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/particles is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -30049,7 +30049,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/graphics - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/graphics is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -33015,7 +33015,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/sprite is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -33596,7 +33596,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/text - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/text is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -35640,7 +35640,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/prepare - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/prepare is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -36270,7 +36270,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/spritesheet - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/spritesheet is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -36591,7 +36591,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite-tiling - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/sprite-tiling is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -36992,7 +36992,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/text-bitmap - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/text-bitmap is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38108,7 +38108,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-alpha - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/filter-alpha is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38194,7 +38194,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-blur - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/filter-blur is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38585,7 +38585,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-color-matrix - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/filter-color-matrix is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39114,7 +39114,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-displacement - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/filter-displacement is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39245,7 +39245,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-fxaa - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/filter-fxaa is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39306,7 +39306,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-noise - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/filter-noise is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39407,7 +39407,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-cache-as-bitmap - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/mixin-cache-as-bitmap is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39832,7 +39832,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-get-child-by-name - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/mixin-get-child-by-name is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39869,7 +39869,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-get-global-position - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/mixin-get-global-position is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39906,7 +39906,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mesh - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/mesh is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -40615,7 +40615,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mesh-extras - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/mesh-extras is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41335,7 +41335,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite-animated - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/sprite-animated is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41777,7 +41777,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * pixi.js - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * pixi.js is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -43260,7 +43260,7 @@ var PIXI = (function (exports) {
 	 * @name VERSION
 	 * @type {string}
 	 */
-	var VERSION$1 = '5.2.1-v14';
+	var VERSION$1 = '5.2.1-v15';
 
 	/**
 	 * @namespace PIXI
@@ -43305,7 +43305,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-renderer - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/canvas-renderer is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -44169,7 +44169,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-mesh - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/canvas-mesh is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -44660,7 +44660,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-graphics - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/canvas-graphics is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45121,7 +45121,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-sprite - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/canvas-sprite is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45326,7 +45326,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-extract - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/canvas-extract is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45500,7 +45500,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-prepare - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/canvas-prepare is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45597,7 +45597,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-sprite-tiling - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/canvas-sprite-tiling is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45686,7 +45686,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-particles - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/canvas-particles is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45793,7 +45793,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-display - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/canvas-display is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45855,7 +45855,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-text - v5.2.1-v9
-	 * Compiled Thu, 07 May 2020 02:38:36 UTC
+	 * Compiled Mon, 25 May 2020 07:45:20 UTC
 	 *
 	 * @pixi/canvas-text is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -46934,7 +46934,7 @@ var PIXI = (function (exports) {
 
 	var saidHello$1 = false;
 	var renderType$1 = 'canvas';
-	var VERSION$2 = '5.2.1-v14';
+	var VERSION$2 = '5.2.1-v15';
 	/**
 	 * 跳过版本说明
 	 *
@@ -48783,7 +48783,7 @@ var PIXI = (function (exports) {
 	                        audio.onpaste = onPause;
 	                        audio.ontimeupdate = onTimeupdate;
 	                        audio.onended = function () {
-	                            _this._isPlaying = true;
+	                            _this._isPlaying = false;
 	                            _this.emit('ended', _this);
 	                        };
 	                        document.body.appendChild(audio);
