@@ -112,6 +112,7 @@ export interface IVFOptions {
     debug?: boolean;
     logAdvancedTrace?: boolean;
     language?: string;
+    realFPS?: boolean;
     /**
      * 动态数据
      */
