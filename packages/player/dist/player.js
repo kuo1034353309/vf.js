@@ -637,7 +637,7 @@ var Player = /** @class */ (function () {
             antialias: true,
             resolution: options.resolution,
         });
-        this._errpanel = new _error_ErrorDisplay__WEBPACK_IMPORTED_MODULE_4__["default"](this.config);
+        this._errpanel = new _error_ErrorDisplay__WEBPACK_IMPORTED_MODULE_4__["default"](this.config, options.useCustomErrorPanel);
         this.initSystemEvent();
         this._readyState = "init" /* INIT */;
         //  3、如果配了资源地址，则启动数据加载
@@ -2138,7 +2138,7 @@ var RES = /** @class */ (function (_super) {
                 urls[res.url].push(res.id);
                 continue;
             }
-            if (res.type === 'audio') {
+            if (res.type === 'audio' || res.type === 'sound') {
                 // 微信wechat不能直接加载audio类型
                 // eslint-disable-next-line max-len
                 loader.add(id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuff' });
@@ -9150,28 +9150,30 @@ __webpack_require__.r(__webpack_exports__);
  *  3、可配置不使用内置Error，外部可根据API抛出的异常自定义显示Error信息。
  */
 var ErrorDisplay = /** @class */ (function () {
-    function ErrorDisplay(config) {
+    function ErrorDisplay(config, useCustomErrorPanel) {
         this._config = config;
         this._showCode = '';
-        this._errPanel = document.createElement("div");
-        this._errPanel.style.background = 'rgba(0,0,0,0.8)';
-        this._errPanel.style.position = 'absolute';
-        this._errPanel.style.width = '100%';
-        this._errPanel.style.height = '100%';
-        this._errPanel.style.zIndex = '8088';
-        this._errPanel.style.display = 'none';
-        var _span = document.createElement("span");
-        _span.style.display = 'table-cell';
-        _span.style.verticalAlign = 'middle';
-        _span.style.textAlign = 'center';
-        _span.style.color = '#eee';
-        this._errPanel.appendChild(_span);
-        this._config.container.appendChild(this._errPanel);
-        this._config.i18n.addListener("state" /* STATE */, this.onChange, this);
+        if (useCustomErrorPanel) {
+            this._errPanel = document.createElement('div');
+            this._errPanel.style.background = 'rgba(0,0,0,0.8)';
+            this._errPanel.style.position = 'absolute';
+            this._errPanel.style.width = '100%';
+            this._errPanel.style.height = '100%';
+            this._errPanel.style.zIndex = '8088';
+            this._errPanel.style.display = 'none';
+            var _span = document.createElement('span');
+            _span.style.display = 'table-cell';
+            _span.style.verticalAlign = 'middle';
+            _span.style.textAlign = 'center';
+            _span.style.color = '#eee';
+            this._errPanel.appendChild(_span);
+            this._config.container.appendChild(this._errPanel);
+            this._config.i18n.addListener("state" /* STATE */, this.onChange, this);
+        }
     }
     ErrorDisplay.prototype.setMessage = function (code, data) {
         // mark: need check code is supported
-        if (code) {
+        if (code && this._errPanel) {
             this._showCode = code;
             this._errPanel.style.display = 'table';
             var _span = this._errPanel.children[0];
@@ -9183,11 +9185,13 @@ var ErrorDisplay = /** @class */ (function () {
         }
     };
     ErrorDisplay.prototype.getText = function (code, data) {
-        return this._config.i18n.t(code, data) + ' #' + code;
+        return this._config.i18n.t(code, data) + " #" + code;
     };
     ErrorDisplay.prototype.close = function () {
         this._showCode = '';
-        this._errPanel.style.display = 'none';
+        if (this._errPanel) {
+            this._errPanel.style.display = 'none';
+        }
     };
     ErrorDisplay.prototype.onChange = function (evt) {
         if (this._showCode && evt.code === 'I18N.Property.Changed') {

@@ -492,7 +492,7 @@ export class RES extends vf.utils.EventEmitter {
                 continue;
             }
 
-            if (res.type === 'audio') {
+            if (res.type === 'audio' || res.type === 'sound') {
                 // 微信wechat不能直接加载audio类型
                 // eslint-disable-next-line max-len
                 loader.add(id, getUrl(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuff' });
