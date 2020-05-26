@@ -134,4 +134,8 @@ export interface IVFOptions {
      * 分辨率 devicePixelRatio
      */
     resolution?: number;
+    /**
+     * 开启错误面板
+     */
+    useCustomErrorPanel?: boolean;
 }

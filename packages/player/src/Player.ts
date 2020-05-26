@@ -76,7 +76,7 @@ export class Player implements EngineAPI {
             resolution: options.resolution,
         });
 
-        this._errpanel = new ErrorDisplay(this.config);
+        this._errpanel = new ErrorDisplay(this.config, options.useCustomErrorPanel);
 
         this.initSystemEvent();
 

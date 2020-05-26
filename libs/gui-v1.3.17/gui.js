@@ -3635,6 +3635,9 @@ var Audio = /** @class */ (function (_super) {
         /**
         * 需要上报的事件
         */
+        this.audio.on("canplay", function (e) {
+            _this.emit("canplay", e);
+        }, this);
         this.audio.on("canplaythrough", function (e) {
             _this.emit("canplaythrough", e);
         }, this);
@@ -4200,7 +4203,8 @@ var Circle = /** @class */ (function (_super) {
         graphics.lineStyle(this._lineWidth, this._lineColor);
         if (this._color !== undefined)
             graphics.beginFill(this._color);
-        graphics.drawCircle(this._anchorX || 0, this._anchorY || 0, this._radius);
+        var diam = this._radius * 2;
+        graphics.drawCircle(this._anchorX ? this._anchorX * diam : 0, this._anchorY ? diam * this._anchorY : 0, this._radius);
         graphics.endFill();
     };
     Circle.prototype.release = function () {
@@ -13876,13 +13880,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.3.17.1.3.17.1.3.17) ==1.3.17.1.3.17.1.3.17;
+//     return this.lastIndexOf(word, pos1.3.19.1.3.19.1.3.19) ==1.3.19.1.3.19.1.3.19;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.3.17";
+window.vf.gui.version = "1.3.19";
 
 
 /***/ })
