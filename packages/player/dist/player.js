@@ -1072,6 +1072,7 @@ var Config = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this._vfvars = {};
         _this._plugs = [];
+        _this.realFPS = true;
         _this._container = options.container;
         _this.uuid = vf.utils.uid();
         _this._id = options.id || _this.createRandomId();
@@ -1107,6 +1108,7 @@ var Config = /** @class */ (function (_super) {
         }
         _this._language = options.language || vf.utils.getSystemInfo().language;
         _this._i18n = new _I18N__WEBPACK_IMPORTED_MODULE_1__["default"](_this._language);
+        _this.realFPS = options.realFPS === false ? false : true;
         return _this;
     }
     Object.defineProperty(Config.prototype, "container", {
@@ -2081,7 +2083,8 @@ var RES = /** @class */ (function (_super) {
             }
         }
         if (customData.animations) {
-            var animation = new _animation_Animation__WEBPACK_IMPORTED_MODULE_4__["Animation"](vfComponent, customData.animations, this.data.fps);
+            var realFPS = this.stage.config.realFPS;
+            var animation = new _animation_Animation__WEBPACK_IMPORTED_MODULE_4__["Animation"](vfComponent, customData.animations, this.data.fps, realFPS);
             vfComponent.animation = animation;
         }
         return vfComponent;
@@ -6477,8 +6480,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var Animation = /** @class */ (function () {
-    function Animation(component, data, fps) {
+    function Animation(component, data, fps, realFPS) {
         if (fps === void 0) { fps = 30; }
+        if (realFPS === void 0) { realFPS = true; }
         this.animationMap = {};
         this.animationConfig = {};
         this.status = 0 /* STOP */;
@@ -6500,6 +6504,7 @@ var Animation = /** @class */ (function () {
         this._curPlayTimes = 0;
         this.component = component;
         this.data = data;
+        this.realFPS = realFPS;
         if (fps > 0) {
             this.fps = fps;
         }
