@@ -669,6 +669,12 @@ var Player = /** @class */ (function () {
             });
         });
     };
+    Player.prototype.playData = function (src, data) {
+        if (data) {
+            this.config.conversionData = data;
+        }
+        this.play(src);
+    };
     Player.prototype.pause = function () {
         if (this.stage) {
             this.stage.pause();

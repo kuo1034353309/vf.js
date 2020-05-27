@@ -95,6 +95,14 @@ export class Player implements EngineAPI {
         this.loadData(src);
     }
 
+    public playData(src?: any, data?: any) {
+        if (data) {
+            this.config.conversionData = data;
+        }
+
+        this.play(src);
+    }
+
     public pause(): void {
         if (this.stage) {
             this.stage.pause();
