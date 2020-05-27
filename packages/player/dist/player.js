@@ -625,6 +625,7 @@ var Player = /** @class */ (function () {
             //
         };
         //  1. 初始化配置
+        this.option = options;
         this.config = new _core_Config__WEBPACK_IMPORTED_MODULE_3__["default"](options);
         var config = this.config;
         // eslint-disable-next-line no-console
@@ -721,6 +722,7 @@ var Player = /** @class */ (function () {
         // if (vf.sound) {
         //     vf.sound.close();
         // }
+        this.option = null;
         this.config.systemEvent.removeAllListeners();
         if (this.stage) {
             this.stage.dispose();
@@ -738,13 +740,21 @@ var Player = /** @class */ (function () {
         event.on("status" /* STATUS */, this.onStatus, this);
     };
     Player.prototype.reload = function () {
-        this.config.systemEvent.removeAllListeners();
+        var config = this.config;
+        config.systemEvent.removeAllListeners();
         if (this.stage) {
             this.stage.dispose();
         }
         if (this.app) {
             this.app.destroy(true, { children: true, texture: true, baseTexture: true });
         }
+        this.app = new vf.Application({
+            backgroundColor: parseInt(config.bgcolor || '0', 16),
+            transparent: config.wmode === 'transparent',
+            antialias: true,
+            resolution: this.option.resolution,
+            forceCanvas: this.option.forceCanvas,
+        });
         this.initSystemEvent();
     };
     /**

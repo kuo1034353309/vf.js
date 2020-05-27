@@ -59,8 +59,11 @@ export class Player implements EngineAPI {
      */
     private config: Config;
 
+    private option: IVFOptions;
+
     constructor(options: IVFOptions) {
         //  1. 初始化配置
+        this.option = options;
         this.config = new Config(options);
         const config = this.config;
 
@@ -156,6 +159,7 @@ export class Player implements EngineAPI {
         // if (vf.sound) {
         //     vf.sound.close();
         // }
+        this.option = null as any;
 
         this.config.systemEvent.removeAllListeners();
 
@@ -222,7 +226,10 @@ export class Player implements EngineAPI {
     }
 
     private reload(): void {
-        this.config.systemEvent.removeAllListeners();
+
+        const config = this.config;
+
+        config.systemEvent.removeAllListeners();
 
         if (this.stage) {
             this.stage.dispose();
@@ -231,6 +238,14 @@ export class Player implements EngineAPI {
         if (this.app) {
             this.app.destroy(true, { children: true, texture: true, baseTexture: true });
         }
+
+        this.app = new vf.Application({
+            backgroundColor: parseInt(config.bgcolor || '0', 16),
+            transparent: config.wmode === 'transparent',
+            antialias: true,
+            resolution: this.option.resolution,
+            forceCanvas: this.option.forceCanvas,
+        });
 
         this.initSystemEvent();
     }
