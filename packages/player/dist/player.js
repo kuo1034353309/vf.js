@@ -636,6 +636,7 @@ var Player = /** @class */ (function () {
             transparent: config.wmode === 'transparent',
             antialias: true,
             resolution: options.resolution,
+            forceCanvas: options.forceCanvas,
         });
         this._errpanel = new _error_ErrorDisplay__WEBPACK_IMPORTED_MODULE_4__["default"](this.config, options.useCustomErrorPanel);
         this.initSystemEvent();
@@ -718,6 +719,7 @@ var Player = /** @class */ (function () {
         if (this.stage) {
             this.stage.dispose();
         }
+        vf.AudioEngine.Ins().dispose();
         if (this.app && this.app.stage) {
             this.app.destroy(removeView, { children: true, texture: true, baseTexture: true });
         }

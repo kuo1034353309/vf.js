@@ -74,6 +74,7 @@ export class Player implements EngineAPI {
             transparent: config.wmode === 'transparent',
             antialias: true,
             resolution: options.resolution,
+            forceCanvas: options.forceCanvas,
         });
 
         this._errpanel = new ErrorDisplay(this.config, options.useCustomErrorPanel);
@@ -153,7 +154,7 @@ export class Player implements EngineAPI {
         if (this.stage) {
             this.stage.dispose();
         }
-
+        vf.AudioEngine.Ins().dispose();
         if (this.app && this.app.stage) {
             this.app.destroy(removeView, { children: true, texture: true, baseTexture: true });
         }

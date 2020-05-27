@@ -11,7 +11,7 @@ export default class ErrorDisplay {
     private _config: Config;
     private _errPanel?: HTMLElement;
     private _showCode: string;
-    constructor(config: Config,useCustomErrorPanel?: boolean) {
+    constructor(config: Config, useCustomErrorPanel?: boolean) {
         this._config = config;
         this._showCode = '';
         if (useCustomErrorPanel) {

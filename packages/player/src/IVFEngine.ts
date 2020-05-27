@@ -135,6 +135,10 @@ export interface IVFOptions {
      */
     resolution?: number;
     /**
+     * 强制使用Canvas 渲染
+     */
+    forceCanvas: boolean;
+    /**
      * 开启错误面板
      */
     useCustomErrorPanel?: boolean;
