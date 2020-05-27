@@ -8601,6 +8601,9 @@ var VFStage = /** @class */ (function (_super) {
          */
         _this.plugs = new Map();
         _this.status = STAGE_STATUS.NONE;
+        if (!vf.Ticker.shared.started) {
+            vf.Ticker.shared.start();
+        }
         _this.data = data;
         _this.config = config;
         _this.player = player;
@@ -8685,6 +8688,7 @@ var VFStage = /** @class */ (function (_super) {
         if (this.app && this.app.ticker) {
             this.app.ticker.remove(this.onGUITickerUpdata, this);
             this.app.ticker.stop();
+            vf.Ticker.shared.stop();
             // this.app.ticker.destroy();
         }
         if (this.res) {

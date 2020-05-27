@@ -44,6 +44,9 @@ export class VFStage extends vf.gui.Stage {
     constructor(data: IVFDataV1, config: Config, player: Player) {
 
         super(config.width, config.height);
+        if (!vf.Ticker.shared.started) {
+            vf.Ticker.shared.start();
+        }
         this.data = data;
         this.config = config;
         this.player = player;
@@ -131,6 +134,7 @@ export class VFStage extends vf.gui.Stage {
         if (this.app && this.app.ticker) {
             this.app.ticker.remove(this.onGUITickerUpdata, this);
             this.app.ticker.stop();
+            vf.Ticker.shared.stop();
             // this.app.ticker.destroy();
         }
         if (this.res) {
