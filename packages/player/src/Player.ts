@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
 import { VFStage } from './display/VFStage';
-import {calculateUpdatePlayerSize, getBoundingClientRect } from './utils/CalculatePlayerSize';
+import { calculateUpdatePlayerSize, getBoundingClientRect } from './utils/CalculatePlayerSize';
 import importScript from './utils/ImportScript';
 import IEvent from './event/IEvent';
 import { IVFOptions, EngineAPI } from './IVFEngine';
