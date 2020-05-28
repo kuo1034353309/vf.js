@@ -113,12 +113,13 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************!*\
   !*** ./packages/launcher/src/Launcher.ts ***!
   \*******************************************/
-/*! exports provided: createVF */
+/*! exports provided: createVF, deleteVF */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createVF", function() { return createVF; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteVF", function() { return deleteVF; });
 /* harmony import */ var _assets_loading2_svg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../assets/loading2.svg */ "./assets/loading2.svg");
 
 /**
@@ -133,9 +134,9 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
-        this.version = "0.3.31";
+        this.version = "0.4.0";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "2020-5-21 8:47:12 PM";
+        this.buildInfo = "5/28/2020, 3:50:20 PM";
         this._extendsLibsUrl = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
@@ -216,12 +217,15 @@ var VIPKIDLauncher = /** @class */ (function () {
         if (this._config.debug) {
             libs.push(this.getLibUrl("https://s.vipkidstatic.com/vf/engine/debug/vconsole.min.js"));
         }
-        libs.push(this.getLibUrl("vf-v5.2.21-v14", cdn, 'vf'));
+        if (this._config.showFPS) {
+            libs.push(this.getLibUrl("https://s.vipkidstatic.com/vf/engine/debug/stats.min.js"));
+        }
+        libs.push(this.getLibUrl("vf-v5.2.4-v25", cdn, 'vf'));
         extendsLibsUrl.forEach(function (value) {
             libs.push(_this.getLibUrl(value));
         });
-        libs.push(this.getLibUrl("gui-v1.3.15", cdn, 'gui'));
-        libs.push(this.getLibUrl("player-v" + "0.3.31", cdn, 'player'));
+        libs.push(this.getLibUrl("gui-v1.3.17", cdn, 'gui'));
+        libs.push(this.getLibUrl("player-v" + "0.4.0", cdn, 'player'));
         libs.forEach(function (value) {
             // eslint-disable-next-line eqeqeq
             if (document.getElementById(value.version) == null) {
@@ -313,7 +317,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             script.setAttribute('name', 'vf-script');
             script.type = 'text/javascript';
             script.id = item.version;
-            script.title = "0.3.31";
+            script.title = "0.4.0";
             script.async = false;
             script.src = item.url;
             script.addEventListener('load', this.onJsComplete.bind(this), false);
@@ -364,6 +368,18 @@ var VIPKIDLauncher = /** @class */ (function () {
                 // eslint-disable-next-line no-new
                 new window.VConsole();
             }
+            if (this._config.showFPS) {
+                var stats_1 = new window.Stats();
+                stats_1.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+                document.body.appendChild(stats_1.dom);
+                var animate_1 = function () {
+                    stats_1.begin();
+                    // monitored code goes here
+                    stats_1.end();
+                    requestAnimationFrame(animate_1);
+                };
+                requestAnimationFrame(animate_1);
+            }
             // eslint-disable-next-line no-undef
             vf.utils.skipHello();
             var player = new window['vf']['player']['Player'](this._config);
@@ -379,7 +395,7 @@ var VIPKIDLauncher = /** @class */ (function () {
 }());
 function createVF(options, completeCall, errorCall) {
     var scripts = document.getElementsByName('vf-script');
-    var version = "0.3.31";
+    var version = "0.4.0";
     if (scripts.length > 0 && scripts[0].title !== version) {
         scripts.forEach(function (value) {
             if (value.parentNode) {
@@ -392,6 +408,14 @@ function createVF(options, completeCall, errorCall) {
     var launcher = new VIPKIDLauncher(options, completeCall, errorCall);
     launcher.debugGuiPath = options.debugGuiPath;
 }
+function deleteVF() {
+    var list = document.getElementsByName('vf-script');
+    while (list.length) {
+        list[0].remove();
+    }
+    delete window.vf;
+    delete window.PIXI;
+}
 
 
 /***/ }),
@@ -400,13 +424,15 @@ function createVF(options, completeCall, errorCall) {
 /*!****************************************!*\
   !*** ./packages/launcher/src/index.ts ***!
   \****************************************/
-/*! exports provided: createVF */
+/*! exports provided: createVF, deleteVF */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Launcher__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Launcher */ "./packages/launcher/src/Launcher.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createVF", function() { return _Launcher__WEBPACK_IMPORTED_MODULE_0__["createVF"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "deleteVF", function() { return _Launcher__WEBPACK_IMPORTED_MODULE_0__["deleteVF"]; });
 
 
 

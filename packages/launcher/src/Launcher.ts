@@ -136,6 +136,10 @@ class VIPKIDLauncher {
             libs.push(this.getLibUrl(`https://s.vipkidstatic.com/vf/engine/debug/vconsole.min.js`));
         }
 
+        if (this._config.showFPS) {
+            libs.push(this.getLibUrl(`https://s.vipkidstatic.com/vf/engine/debug/stats.min.js`));
+        }
+
         libs.push(this.getLibUrl(VFVERSION, cdn, 'vf'));
 
         extendsLibsUrl.forEach((value) => {
@@ -316,6 +320,21 @@ class VIPKIDLauncher {
                 // eslint-disable-next-line no-new
                 new (window as any).VConsole();
             }
+            if (this._config.showFPS) {
+                const stats = new (window as any).Stats();
+
+                stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+                document.body.appendChild(stats.dom);
+
+                const animate = () => {
+                    stats.begin();
+                    // monitored code goes here
+                    stats.end();
+                    requestAnimationFrame(animate);
+                };
+
+                requestAnimationFrame(animate);
+            }
             // eslint-disable-next-line no-undef
             vf.utils.skipHello();
             const player = new (window as any)['vf']['player']['Player'](this._config);
@@ -347,4 +366,14 @@ export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) 
     const launcher = new VIPKIDLauncher(options, completeCall, errorCall);
 
     launcher.debugGuiPath = (options as any).debugGuiPath;
+}
+
+export function deleteVF() {
+    const list = document.getElementsByName('vf-script');
+
+    while (list.length) {
+        list[0].remove();
+    }
+    delete window.vf;
+    delete (window as any).PIXI;
 }

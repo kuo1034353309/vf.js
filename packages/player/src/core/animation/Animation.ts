@@ -36,9 +36,10 @@ export class Animation {
         private curAnimationTotalTime: number = 0;
         private _curPlayTimes: number = 0;
 
-        constructor(component: VFComponent, data: IAnimation[], fps: number = 30) {
+        constructor(component: VFComponent, data: IAnimation[], fps: number = 30, realFPS: boolean = true) {
             this.component = component;
             this.data = data;
+            this.realFPS = realFPS;
             if (fps > 0) {
                 this.fps = fps;
             }

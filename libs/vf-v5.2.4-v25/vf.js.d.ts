@@ -41,7 +41,21 @@ declare namespace vf {
      */
     namespace filters {
         /**
-         * @param {number} [alpha=1] Amount of alpha from 0 to 1, where 0 is transparent
+         * Simplest filter - applies alpha.
+         *
+         * Use this instead of Container's alpha property to avoid visual layering of individual elements.
+         * AlphaFilter applies alpha evenly across the entire display object and any opaque elements it contains.
+         * If elements are not opaque, they will blend with each other anyway.
+         *
+         * Very handy if you want to use common features of all filters:
+         *
+         * 1. Assign a blendMode to this filter, blend all elements inside display object with background.
+         *
+         * 2. To use clipping in display coordinates, assign a filterArea to the same container that has this filter.
+         *
+         * @class
+         * @extends vf.Filter
+         * @memberof vf.filters
          */
         class AlphaFilter extends vf.Filter {
             constructor(alpha?: number);
@@ -97,12 +111,12 @@ declare namespace vf {
              * @param {vf.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
              * @param {vf.RenderTexture} input - The input render target.
              * @param {vf.RenderTexture} output - The target to output to.
-             * @param {vf.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
+             * @param {boolean} clear - Should the output be cleared before rendering to it
              * @param {object} [currentState] - It's current state of filter.
              *        There are some useful properties in the currentState :
              *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
              */
-            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clearMode: vf.CLEAR_MODES, currentState?: any): void;
+            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clear: boolean, currentState?: any): void;
             /**
              * Sets the blendmode of the filter
              *
@@ -124,10 +138,13 @@ declare namespace vf {
             readonly uniforms: any;
         }
         /**
-         * @param {number} [strength=8] - The strength of the blur filter.
-         * @param {number} [quality=4] - The quality of the blur filter.
-         * @param {number} [resolution=1] - The resolution of the blur filter.
-         * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
+         * The BlurFilter applies a Gaussian blur to an object.
+         *
+         * The strength of the blur can be set for the x-axis and y-axis separately.
+         *
+         * @class
+         * @extends vf.Filter
+         * @memberof vf.filters
          */
         class BlurFilter extends vf.Filter {
             constructor(strength?: number, quality?: number, resolution?: number, kernelSize?: number);
@@ -137,9 +154,8 @@ declare namespace vf {
              * @param {vf.systems.FilterSystem} filterManager - The manager.
              * @param {vf.RenderTexture} input - The input target.
              * @param {vf.RenderTexture} output - The output target.
-             * @param {vf.CLEAR_MODES} clearMode - How to clear
              */
-            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clearMode: vf.CLEAR_MODES): void;
+            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture): void;
             /**
              * Sets the strength of both the blurX and blurY properties simultaneously
              *
@@ -178,7 +194,7 @@ declare namespace vf {
             /**
              * If set to true the edge of the target will be clamped
              *
-             * @member {boolean}
+             * @member {bool}
              * @default false
              */
             repeatEdgePixels: boolean;
@@ -235,23 +251,14 @@ declare namespace vf {
             readonly uniforms: any;
         }
         /**
-         * @param {boolean} horizontal - Do pass along the x-axis (`true`) or y-axis (`false`).
-         * @param {number} [strength=8] - The strength of the blur filter.
-         * @param {number} [quality=4] - The quality of the blur filter.
-         * @param {number} [resolution=1] - The resolution of the blur filter.
-         * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
+         * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
+         *
+         * @class
+         * @extends vf.Filter
+         * @memberof vf.filters
          */
         class BlurFilterPass extends vf.Filter {
-            constructor(horizontal: boolean, strength?: number, quality?: number, resolution?: number, kernelSize?: number);
-            /**
-             * Applies the filter.
-             *
-             * @param {vf.systems.FilterSystem} filterManager - The manager.
-             * @param {vf.RenderTexture} input - The input target.
-             * @param {vf.RenderTexture} output - The output target.
-             * @param {vf.CLEAR_MODES} clearMode - How to clear
-             */
-            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clearMode: vf.CLEAR_MODES): void;
+            constructor(horizontal: boolean, strength: number, quality: number, resolution: number, kernelSize?: number);
             /**
              * Sets the strength of both the blur.
              *
@@ -307,6 +314,18 @@ declare namespace vf {
              */
             state: vf.State;
             /**
+             * Applies the filter
+             *
+             * @param {vf.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
+             * @param {vf.RenderTexture} input - The input render target.
+             * @param {vf.RenderTexture} output - The target to output to.
+             * @param {boolean} clear - Should the output be cleared before rendering to it
+             * @param {object} [currentState] - It's current state of filter.
+             *        There are some useful properties in the currentState :
+             *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
+             */
+            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clear: boolean, currentState?: any): void;
+            /**
              * Sets the blendmode of the filter
              *
              * @member {number}
@@ -326,7 +345,23 @@ declare namespace vf {
              */
             readonly uniforms: any;
         }
+        /**
+         * The ColorMatrixFilter class lets you apply a 5x4 matrix transformation on the RGBA
+         * color and alpha values of every pixel on your displayObject to produce a result
+         * with a new set of RGBA color and alpha values. It's pretty powerful!
+         *
+         * ```js
+         *  let colorMatrix = new vf.filters.ColorMatrixFilter();
+         *  container.filters = [colorMatrix];
+         *  colorMatrix.contrast(2);
+         * ```
+         * @author Clément Chenebault <clement@goodboydigital.com>
+         * @class
+         * @extends vf.Filter
+         * @memberof vf.filters
+         */
         class ColorMatrixFilter extends vf.Filter {
+            constructor();
             /**
              * Transforms current matrix and set the new one
              *
@@ -381,10 +416,10 @@ declare namespace vf {
              * Increase saturation : increase contrast, brightness, and sharpness
              *
              * @param {number} amount - The saturation amount (0-1)
-             * @param {boolean} [multiply] - if true, current matrix and matrix are multiplied. If false,
+             * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
              *  just set the current matrix with @param matrix
              */
-            saturate(amount: number, multiply?: boolean): void;
+            saturate(amount: number, multiply: boolean): void;
             /**
              * Desaturate image (remove color)
              *
@@ -453,12 +488,12 @@ declare namespace vf {
              *
              * @param {number} desaturation - Tone values.
              * @param {number} toned - Tone values.
-             * @param {number} lightColor - Tone values, example: `0xFFE580`
-             * @param {number} darkColor - Tone values, example: `0xFFE580`
+             * @param {string} lightColor - Tone values, example: `0xFFE580`
+             * @param {string} darkColor - Tone values, example: `0xFFE580`
              * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
              *  just set the current matrix with @param matrix
              */
-            colorTone(desaturation: number, toned: number, lightColor: number, darkColor: number, multiply: boolean): void;
+            colorTone(desaturation: number, toned: number, lightColor: string, darkColor: string, multiply: boolean): void;
             /**
              * Night effect
              *
@@ -554,12 +589,12 @@ declare namespace vf {
              * @param {vf.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
              * @param {vf.RenderTexture} input - The input render target.
              * @param {vf.RenderTexture} output - The target to output to.
-             * @param {vf.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
+             * @param {boolean} clear - Should the output be cleared before rendering to it
              * @param {object} [currentState] - It's current state of filter.
              *        There are some useful properties in the currentState :
              *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
              */
-            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clearMode: vf.CLEAR_MODES, currentState?: any): void;
+            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clear: boolean, currentState?: any): void;
             /**
              * Sets the blendmode of the filter
              *
@@ -581,8 +616,22 @@ declare namespace vf {
             readonly uniforms: any;
         }
         /**
-         * @param {vf.Sprite} sprite - The sprite used for the displacement map. (make sure its added to the scene!)
-         * @param {number} [scale] - The scale of the displacement
+         * The DisplacementFilter class uses the pixel values from the specified texture
+         * (called the displacement map) to perform a displacement of an object.
+         *
+         * You can use this filter to apply all manor of crazy warping effects.
+         * Currently the `r` property of the texture is used to offset the `x`
+         * and the `g` property of the texture is used to offset the `y`.
+         *
+         * The way it works is it uses the values of the displacement map to look up the
+         * correct pixels to output. This means it's not technically moving the original.
+         * Instead, it's starting at the output and asking "which pixel from the original goes here".
+         * For example, if a displacement map pixel has `red = 1` and the filter scale is `20`,
+         * this filter will output the pixel approximately 20 pixels to the right of the original.
+         *
+         * @class
+         * @extends vf.Filter
+         * @memberof vf.filters
          */
         class DisplacementFilter extends vf.Filter {
             constructor(sprite: vf.Sprite, scale?: number);
@@ -597,9 +646,9 @@ declare namespace vf {
              * @param {vf.systems.FilterSystem} filterManager - The manager.
              * @param {vf.RenderTexture} input - The input target.
              * @param {vf.RenderTexture} output - The output target.
-             * @param {vf.CLEAR_MODES} clearMode - clearMode.
+             * @param {boolean} clear - Should the output be cleared before rendering to it.
              */
-            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clearMode: vf.CLEAR_MODES): void;
+            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clear: boolean): void;
             /**
              * The texture used for the displacement map. Must be power of 2 sized texture.
              *
@@ -665,7 +714,19 @@ declare namespace vf {
              */
             readonly uniforms: any;
         }
+        /**
+         * Basic FXAA (Fast Approximate Anti-Aliasing) implementation based on the code on geeks3d.com
+         * with the modification that the texture2DLod stuff was removed since it is unsupported by WebGL.
+         *
+         * @see https://github.com/mitsuhiko/webgl-meincraft
+         *
+         * @class
+         * @extends vf.Filter
+         * @memberof vf.filters
+         *
+         */
         class FXAAFilter extends vf.Filter {
+            constructor();
             /**
              * The padding of the filter. Some filters require extra space to breath such as a blur.
              * Increasing this will add extra width and height to the bounds of the object that the
@@ -711,12 +772,12 @@ declare namespace vf {
              * @param {vf.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
              * @param {vf.RenderTexture} input - The input render target.
              * @param {vf.RenderTexture} output - The target to output to.
-             * @param {vf.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
+             * @param {boolean} clear - Should the output be cleared before rendering to it
              * @param {object} [currentState] - It's current state of filter.
              *        There are some useful properties in the currentState :
              *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
              */
-            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clearMode: vf.CLEAR_MODES, currentState?: any): void;
+            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clear: boolean, currentState?: any): void;
             /**
              * Sets the blendmode of the filter
              *
@@ -738,8 +799,11 @@ declare namespace vf {
             readonly uniforms: any;
         }
         /**
-         * @param {number} [noise=0.5] - The noise intensity, should be a normalized value in the range [0, 1].
-         * @param {number} [seed] - A random seed for the noise generation. Default is `Math.random()`.
+         * A Noise effect filter.
+         *
+         * @class
+         * @extends vf.Filter
+         * @memberof vf.filters
          */
         class NoiseFilter extends vf.Filter {
             constructor(noise?: number, seed?: number);
@@ -801,12 +865,12 @@ declare namespace vf {
              * @param {vf.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
              * @param {vf.RenderTexture} input - The input render target.
              * @param {vf.RenderTexture} output - The target to output to.
-             * @param {vf.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
+             * @param {boolean} clear - Should the output be cleared before rendering to it
              * @param {object} [currentState] - It's current state of filter.
              *        There are some useful properties in the currentState :
              *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
              */
-            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clearMode: vf.CLEAR_MODES, currentState?: any): void;
+            apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clear: boolean, currentState?: any): void;
             /**
              * Sets the blendmode of the filter
              *
@@ -837,7 +901,16 @@ declare namespace vf {
      */
     namespace accessibility {
         /**
-         * @param {vf.CanvasRenderer|vf.Renderer} renderer - A reference to the current renderer
+         * The Accessibility manager recreates the ability to tab and have content read by screen readers.
+         * This is very important as it can possibly help people with disabilities access PixiJS content.
+         *
+         * A DisplayObject can be made accessible just like it can be made interactive. This manager will map the
+         * events as if the mouse was being used, minimizing the effort required to implement.
+         *
+         * An instance of this class is automatically created by default, and can be found at `renderer.plugins.accessibility`
+         *
+         * @class
+         * @memberof vf.accessibility
          */
         class AccessibilityManager {
             constructor(renderer: vf.CanvasRenderer | vf.Renderer);
@@ -855,13 +928,13 @@ declare namespace vf {
             renderer: vf.AbstractRenderer;
             /**
              * A flag
-             * @member {boolean}
+             * @type {boolean}
              * @readonly
              */
             readonly isActive: boolean;
             /**
              * A flag
-             * @member {boolean}
+             * @type {boolean}
              * @readonly
              */
             readonly isMobileAccessibility: boolean;
@@ -869,9 +942,9 @@ declare namespace vf {
              * private function that will visually add the information to the
              * accessability div
              *
-             * @param {HTMLElement} div
+             * @param {HTMLDivElement} div
              */
-            updateDebugHTML(div: HTMLElement): void;
+            updateDebugHTML(div: HTMLDivElement): void;
             /**
              * Adjust the hit area based on the bounds of a display object
              *
@@ -886,34 +959,22 @@ declare namespace vf {
         }
     }
     /**
-     * @param {object} [options] - The optional renderer parameters.
-     * @param {boolean} [options.autoStart=true] - Automatically starts the rendering after the construction.
-     * **Note**: Setting this parameter to false does NOT stop the shared ticker even if you set
-     *     options.sharedTicker to true in case that it is already started. Stop it by your own.
-     * @param {number} [options.width=800] - The width of the renderers view.
-     * @param {number} [options.height=600] - The height of the renderers view.
-     * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.transparent=false] - If the render view is transparent.
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1.
-     * @param {boolean} [options.antialias=false] - Sets antialias
-     * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation, enable this if you
-     *  need to call toDataUrl on the WebGL context.
-     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2.
-     * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
-     *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
-     *   it is ignored.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
-     *   not before the new render pass.
-     * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
-     *  for devices with dual graphics card. **(WebGL only)**.
-     * @param {boolean} [options.sharedTicker=false] - `true` to use vf.Ticker.shared, `false` to create new ticker.
-     *  If set to false, you cannot register a handler to occur before anything that runs on the shared ticker.
-     *  The system ticker will always run before both the shared ticker and the app ticker.
-     * @param {boolean} [options.sharedLoader=false] - `true` to use vf.Loader.shared, `false` to create new Loader.
-     * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
+     * Convenience class to create a new vf application.
+     *
+     * This class automatically creates the renderer, ticker and root container.
+     *
+     * @example
+     * // Create the application
+     * const app = new vf.Application();
+     *
+     * // Add the view to the DOM
+     * document.body.appendChild(app.view);
+     *
+     * // ex, add display objects
+     * app.stage.addChild(vf.Sprite.from('something.png'));
+     *
+     * @class
+     * @memberof vf
      */
     class Application {
         constructor(options?: {
@@ -929,6 +990,7 @@ declare namespace vf {
             forceCanvas?: boolean;
             backgroundColor?: number;
             clearBeforeRender?: boolean;
+            forceFXAA?: boolean;
             powerPreference?: string;
             sharedTicker?: boolean;
             sharedLoader?: boolean;
@@ -984,24 +1046,15 @@ declare namespace vf {
             baseTexture?: boolean;
         }): void;
         /**
-         * The HTML element or window to automatically resize the
-         * renderer's view element to match width and height.
+         * The element or window to resize the application to.
          * @type {Window|HTMLElement}
          * @name resizeTo
          * @memberof vf.Application#
          */
         resizeTo: Window | HTMLElement;
         /**
-         * Resize is throttled, so it's
-         * safe to call this multiple times per frame and it'll
-         * only be called once.
-         * @method vf.Application#queueResize
-         */
-        queueResize(): void;
-        /**
-         * Execute an immediate resize on the renderer, this is not
-         * throttled and can be expensive to call many times in a row.
-         * Will resize only if `resizeTo` property is set.
+         * If `resizeTo` is set, calling this function
+         * will resize to the width and height of that element.
          * @method vf.Application#resize
          */
         resize(): void;
@@ -1048,9 +1101,13 @@ declare namespace vf {
         };
     }
     /**
-     * 不可实例化
+     * 负责在整个应用程序中播放，同步和分析声音。
+     * @class
+     * @extends vf.utils.EventEmitter
+     * @memberof vf
      */
     class AudioEngine extends vf.utils.EventEmitter {
+        constructor();
         /**
          * 当前存放的音频列表
          * @type {Map<string, vf.IAudio>}
@@ -1151,7 +1208,16 @@ declare namespace vf {
          */
         static type: any;
     }
+    /**
+     * HtmlAudio
+     *
+     *
+     * @class
+     * @extends vf.utils.EventEmitter
+     * @memberof vf
+     */
     class HtmlAudio extends vf.utils.EventEmitter {
+        constructor();
         /**
          * 完成播放一次后声音是否循环播放。
          * @default false
@@ -1196,11 +1262,10 @@ declare namespace vf {
          *
          *  await sound.play()
          *
-        * @param {number} [time] - 等待播放时间
-        * @param {number} [offset] - 声音的开始偏移值
-        * @param {number} [length] - 声音持续时间 
-        */
-        play(time?: number, offset?: number, length?: number): void;
+         * @param {number} [offset] - 声音的开始偏移值
+         * @param {number} [length] - 持续时间（以秒为单位）
+         */
+        play(offset?: number, length?: number): void;
         /**
          * 停止声音
          * @param time (optional) X秒后停止声音。默认情况下立即停止
@@ -1219,7 +1284,15 @@ declare namespace vf {
          */
         getAudioBuffer(): void;
     }
+    /**
+     * WebAudio
+     *
+     * @class
+     * @extends vf.utils.EventEmitter
+     * @memberof vf
+     */
     class WebAudio extends vf.utils.EventEmitter {
+        constructor();
         /**
          * 完成播放一次后声音是否循环播放。
          */
@@ -1228,6 +1301,10 @@ declare namespace vf {
          * 此声音当前是否播放。
          */
         _isPlaying: any;
+        /**
+         * 播放1，暂停2，停止3，卸载4
+         */
+        _readyState: any;
         /**
          * 获取当前音频的长度
          * @readonly
@@ -1253,11 +1330,11 @@ declare namespace vf {
          *
          *  await sound.play()
          *
-        * @param {number} [time] - 等待播放时间
-        * @param {number} [offset] - 声音的开始偏移值
-        * @param {number} [length] - 声音持续时间 
-        */
-       play(time?: number, offset?: number, length?: number): void;
+         * @param {number} [when] - 开始的等待时间
+         * @param {number} [offset] - 声音的开始偏移值
+         * @param {number} [length] - 持续时间（以秒为单位）
+         */
+        play(when?: number, offset?: number, length?: number): void;
         /**
          * 停止声音
          * @param time (optional) X秒后停止声音。默认情况下立即停止
@@ -1288,7 +1365,12 @@ declare namespace vf {
         connectToSoundTrackAudioNode(soundTrackAudioNode: any): void;
     }
     /**
-     * @param {vf.CanvasRenderer} renderer - A reference to the current renderer
+     * The extract manager provides functionality to export content from the renderers.
+     *
+     * An instance of this class is automatically created by default, and can be found at `renderer.plugins.extract`
+     *
+     * @class
+     * @memberof vf
      */
     class CanvasExtract {
         constructor(renderer: vf.CanvasRenderer);
@@ -1337,7 +1419,11 @@ declare namespace vf {
         destroy(): void;
     }
     /**
-     * @param {vf.CanvasRenderer} renderer - The current vf renderer.
+     * Renderer dedicated to drawing and batching graphics objects.
+     *
+     * @class
+     * @protected
+     * @memberof vf
      */
     class CanvasGraphicsRenderer {
         constructor(renderer: vf.CanvasRenderer);
@@ -1361,7 +1447,11 @@ declare namespace vf {
         destroy(): void;
     }
     /**
-     * @param {vf.CanvasRenderer} renderer - The renderer this downport works for
+     * Renderer dedicated to meshes.
+     *
+     * @class
+     * @protected
+     * @memberof vf
      */
     class CanvasMeshRenderer {
         constructor(renderer: vf.CanvasRenderer);
@@ -1378,7 +1468,16 @@ declare namespace vf {
         destroy(): void;
     }
     /**
-     * @param {vf.CanvasRenderer} renderer - A reference to the current renderer
+     * The prepare manager provides functionality to upload content to the GPU.
+     *
+     * This cannot be done directly for Canvas like in WebGL, but the effect can be achieved by drawing
+     * textures to an offline canvas. This draw call will force the texture to be moved onto the GPU.
+     *
+     * An instance of this class is automatically created by default, and can be found at `renderer.plugins.prepare`
+     *
+     * @class
+     * @extends vf.BasePrepare
+     * @memberof vf
      */
     class CanvasPrepare extends vf.BasePrepare {
         constructor(renderer: vf.CanvasRenderer);
@@ -1440,22 +1539,14 @@ declare namespace vf {
         add(item: vf.DisplayObject | vf.Container | vf.BaseTexture | vf.Texture | vf.Graphics | vf.Text | any): this;
     }
     /**
-     * @param {object} [options] - The optional renderer parameters
-     * @param {number} [options.width=800] - the width of the screen
-     * @param {number} [options.height=600] - the height of the screen
-     * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
-     * @param {boolean} [options.transparent=false] - If the render view is transparent, default false
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1
-     * @param {boolean} [options.antialias=false] - sets antialias
-     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer. The
-     *  resolution of the renderer retina would be 2.
-     * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
-     *  enable this if you need to call toDataUrl on the webgl context.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
-     *      not before the new render pass.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
+     * The CanvasRenderer draws the scene and all its content onto a 2d canvas.
+     *
+     * This renderer should be used for browsers that do not support WebGL.
+     * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything!
+     *
+     * @class
+     * @memberof vf
+     * @extends vf.AbstractRenderer
      */
     class CanvasRenderer extends vf.AbstractRenderer {
         constructor(options?: {
@@ -1761,11 +1852,11 @@ declare namespace vf {
          * Basically this method just needs a sprite and a color and tints the sprite with the given color.
          *
          * @memberof vf.canvasUtils
-         * @param {vf.Texture} texture - the sprite to tint
+         * @param {vf.Sprite} sprite - the sprite to tint
          * @param {number} color - the color to use to tint the sprite with
          * @return {HTMLCanvasElement} The tinted canvas
          */
-        function getTintedPattern(texture: vf.Texture, color: number): HTMLCanvasElement;
+        function getTintedPattern(sprite: vf.Sprite, color: number): HTMLCanvasElement;
         /**
          * Tint a texture using the 'multiply' operation.
          *
@@ -1822,9 +1913,21 @@ declare namespace vf {
          * @type {boolean}
          */
         var canUseMultiply: boolean;
+        /**
+         * The tinting method that will be used.
+         *
+         * @memberof vf.canvasUtils
+         * @type {Function}
+         */
+        function tintMethod(): void;
     }
     /**
-     * @param {vf.CanvasRenderer} renderer - The canvas renderer.
+     * A set of functions used to handle masking.
+     *
+     * Sprite masking is not supported on the CanvasRenderer.
+     *
+     * @class
+     * @memberof vf
      */
     class CanvasMaskManager {
         constructor(renderer: vf.CanvasRenderer);
@@ -1866,7 +1969,11 @@ declare namespace vf {
      */
     type ICanvasImageSource = HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap;
     /**
-     * @param {vf.Renderer} renderer -The renderer sprite this batch works for.
+     * Renderer dedicated to drawing and batching sprites.
+     *
+     * @class
+     * @protected
+     * @memberof vf
      */
     class CanvasSpriteRenderer {
         constructor(renderer: vf.Renderer);
@@ -1914,22 +2021,6 @@ declare namespace vf {
         UNKNOWN,
         WEBGL,
         CANVAS
-    }
-    /**
-     * Bitwise OR of masks that indicate the buffers to be cleared.
-     *
-     * @static
-     * @memberof vf
-     * @name BUFFER_BITS
-     * @enum {number}
-     * @property {number} COLOR - Indicates the buffers currently enabled for color writing.
-     * @property {number} DEPTH - Indicates the depth buffer.
-     * @property {number} STENCIL - Indicates the stencil buffer.
-     */
-    enum BUFFER_BITS {
-        COLOR,
-        DEPTH,
-        STENCIL
     }
     /**
      * Various blend modes supported by vf.
@@ -2197,28 +2288,6 @@ declare namespace vf {
         PMA
     }
     /**
-     * How to clear renderTextures in filter
-     *
-     * @name CLEAR_MODES
-     * @memberof vf
-     * @static
-     * @enum {number}
-     * @property {number} BLEND - Preserve the information in the texture, blend above
-     * @property {number} CLEAR - Must use `gl.clear` operation
-     * @property {number} BLIT - Clear or blit it, depends on device and level of paranoia
-     * @property {number} NO - Alias for BLEND, same as `false` in earlier versions
-     * @property {number} YES - Alias for CLEAR, same as `true` in earlier versions
-     * @property {number} AUTO - Alias for BLIT
-     */
-    enum CLEAR_MODES {
-        BLEND,
-        CLEAR,
-        BLIT,
-        NO,
-        YES,
-        AUTO
-    }
-    /**
      * The gc modes that are supported by pixi.
      *
      * The {@link vf.settings.GC_MODE} Garbage Collection mode for PixiJS textures is AUTO
@@ -2253,7 +2322,7 @@ declare namespace vf {
      * @property {string} MEDIUM='mediump'
      * @property {string} HIGH='highp'
      */
-    const enum PRECISION {
+    enum PRECISION {
         LOW,
         MEDIUM,
         HIGH
@@ -2278,43 +2347,13 @@ declare namespace vf {
         SPRITE
     }
     /**
-     * Constants for multi-sampling antialiasing.
+     * The AbstractRenderer is the base for a PixiJS Renderer. It is extended by the {@link vf.CanvasRenderer}
+     * and {@link vf.Renderer} which can be used for rendering a PixiJS scene.
      *
-     * @see vf.Framebuffer#multisample
-     *
-     * @name MSAA_QUALITY
+     * @abstract
+     * @class
+     * @extends vf.utils.EventEmitter
      * @memberof vf
-     * @static
-     * @enum {number}
-     * @property {number} NONE - No multisampling for this renderTexture
-     * @property {number} LOW - Try 2 samples
-     * @property {number} MEDIUM - Try 4 samples
-     * @property {number} HIGH - Try 8 samples
-     */
-    enum MSAA_QUALITY {
-        NONE,
-        LOW,
-        MEDIUM,
-        HIGH
-    }
-    /**
-     * @param {string} system - The name of the system this renderer is for.
-     * @param {object} [options] - The optional renderer parameters.
-     * @param {number} [options.width=800] - The width of the screen.
-     * @param {number} [options.height=600] - The height of the screen.
-     * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.transparent=false] - If the render view is transparent.
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1.
-     * @param {boolean} [options.antialias=false] - Sets antialias
-     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer. The
-     *  resolution of the renderer retina would be 2.
-     * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
-     *  enable this if you need to call toDataUrl on the WebGL context.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
-     *      not before the new render pass.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
      */
     class AbstractRenderer extends vf.utils.EventEmitter {
         constructor(system: string, options?: {
@@ -2493,27 +2532,16 @@ declare namespace vf {
         backgroundColor: number;
     }
     /**
-     * @param {object} [options] - The optional renderer parameters.
-     * @param {number} [options.width=800] - The width of the screen.
-     * @param {number} [options.height=600] - The height of the screen.
-     * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.transparent=false] - If the render view is transparent.
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1.
-     * @param {boolean} [options.antialias=false] - Sets antialias. If not available natively then FXAA
-     *  antialiasing is used.
-     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer.
-     *  The resolution of the renderer retina would be 2.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear
-     *  the canvas or not before the new render pass. If you wish to set this to false, you *must* set
-     *  preserveDrawingBuffer to `true`.
-     * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
-     *  enable this if you need to call toDataUrl on the WebGL context.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
-     * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
-     *  for devices with dual graphics card.
-     * @param {object} [options.context] If WebGL context already exists, all parameters must be taken from it.
+     * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
+     *
+     * This renderer should be used for browsers that support WebGL.
+     *
+     * This renderer works by automatically managing WebGLBatchesm, so no need for Sprite Batches or Sprite Clouds.
+     * Don't forget to add the view to your DOM or you will not see anything!
+     *
+     * @class
+     * @memberof vf
+     * @extends vf.AbstractRenderer
      */
     class Renderer extends vf.AbstractRenderer {
         constructor(options?: {
@@ -2523,6 +2551,7 @@ declare namespace vf {
             transparent?: boolean;
             autoDensity?: boolean;
             antialias?: boolean;
+            forceFXAA?: boolean;
             resolution?: number;
             clearBeforeRender?: boolean;
             preserveDrawingBuffer?: boolean;
@@ -2530,6 +2559,13 @@ declare namespace vf {
             powerPreference?: string;
             context?: any;
         });
+        /**
+         * The type of this renderer as a standardized const
+         *
+         * @member {number} vf.Renderer#type
+         * @see vf.RENDERER_TYPE
+         */
+        type: number;
         /**
          * WebGL context, set by the contextSystem (this.context)
          *
@@ -2692,6 +2728,24 @@ declare namespace vf {
          */
         destroy(removeView?: boolean): void;
         /**
+         * Collection of installed plugins. These are included by default in vf, but can be excluded
+         * by creating a custom build. Consult the README for more information about creating custom
+         * builds and excluding plugins.
+         * @name vf.Renderer#plugins
+         * @type {object}
+         * @readonly
+         * @property {vf.accessibility.AccessibilityManager} accessibility Support tabbing interactive elements.
+         * @property {vf.Extract} extract Extract image data from renderer.
+         * @property {vf.interaction.InteractionManager} interaction Handles mouse, touch and pointer events.
+         * @property {vf.Prepare} prepare Pre-render display objects.
+         */
+        readonly plugins: {
+            accessibility: vf.accessibility.AccessibilityManager;
+            extract: vf.Extract;
+            interaction: vf.interaction.InteractionManager;
+            prepare: vf.Prepare;
+        };
+        /**
          * Adds a plugin to the renderer.
          *
          * @method
@@ -2714,14 +2768,6 @@ declare namespace vf {
          * @readOnly
          */
         readonly options: any;
-        /**
-         * The type of the renderer.
-         *
-         * @member {number} vf.AbstractRenderer#type
-         * @default vf.RENDERER_TYPE.UNKNOWN
-         * @see vf.RENDERER_TYPE
-         */
-        type: number;
         /**
          * Measurements of the screen. (0, 0, screenWidth, screenHeight).
          *
@@ -2809,12 +2855,6 @@ declare namespace vf {
          */
         protected _lastObjectRendered: vf.DisplayObject;
         /**
-         * Collection of plugins.
-         * @readonly
-         * @member {object} vf.AbstractRenderer#plugins
-         */
-        readonly plugins: any;
-        /**
          * Initialize the plugins.
          *
          * @protected
@@ -2857,7 +2897,11 @@ declare namespace vf {
         backgroundColor: number;
     }
     /**
-     * @param {vf.Renderer} renderer - The renderer this manager works for.
+     * System is a base class used for extending systems used by the {@link vf.Renderer}
+     *
+     * @see vf.Renderer#addSystem
+     * @class
+     * @memberof vf
      */
     class System {
         constructor(renderer: vf.Renderer);
@@ -2895,8 +2939,10 @@ declare namespace vf {
      *   not before the new render pass.
      * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the renderer, retina would be 2
      * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
-     *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
+     *   option only is available when using **vf.js** or **@pixi/canvas-renderer** modules, otherwise
      *   it is ignored.
+     * @param {boolean} [options.forceFXAA=false] - forces FXAA antialiasing to be used over native.
+     *  FXAA is faster, but may not always look as great **webgl only**
      * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
      *  for devices with dual graphics card **webgl only**
      * @return {vf.Renderer|vf.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
@@ -2913,13 +2959,21 @@ declare namespace vf {
         clearBeforeRender?: boolean;
         resolution?: number;
         forceCanvas?: boolean;
+        forceFXAA?: boolean;
         powerPreference?: string;
     }): vf.Renderer | vf.CanvasRenderer;
     /**
-     * This will hook onto the renderer's `contextChange`
-     * and `prerender` signals.
+     * Renderer dedicated to drawing and batching sprites.
      *
-     * @param {vf.Renderer} renderer - The renderer this works for.
+     * This is the default batch renderer. It buffers objects
+     * with texture-based geometries and renders them in
+     * batches. It uploads multiple textures to the GPU to
+     * reduce to the number of draw calls.
+     *
+     * @class
+     * @protected
+     * @memberof vf
+     * @extends vf.ObjectRenderer
      */
     class AbstractBatchRenderer extends vf.ObjectRenderer {
         constructor(renderer: vf.Renderer);
@@ -3097,7 +3151,15 @@ declare namespace vf {
          */
         renderer: vf.Renderer;
     }
+    /**
+     * Used by the batcher to draw batches.
+     * Each one of these contains all information required to draw a bound geometry.
+     *
+     * @class
+     * @memberof vf
+     */
     class BatchDrawCall {
+        constructor();
         /**
          * data for uniforms or custom webgl state
          * @member {object} vf.BatchDrawCall#data
@@ -3105,8 +3167,10 @@ declare namespace vf {
         data: any;
     }
     /**
-     * @param {boolean} [_static=false] Optimization flag, where `false`
-     *        is updated every frame, `true` doesn't change frame-to-frame.
+     * Geometry used to batch standard vf content (e.g. Mesh, Sprite, Graphics objects).
+     *
+     * @class
+     * @memberof vf
      */
     class BatchGeometry {
         constructor(_static?: boolean);
@@ -3184,8 +3248,10 @@ declare namespace vf {
         static readonly defaultFragmentTemplate: string;
     }
     /**
-     * @param {string} vertexSrc - Vertex shader
-     * @param {string} fragTemplate - Fragment shader template
+     * Helper that generates batching multi-texture shader. Use it with your new BatchRenderer
+     *
+     * @class
+     * @memberof vf
      */
     class BatchShaderGenerator {
         constructor(vertexSrc: string, fragTemplate: string);
@@ -3202,7 +3268,15 @@ declare namespace vf {
          */
         fragTemplate: string;
     }
+    /**
+     * Used by the batcher to build texture batches.
+     * Holds list of textures and their respective locations.
+     *
+     * @class
+     * @memberof vf
+     */
     class BatchTextureArray {
+        constructor();
         /**
          * inside textures array
          * @member {vf.BaseTexture[]} vf.BatchTextureArray#elements
@@ -3220,7 +3294,12 @@ declare namespace vf {
         count: number;
     }
     /**
-     * @param {vf.Renderer} renderer - The renderer this manager works for.
+     * Base for a common object renderer that can be used as a
+     * system renderer plugin.
+     *
+     * @class
+     * @extends vf.System
+     * @memberof vf
      */
     class ObjectRenderer extends vf.System {
         constructor(renderer: vf.Renderer);
@@ -3252,11 +3331,149 @@ declare namespace vf {
          * become dormant.
          */
         stop(): void;
+        /**
+         * Keeps the object to render. It doesn't have to be
+         * rendered immediately.
+         *
+         * @param {vf.DisplayObject} object - The object to render.
+         */
+        render(object: vf.DisplayObject): void;
     }
     /**
-     * @param {string} [vertexSrc] - The source of the vertex shader.
-     * @param {string} [fragmentSrc] - The source of the fragment shader.
-     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
+     * Filter is a special type of WebGL shader that is applied to the screen.
+     *
+     * {@link http://pixijs.io/examples/#/filters/blur-filter.js Example} of the
+     * {@link vf.filters.BlurFilter BlurFilter}.
+     *
+     * ### Usage
+     * Filters can be applied to any DisplayObject or Container.
+     * PixiJS' `FilterSystem` renders the container into temporary Framebuffer,
+     * then filter renders it to the screen.
+     * Multiple filters can be added to the `filters` array property and stacked on each other.
+     *
+     * ```
+     * const filter = new vf.Filter(myShaderVert, myShaderFrag, { myUniform: 0.5 });
+     * const container = new vf.Container();
+     * container.filters = [filter];
+     * ```
+     *
+     * ### Previous Version Differences
+     *
+     * In PixiJS **v3**, a filter was always applied to _whole screen_.
+     *
+     * In PixiJS **v4**, a filter can be applied _only part of the screen_.
+     * Developers had to create a set of uniforms to deal with coordinates.
+     *
+     * In PixiJS **v5** combines _both approaches_.
+     * Developers can use normal coordinates of v3 and then allow filter to use partial Framebuffers,
+     * bringing those extra uniforms into account.
+     *
+     * Also be aware that we have changed default vertex shader, please consult
+     * {@link https://github.com/pixijs/pixi.js/wiki/v5-Creating-filters Wiki}.
+     *
+     * ### Built-in Uniforms
+     *
+     * PixiJS viewport uses screen (CSS) coordinates, `(0, 0, renderer.screen.width, renderer.screen.height)`,
+     * and `projectionMatrix` uniform maps it to the gl viewport.
+     *
+     * **uSampler**
+     *
+     * The most important uniform is the input texture that container was rendered into.
+     * _Important note: as with all Framebuffers in PixiJS, both input and output are
+     * premultiplied by alpha._
+     *
+     * By default, input normalized coordinates are passed to fragment shader with `vTextureCoord`.
+     * Use it to sample the input.
+     *
+     * ```
+     * const fragment = `
+     * varying vec2 vTextureCoord;
+     * uniform sampler2D uSampler;
+     * void main(void)
+     * {
+     *    gl_FragColor = texture2D(uSampler, vTextureCoord);
+     * }
+     * `;
+     *
+     * const myFilter = new vf.Filter(null, fragment);
+     * ```
+     *
+     * This filter is just one uniform less than {@link vf.filters.AlphaFilter AlphaFilter}.
+     *
+     * **outputFrame**
+     *
+     * The `outputFrame` holds the rectangle where filter is applied in screen (CSS) coordinates.
+     * It's the same as `renderer.screen` for a fullscreen filter.
+     * Only a part of  `outputFrame.zw` size of temporary Framebuffer is used,
+     * `(0, 0, outputFrame.width, outputFrame.height)`,
+     *
+     * Filters uses this quad to normalized (0-1) space, its passed into `aVertexPosition` attribute.
+     * To calculate vertex position in screen space using normalized (0-1) space:
+     *
+     * ```
+     * vec4 filterVertexPosition( void )
+     * {
+     *     vec2 position = aVertexPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;
+     *     return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
+     * }
+     * ```
+     *
+     * **inputSize**
+     *
+     * Temporary framebuffer is different, it can be either the size of screen, either power-of-two.
+     * The `inputSize.xy` are size of temporary framebuffer that holds input.
+     * The `inputSize.zw` is inverted, it's a shortcut to evade division inside the shader.
+     *
+     * Set `inputSize.xy = outputFrame.zw` for a fullscreen filter.
+     *
+     * To calculate input normalized coordinate, you have to map it to filter normalized space.
+     * Multiply by `outputFrame.zw` to get input coordinate.
+     * Divide by `inputSize.xy` to get input normalized coordinate.
+     *
+     * ```
+     * vec2 filterTextureCoord( void )
+     * {
+     *     return aVertexPosition * (outputFrame.zw * inputSize.zw); // same as /inputSize.xy
+     * }
+     * ```
+     * **resolution**
+     *
+     * The `resolution` is the ratio of screen (CSS) pixels to real pixels.
+     *
+     * **inputPixel**
+     *
+     * `inputPixel.xy` is the size of framebuffer in real pixels, same as `inputSize.xy * resolution`
+     * `inputPixel.zw` is inverted `inputPixel.xy`.
+     *
+     * It's handy for filters that use neighbour pixels, like {@link vf.filters.FXAAFilter FXAAFilter}.
+     *
+     * **inputClamp**
+     *
+     * If you try to get info from outside of used part of Framebuffer - you'll get undefined behaviour.
+     * For displacements, coordinates has to be clamped.
+     *
+     * The `inputClamp.xy` is left-top pixel center, you may ignore it, because we use left-top part of Framebuffer
+     * `inputClamp.zw` is bottom-right pixel center.
+     *
+     * ```
+     * vec4 color = texture2D(uSampler, clamp(modifigedTextureCoord, inputClamp.xy, inputClamp.zw))
+     * ```
+     * OR
+     * ```
+     * vec4 color = texture2D(uSampler, min(modifigedTextureCoord, inputClamp.zw))
+     * ```
+     *
+     * ### Additional Information
+     *
+     * Complete documentation on Filter usage is located in the
+     * {@link https://github.com/pixijs/pixi.js/wiki/v5-Creating-filters Wiki}.
+     *
+     * Since PixiJS only had a handful of built-in filters, additional filters can be downloaded
+     * {@link https://github.com/pixijs/pixi-filters here} from the PixiJS Filters repository.
+     *
+     * @class
+     * @memberof vf
+     * @extends vf.Shader
      */
     class Filter extends vf.Shader {
         constructor(vertexSrc?: string, fragmentSrc?: string, uniforms?: any);
@@ -3305,12 +3522,12 @@ declare namespace vf {
          * @param {vf.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
          * @param {vf.RenderTexture} input - The input render target.
          * @param {vf.RenderTexture} output - The target to output to.
-         * @param {vf.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
+         * @param {boolean} clear - Should the output be cleared before rendering to it
          * @param {object} [currentState] - It's current state of filter.
          *        There are some useful properties in the currentState :
          *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
          */
-        apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clearMode: vf.CLEAR_MODES, currentState?: any): void;
+        apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clear: boolean, currentState?: any): void;
         /**
          * Sets the blendmode of the filter
          *
@@ -3335,6 +3552,14 @@ declare namespace vf {
          */
         static readonly defaultFragmentSrc: string;
         /**
+         * Used for caching shader IDs
+         *
+         * @static
+         * @type {object}
+         * @protected
+         */
+        protected static SOURCE_KEY_MAP: any;
+        /**
          * Program that the shader uses
          *
          * @member {vf.Program} vf.Shader#program
@@ -3348,7 +3573,13 @@ declare namespace vf {
         readonly uniforms: any;
     }
     /**
-     * @param {vf.Sprite} sprite - the target sprite
+     * This handles a Sprite acting as a mask, as opposed to a Graphic.
+     *
+     * WebGL only.
+     *
+     * @class
+     * @extends vf.Filter
+     * @memberof vf
      */
     class SpriteMaskFilter extends vf.Filter {
         constructor(sprite: vf.Sprite);
@@ -3368,9 +3599,9 @@ declare namespace vf {
          * @param {vf.systems.FilterSystem} filterManager - The renderer to retrieve the filter from
          * @param {vf.RenderTexture} input - The input render target.
          * @param {vf.RenderTexture} output - The target to output to.
-         * @param {vf.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
+         * @param {boolean} clear - Should the output be cleared before rendering to it.
          */
-        apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clearMode: vf.CLEAR_MODES): void;
+        apply(filterManager: vf.systems.FilterSystem, input: vf.RenderTexture, output: vf.RenderTexture, clear: boolean): void;
         /**
          * The padding of the filter. Some filters require extra space to breath such as a blur.
          * Increasing this will add extra width and height to the bounds of the object that the
@@ -3443,59 +3674,33 @@ declare namespace vf {
      */
     var defaultFilterVertex: string;
     /**
-     * @param {number} width - Width of the frame buffer
-     * @param {number} height - Height of the frame buffer
+     * Frame buffer used by the BaseRenderTexture
+     *
+     * @class
+     * @memberof vf
      */
     class Framebuffer {
         constructor(width: number, height: number);
         /**
-         * Width of framebuffer in pixels
-         * @member {number} vf.Framebuffer#width
-         */
-        width: number;
-        /**
-         * Height of framebuffer in pixels
-         * @member {number} vf.Framebuffer#height
-         */
-        height: number;
-        /**
-         * Desired number of samples for antialiasing. 0 means AA should not be used.
-         *
-         * Experimental WebGL2 feature, allows to use antialiasing in individual renderTextures.
-         * Antialiasing is the same as for main buffer with renderer `antialias:true` options.
-         * Seriously affects GPU memory consumption and GPU performance.
-         *
-         *```js
-         * renderTexture.framebuffer.multisample = vf.MSAA_QUALITY.HIGH;
-         * //...
-         * renderer.render(renderTexture, myContainer);
-         * renderer.framebuffer.blit(); // copies data from MSAA framebuffer to texture
-         *  ```
-         *
-         * @member {vf.MSAA_QUALITY} vf.Framebuffer#multisample
-         * @default vf.MSAA_QUALITY.NONE
-         */
-        multisample: vf.MSAA_QUALITY;
-        /**
          * Reference to the colorTexture.
          *
-         * @member {vf.BaseTexture[]}
+         * @member {vf.Texture[]}
          * @readonly
          */
-        readonly colorTexture: vf.BaseTexture[];
+        readonly colorTexture: vf.Texture[];
         /**
          * Add texture to the colorTexture array
          *
          * @param {number} [index=0] - Index of the array to add the texture to
-         * @param {vf.BaseTexture} [texture] - Texture to add to the array
+         * @param {vf.Texture} [texture] - Texture to add to the array
          */
-        addColorTexture(index?: number, texture?: vf.BaseTexture): void;
+        addColorTexture(index?: number, texture?: vf.Texture): void;
         /**
          * Add a depth texture to the frame buffer
          *
-         * @param {vf.BaseTexture} [texture] - Texture to add
+         * @param {vf.Texture} [texture] - Texture to add
          */
-        addDepthTexture(texture?: vf.BaseTexture): void;
+        addDepthTexture(texture?: vf.Texture): void;
         /**
          * Enable depth on the frame buffer
          */
@@ -3516,59 +3721,14 @@ declare namespace vf {
          */
         dispose(): void;
     }
-    class GLFramebuffer {
-        /**
-         * The WebGL framebuffer
-         * @member {WebGLFramebuffer} vf.GLFramebuffer#framebuffer
-         */
-        framebuffer: WebGLFramebuffer;
-        /**
-         * stencil+depth , usually costs 32bits per pixel
-         * @member {WebGLRenderbuffer} vf.GLFramebuffer#stencil
-         */
-        stencil: WebGLRenderbuffer;
-        /**
-         * latest known version of framebuffer
-         * @member {number} vf.GLFramebuffer#dirtyId
-         * @protected
-         */
-        protected dirtyId: number;
-        /**
-         * latest known version of framebuffer format
-         * @member {number} vf.GLFramebuffer#dirtyFormat
-         * @protected
-         */
-        protected dirtyFormat: number;
-        /**
-         * latest known version of framebuffer size
-         * @member {number} vf.GLFramebuffer#dirtySize
-         * @protected
-         */
-        protected dirtySize: number;
-        /**
-         * Detected AA samples number
-         * @member {vf.MSAA_QUALITY} vf.GLFramebuffer#multisample
-         */
-        multisample: vf.MSAA_QUALITY;
-        /**
-         * In case MSAA, we use this Renderbuffer instead of colorTextures[0] when we write info
-         * @member {WebGLRenderbuffer} vf.GLFramebuffer#msaaBuffer
-         */
-        msaaBuffer: WebGLRenderbuffer;
-        /**
-         * In case we use MSAA, this is actual framebuffer that has colorTextures[0]
-         * The contents of that framebuffer are read when we use that renderTexture in sprites
-         * @member {vf.Framebuffer} vf.GLFramebuffer#blitFramebuffer
-         */
-        blitFramebuffer: vf.Framebuffer;
-    }
     /**
-     * @param {string} buffer  the id of the buffer that this attribute will look for
-     * @param {Number} [size=0] the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2.
-     * @param {Boolean} [normalized=false] should the data be normalized.
-     * @param {Number} [type=vf.TYPES.FLOAT] what type of number is the attribute. Check {@link vf.TYPES} to see the ones available
-     * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
-     * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
+     * Holds the information for a single attribute structure required to render geometry.
+     *
+     * This does not contain the actual data, but instead has a buffer id that maps to a {@link vf.Buffer}
+     * This can include anything from positions, uvs, normals, colors etc.
+     *
+     * @class
+     * @memberof vf
      */
     class Attribute {
         constructor(buffer: string, size?: number, normalized?: boolean, type?: number, stride?: number, start?: number);
@@ -3592,16 +3752,17 @@ declare namespace vf {
         static from(buffer: string, size?: number, normalized?: boolean, start?: number, type?: number, stride?: number): vf.Attribute;
     }
     /**
-     * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data the data to store in the buffer.
-     * @param {boolean} [_static=true] `true` for static buffer
-     * @param {boolean} [index=false] `true` for index buffer
+     * A wrapper for data so that it can be used and uploaded by WebGL
+     *
+     * @class
+     * @memberof vf
      */
     class Buffer {
         constructor(data: ArrayBuffer | SharedArrayBuffer | ArrayBufferView, _static?: boolean, index?: boolean);
         /**
          * The data in the buffer, as a typed array
          *
-         * @member {ArrayBuffer| SharedArrayBuffer | ArrayBufferView} vf.Buffer#data
+         * @member {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} vf.Buffer#data
          */
         data: ArrayBuffer | SharedArrayBuffer | ArrayBufferView;
         /**
@@ -3627,8 +3788,23 @@ declare namespace vf {
         static from(data: ArrayBufferView | number[]): vf.Buffer;
     }
     /**
-     * @param {vf.Buffer[]} [buffers]  an array of buffers. optional.
-     * @param {object} [attributes] of the geometry, optional structure of the attributes layout
+     * The Geometry represents a model. It consists of two components:
+     * - GeometryStyle - The structure of the model such as the attributes layout
+     * - GeometryData - the data of the model - this consists of buffers.
+     * This can include anything from positions, uvs, normals, colors etc.
+     *
+     * Geometry can be defined without passing in a style or data if required (thats how I prefer!)
+     *
+     * ```js
+     * let geometry = new vf.Geometry();
+     *
+     * geometry.addAttribute('positions', [0, 0, 100, 0, 100, 100, 0, 100], 2);
+     * geometry.addAttribute('uvs', [0,0,1,0,1,1,0,1],2)
+     * geometry.addIndex([0,1,2,1,3,2])
+     *
+     * ```
+     * @class
+     * @memberof vf
      */
     class Geometry {
         constructor(buffers?: vf.Buffer[], attributes?: any);
@@ -3653,20 +3829,18 @@ declare namespace vf {
         /**
          *
          * Adds an attribute to the geometry
-         * Note: `stride` and `start` should be `undefined` if you dont know them, not 0!
          *
          * @param {String} id - the name of the attribute (matching up to a shader)
          * @param {vf.Buffer|number[]} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
          * @param {Number} [size=0] the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
          * @param {Boolean} [normalized=false] should the data be normalized.
          * @param {Number} [type=vf.TYPES.FLOAT] what type of number is the attribute. Check {vf.TYPES} to see the ones available
-         * @param {Number} [stride] How far apart (in floats) the start of each value is. (used for interleaving data)
-         * @param {Number} [start] How far into the array to start reading values (used for interleaving data)
-         * @param {boolean} [instance=false] Instancing flag
+         * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
+         * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
          *
          * @return {vf.Geometry} returns self, useful for chaining.
          */
-        addAttribute(id: string, buffer?: vf.Buffer | number[], size?: number, normalized?: boolean, type?: number, stride?: number, start?: number, instance?: boolean): vf.Geometry;
+        addAttribute(id: string, buffer?: vf.Buffer | number[], size?: number, normalized?: boolean, type?: number, stride?: number, start?: number): vf.Geometry;
         /**
          * returns the requested attribute
          *
@@ -3727,7 +3901,11 @@ declare namespace vf {
         static merge(geometries: vf.Geometry[]): vf.Geometry;
     }
     /**
-     * @param {number} size - The size of the buffer in bytes.
+     * Flexible wrapper around `ArrayBuffer` that also provides
+     * typed array views on demand.
+     *
+     * @class
+     * @memberof vf
      */
     class ViewableBuffer {
         constructor(size: number);
@@ -3795,9 +3973,12 @@ declare namespace vf {
         destroy(): void;
     }
     /**
-     * Create MaskData
+     * Component for masked elements
      *
-     * @param {vf.DisplayObject} [maskObject=null] object that describes the mask
+     * Holds mask mode and temporary data about current mask
+     *
+     * @class
+     * @memberof vf
      */
     class MaskData {
         constructor(maskObject?: vf.DisplayObject);
@@ -3844,11 +4025,44 @@ declare namespace vf {
         copyCountersOrReset(maskAbove: vf.MaskData | null): void;
     }
     /**
-     * @param {object} [options]
-     * @param {number} [options.width=100] - The width of the base render texture.
-     * @param {number} [options.height=100] - The height of the base render texture.
-     * @param {vf.SCALE_MODES} [options.scaleMode] - See {@link vf.SCALE_MODES} for possible values.
-     * @param {number} [options.resolution=1] - The resolution / device pixel ratio of the texture being generated.
+     * A BaseRenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
+     *
+     * __Hint__: All DisplayObjects (i.e. Sprites) that render to a BaseRenderTexture should be preloaded
+     * otherwise black rectangles will be drawn instead.
+     *
+     * A BaseRenderTexture takes a snapshot of any Display Object given to its render method. The position
+     * and rotation of the given Display Objects is ignored. For example:
+     *
+     * ```js
+     * let renderer = vf.autoDetectRenderer();
+     * let baseRenderTexture = new vf.BaseRenderTexture({ width: 800, height: 600 });
+     * let renderTexture = new vf.RenderTexture(baseRenderTexture);
+     * let sprite = vf.Sprite.from("spinObj_01.png");
+     *
+     * sprite.position.x = 800/2;
+     * sprite.position.y = 600/2;
+     * sprite.anchor.x = 0.5;
+     * sprite.anchor.y = 0.5;
+     *
+     * renderer.render(sprite, renderTexture);
+     * ```
+     *
+     * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
+     * you can clear the transform
+     *
+     * ```js
+     *
+     * sprite.setTransform()
+     *
+     * let baseRenderTexture = new vf.BaseRenderTexture({ width: 100, height: 100 });
+     * let renderTexture = new vf.RenderTexture(baseRenderTexture);
+     *
+     * renderer.render(sprite, renderTexture);  // Renders to center of RenderTexture
+     * ```
+     *
+     * @class
+     * @extends vf.BaseTexture
+     * @memberof vf
      */
     class BaseRenderTexture extends vf.BaseTexture {
         constructor(options?: {
@@ -3861,10 +4075,9 @@ declare namespace vf {
          * A reference to the canvas render target (we only need one as this can be shared across renderers)
          *
          * @protected
-         * @member {vf.utils.CanvasRenderTarget} _canvasRenderTarget
-         * @memberof vf.BaseRenderTexture#
+         * @member {object} vf.BaseRenderTexture#_canvasRenderTarget
          */
-        protected _canvasRenderTarget: vf.utils.CanvasRenderTarget;
+        protected _canvasRenderTarget: any;
         /**
          * The data structure for the stencil masks.
          *
@@ -3983,10 +4196,10 @@ declare namespace vf {
         /**
          * Global unique identifier for this BaseTexture
          *
-         * @member {number} vf.BaseTexture#uid
+         * @member {string} vf.BaseTexture#uid
          * @protected
          */
-        protected uid: number;
+        protected uid: string;
         /**
          * Used by automatic texture Garbage Collection, stores last GC tick when it was bound
          *
@@ -4109,10 +4322,10 @@ declare namespace vf {
         /**
          * Changes resolution
          *
-         * @param {number} resolution res
+         * @param {number} [resolution] res
          * @returns {vf.BaseTexture} this
          */
-        setResolution(resolution: number): vf.BaseTexture;
+        setResolution(resolution?: number): vf.BaseTexture;
         /**
          * Sets the resource if it wasn't set. Throws error if resource already present
          *
@@ -4124,14 +4337,46 @@ declare namespace vf {
          * Invalidates the object. Texture becomes valid if width and height are greater than zero.
          */
         update(): void;
-        /**
-         * Utility function for BaseTexture|Texture cast
-         */
-        castToBaseTexture(): void;
     }
     /**
-     * @param {vf.BaseRenderTexture} baseRenderTexture - The base texture object that this texture uses
-     * @param {vf.Rectangle} [frame] - The rectangle frame of the texture to show
+     * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
+     *
+     * __Hint__: All DisplayObjects (i.e. Sprites) that render to a RenderTexture should be preloaded
+     * otherwise black rectangles will be drawn instead.
+     *
+     * __Hint-2__: The actual memory allocation will happen on first render.
+     * You shouldn't create renderTextures each frame just to delete them after, try to reuse them.
+     *
+     * A RenderTexture takes a snapshot of any Display Object given to its render method. For example:
+     *
+     * ```js
+     * let renderer = vf.autoDetectRenderer();
+     * let renderTexture = vf.RenderTexture.create({ width: 800, height: 600 });
+     * let sprite = vf.Sprite.from("spinObj_01.png");
+     *
+     * sprite.position.x = 800/2;
+     * sprite.position.y = 600/2;
+     * sprite.anchor.x = 0.5;
+     * sprite.anchor.y = 0.5;
+     *
+     * renderer.render(sprite, renderTexture);
+     * ```
+     *
+     * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
+     * you can clear the transform
+     *
+     * ```js
+     *
+     * sprite.setTransform()
+     *
+     * let renderTexture = new vf.RenderTexture.create(100, 100);
+     *
+     * renderer.render(sprite, renderTexture);  // Renders to center of RenderTexture
+     * ```
+     *
+     * @class
+     * @extends vf.Texture
+     * @memberof vf
      */
     class RenderTexture extends vf.Texture {
         constructor(baseRenderTexture: vf.BaseRenderTexture, frame?: vf.Rectangle);
@@ -4155,12 +4400,6 @@ declare namespace vf {
          * @member {string} vf.RenderTexture#filterPoolKey
          */
         protected filterPoolKey: string;
-        /**
-         * Shortcut to `this.baseTexture.framebuffer`, saves baseTexture cast.
-         * @member {vf.Framebuffer}
-         * @readonly
-         */
-        readonly framebuffer: vf.Framebuffer;
         /**
          * Resizes the RenderTexture.
          *
@@ -4230,6 +4469,12 @@ declare namespace vf {
          * @member {vf.Rectangle} vf.Texture#trim
          */
         trim: vf.Rectangle;
+        /**
+         * This will let a renderer know that a texture has been updated (used mainly for WebGL uv updates)
+         *
+         * @member {boolean} vf.Texture#requiresUpdate
+         */
+        requiresUpdate: boolean;
         /**
          * The WebGL UV data cache. Can be used as quad UV
          *
@@ -4342,14 +4587,18 @@ declare namespace vf {
          * @member {number}
          */
         height: number;
-        /**
-         * Utility function for BaseTexture|Texture cast
-         */
-        castToBaseTexture(): void;
     }
     /**
-     * @param {object} [textureOptions] - options that will be passed to BaseRenderTexture constructor
-     * @param {vf.SCALE_MODES} [textureOptions.scaleMode] - See {@link vf.SCALE_MODES} for possible values.
+     * Experimental!
+     *
+     * Texture pool, used by FilterSystem and plugins
+     * Stores collection of temporary pow2 or screen-sized renderTextures
+     *
+     * If you use custom RenderTexturePool for your filters, you can use methods
+     * `getFilterTexture` and `returnFilterTexture` same as in
+     *
+     * @class
+     * @memberof vf
      */
     class RenderTexturePool {
         constructor(textureOptions?: {
@@ -4427,22 +4676,41 @@ declare namespace vf {
         static readonly SCREEN_KEY: string;
     }
     /**
-     * Makes a new Pixi program
+     * Helper class to create a WebGL Program
      *
-     * @param program {WebGLProgram} webgl program
-     * @param uniformData {Object} uniforms
+     * @class
+     * @memberof vf
      */
     class GLProgram {
         constructor(program: WebGLProgram, uniformData: any);
+        /**
+         * The shader program
+         *
+         * @member {WebGLProgram} vf.GLProgram#program
+         */
+        program: WebGLProgram;
+        /**
+         * holds the uniform data which contains uniform locations
+         * and current uniform values used for caching and preventing unneeded GPU commands
+         * @member {Object} vf.GLProgram#uniformData
+         */
+        uniformData: any;
+        /**
+         * uniformGroups holds the various upload functions for the shader. Each uniform group
+         * and program have a unique upload function generated.
+         * @member {Object} vf.GLProgram#uniformGroups
+         */
+        uniformGroups: any;
         /**
          * Destroys this program
          */
         destroy(): void;
     }
     /**
-     * @param {string} [vertexSrc] - The source of the vertex shader.
-     * @param {string} [fragmentSrc] - The source of the fragment shader.
-     * @param {string} [name] - Name for shader
+     * Helper class to create a shader program.
+     *
+     * @class
+     * @memberof vf
      */
     class Program {
         constructor(vertexSrc?: string, fragmentSrc?: string, name?: string);
@@ -4496,8 +4764,10 @@ declare namespace vf {
         static from(vertexSrc?: string, fragmentSrc?: string, name?: string): vf.Program;
     }
     /**
-     * @param {vf.Program} [program] - The program the shader will use.
-     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
+     * A helper class for shaders
+     *
+     * @class
+     * @memberof vf
      */
     class Shader {
         constructor(program?: vf.Program, uniforms?: any);
@@ -4525,8 +4795,10 @@ declare namespace vf {
         static from(vertexSrc?: string, fragmentSrc?: string, uniforms?: any): vf.Shader;
     }
     /**
-     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
-     * @param {boolean} [_static] - Uniforms wont be changed after creation
+     * Uniform group holds uniform map and some ID's for work
+     *
+     * @class
+     * @memberof vf
      */
     class UniformGroup {
         constructor(uniforms?: any, _static?: boolean);
@@ -4561,7 +4833,17 @@ declare namespace vf {
          */
         static: boolean;
     }
+    /**
+     * This is a WebGL state, and is is passed The WebGL StateManager.
+     *
+     * Each mesh rendered may require WebGL to be in a different state.
+     * For example you may want different blend mode or to enable polygon offsets
+     *
+     * @class
+     * @memberof vf
+     */
     class State {
+        constructor();
         /**
          * Activates blending of the computed fragment color values
          *
@@ -4618,7 +4900,11 @@ declare namespace vf {
      */
     namespace systems {
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage batching.
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class BatchSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -4653,10 +4939,10 @@ declare namespace vf {
              * Handy function for batch renderers: copies bound textures in first maxTextures locations to array
              * sets actual _batchLocation for them
              *
-             * @param {vf.BaseTexture[]} arr copy destination
-             * @param {number} maxTextures number of copied elements
+             * @param arr
+             * @param maxTextures
              */
-            copyBoundTextures(arr: vf.BaseTexture[], maxTextures: number): void;
+            copyBoundTextures(arr: any, maxTextures: any): void;
             /**
              * Assigns batch locations to textures in array based on boundTextures state.
              * All textures in texArray should have `_batchEnabled = _batchId`,
@@ -4680,7 +4966,11 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage the context.
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class ContextSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -4788,7 +5078,11 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage the filters.
+         *
+         * @class
+         * @memberof vf.systems
+         * @extends vf.System
          */
         class FilterSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -4846,6 +5140,13 @@ declare namespace vf {
              */
             forceClear: boolean;
             /**
+             * Old padding behavior is to use the max amount instead of sum padding.
+             * Use this flag if you need the old behavior.
+             * @member {boolean} vf.systems.FilterSystem#useMaxPadding
+             * @default false
+             */
+            useMaxPadding: boolean;
+            /**
              * Adds a new filter to the System.
              *
              * @param {vf.DisplayObject} target - The target of the filter to render.
@@ -4858,20 +5159,14 @@ declare namespace vf {
              */
             pop(): void;
             /**
-             * Binds a renderTexture with corresponding `filterFrame`, clears it if mode corresponds.
-             * @param {vf.RenderTexture} filterTexture renderTexture to bind, should belong to filter pool or filter stack
-             * @param {vf.CLEAR_MODES} [clearMode] clearMode, by default its CLEAR/YES. See {@link vf.CLEAR_MODES}
-             */
-            bindAndClear(filterTexture: vf.RenderTexture, clearMode?: vf.CLEAR_MODES): void;
-            /**
              * Draws a filter.
              *
              * @param {vf.Filter} filter - The filter to draw.
              * @param {vf.RenderTexture} input - The input render target.
              * @param {vf.RenderTexture} output - The target to output to.
-             * @param {vf.CLEAR_MODES} [clearMode] - Should the output be cleared before rendering to it
+             * @param {boolean} clear - Should the output be cleared before rendering to it
              */
-            applyFilter(filter: vf.Filter, input: vf.RenderTexture, output: vf.RenderTexture, clearMode?: vf.CLEAR_MODES): void;
+            applyFilter(filter: vf.Filter, input: vf.RenderTexture, output: vf.RenderTexture, clear: boolean): void;
             /**
              * Multiply _input normalized coordinates_ to this matrix to get _sprite texture normalized coordinates_.
              *
@@ -4927,7 +5222,11 @@ declare namespace vf {
             renderer: vf.Renderer;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage framebuffers.
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class FramebufferSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -4977,18 +5276,15 @@ declare namespace vf {
              * @param {Number} g - Green value from 0 to 1
              * @param {Number} b - Blue value from 0 to 1
              * @param {Number} a - Alpha value from 0 to 1
-             * @param {vf.BUFFER_BITS} [mask=BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH] - Bitwise OR of masks
-             *  that indicate the buffers to be cleared, by default COLOR and DEPTH buffers.
              */
-            clear(r: number, g: number, b: number, a: number, mask?: vf.BUFFER_BITS): void;
+            clear(r: number, g: number, b: number, a: number): void;
             /**
-             * Initialize framebuffer for this context
+             * Initialize framebuffer
              *
              * @protected
              * @param {vf.Framebuffer} framebuffer
-             * @returns {vf.GLFramebuffer} created GLFramebuffer
              */
-            protected initFramebuffer(framebuffer: vf.Framebuffer): vf.GLFramebuffer;
+            protected initFramebuffer(framebuffer: vf.Framebuffer): void;
             /**
              * Resize the framebuffer
              *
@@ -5003,26 +5299,6 @@ declare namespace vf {
              * @param {vf.Framebuffer} framebuffer
              */
             protected updateFramebuffer(framebuffer: vf.Framebuffer): void;
-            /**
-             * Detects number of samples that is not more than a param but as close to it as possible
-             *
-             * @param {vf.MSAA_QUALITY} samples number of samples
-             * @returns {vf.MSAA_QUALITY} recommended number of samples
-             */
-            detectSamples(samples: vf.MSAA_QUALITY): vf.MSAA_QUALITY;
-            /**
-             * Only works with WebGL2
-             *
-             * blits framebuffer to another of the same or bigger size
-             * after that target framebuffer is bound
-             *
-             * Fails with WebGL warning if blits multisample framebuffer to different size
-             *
-             * @param {vf.Framebuffer} [framebuffer] by default it blits "into itself", from renderBuffer to texture.
-             * @param {vf.Rectangle} [sourcePixels] source rectangle in pixels
-             * @param {vf.Rectangle} [destPixels] dest rectangle in pixels, assumed to be the same as sourcePixels
-             */
-            blit(framebuffer?: vf.Framebuffer, sourcePixels?: vf.Rectangle, destPixels?: vf.Rectangle): void;
             /**
              * Disposes framebuffer
              * @param {vf.Framebuffer} framebuffer framebuffer that has to be disposed of
@@ -5052,7 +5328,11 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage geometry.
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class GeometrySystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -5074,6 +5354,15 @@ declare namespace vf {
              * @readonly
              */
             readonly canUseUInt32ElementIndex: boolean;
+            /**
+             * A cache of currently bound buffer,
+             * contains only two members with keys ARRAY_BUFFER and ELEMENT_ARRAY_BUFFER
+             * @member {Object.<number, vf.Buffer>} vf.systems.GeometrySystem#boundBuffers
+             * @readonly
+             */
+            readonly boundBuffers: {
+                [key: number]: vf.Buffer;
+            };
             /**
              * Cache for all geometries by id, used in case renderer gets destroyed or for profiling
              * @member {object} vf.systems.GeometrySystem#managedGeometries
@@ -5182,7 +5471,11 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage masks of certain type
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class AbstractMaskSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -5215,10 +5508,20 @@ declare namespace vf {
             renderer: vf.Renderer;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage masks.
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class MaskSystem extends vf.System {
             constructor(renderer: vf.Renderer);
+            /**
+             * Target to mask
+             * @member {vf.DisplayObject} vf.systems.MaskSystem#scissorRenderTarget
+             * @readonly
+             */
+            readonly scissorRenderTarget: vf.DisplayObject;
             /**
              * Enable scissor
              * @member {boolean} vf.systems.MaskSystem#enableScissor
@@ -5292,7 +5595,11 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage scissor rects (used for masks).
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class ScissorSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -5318,7 +5625,11 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage stencils (used for masks).
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class StencilSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -5346,7 +5657,11 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage the projection matrix.
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class ProjectionSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -5416,7 +5731,13 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage render textures.
+         *
+         * Should be added after FramebufferSystem
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class RenderTextureSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -5460,11 +5781,9 @@ declare namespace vf {
              * Erases the render texture and fills the drawing area with a colour
              *
              * @param {number[]} [clearColor] - The color as rgba, default to use the renderer backgroundColor
-             * @param {vf.BUFFER_BITS} [mask=BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH] - Bitwise OR of masks
-             *  that indicate the buffers to be cleared, by default COLOR and DEPTH buffers.
              * @return {vf.Renderer} Returns itself.
              */
-            clear(clearColor?: number[], mask?: vf.BUFFER_BITS): vf.Renderer;
+            clear(clearColor?: number[]): vf.Renderer;
             /**
              * Resets renderTexture state
              */
@@ -5481,7 +5800,11 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage shaders.
+         *
+         * @class
+         * @memberof vf.systems
+         * @extends vf.System
          */
         class ShaderSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -5495,10 +5818,10 @@ declare namespace vf {
              * Changes the current shader to the one given in parameter
              *
              * @param {vf.Shader} shader - the new shader
-             * @param {boolean} [dontSync] - false if the shader should automatically sync its uniforms.
+             * @param {boolean} dontSync - false if the shader should automatically sync its uniforms.
              * @returns {vf.GLProgram} the glProgram that belongs to the shader.
              */
-            bind(shader: vf.Shader, dontSync?: boolean): vf.GLProgram;
+            bind(shader: vf.Shader, dontSync: boolean): vf.GLProgram;
             /**
              * Uploads the uniforms values to the currently bound shader.
              *
@@ -5509,9 +5832,9 @@ declare namespace vf {
              *
              * syncs uniforms on the group
              * @param {*} group the uniform group to sync
-             * @param {*} [syncData] this is data that is passed to the sync function and any nested sync functions
+             * @param {*} syncData this is data that is passed to the sync function and any nested sync functions
              */
-            syncUniformGroup(group: any, syncData?: any): void;
+            syncUniformGroup(group: any, syncData: any): void;
             /**
              * Returns the underlying GLShade rof the currently bound shader.
              * This can be handy for when you to have a little more control over the setting of your uniforms.
@@ -5535,7 +5858,11 @@ declare namespace vf {
             renderer: vf.Renderer;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage WebGL state machines.
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class StateSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -5669,7 +5996,12 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage texture garbage collection on the GPU,
+         * ensuring that it does not get clogged up with textures that are no longer being used.
+         *
+         * @class
+         * @memberof vf.systems
+         * @extends vf.System
          */
         class TextureGCSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -5731,7 +6063,11 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {vf.Renderer} renderer - The renderer this System works for.
+         * System plugin to the renderer to manage textures.
+         *
+         * @class
+         * @extends vf.System
+         * @memberof vf.systems
          */
         class TextureSystem extends vf.System {
             constructor(renderer: vf.Renderer);
@@ -5768,10 +6104,10 @@ declare namespace vf {
              *
              * If you want to unbind something, please use `unbind(texture)` instead of `bind(null, textureLocation)`
              *
-             * @param {vf.Texture|vf.BaseTexture} texture_ - Texture to bind
+             * @param {vf.Texture|vf.BaseTexture} texture - Texture to bind
              * @param {number} [location=0] - Location to bind at
              */
-            bind(texture_: vf.Texture | vf.BaseTexture, location?: number): void;
+            bind(texture: vf.Texture | vf.BaseTexture, location?: number): void;
             /**
              * Resets texture location and bound textures
              *
@@ -5780,9 +6116,9 @@ declare namespace vf {
             reset(): void;
             /**
              * Unbind a texture
-             * @param {vf.BaseTexture} texture - Texture to bind
+             * @param {vf.Texture|vf.BaseTexture} texture - Texture to bind
              */
-            unbind(texture: vf.BaseTexture): void;
+            unbind(texture: vf.Texture | vf.BaseTexture): void;
             /**
              * The renderer this manager works for.
              *
@@ -5795,6 +6131,32 @@ declare namespace vf {
             destroy(): void;
         }
     }
+    /**
+     * A Texture stores the information that represents an image.
+     * All textures have a base texture, which contains information about the source.
+     * Therefore you can have many textures all using a single BaseTexture
+     *
+     * @class
+     * @extends vf.utils.EventEmitter
+     * @memberof vf
+     * @param {vf.resources.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null]
+     *        The current resource to use, for things that aren't Resource objects, will be converted
+     *        into a Resource.
+     * @param {Object} [options] - Collection of options
+     * @param {vf.MIPMAP_MODES} [options.mipmap=vf.settings.MIPMAP_TEXTURES] - If mipmapping is enabled for texture
+     * @param {number} [options.anisotropicLevel=vf.settings.ANISOTROPIC_LEVEL] - Anisotropic filtering level of texture
+     * @param {vf.WRAP_MODES} [options.wrapMode=vf.settings.WRAP_MODE] - Wrap mode for textures
+     * @param {vf.SCALE_MODES} [options.scaleMode=vf.settings.SCALE_MODE] - Default scale mode, linear, nearest
+     * @param {vf.FORMATS} [options.format=vf.FORMATS.RGBA] - GL format type
+     * @param {vf.TYPES} [options.type=vf.TYPES.UNSIGNED_BYTE] - GL data type
+     * @param {vf.TARGETS} [options.target=vf.TARGETS.TEXTURE_2D] - GL texture target
+     * @param {vf.ALPHA_MODES} [options.alphaMode=vf.ALPHA_MODES.UNPACK] - Pre multiply the image alpha
+     * @param {number} [options.width=0] - Width of the texture
+     * @param {number} [options.height=0] - Height of the texture
+     * @param {number} [options.resolution] - Resolution of the base texture
+     * @param {object} [options.resourceOptions] - Optional resource options,
+     *        see {@link vf.resources.autoDetectResource autoDetectResource}
+     */
     class BaseTexture extends vf.utils.EventEmitter {
         constructor(resource?: vf.resources.Resource | string | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement, options?: {
             mipmap?: vf.MIPMAP_MODES;
@@ -5896,10 +6258,10 @@ declare namespace vf {
         /**
          * Global unique identifier for this BaseTexture
          *
-         * @member {number} vf.BaseTexture#uid
+         * @member {string} vf.BaseTexture#uid
          * @protected
          */
-        protected uid: number;
+        protected uid: string;
         /**
          * Used by automatic texture Garbage Collection, stores last GC tick when it was bound
          *
@@ -6022,10 +6384,10 @@ declare namespace vf {
         /**
          * Changes resolution
          *
-         * @param {number} resolution res
+         * @param {number} [resolution] res
          * @returns {vf.BaseTexture} this
          */
-        setResolution(resolution: number): vf.BaseTexture;
+        setResolution(resolution?: number): vf.BaseTexture;
         /**
          * Sets the resource if it wasn't set. Throws error if resource already present
          *
@@ -6051,10 +6413,6 @@ declare namespace vf {
          * @fires vf.BaseTexture#dispose
          */
         dispose(): void;
-        /**
-         * Utility function for BaseTexture|Texture cast
-         */
-        castToBaseTexture(): void;
         /**
          * Helper function that creates a base texture based on the source you provide.
          * The source can be - image url, image element, canvas element. If the
@@ -6105,7 +6463,274 @@ declare namespace vf {
          */
         static _globalBatch: number;
     }
+    /**
+     * A Texture that depends on six other resources.
+     *
+     * @class
+     * @extends vf.BaseTexture
+     * @memberof vf
+     */
+    class CubeTexture extends vf.BaseTexture {
+        static from(resources: string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement, options?: any): BaseTexture;
+        /**
+         * Generate a new CubeTexture.
+         * @static
+         * @param {string[]|vf.resources.Resource[]} resources - Collection of 6 URLs or resources
+         * @param {object} [options] - Optional options passed to the resources being loaded.
+         *        See {@vf.resources.autoDetectResource autoDetectResource} for more info
+         *        on the options available to each resource.
+         * @returns {vf.CubeTexture} new cube texture
+         */
+        static from(resources: string[] | vf.resources.Resource[], options?: any): vf.CubeTexture;
+        /**
+         * Get the drawable source, such as HTMLCanvasElement or HTMLImageElement suitable
+         * for rendering with CanvasRenderer. Provided by **@pixi/canvas-renderer** package.
+         * @method getDrawableSource
+         * @memberof vf.BaseTexture#
+         * @return {vf.ICanvasImageSource} Source to render with CanvasRenderer
+         */
+        getDrawableSource(): vf.ICanvasImageSource;
+        /**
+         * The width of the base texture set when the image has loaded
+         *
+         * @readonly
+         * @member {number} vf.BaseTexture#width
+         */
+        readonly width: number;
+        /**
+         * The height of the base texture set when the image has loaded
+         *
+         * @readonly
+         * @member {number} vf.BaseTexture#height
+         */
+        readonly height: number;
+        /**
+         * The resolution / device pixel ratio of the texture
+         *
+         * @member {number} vf.BaseTexture#resolution
+         * @default vf.settings.RESOLUTION
+         */
+        resolution: number;
+        /**
+         * Mipmap mode of the texture, affects downscaled images
+         *
+         * @member {vf.MIPMAP_MODES} vf.BaseTexture#mipmap
+         * @default vf.settings.MIPMAP_TEXTURES
+         */
+        mipmap: vf.MIPMAP_MODES;
+        /**
+         * Anisotropic filtering level of texture
+         *
+         * @member {number} vf.BaseTexture#anisotropicLevel
+         * @default vf.settings.ANISOTROPIC_LEVEL
+         */
+        anisotropicLevel: number;
+        /**
+         * How the texture wraps
+         * @member {number} vf.BaseTexture#wrapMode
+         */
+        wrapMode: number;
+        /**
+         * The scale mode to apply when scaling this texture
+         *
+         * @member {vf.SCALE_MODES} vf.BaseTexture#scaleMode
+         * @default vf.settings.SCALE_MODE
+         */
+        scaleMode: vf.SCALE_MODES;
+        /**
+         * The pixel format of the texture
+         *
+         * @member {vf.FORMATS} vf.BaseTexture#format
+         * @default vf.FORMATS.RGBA
+         */
+        format: vf.FORMATS;
+        /**
+         * The type of resource data
+         *
+         * @member {vf.TYPES} vf.BaseTexture#type
+         * @default vf.TYPES.UNSIGNED_BYTE
+         */
+        type: vf.TYPES;
+        /**
+         * The target type
+         *
+         * @member {vf.TARGETS} vf.BaseTexture#target
+         * @default vf.TARGETS.TEXTURE_2D
+         */
+        target: vf.TARGETS;
+        /**
+         * How to treat premultiplied alpha, see {@link vf.ALPHA_MODES}.
+         *
+         * @member {vf.ALPHA_MODES} vf.BaseTexture#alphaMode
+         * @default vf.ALPHA_MODES.UNPACK
+         */
+        alphaMode: vf.ALPHA_MODES;
+        /**
+         * Global unique identifier for this BaseTexture
+         *
+         * @member {string} vf.BaseTexture#uid
+         * @protected
+         */
+        protected uid: string;
+        /**
+         * Used by automatic texture Garbage Collection, stores last GC tick when it was bound
+         *
+         * @member {number} vf.BaseTexture#touched
+         * @protected
+         */
+        protected touched: number;
+        /**
+         * Whether or not the texture is a power of two, try to use power of two textures as much
+         * as you can
+         *
+         * @readonly
+         * @member {boolean} vf.BaseTexture#isPowerOfTwo
+         * @default false
+         */
+        readonly isPowerOfTwo: boolean;
+        /**
+         * Used by TextureSystem to only update texture to the GPU when needed.
+         * Please call `update()` to increment it.
+         *
+         * @readonly
+         * @member {number} vf.BaseTexture#dirtyId
+         */
+        readonly dirtyId: number;
+        /**
+         * Used by TextureSystem to only update texture style when needed.
+         *
+         * @protected
+         * @member {number} vf.BaseTexture#dirtyStyleId
+         */
+        protected dirtyStyleId: number;
+        /**
+         * Currently default cache ID.
+         *
+         * @member {string} vf.BaseTexture#cacheId
+         */
+        cacheId: string;
+        /**
+         * Generally speaking means when resource is loaded.
+         * @readonly
+         * @member {boolean} vf.BaseTexture#valid
+         */
+        readonly valid: boolean;
+        /**
+         * The collection of alternative cache ids, since some BaseTextures
+         * can have more than one ID, short name and longer full URL
+         *
+         * @member {Array<string>} vf.BaseTexture#textureCacheIds
+         * @readonly
+         */
+        readonly textureCacheIds: string[];
+        /**
+         * Flag if BaseTexture has been destroyed.
+         *
+         * @member {boolean} vf.BaseTexture#destroyed
+         * @readonly
+         */
+        readonly destroyed: boolean;
+        /**
+         * The resource used by this BaseTexture, there can only
+         * be one resource per BaseTexture, but textures can share
+         * resources.
+         *
+         * @member {vf.resources.Resource} vf.BaseTexture#resource
+         * @readonly
+         */
+        readonly resource: vf.resources.Resource;
+        /**
+         * Number of the texture batch, used by multi-texture renderers
+         *
+         * @member {number} vf.BaseTexture#_batchEnabled
+         */
+        _batchEnabled: number;
+        /**
+         * Location inside texture batch, used by multi-texture renderers
+         *
+         * @member {number} vf.BaseTexture#_batchLocation
+         */
+        _batchLocation: number;
+        /**
+         * Pixel width of the source of this texture
+         *
+         * @readonly
+         * @member {number}
+         */
+        readonly realWidth: number;
+        /**
+         * Pixel height of the source of this texture
+         *
+         * @readonly
+         * @member {number}
+         */
+        readonly realHeight: number;
+        /**
+         * Changes style options of BaseTexture
+         *
+         * @param {vf.SCALE_MODES} [scaleMode] - Pixi scalemode
+         * @param {vf.MIPMAP_MODES} [mipmap] - enable mipmaps
+         * @returns {vf.BaseTexture} this
+         */
+        setStyle(scaleMode?: vf.SCALE_MODES, mipmap?: vf.MIPMAP_MODES): vf.BaseTexture;
+        /**
+         * Changes w/h/resolution. Texture becomes valid if width and height are greater than zero.
+         *
+         * @param {number} width Visual width
+         * @param {number} height Visual height
+         * @param {number} [resolution] Optionally set resolution
+         * @returns {vf.BaseTexture} this
+         */
+        setSize(width: number, height: number, resolution?: number): vf.BaseTexture;
+        /**
+         * Sets real size of baseTexture, preserves current resolution.
+         *
+         * @param {number} realWidth Full rendered width
+         * @param {number} realHeight Full rendered height
+         * @param {number} [resolution] Optionally set resolution
+         * @returns {vf.BaseTexture} this
+         */
+        setRealSize(realWidth: number, realHeight: number, resolution?: number): vf.BaseTexture;
+        /**
+         * Changes resolution
+         *
+         * @param {number} [resolution] res
+         * @returns {vf.BaseTexture} this
+         */
+        setResolution(resolution?: number): vf.BaseTexture;
+        /**
+         * Sets the resource if it wasn't set. Throws error if resource already present
+         *
+         * @param {vf.resources.Resource} resource - that is managing this BaseTexture
+         * @returns {vf.BaseTexture} this
+         */
+        setResource(resource: vf.resources.Resource): vf.BaseTexture;
+        /**
+         * Invalidates the object. Texture becomes valid if width and height are greater than zero.
+         */
+        update(): void;
+        /**
+         * Destroys this base texture.
+         * The method stops if resource doesn't want this texture to be destroyed.
+         * Removes texture from all caches.
+         */
+        destroy(): void;
+        /**
+         * Frees the texture from WebGL memory without destroying this texture object.
+         * This means you can still use the texture later which will upload it to GPU
+         * memory again.
+         *
+         * @fires vf.BaseTexture#dispose
+         */
+        dispose(): void;
+    }
+    /**
+     * Internal texture for WebGL context
+     * @class
+     * @memberof vf
+     */
     class GLTexture {
+        constructor();
         /**
          * The WebGL texture
          * @member {WebGLTexture} vf.GLTexture#texture
@@ -6153,12 +6778,34 @@ declare namespace vf {
         internalFormat: number;
     }
     /**
-     * @param {vf.BaseTexture} baseTexture - The base texture source to create the texture from
-     * @param {vf.Rectangle} [frame] - The rectangle frame of the texture to show
-     * @param {vf.Rectangle} [orig] - The area of original texture
-     * @param {vf.Rectangle} [trim] - Trimmed rectangle of original texture
-     * @param {number} [rotate] - indicates how the texture was rotated by texture packer. See {@link vf.groupD8}
-     * @param {vf.Point} [anchor] - Default anchor point used for sprite placement / rotation
+     * A texture stores the information that represents an image or part of an image.
+     *
+     * It cannot be added to the display list directly; instead use it as the texture for a Sprite.
+     * If no frame is provided for a texture, then the whole image is used.
+     *
+     * You can directly create a texture from an image and then reuse it multiple times like this :
+     *
+     * ```js
+     * let texture = vf.Texture.from('assets/image.png');
+     * let sprite1 = new vf.Sprite(texture);
+     * let sprite2 = new vf.Sprite(texture);
+     * ```
+     *
+     * If you didnt pass the texture frame to constructor, it enables `noFrame` mode:
+     * it subscribes on baseTexture events, it automatically resizes at the same time as baseTexture.
+     *
+     * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing.
+     * You can check for this by checking the sprite's _textureID property.
+     * ```js
+     * var texture = vf.Texture.from('assets/image.svg');
+     * var sprite1 = new vf.Sprite(texture);
+     * //sprite1._textureID should not be undefined if the texture has finished processing the SVG file
+     * ```
+     * You can use a ticker or rAF to ensure your sprites load the finished textures after processing. See issue #3068.
+     *
+     * @class
+     * @extends vf.utils.EventEmitter
+     * @memberof vf
      */
     class Texture extends vf.utils.EventEmitter {
         constructor(baseTexture: vf.BaseTexture, frame?: vf.Rectangle, orig?: vf.Rectangle, trim?: vf.Rectangle, rotate?: number, anchor?: vf.Point);
@@ -6207,6 +6854,12 @@ declare namespace vf {
          * @member {boolean} vf.Texture#valid
          */
         valid: boolean;
+        /**
+         * This will let a renderer know that a texture has been updated (used mainly for WebGL uv updates)
+         *
+         * @member {boolean} vf.Texture#requiresUpdate
+         */
+        requiresUpdate: boolean;
         /**
          * The WebGL UV data cache. Can be used as quad UV
          *
@@ -6371,10 +7024,6 @@ declare namespace vf {
          */
         height: number;
         /**
-         * Utility function for BaseTexture|Texture cast
-         */
-        castToBaseTexture(): void;
-        /**
          * An empty texture, used often to not have to create multiple empty textures.
          * Can not be destroyed.
          *
@@ -6394,10 +7043,21 @@ declare namespace vf {
         static WHITE: vf.Texture;
     }
     /**
+     * Class controls uv mapping from Texture normal space to BaseTexture normal space.
      *
-     * @param {vf.Texture} texture observed texture
-     * @param {number} [clampMargin] Changes frame clamping, 0.5 by default. Use -0.5 for extra border.
-     * @constructor
+     * Takes `trim` and `rotate` into account. May contain clamp settings for Meshes and TilingSprite.
+     *
+     * Can be used in Texture `uvMatrix` field, or separately, you can use different clamp settings on the same texture.
+     * If you want to add support for texture region of certain feature or filter, that's what you're looking for.
+     *
+     * Takes track of Texture changes through `_lastTextureID` private field.
+     * Use `update()` method call to track it from outside.
+     *
+     * @see vf.Texture
+     * @see vf.Mesh
+     * @see vf.TilingSprite
+     * @class
+     * @memberof vf
      */
     class TextureMatrix {
         constructor(texture: vf.Texture, clampMargin?: number);
@@ -6471,7 +7131,24 @@ declare namespace vf {
          */
         update(forceUpdate?: boolean): boolean;
     }
+    /**
+     * Stores a texture's frame in UV coordinates, in
+     * which everything lies in the rectangle `[(0,0), (1,0),
+     * (1,1), (0,1)]`.
+     *
+     * | Corner       | Coordinates |
+     * |--------------|-------------|
+     * | Top-Left     | `(x0,y0)`   |
+     * | Top-Right    | `(x1,y1)`   |
+     * | Bottom-Right | `(x2,y2)`   |
+     * | Bottom-Left  | `(x3,y3)`   |
+     *
+     * @class
+     * @protected
+     * @memberof vf
+     */
     class TextureUvs {
+        constructor();
         /**
          * X-component of top-left corner `(x0,y0)`.
          *
@@ -6542,6 +7219,18 @@ declare namespace vf {
      * @namespace vf.resources
      */
     namespace resources {
+        /**
+         * A resource that contains a number of sources.
+         *
+         * @class
+         * @extends vf.resources.Resource
+         * @memberof vf.resources
+         * @param {number|Array<*>} source - Number of items in array or the collection
+         *        of image URLs to use. Can also be resources, image elements, canvas, etc.
+         * @param {object} [options] Options to apply to {@link vf.resources.autoDetectResource}
+         * @param {number} [options.width] - Width of the resource
+         * @param {number} [options.height] - Height of the resource
+         */
         class ArrayResource extends vf.resources.Resource {
             constructor(source: number | any[], options?: {
                 width?: number;
@@ -6611,6 +7300,18 @@ declare namespace vf {
              */
             protected internal: boolean;
             /**
+             * Bind to a parent BaseTexture
+             *
+             * @param {vf.BaseTexture} baseTexture - Parent texture
+             */
+            bind(baseTexture: vf.BaseTexture): void;
+            /**
+             * Unbind to a parent BaseTexture
+             *
+             * @param {vf.BaseTexture} baseTexture - Parent texture
+             */
+            unbind(baseTexture: vf.BaseTexture): void;
+            /**
              * Trigger a resize event
              * @param {number} width X dimension
              * @param {number} height Y dimension
@@ -6627,6 +7328,13 @@ declare namespace vf {
              */
             update(): void;
             /**
+             * This can be overridden to start preloading a resource
+             * or do any other prepare step.
+             * @protected
+             * @return {Promise<void>} Handle the validate event
+             */
+            protected load(): Promise<void>;
+            /**
              * The width of the resource.
              *
              * @member {number}
@@ -6641,37 +7349,32 @@ declare namespace vf {
              */
             readonly height: number;
             /**
+             * Set the style, optional to override
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} `true` is success
+             */
+            style(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
+            /**
+             * Clean up anything, this happens when destroying is ready.
+             *
+             * @protected
+             */
+            protected dispose(): void;
+            /**
              * Call when destroying resource, unbind any BaseTexture object
              * before calling this method, as reference counts are maintained
              * internally.
              */
             destroy(): void;
-            /**
-             * Set the parent base texture
-             * @member {vf.BaseTexture}
-             * @override
-             */
-            bind: vf.BaseTexture;
-            /**
-             * Unset the parent base texture
-             * @member {vf.BaseTexture}
-             * @override
-             */
-            unbind: vf.BaseTexture;
-            /**
-             * Load all the resources simultaneously
-             * @override
-             * @return {Promise<void>} When load is resolved
-             */
-            protected load(): Promise<void>;
-            /**
-             * Destroy this BaseImageResource
-             * @override
-             */
-            protected dispose(): void;
         }
         /**
-         * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} source
+         * Base for all the image/canvas resources
+         * @class
+         * @extends vf.resources.Resource
+         * @memberof vf.resources
          */
         class BaseImageResource extends vf.resources.Resource {
             constructor(source: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | SVGElement);
@@ -6777,23 +7480,32 @@ declare namespace vf {
              */
             readonly height: number;
             /**
+             * Set the style, optional to override
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} `true` is success
+             */
+            style(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
+            /**
+             * Clean up anything, this happens when destroying is ready.
+             *
+             * @protected
+             */
+            protected dispose(): void;
+            /**
              * Call when destroying resource, unbind any BaseTexture object
              * before calling this method, as reference counts are maintained
              * internally.
              */
             destroy(): void;
-            /**
-             * Destroy this BaseImageResource
-             * @override
-             * @param {vf.BaseTexture} [fromTexture] Optional base texture
-             */
-            protected dispose(fromTexture?: vf.BaseTexture): void;
         }
         /**
-         * @param {Float32Array|Uint8Array|Uint32Array} source - Source buffer
-         * @param {object} options - Options
-         * @param {number} options.width - Width of the texture
-         * @param {number} options.height - Height of the texture
+         * Buffer resource with data of typed array.
+         * @class
+         * @extends vf.resources.Resource
+         * @memberof vf.resources
          */
         class BufferResource extends vf.resources.Resource {
             constructor(source: Float32Array | Uint8Array | Uint32Array, options: {
@@ -6901,16 +7613,26 @@ declare namespace vf {
              */
             readonly height: number;
             /**
+             * Set the style, optional to override
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} `true` is success
+             */
+            style(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
+            /**
+             * Clean up anything, this happens when destroying is ready.
+             *
+             * @protected
+             */
+            protected dispose(): void;
+            /**
              * Call when destroying resource, unbind any BaseTexture object
              * before calling this method, as reference counts are maintained
              * internally.
              */
             destroy(): void;
-            /**
-             * Destroy and don't use after this
-             * @override
-             */
-            protected dispose(): void;
         }
         /**
          * Resource type for HTMLCanvasElement.
@@ -6950,6 +7672,12 @@ declare namespace vf {
              */
             update(): void;
             /**
+             * Clean up anything, this happens when destroying is ready.
+             *
+             * @protected
+             */
+            protected dispose(): void;
+            /**
              * Internal width of the resource
              * @member {number} vf.resources.Resource#_width
              * @protected
@@ -7023,12 +7751,33 @@ declare namespace vf {
              */
             readonly height: number;
             /**
+             * Set the style, optional to override
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} `true` is success
+             */
+            style(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
+            /**
              * Call when destroying resource, unbind any BaseTexture object
              * before calling this method, as reference counts are maintained
              * internally.
              */
             destroy(): void;
         }
+        /**
+         * Resource for a CubeTexture which contains six resources.
+         *
+         * @class
+         * @extends vf.resources.ArrayResource
+         * @memberof vf.resources
+         * @param {Array<string|vf.resources.Resource>} [source] Collection of URLs or resources
+         *        to use as the sides of the cube.
+         * @param {object} [options] - ImageResource options
+         * @param {number} [options.width] - Width of resource
+         * @param {number} [options.height] - Height of resource
+         */
         class CubeResource extends vf.resources.ArrayResource {
             constructor(source?: (string | vf.resources.Resource)[], options?: {
                 width?: number;
@@ -7040,14 +7789,6 @@ declare namespace vf {
              * @returns {boolean} true is success
              */
             upload(): boolean;
-            /**
-             * Used to auto-detect the type of resource.
-             *
-             * @static
-             * @param {object} source - The source object
-             * @return {boolean} `true` if source is an array of 6 elements
-             */
-            static test(source: any): boolean;
             /**
              * Number of texture sides to store for CubeResources
              *
@@ -7077,6 +7818,12 @@ declare namespace vf {
              */
             readonly length: number;
             /**
+             * Clean up anything, this happens when destroying is ready.
+             *
+             * @protected
+             */
+            protected dispose(): void;
+            /**
              * Set a resource by ID
              *
              * @param {vf.resources.Resource} resource
@@ -7084,6 +7831,25 @@ declare namespace vf {
              * @return {vf.resources.ArrayResource} Instance for chaining
              */
             addResourceAt(resource: vf.resources.Resource, index: number): vf.resources.ArrayResource;
+            /**
+             * Bind to a parent BaseTexture
+             *
+             * @param {vf.BaseTexture} baseTexture - Parent texture
+             */
+            bind(baseTexture: vf.BaseTexture): void;
+            /**
+             * Unbind to a parent BaseTexture
+             *
+             * @param {vf.BaseTexture} baseTexture - Parent texture
+             */
+            unbind(baseTexture: vf.BaseTexture): void;
+            /**
+             * This can be overridden to start preloading a resource
+             * or do any other prepare step.
+             * @protected
+             * @return {Promise<void>} Handle the validate event
+             */
+            protected load(): Promise<void>;
             /**
              * Internal width of the resource
              * @member {number} vf.resources.Resource#_width
@@ -7142,6 +7908,15 @@ declare namespace vf {
              * @readonly
              */
             readonly height: number;
+            /**
+             * Set the style, optional to override
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} `true` is success
+             */
+            style(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
             /**
              * Call when destroying resource, unbind any BaseTexture object
              * before calling this method, as reference counts are maintained
@@ -7172,6 +7947,12 @@ declare namespace vf {
              */
             data: Float32Array | Uint8Array | Uint32Array;
             /**
+             * Clean up anything, this happens when destroying is ready.
+             *
+             * @protected
+             */
+            protected dispose(): void;
+            /**
              * Internal width of the resource
              * @member {number} vf.resources.Resource#_width
              * @protected
@@ -7248,6 +8029,15 @@ declare namespace vf {
              * @readonly
              */
             readonly height: number;
+            /**
+             * Set the style, optional to override
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} `true` is success
+             */
+            style(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
             /**
              * Call when destroying resource, unbind any BaseTexture object
              * before calling this method, as reference counts are maintained
@@ -7293,6 +8083,12 @@ declare namespace vf {
              */
             update(): void;
             /**
+             * Clean up anything, this happens when destroying is ready.
+             *
+             * @protected
+             */
+            protected dispose(): void;
+            /**
              * Internal width of the resource
              * @member {number} vf.resources.Resource#_width
              * @protected
@@ -7366,6 +8162,15 @@ declare namespace vf {
              */
             readonly height: number;
             /**
+             * Set the style, optional to override
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} `true` is success
+             */
+            style(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
+            /**
              * Call when destroying resource, unbind any BaseTexture object
              * before calling this method, as reference counts are maintained
              * internally.
@@ -7373,12 +8178,10 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {HTMLImageElement|string} source - image source or URL
-         * @param {boolean} [options.autoLoad=true] start loading process
-         * @param {boolean} [options.createBitmap=vf.settings.CREATE_IMAGE_BITMAP] whether its required to create
-         *        a bitmap before upload
-         * @param {boolean} [options.crossorigin=true] - Load image using cross origin
-         * @param {vf.ALPHA_MODES} [options.alphaMode=vf.ALPHA_MODES.UNPACK] - Premultiply image alpha in bitmap
+         * Resource type for HTMLImageElement.
+         * @class
+         * @extends vf.resources.BaseImageResource
+         * @memberof vf.resources
          */
         class ImageResource extends vf.resources.BaseImageResource {
             constructor(source: HTMLImageElement | string);
@@ -7417,7 +8220,7 @@ declare namespace vf {
             /**
              * returns a promise when image will be loaded and processed
              *
-             * @param {boolean} [createBitmap] whether process image into bitmap
+             * @param {boolean} [createBitmap=true] whether process image into bitmap
              * @returns {Promise<void>}
              */
             load(createBitmap?: boolean): Promise<void>;
@@ -7448,6 +8251,12 @@ declare namespace vf {
              * Triggers one update in any case.
              */
             update(): void;
+            /**
+             * Clean up anything, this happens when destroying is ready.
+             *
+             * @protected
+             */
+            protected dispose(): void;
             /**
              * Internal width of the resource
              * @member {number} vf.resources.Resource#_width
@@ -7515,6 +8324,15 @@ declare namespace vf {
              */
             readonly height: number;
             /**
+             * Set the style, optional to override
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} `true` is success
+             */
+            style(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
+            /**
              * Call when destroying resource, unbind any BaseTexture object
              * before calling this method, as reference counts are maintained
              * internally.
@@ -7522,8 +8340,12 @@ declare namespace vf {
             destroy(): void;
         }
         /**
-         * @param {number} [width=0] Width of the resource
-         * @param {number} [height=0] Height of the resource
+         * Base resource class for textures that manages validation and uploading, depending on its type.
+         *
+         * Uploading of a base texture to the GPU is required.
+         *
+         * @class
+         * @memberof vf.resources
          */
         class Resource {
             constructor(width?: number, height?: number);
@@ -7605,6 +8427,24 @@ declare namespace vf {
              */
             readonly height: number;
             /**
+             * Uploads the texture or returns false if it cant for some reason. Override this.
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} true is success
+             */
+            upload(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
+            /**
+             * Set the style, optional to override
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} `true` is success
+             */
+            style(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
+            /**
              * Clean up anything, this happens when destroying is ready.
              *
              * @protected
@@ -7617,6 +8457,18 @@ declare namespace vf {
              */
             destroy(): void;
         }
+        /**
+         * Resource type for SVG elements and graphics.
+         * @class
+         * @extends vf.resources.BaseImageResource
+         * @memberof vf.resources
+         * @param {string} source - Base64 encoded SVG element or URL for SVG file.
+         * @param {object} [options] - Options to use
+         * @param {number} [options.scale=1] Scale to apply to SVG. Overridden by...
+         * @param {number} [options.width] Rasterize SVG this wide. Aspect ratio preserved if height not specified.
+         * @param {number} [options.height] Rasterize SVG this high. Aspect ratio preserved if width not specified.
+         * @param {boolean} [options.autoLoad=true] Start loading right away.
+         */
         class SVGResource extends vf.resources.BaseImageResource {
             constructor(source: string, options?: {
                 scale?: number;
@@ -7694,6 +8546,12 @@ declare namespace vf {
              */
             update(): void;
             /**
+             * Clean up anything, this happens when destroying is ready.
+             *
+             * @protected
+             */
+            protected dispose(): void;
+            /**
              * Internal width of the resource
              * @member {number} vf.resources.Resource#_width
              * @protected
@@ -7767,12 +8625,34 @@ declare namespace vf {
              */
             readonly height: number;
             /**
+             * Set the style, optional to override
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} `true` is success
+             */
+            style(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
+            /**
              * Call when destroying resource, unbind any BaseTexture object
              * before calling this method, as reference counts are maintained
              * internally.
              */
             destroy(): void;
         }
+        /**
+         * Resource type for HTMLVideoElement.
+         * @class
+         * @extends vf.resources.BaseImageResource
+         * @memberof vf.resources
+         * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
+         * @param {object} [options] - Options to use
+         * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
+         * @param {boolean} [options.autoPlay=true] - Start playing video immediately
+         * @param {number} [options.updateFPS=0] - How many times a second to update the texture from the video.
+         * Leave at 0 to update at every render.
+         * @param {boolean} [options.crossorigin=true] - Load image using cross origin
+         */
         class VideoResource extends vf.resources.BaseImageResource {
             constructor(source: HTMLVideoElement | any | string | (string | any)[], options?: {
                 autoLoad?: boolean;
@@ -7788,6 +8668,12 @@ declare namespace vf {
              * @default true
              */
             autoPlay: boolean;
+            /**
+             * Trigger updating of the texture
+             *
+             * @param {number} [deltaTime=0] - time delta since last tick
+             */
+            update(deltaTime?: number): void;
             /**
              * Start preloading the video resource.
              *
@@ -7841,10 +8727,11 @@ declare namespace vf {
              */
             upload(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture, source?: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | SVGElement): boolean;
             /**
-             * Checks if source width/height was changed, resize can cause extra baseTexture update.
-             * Triggers one update in any case.
+             * Clean up anything, this happens when destroying is ready.
+             *
+             * @protected
              */
-            update(): void;
+            protected dispose(): void;
             /**
              * Internal width of the resource
              * @member {number} vf.resources.Resource#_width
@@ -7911,6 +8798,15 @@ declare namespace vf {
              * @readonly
              */
             readonly height: number;
+            /**
+             * Set the style, optional to override
+             *
+             * @param {vf.Renderer} renderer - yeah, renderer!
+             * @param {vf.BaseTexture} baseTexture - the texture
+             * @param {vf.GLTexture} glTexture - texture instance for this webgl context
+             * @returns {boolean} `true` is success
+             */
+            style(renderer: vf.Renderer, baseTexture: vf.BaseTexture, glTexture: vf.GLTexture): boolean;
             /**
              * Call when destroying resource, unbind any BaseTexture object
              * before calling this method, as reference counts are maintained
@@ -7985,9 +8881,24 @@ declare namespace vf {
             updateFPS?: number;
         }): vf.resources.Resource;
     }
+    /**
+     * Helper class to create a quad
+     *
+     * @class
+     * @memberof vf
+     */
     class Quad {
+        constructor();
     }
+    /**
+     * Helper class to create a quad with uvs like in v4
+     *
+     * @class
+     * @memberof vf
+     * @extends vf.Geometry
+     */
     class QuadUv extends vf.Geometry {
+        constructor();
         /**
          * An array of vertices
          *
@@ -8034,20 +8945,18 @@ declare namespace vf {
         /**
          *
          * Adds an attribute to the geometry
-         * Note: `stride` and `start` should be `undefined` if you dont know them, not 0!
          *
          * @param {String} id - the name of the attribute (matching up to a shader)
          * @param {vf.Buffer|number[]} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
          * @param {Number} [size=0] the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
          * @param {Boolean} [normalized=false] should the data be normalized.
          * @param {Number} [type=vf.TYPES.FLOAT] what type of number is the attribute. Check {vf.TYPES} to see the ones available
-         * @param {Number} [stride] How far apart (in floats) the start of each value is. (used for interleaving data)
-         * @param {Number} [start] How far into the array to start reading values (used for interleaving data)
-         * @param {boolean} [instance=false] Instancing flag
+         * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
+         * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
          *
          * @return {vf.Geometry} returns self, useful for chaining.
          */
-        addAttribute(id: string, buffer?: vf.Buffer | number[], size?: number, normalized?: boolean, type?: number, stride?: number, start?: number, instance?: boolean): vf.Geometry;
+        addAttribute(id: string, buffer?: vf.Buffer | number[], size?: number, normalized?: boolean, type?: number, stride?: number, start?: number): vf.Geometry;
         /**
          * returns the requested attribute
          *
@@ -8099,7 +9008,17 @@ declare namespace vf {
          */
         clone(): vf.Geometry;
     }
+    /**
+     * 'Builder' pattern for bounds rectangles.
+     *
+     * This could be called an Axis-Aligned Bounding Box.
+     * It is not an actual shape. It is a mutable thing; no 'EMPTY' or those kind of problems.
+     *
+     * @class
+     * @memberof vf
+     */
     class Bounds {
+        constructor();
         /**
          * @member {number} vf.Bounds#minX
          * @default 0
@@ -8120,14 +9039,6 @@ declare namespace vf {
          * @default 0
          */
         maxY: number;
-        /**
-         * It is updated to _boundsID of corresponding object to keep bounds in sync with content.
-         * Updated from outside, thus public modifier.
-         *
-         * @member {number} vf.Bounds#updateID
-         * @public
-         */
-        public updateID: number;
         /**
          * Checks if bounds are empty.
          *
@@ -8150,9 +9061,9 @@ declare namespace vf {
         /**
          * This function should be inlined when its possible.
          *
-         * @param {vf.IPoint} point - The point to add.
+         * @param {vf.Point} point - The point to add.
          */
-        addPoint(point: vf.IPoint): void;
+        addPoint(point: vf.Point): void;
         /**
          * Adds a quad, not transformed
          *
@@ -8197,38 +9108,38 @@ declare namespace vf {
          */
         addVertices(transform: vf.Transform, vertices: Float32Array, beginOffset: number, endOffset: number): void;
         /**
-         * Add an array of mesh vertices.
+         * Add an array of mesh vertices
          *
          * @param {vf.Matrix} matrix - mesh matrix
          * @param {Float32Array} vertices - mesh coordinates in array
          * @param {number} beginOffset - begin offset
          * @param {number} endOffset - end offset, excluded
-         * @param {number} [padX=0] - x padding
-         * @param {number} [padY=0] - y padding
+         * @param {number} [padX] - x padding
+         * @param {number} [padY] - y padding
          */
         addVerticesMatrix(matrix: vf.Matrix, vertices: Float32Array, beginOffset: number, endOffset: number, padX?: number, padY?: number): void;
         /**
-         * Adds other Bounds.
+         * Adds other Bounds
          *
-         * @param {vf.Bounds} bounds - The Bounds to be added
+         * @param {vf.Bounds} bounds - TODO
          */
         addBounds(bounds: vf.Bounds): void;
         /**
-         * Adds other Bounds, masked with Bounds.
+         * Adds other Bounds, masked with Bounds
          *
-         * @param {vf.Bounds} bounds - The Bounds to be added.
+         * @param {vf.Bounds} bounds - TODO
          * @param {vf.Bounds} mask - TODO
          */
         addBoundsMask(bounds: vf.Bounds, mask: vf.Bounds): void;
         /**
-         * Adds other Bounds, multiplied by matrix. Bounds shouldn't be empty.
+         * Adds other Bounds, multiplied by matrix. Bounds shouldn't be empty
          *
          * @param {vf.Bounds} bounds other bounds
          * @param {vf.Matrix} matrix multiplicator
          */
         addBoundsMatrix(bounds: vf.Bounds, matrix: vf.Matrix): void;
         /**
-         * Adds other Bounds, masked with Rectangle.
+         * Adds other Bounds, masked with Rectangle
          *
          * @param {vf.Bounds} bounds - TODO
          * @param {vf.Rectangle} area - TODO
@@ -8254,7 +9165,22 @@ declare namespace vf {
          */
         addFramePad(x0: number, y0: number, x1: number, y1: number, padX: number, padY: number): void;
     }
+    /**
+     * A Container represents a collection of display objects.
+     *
+     * It is the base class of all display objects that act as a container for other objects (like Sprites).
+     *
+     *```js
+     * let container = new vf.Container();
+     * container.addChild(sprite);
+     * ```
+     *
+     * @class
+     * @extends vf.DisplayObject
+     * @memberof vf
+     */
     class Container extends vf.DisplayObject {
+        constructor();
         /**
          * To be overridden by the subclass
          * @method _renderCanvas
@@ -8318,10 +9244,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -8361,10 +9287,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -8393,15 +9319,6 @@ declare namespace vf {
          *
          */
         calculateBounds(): void;
-        /**
-         * Retrieves the local bounds of the displayObject as a rectangle object.
-         *
-         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-         * @param {boolean} [skipChildrenUpdate=false] Setting to `true` will stop re-calculation of children transforms,
-         *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
-         * @return {vf.Rectangle} The rectangular bounding area.
-         */
-        getLocalBounds(rect?: vf.Rectangle, skipChildrenUpdate?: boolean): vf.Rectangle;
         /**
          * Recalculates the bounds of the object. Override this to
          * calculate the bounds of the specific object (not including children).
@@ -8459,14 +9376,6 @@ declare namespace vf {
          * @member {number}
          */
         height: number;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -8581,8 +9490,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -8624,44 +9534,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -8687,6 +9565,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -8702,26 +9585,33 @@ declare namespace vf {
          */
         getBounds(skipUpdate?: boolean, rect?: vf.Rectangle): vf.Rectangle;
         /**
+         * Retrieves the local bounds of the displayObject as a rectangle object.
+         *
+         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+         * @return {vf.Rectangle} The rectangular bounding area.
+         */
+        getLocalBounds(rect?: vf.Rectangle): vf.Rectangle;
+        /**
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -8744,11 +9634,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -8781,23 +9666,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -8948,7 +9833,17 @@ declare namespace vf {
          */
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
+    /**
+     * The base class for all objects that are rendered on the screen.
+     *
+     * This is an abstract class and should not be used on its own; rather it should be extended.
+     *
+     * @class
+     * @extends vf.utils.EventEmitter
+     * @memberof vf
+     */
     class DisplayObject extends vf.utils.EventEmitter {
+        constructor();
         /**
          *  Flag for if the object is accessible. If true AccessibilityManager will overlay a
          *   shadow div with attributes set
@@ -9012,6 +9907,12 @@ declare namespace vf {
          */
         accessibleChildren: boolean;
         /**
+         * Mixes all enumerable properties and methods from a source object to DisplayObject.
+         *
+         * @param {object} source The source of properties and methods to mix in.
+         */
+        static mixin(source: any): void;
+        /**
          * World transform and local transform of this object.
          * This will become read-only later, please do not assign anything there unless you know what are you doing.
          *
@@ -9046,8 +9947,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -9089,44 +9991,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -9152,22 +10022,27 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
-         * Mixes all enumerable properties and methods from a source object to DisplayObject.
-         *
-         * @param {object} source The source of properties and methods to mix in.
+         * @protected
+         * @member {vf.DisplayObject}
          */
-        static mixin(source: any): void;
-        /**
-         * Recursively updates transform of all objects from the root to this one
-         * internal function for toLocal()
-         */
-        _recursivePostUpdateTransform(): void;
+        protected _tempDisplayObjectParent: vf.DisplayObject;
         /**
          * Updates the object transform for rendering.
          *
          * TODO - Optimization pass!
          */
         updateTransform(): void;
+        /**
+         * Recalculates the bounds of the display object.
+         *
+         * Does nothing by default and can be overwritten in a parent class.
+         */
+        calculateBounds(): void;
+        /**
+         * Recursively updates transform of all objects from the root to this one
+         * internal function for toLocal()
+         */
+        _recursivePostUpdateTransform(): void;
         /**
          * Retrieves the bounds of the displayObject as a rectangle object.
          *
@@ -9189,23 +10064,29 @@ declare namespace vf {
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
+        /**
+         * Renders the object using the WebGL renderer.
+         *
+         * @param {vf.Renderer} renderer - The renderer.
+         */
+        render(renderer: vf.Renderer): void;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -9236,11 +10117,6 @@ declare namespace vf {
          *
          */
         destroy(): void;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -9273,23 +10149,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -9441,7 +10317,25 @@ declare namespace vf {
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
     /**
-     * @param {vf.Renderer} renderer - A reference to the current renderer
+     * This class provides renderer-specific plugins for exporting content from a renderer.
+     * For instance, these plugins can be used for saving an Image, Canvas element or for exporting the raw image data (pixels).
+     *
+     * Do not instantiate these plugins directly. It is available from the `renderer.plugins` property.
+     * See {@link vf.CanvasRenderer#plugins} or {@link vf.Renderer#plugins}.
+     * @example
+     * // Create a new app (will auto-add extract plugin to renderer)
+     * const app = new vf.Application();
+     *
+     * // Draw a red circle
+     * const graphics = new vf.Graphics()
+     *     .beginFill(0xFF0000)
+     *     .drawCircle(0, 0, 50);
+     *
+     * // Render the graphics as an HTMLImageElement
+     * const image = app.renderer.plugins.extract.image(graphics);
+     * document.body.appendChild(image);
+     * @class
+     * @memberof vf
      */
     class Extract {
         constructor(renderer: vf.Renderer);
@@ -9490,13 +10384,22 @@ declare namespace vf {
         destroy(): void;
     }
     /**
-     * @param {vf.GraphicsGeometry} [geometry=null] - Geometry to use, if omitted
-     *        will create a new GraphicsGeometry instance.
+     * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
+     * rectangles to the display, and to color and fill them.
+     *
+     * Note that because Graphics can share a GraphicsGeometry with other instances,
+     * it is necessary to call `destroy()` to properly dereference the underlying
+     * GraphicsGeometry and avoid a memory leak. Alternatively, keep using the same
+     * Graphics instance and call `clear()` between redraws.
+     *
+     * @class
+     * @extends vf.Container
+     * @memberof vf
      */
     class Graphics extends vf.Container {
         constructor(geometry?: vf.GraphicsGeometry);
         /**
-         * Generates a canvas texture. Only available with **pixi.js-legacy** bundle
+         * Generates a canvas texture. Only available with **vf.js** bundle
          * or the **@pixi/canvas-graphics** package.
          * @method generateCanvasTexture
          * @memberof vf.Graphics#
@@ -9506,16 +10409,22 @@ declare namespace vf {
          */
         generateCanvasTexture(scaleMode: vf.SCALE_MODES, resolution: number): vf.Texture;
         /**
+         * Includes vertex positions, face indices, normals, colors, UVs, and
+         * custom attributes within buffers, reducing the cost of passing all
+         * this data to the GPU. Can be shared between multiple Mesh or Graphics objects.
+         * @member {vf.GraphicsGeometry} vf.Graphics#geometry
+         * @readonly
+         */
+        readonly geometry: vf.GraphicsGeometry;
+        /**
          * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
          * Can be shared between multiple Graphics objects.
-         *
          * @member {vf.Shader} vf.Graphics#shader
          */
         shader: vf.Shader;
         /**
          * Represents the WebGL state the Graphics required to render, excludes shader and geometry. E.g.,
          * blend mode, culling, depth testing, direction of rendering triangles, backface, etc.
-         *
          * @member {vf.State} vf.Graphics#state
          */
         state: vf.State;
@@ -9584,14 +10493,6 @@ declare namespace vf {
          */
         protected batchTint: number;
         /**
-         * Update dirty for limiting calculating batches.
-         *
-         * @protected
-         * @member {number} vf.Graphics#batchDirty
-         * @default -1
-         */
-        protected batchDirty: number;
-        /**
          * Copy of the object vertex data.
          *
          * @protected
@@ -9605,15 +10506,6 @@ declare namespace vf {
          * @default 'batch'
          */
         pluginName: string;
-        /**
-         * Includes vertex positions, face indices, normals, colors, UVs, and
-         * custom attributes within buffers, reducing the cost of passing all
-         * this data to the GPU. Can be shared between multiple Mesh or Graphics objects.
-         *
-         * @member {vf.GraphicsGeometry}
-         * @readonly
-         */
-        readonly geometry: vf.GraphicsGeometry;
         /**
          * Creates a new Graphics object with the same values as this one.
          * Note that the only the properties of the object are cloned, not its transform (position,scale,etc)
@@ -9864,7 +10756,7 @@ declare namespace vf {
          * @param {number[]|vf.Point[]|vf.Polygon} path - The path data used to construct the polygon.
          * @return {vf.Graphics} This Graphics object. Good for chaining method calls
          */
-        drawPolygon(...path: (number[] | vf.Point[] | vf.Polygon)[]): vf.Graphics;
+        drawPolygon(path: number[] | vf.Point[] | vf.Polygon): vf.Graphics;
         /**
          * Draw any shape.
          *
@@ -10054,10 +10946,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -10097,10 +10989,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -10130,15 +11022,6 @@ declare namespace vf {
          */
         calculateBounds(): void;
         /**
-         * Retrieves the local bounds of the displayObject as a rectangle object.
-         *
-         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-         * @param {boolean} [skipChildrenUpdate=false] Setting to `true` will stop re-calculation of children transforms,
-         *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
-         * @return {vf.Rectangle} The rectangular bounding area.
-         */
-        getLocalBounds(rect?: vf.Rectangle, skipChildrenUpdate?: boolean): vf.Rectangle;
-        /**
          * Renders the object using the WebGL renderer
          *
          * @param {vf.Renderer} renderer - The renderer
@@ -10163,14 +11046,6 @@ declare namespace vf {
          * @member {number}
          */
         height: number;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -10285,8 +11160,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -10328,44 +11204,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -10391,6 +11235,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -10406,26 +11255,33 @@ declare namespace vf {
          */
         getBounds(skipUpdate?: boolean, rect?: vf.Rectangle): vf.Rectangle;
         /**
+         * Retrieves the local bounds of the displayObject as a rectangle object.
+         *
+         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+         * @return {vf.Rectangle} The rectangular bounding area.
+         */
+        getLocalBounds(rect?: vf.Rectangle): vf.Rectangle;
+        /**
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -10448,11 +11304,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -10485,23 +11336,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -10640,14 +11491,13 @@ declare namespace vf {
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
     /**
+     * A class to contain data useful for Graphics objects
      *
-     * @param {vf.Circle|vf.Ellipse|vf.Polygon|vf.Rectangle|vf.RoundedRectangle} shape - The shape object to draw.
-     * @param {vf.FillStyle} [fillStyle] - the width of the line to draw
-     * @param {vf.LineStyle} [lineStyle] - the color of the line to draw
-     * @param {vf.Matrix} [matrix] - Transform matrix
+     * @class
+     * @memberof vf
      */
     class GraphicsData {
-        constructor(shape: vf.Circle | vf.Ellipse | vf.Polygon | vf.Rectangle | vf.RoundedRectangle, fillStyle?: vf.FillStyle, lineStyle?: vf.LineStyle, matrix?: vf.Matrix);
+        constructor(shape: vf.Circle | vf.Rectangle | vf.Ellipse | vf.Polygon, fillStyle?: vf.FillStyle, lineStyle?: vf.LineStyle, matrix?: vf.Matrix);
         /**
          * The shape object to draw.
          * @member {vf.Circle|vf.Ellipse|vf.Polygon|vf.Rectangle|vf.RoundedRectangle} vf.GraphicsData#shape
@@ -10691,11 +11541,22 @@ declare namespace vf {
         clone(): vf.GraphicsData;
         /**
          * Destroys the Graphics data.
-         *
          */
         destroy(): void;
     }
+    /**
+     * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
+     * rectangles to the display, and to color and fill them.
+     *
+     * GraphicsGeometry is designed to not be continually updating the geometry since it's expensive
+     * to re-tesselate using **earcut**. Consider using {@link vf.Mesh} for this use-case, it's much faster.
+     *
+     * @class
+     * @extends vf.BatchGeometry
+     * @memberof vf
+     */
     class GraphicsGeometry extends vf.BatchGeometry {
+        constructor();
         /**
          * An array of points to draw, 2 numbers per point
          *
@@ -10854,10 +11715,22 @@ declare namespace vf {
          */
         drawHole(shape: vf.Circle | vf.Ellipse | vf.Polygon | vf.Rectangle | vf.RoundedRectangle, matrix: vf.Matrix): vf.GraphicsGeometry;
         /**
-         * Destroys the GraphicsGeometry object.
+         * Destroys the Graphics object.
          *
+         * @param {object|boolean} [options] - Options parameter. A boolean will act as if all
+         *  options have been set to that value
+         * @param {boolean} [options.children=false] - if set to true, all the children will have
+         *  their destroy method called as well. 'options' will be passed on to those calls.
+         * @param {boolean} [options.texture=false] - Only used for child Sprites if options.children is set to true
+         *  Should it destroy the texture of the child sprite
+         * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
+         *  Should it destroy the base texture of the child sprite
          */
-        destroy(): void;
+        destroy(options?: {
+            children?: boolean;
+            texture?: boolean;
+            baseTexture?: boolean;
+        }): void;
         /**
          * Check to see if a point is contained within this geometry.
          *
@@ -10868,10 +11741,8 @@ declare namespace vf {
         /**
          * Generates intermediate batch data. Either gets converted to drawCalls
          * or used to convert to batch objects directly by the Graphics object.
-         *
-         * @param {boolean} [aloow32Indices] - Allow using 32-bit indices for preventings artefacts when more that 65535 vertices
          */
-        updateBatches(aloow32Indices?: boolean): void;
+        updateBatches(): void;
         /**
          * Affinity check
          *
@@ -11032,42 +11903,14 @@ declare namespace vf {
         minSegments: number;
         maxSegments: number;
     };
+    /**
+     * Fill style object for Graphics.
+     *
+     * @class
+     * @memberof vf
+     */
     class FillStyle {
-        /**
-         * The hex color value used when coloring the Graphics object.
-         *
-         * @member {number} vf.FillStyle#color
-         * @default 0xFFFFFF
-         */
-        color: number;
-        /**
-         * The alpha value used when filling the Graphics object.
-         *
-         * @member {number} vf.FillStyle#alpha
-         * @default 1
-         */
-        alpha: number;
-        /**
-         * The texture to be used for the fill.
-         *
-         * @member {vf.Texture} vf.FillStyle#texture
-         * @default 0
-         */
-        texture: vf.Texture;
-        /**
-         * The transform aplpied to the texture.
-         *
-         * @member {vf.Matrix} vf.FillStyle#matrix
-         * @default null
-         */
-        matrix: vf.Matrix;
-        /**
-         * If the current fill is visible.
-         *
-         * @member {boolean} vf.FillStyle#visible
-         * @default false
-         */
-        visible: boolean;
+        constructor();
         /**
          * Clones the object
          *
@@ -11079,47 +11922,10 @@ declare namespace vf {
          */
         reset(): void;
         /**
-         * Destroy and don't use after this
-         */
-        destroy(): void;
-    }
-    class LineStyle extends vf.FillStyle {
-        /**
-         * The width (thickness) of any lines drawn.
-         *
-         * @member {number} vf.LineStyle#width
-         * @default 0
-         */
-        width: number;
-        /**
-         * The alignment of any lines drawn (0.5 = middle, 1 = outter, 0 = inner).
-         *
-         * @member {number} vf.LineStyle#alignment
-         * @default 0
-         */
-        alignment: number;
-        /**
-         * If true the lines will be draw using LINES instead of TRIANGLE_STRIP
-         *
-         * @member {boolean} vf.LineStyle#native
-         * @default false
-         */
-        native: boolean;
-        /**
-         * Clones the object
-         *
-         * @return {vf.LineStyle}
-         */
-        clone(): vf.LineStyle;
-        /**
-         * Reset the line style to default.
-         */
-        reset(): void;
-        /**
          * The hex color value used when coloring the Graphics object.
          *
          * @member {number} vf.FillStyle#color
-         * @default 0xFFFFFF
+         * @default 1
          */
         color: number;
         /**
@@ -11132,17 +11938,17 @@ declare namespace vf {
         /**
          * The texture to be used for the fill.
          *
-         * @member {vf.Texture} vf.FillStyle#texture
+         * @member {string} vf.FillStyle#texture
          * @default 0
          */
-        texture: vf.Texture;
+        texture: string;
         /**
          * The transform aplpied to the texture.
          *
-         * @member {vf.Matrix} vf.FillStyle#matrix
-         * @default null
+         * @member {string} vf.FillStyle#matrix
+         * @default 0
          */
-        matrix: vf.Matrix;
+        matrix: string;
         /**
          * If the current fill is visible.
          *
@@ -11155,6 +11961,98 @@ declare namespace vf {
          */
         destroy(): void;
     }
+    /**
+     * Represents the line style for Graphics.
+     * @memberof vf
+     * @class
+     * @extends vf.FillStyle
+     */
+    class LineStyle extends vf.FillStyle {
+        /**
+         * Clones the object
+         *
+         * @return {vf.LineStyle}
+         */
+        clone(): vf.LineStyle;
+        /**
+         * Reset the line style to default.
+         */
+        reset(): void;
+        /**
+         * The width (thickness) of any lines drawn.
+         *
+         * @member {number} vf.LineStyle#width
+         * @default 0
+         */
+        width: number;
+        /**
+         * The alignment of any lines drawn (0.5 = middle, 1 = outer, 0 = inner).
+         *
+         * @member {number} vf.LineStyle#alignment
+         * @default 0.5
+         */
+        alignment: number;
+        /**
+         * If true the lines will be draw using LINES instead of TRIANGLE_STRIP
+         *
+         * @member {boolean} vf.LineStyle#native
+         * @default false
+         */
+        native: boolean;
+        /**
+         * The hex color value used when coloring the Graphics object.
+         *
+         * @member {number} vf.FillStyle#color
+         * @default 1
+         */
+        color: number;
+        /**
+         * The alpha value used when filling the Graphics object.
+         *
+         * @member {number} vf.FillStyle#alpha
+         * @default 1
+         */
+        alpha: number;
+        /**
+         * The texture to be used for the fill.
+         *
+         * @member {string} vf.FillStyle#texture
+         * @default 0
+         */
+        texture: string;
+        /**
+         * The transform aplpied to the texture.
+         *
+         * @member {string} vf.FillStyle#matrix
+         * @default 0
+         */
+        matrix: string;
+        /**
+         * If the current fill is visible.
+         *
+         * @member {boolean} vf.FillStyle#visible
+         * @default false
+         */
+        visible: boolean;
+        /**
+         * Destroy and don't use after this
+         */
+        destroy(): void;
+    }
+    /**
+     * Draw a star shape with an arbitrary number of points.
+     *
+     * @class
+     * @extends vf.Polygon
+     * @memberof vf
+     * @param {number} x - Center X position of the star
+     * @param {number} y - Center Y position of the star
+     * @param {number} points - The number of points of the star, must be > 1
+     * @param {number} radius - The outer radius of the star
+     * @param {number} [innerRadius] - The inner radius between points, default half `radius`
+     * @param {number} [rotation=0] - The rotation of the star in radians, where 0 is vertical
+     * @return {vf.Graphics} This Graphics object. Good for chaining method calls
+     */
     class Star extends vf.Polygon {
         constructor(x: number, y: number, points: number, radius: number, innerRadius?: number, rotation?: number);
         /**
@@ -11199,7 +12097,13 @@ declare namespace vf {
      * @namespace vf.graphicsUtils
      */
     namespace graphicsUtils {
+        /**
+         * A structure to hold interim batch objects for Graphics.
+         * @class
+         * @memberof vf.graphicsUtils
+         */
         class BatchPart {
+            constructor();
             /**
              * Begin batch part
              *
@@ -11246,7 +12150,14 @@ declare namespace vf {
      * @namespace vf.interaction
      */
     namespace interaction {
+        /**
+         * Holds all information related to an Interaction event
+         *
+         * @class
+         * @memberof vf.interaction
+         */
         class InteractionData {
+            constructor();
             /**
              * This point stores the global coords of where the touch/mouse event happened
              *
@@ -11380,7 +12291,14 @@ declare namespace vf {
              */
             reset(): void;
         }
+        /**
+         * Event class that mimics native DOM events.
+         *
+         * @class
+         * @memberof vf.interaction
+         */
         class InteractionEvent {
+            constructor();
             /**
              * Whether this event will continue propagating in the tree.
              *
@@ -11426,11 +12344,17 @@ declare namespace vf {
             reset(): void;
         }
         /**
-         * @param {vf.CanvasRenderer|vf.Renderer} renderer - A reference to the current renderer
-         * @param {object} [options] - The options for the manager.
-         * @param {boolean} [options.autoPreventDefault=true] - Should the manager automatically prevent default browser actions.
-         * @param {number} [options.interactionFrequency=10] - Maximum requency (ms) at pointer over/out states will be checked.
-         * @param {number} [options.useSystemTicker=true] - Whether to add {@link tickerUpdate} to {@link vf.Ticker.system}.
+         * The interaction manager deals with mouse, touch and pointer events.
+         *
+         * Any DisplayObject can be interactive if its `interactive` property is set to true.
+         *
+         * This manager also supports multitouch.
+         *
+         * An instance of this class is automatically created by default, and can be found at `renderer.plugins.interaction`
+         *
+         * @class
+         * @extends vf.utils.EventEmitter
+         * @memberof vf.interaction
          */
         class InteractionManager extends vf.utils.EventEmitter {
             constructor(renderer: vf.CanvasRenderer | vf.Renderer, options?: {
@@ -11657,7 +12581,7 @@ declare namespace vf {
     }
     /**
      * Application plugin for supporting loader option. Installing the LoaderPlugin
-     * is not necessary if using **pixi.js** or **pixi.js-legacy**.
+     * is not necessary if using **pixi.js** or **vf.js**.
      * @example
      * import {AppLoaderPlugin} from '@pixi/loaders';
      * import {Application} from '@pixi/app';
@@ -11671,7 +12595,7 @@ declare namespace vf {
      * Plugin to be installed for handling specific Loader resources.
      *
      * @memberof vf
-     * @typedef {object} ILoaderPlugin
+     * @typedef ILoaderPlugin
      * @property {function} [add] - Function to call immediate after registering plugin.
      * @property {vf.Loader.loaderMiddleware} [pre] - Middleware function to run before load, the
      *           arguments for this are `(resource, next)`
@@ -11684,37 +12608,6 @@ declare namespace vf {
         use?: vf.Loader.loaderMiddleware;
     };
     module Loader {
-        /**
-         * @memberof vf.Loader
-         * @typedef {object} ICallbackID
-         */
-        type ICallbackID = any;
-        /**
-         * @memberof vf.Loader
-         * @typedef {function} ISignalCallback
-         * @param {function} callback - Callback function
-         * @param {object} [context] - Context
-         * @returns {ICallbackID} - CallbackID
-         */
-        type ISignalCallback = (callback: (...params: any[]) => any, context?: any) => ICallbackID;
-        /**
-         * @memberof vf.Loader
-         * @typedef {function} ISignalDetach
-         * @param {ICallbackID} id - CallbackID returned by `add`/`once` methods
-         */
-        type ISignalDetach = (id: ICallbackID) => void;
-        /**
-         * @memberof vf.Loader
-         * @typedef ILoaderSignal
-         * @property {ISignalCallback} add - Register callback
-         * @property {ISignalCallback} once - Register oneshot callback
-         * @property {ISignalDetach} detach - Detach specific callback by ID
-         */
-        type ILoaderSignal = {
-            add: ISignalCallback;
-            once: ISignalCallback;
-            detach: ISignalDetach;
-        };
         /**
          * @memberof vf.Loader
          * @callback loaderMiddleware
@@ -11778,41 +12671,29 @@ declare namespace vf {
         constructor(baseUrl?: string, concurrency?: number);
         /**
          * @memberof vf.Loader#
-         * @description Dispatched when the loader begins to loading process.
-         * @member {vf.Loader.ILoaderSignal} onStart
+         * @member {object} onStart
          */
-        onStart: vf.Loader.ILoaderSignal;
+        onStart: any;
         /**
          * @memberof vf.Loader#
-         * @description Dispatched once per loaded or errored resource.
-         * @member {vf.Loader.ILoaderSignal} onProgress
+         * @member {object} onProgress
          */
-        onProgress: vf.Loader.ILoaderSignal;
+        onProgress: any;
         /**
          * @memberof vf.Loader#
-         * @description Dispatched once per errored resource.
-         * @member {vf.Loader.ILoaderSignal} onError
+         * @member {object} onError
          */
-        onError: vf.Loader.ILoaderSignal;
+        onError: any;
         /**
          * @memberof vf.Loader#
-         * @description Dispatched once per loaded resource.
-         * @member {vf.Loader.ILoaderSignal} onLoad
+         * @member {object} onLoad
          */
-        onLoad: vf.Loader.ILoaderSignal;
+        onLoad: any;
         /**
          * @memberof vf.Loader#
-         * @description Dispatched when completely loaded all resources.
-         * @member {vf.Loader.ILoaderSignal} onComplete
+         * @member {object} onComplete
          */
-        onComplete: vf.Loader.ILoaderSignal;
-        /**
-         * Destroy the loader, removes references.
-         * @memberof vf.Loader#
-         * @method destroy
-         * @public
-         */
-        public destroy(): void;
+        onComplete: any;
         /**
          * A premade instance of the loader that can be used to load resources.
          * @name shared
@@ -11833,15 +12714,6 @@ declare namespace vf {
          */
         static registerPlugin(plugin: vf.ILoaderPlugin): vf.Loader;
     }
-    /**
-    * Reference to **{@link https://github.com/englercj/resource-loader
-    * resource-loader}**'s Resource class.
-    * @see http://englercj.github.io/resource-loader/Resource.html
-    * @class LoaderResource
-    * @memberof vf
-     */
-    class LoaderResource {
-    }
     interface TextureLoader extends vf.ILoaderPlugin {
     }
     /**
@@ -11858,6 +12730,15 @@ declare namespace vf {
          * @param {function} next
          */
         static use(resource: vf.LoaderResource, next: (...params: any[]) => any): void;
+    }
+    /**
+     * Reference to **{@link https://github.com/englercj/resource-loader
+     * resource-loader}**'s Resource class.
+     * @see http://englercj.github.io/resource-loader/Resource.html
+     * @class LoaderResource
+     * @memberof vf
+     */
+    class LoaderResource {
     }
     /**
      * Common interface for points. Both Point and ObservablePoint implement it
@@ -11914,12 +12795,16 @@ declare namespace vf {
         equals(p: vf.IPoint): boolean;
     }
     /**
-     * @param {number} [a=1] - x scale
-     * @param {number} [b=0] - x skew
-     * @param {number} [c=0] - y skew
-     * @param {number} [d=1] - y scale
-     * @param {number} [tx=0] - x translation
-     * @param {number} [ty=0] - y translation
+     * The PixiJS Matrix as a class makes it a lot faster.
+     *
+     * Here is a representation of it:
+     * ```js
+     * | a | c | tx|
+     * | b | d | ty|
+     * | 0 | 0 | 1 |
+     * ```
+     * @class
+     * @memberof vf
      */
     class Matrix {
         constructor(a?: number, b?: number, c?: number, d?: number, tx?: number, ty?: number);
@@ -12116,10 +13001,14 @@ declare namespace vf {
     interface ObservablePoint extends IPoint {
     }
     /**
-     * @param {Function} cb - callback when changed
-     * @param {object} scope - owner of callback
-     * @param {number} [x=0] - position of the point on the x axis
-     * @param {number} [y=0] - position of the point on the y axis
+     * The Point object represents a location in a two-dimensional coordinate system, where x represents
+     * the horizontal axis and y represents the vertical axis.
+     *
+     * An ObservablePoint is a point that triggers a callback when the point's position is changed.
+     *
+     * @class
+     * @memberof vf
+     * @implements IPoint
      */
     class ObservablePoint implements IPoint {
         constructor(cb: (...params: any[]) => any, scope: any, x?: number, y?: number);
@@ -12180,8 +13069,12 @@ declare namespace vf {
     interface Point extends IPoint {
     }
     /**
-     * @param {number} [x=0] - position of the point on the x axis
-     * @param {number} [y=0] - position of the point on the y axis
+     * The Point object represents a location in a two-dimensional coordinate system, where x represents
+     * the horizontal axis and y represents the vertical axis.
+     *
+     * @class
+     * @memberof vf
+     * @implements IPoint
      */
     class Point implements IPoint {
         constructor(x?: number, y?: number);
@@ -12232,7 +13125,14 @@ declare namespace vf {
          */
         set(x?: number, y?: number): this;
     }
+    /**
+     * Transform that takes care about its versions
+     *
+     * @class
+     * @memberof vf
+     */
     class Transform {
+        constructor();
         /**
          * The world transformation matrix.
          *
@@ -12396,7 +13296,7 @@ declare namespace vf {
      * @property {number} RREC Rounded Rectangle
      * @enum {number}
      */
-    const enum SHAPES {
+    enum SHAPES {
         POLY,
         RECT,
         CIRC,
@@ -12670,9 +13570,10 @@ declare namespace vf {
         function matrixAppendRotationInv(matrix: vf.Matrix, rotation: vf.GD8Symmetry, tx: number, ty: number): void;
     }
     /**
-     * @param {number} [x=0] - The X coordinate of the center of this circle
-     * @param {number} [y=0] - The Y coordinate of the center of this circle
-     * @param {number} [radius=0] - The radius of the circle
+     * The Circle object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
+     *
+     * @class
+     * @memberof vf
      */
     class Circle {
         constructor(x?: number, y?: number, radius?: number);
@@ -12722,10 +13623,10 @@ declare namespace vf {
         getBounds(): vf.Rectangle;
     }
     /**
-     * @param {number} [x=0] - The X coordinate of the center of this ellipse
-     * @param {number} [y=0] - The Y coordinate of the center of this ellipse
-     * @param {number} [halfWidth=0] - The half width of this ellipse
-     * @param {number} [halfHeight=0] - The half height of this ellipse
+     * The Ellipse object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
+     *
+     * @class
+     * @memberof vf
      */
     class Ellipse {
         constructor(x?: number, y?: number, halfWidth?: number, halfHeight?: number);
@@ -12780,14 +13681,13 @@ declare namespace vf {
         getBounds(): vf.Rectangle;
     }
     /**
-     * @param {vf.IPoint[]|number[]} points - This can be an array of Points
-     *  that form the polygon, a flat array of numbers that will be interpreted as [x,y, x,y, ...], or
-     *  the arguments passed can be all the points of the polygon e.g.
-     *  `new vf.Polygon(new vf.Point(), new vf.Point(), ...)`, or the arguments passed can be flat
-     *  x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are Numbers.
+     * A class to define a shape via user defined co-orinates.
+     *
+     * @class
+     * @memberof vf
      */
     class Polygon {
-        constructor(...points: (vf.IPoint[] | number[])[]);
+        constructor(...points: (vf.Point[] | number[] | number[][])[]);
         /**
          * An array of the points of this polygon
          *
@@ -12837,10 +13737,11 @@ declare namespace vf {
         height: number;
     };
     /**
-     * @param {number} [x=0] - The X coordinate of the upper-left corner of the rectangle
-     * @param {number} [y=0] - The Y coordinate of the upper-left corner of the rectangle
-     * @param {number} [width=0] - The overall width of this rectangle
-     * @param {number} [height=0] - The overall height of this rectangle
+     * Rectangle object is an area defined by its position, as indicated by its top-left corner
+     * point (x, y) and by its width and its height.
+     *
+     * @class
+     * @memberof vf
      */
     class Rectangle {
         constructor(x?: number, y?: number, width?: number, height?: number);
@@ -12967,11 +13868,11 @@ declare namespace vf {
         enlarge(rectangle: vf.Rectangle): vf.Rectangle;
     }
     /**
-     * @param {number} [x=0] - The X coordinate of the upper-left corner of the rounded rectangle
-     * @param {number} [y=0] - The Y coordinate of the upper-left corner of the rounded rectangle
-     * @param {number} [width=0] - The overall width of this rounded rectangle
-     * @param {number} [height=0] - The overall height of this rounded rectangle
-     * @param {number} [radius=20] - Controls the radius of the rounded corners
+     * The Rounded Rectangle object is an area that has nice rounded corners, as indicated by its
+     * top-left corner point (x, y) and by its width and its height and its radius.
+     *
+     * @class
+     * @memberof vf
      */
     class RoundedRectangle {
         constructor(x?: number, y?: number, width?: number, height?: number, radius?: number);
@@ -13025,14 +13926,25 @@ declare namespace vf {
         contains(x: number, y: number): boolean;
     }
     /**
-     * @param {vf.Geometry} geometry  the geometry the mesh will use
-     * @param {vf.MeshMaterial} shader  the shader the mesh will use
-     * @param {vf.State} [state] the state that the WebGL context is required to be in to render the mesh
-     *        if no state is provided, uses {@link vf.State.for2d} to create a 2D state for PixiJS.
-     * @param {number} [drawMode=vf.DRAW_MODES.TRIANGLES] the drawMode, can be any of the vf.DRAW_MODES consts
+     * Base mesh class.
+     *
+     * This class empowers you to have maximum flexibility to render any kind of WebGL visuals you can think of.
+     * This class assumes a certain level of WebGL knowledge.
+     * If you know a bit this should abstract enough away to make you life easier!
+     *
+     * Pretty much ALL WebGL can be broken down into the following:
+     * - Geometry - The structure and data for the mesh. This can include anything from positions, uvs, normals, colors etc..
+     * - Shader - This is the shader that PixiJS will render the geometry with (attributes in the shader must match the geometry)
+     * - State - This is the state of WebGL required to render the mesh.
+     *
+     * Through a combination of the above elements you can render anything you want, 2D or 3D!
+     *
+     * @class
+     * @extends vf.Container
+     * @memberof vf
      */
     class Mesh extends vf.Container {
-        constructor(geometry: vf.Geometry, shader: vf.MeshMaterial, state?: vf.State, drawMode?: number);
+        constructor(geometry: vf.Geometry, shader: vf.Shader | vf.MeshMaterial, state?: vf.State, drawMode?: number);
         /**
          * Renders the object using the Canvas renderer
          *
@@ -13096,9 +14008,9 @@ declare namespace vf {
         readonly verticesBuffer: vf.Buffer;
         /**
          * Alias for {@link vf.Mesh#shader}.
-         * @member {vf.MeshMaterial}
+         * @member {vf.Shader|vf.MeshMaterial}
          */
-        material: vf.MeshMaterial;
+        material: vf.Shader | vf.MeshMaterial;
         /**
          * The blend mode to be applied to the Mesh. Apply a value of
          * `vf.BLEND_MODES.NORMAL` to reset the blend mode.
@@ -13168,10 +14080,10 @@ declare namespace vf {
         /**
          * Tests if a point is inside this mesh. Works only for vf.DRAW_MODES.TRIANGLES.
          *
-         * @param {vf.IPoint} point the point to test
+         * @param {vf.Point} point the point to test
          * @return {boolean} the result of the test
          */
-        containsPoint(point: vf.IPoint): boolean;
+        containsPoint(point: vf.Point): boolean;
         /**
          * Destroys the Mesh object.
          *
@@ -13239,10 +14151,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -13282,10 +14194,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -13315,15 +14227,6 @@ declare namespace vf {
          */
         calculateBounds(): void;
         /**
-         * Retrieves the local bounds of the displayObject as a rectangle object.
-         *
-         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-         * @param {boolean} [skipChildrenUpdate=false] Setting to `true` will stop re-calculation of children transforms,
-         *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
-         * @return {vf.Rectangle} The rectangular bounding area.
-         */
-        getLocalBounds(rect?: vf.Rectangle, skipChildrenUpdate?: boolean): vf.Rectangle;
-        /**
          * Renders the object using the WebGL renderer
          *
          * @param {vf.Renderer} renderer - The renderer
@@ -13348,14 +14251,6 @@ declare namespace vf {
          * @member {number}
          */
         height: number;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -13470,8 +14365,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -13513,44 +14409,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -13576,6 +14440,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -13591,26 +14460,33 @@ declare namespace vf {
          */
         getBounds(skipUpdate?: boolean, rect?: vf.Rectangle): vf.Rectangle;
         /**
+         * Retrieves the local bounds of the displayObject as a rectangle object.
+         *
+         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+         * @return {vf.Rectangle} The rectangular bounding area.
+         */
+        getLocalBounds(rect?: vf.Rectangle): vf.Rectangle;
+        /**
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -13633,11 +14509,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -13670,23 +14541,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -13838,8 +14709,10 @@ declare namespace vf {
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
     /**
-     * @param {vf.Buffer} uvBuffer - Buffer with normalized uv's
-     * @param {vf.TextureMatrix} uvMatrix - Material UV matrix
+     * Class controls cache for UV mapping from Texture normal space to BaseTexture normal space.
+     *
+     * @class
+     * @memberof vf
      */
     class MeshBatchUvs {
         constructor(uvBuffer: vf.Buffer, uvMatrix: vf.TextureMatrix);
@@ -13862,17 +14735,29 @@ declare namespace vf {
         /**
          * updates
          *
-         * @param {boolean} [forceUpdate] - force the update
+         * @param {boolean} forceUpdate - force the update
          */
-        update(forceUpdate?: boolean): void;
+        update(forceUpdate: boolean): void;
     }
     /**
-     * @param {Float32Array|number[]} [vertices] - Positional data on geometry.
-     * @param {Float32Array|number[]} [uvs] - Texture UVs.
-     * @param {Uint16Array|number[]} [index] - IndexBuffer
+     * Standard 2D geometry used in PixiJS.
+     *
+     * Geometry can be defined without passing in a style or data if required.
+     *
+     * ```js
+     * const geometry = new vf.Geometry();
+     *
+     * geometry.addAttribute('positions', [0, 0, 100, 0, 100, 100, 0, 100], 2);
+     * geometry.addAttribute('uvs', [0,0,1,0,1,1,0,1], 2);
+     * geometry.addIndex([0,1,2,1,3,2]);
+     *
+     * ```
+     * @class
+     * @memberof vf
+     * @extends vf.Geometry
      */
     class MeshGeometry extends vf.Geometry {
-        constructor(vertices?: Float32Array | number[], uvs?: Float32Array | number[], index?: Uint16Array | number[]);
+        constructor(vertices: Float32Array | number[], uvs: Float32Array | number[], index: Uint16Array | number[]);
         /**
          * A map of renderer IDs to webgl VAOs
          *
@@ -13894,20 +14779,18 @@ declare namespace vf {
         /**
          *
          * Adds an attribute to the geometry
-         * Note: `stride` and `start` should be `undefined` if you dont know them, not 0!
          *
          * @param {String} id - the name of the attribute (matching up to a shader)
          * @param {vf.Buffer|number[]} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
          * @param {Number} [size=0] the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
          * @param {Boolean} [normalized=false] should the data be normalized.
          * @param {Number} [type=vf.TYPES.FLOAT] what type of number is the attribute. Check {vf.TYPES} to see the ones available
-         * @param {Number} [stride] How far apart (in floats) the start of each value is. (used for interleaving data)
-         * @param {Number} [start] How far into the array to start reading values (used for interleaving data)
-         * @param {boolean} [instance=false] Instancing flag
+         * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
+         * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
          *
          * @return {vf.Geometry} returns self, useful for chaining.
          */
-        addAttribute(id: string, buffer?: vf.Buffer | number[], size?: number, normalized?: boolean, type?: number, stride?: number, start?: number, instance?: boolean): vf.Geometry;
+        addAttribute(id: string, buffer?: vf.Buffer | number[], size?: number, normalized?: boolean, type?: number, stride?: number, start?: number): vf.Geometry;
         /**
          * returns the requested attribute
          *
@@ -13960,13 +14843,10 @@ declare namespace vf {
         clone(): vf.Geometry;
     }
     /**
-     * @param {vf.Texture} uSampler - Texture that material uses to render.
-     * @param {object} [options] - Additional options
-     * @param {number} [options.alpha=1] - Default alpha.
-     * @param {number} [options.tint=0xFFFFFF] - Default tint.
-     * @param {string} [options.pluginName='batch'] - Renderer plugin for batching.
-     * @param {vf.Program} [options.program=0xFFFFFF] - Custom program.
-     * @param {object} [options.uniforms] - Custom uniforms.
+     * Slightly opinionated default shader for PixiJS 2D objects.
+     * @class
+     * @memberof vf
+     * @extends vf.Shader
      */
     class MeshMaterial extends vf.Shader {
         constructor(uSampler: vf.Texture, options?: {
@@ -14043,11 +14923,35 @@ declare namespace vf {
         readonly uniforms: any;
     }
     /**
-     * @param {vf.Texture} texture - The texture to use on the NineSlicePlane.
-     * @param {number} [leftWidth=10] size of the left vertical bar (A)
-     * @param {number} [topHeight=10] size of the top horizontal bar (C)
-     * @param {number} [rightWidth=10] size of the right vertical bar (B)
-     * @param {number} [bottomHeight=10] size of the bottom horizontal bar (D)
+     * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
+     * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
+     *
+     *```js
+     * let Plane9 = new vf.NineSlicePlane(vf.Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
+     *  ```
+     * <pre>
+     *      A                          B
+     *    +---+----------------------+---+
+     *  C | 1 |          2           | 3 |
+     *    +---+----------------------+---+
+     *    |   |                      |   |
+     *    | 4 |          5           | 6 |
+     *    |   |                      |   |
+     *    +---+----------------------+---+
+     *  D | 7 |          8           | 9 |
+     *    +---+----------------------+---+
+    
+     *  When changing this objects width and/or height:
+     *     areas 1 3 7 and 9 will remain unscaled.
+     *     areas 2 and 8 will be stretched horizontally
+     *     areas 4 and 6 will be stretched vertically
+     *     area 5 will be stretched both horizontally and vertically
+     * </pre>
+     *
+     * @class
+     * @extends vf.SimplePlane
+     * @memberof vf
+     *
      */
     class NineSlicePlane extends vf.SimplePlane {
         constructor(texture: vf.Texture, leftWidth?: number, topHeight?: number, rightWidth?: number, bottomHeight?: number);
@@ -14188,9 +15092,9 @@ declare namespace vf {
         readonly verticesBuffer: vf.Buffer;
         /**
          * Alias for {@link vf.Mesh#shader}.
-         * @member {vf.MeshMaterial}
+         * @member {vf.Shader|vf.MeshMaterial}
          */
-        material: vf.MeshMaterial;
+        material: vf.Shader | vf.MeshMaterial;
         /**
          * The blend mode to be applied to the Mesh. Apply a value of
          * `vf.BLEND_MODES.NORMAL` to reset the blend mode.
@@ -14260,10 +15164,10 @@ declare namespace vf {
         /**
          * Tests if a point is inside this mesh. Works only for vf.DRAW_MODES.TRIANGLES.
          *
-         * @param {vf.IPoint} point the point to test
+         * @param {vf.Point} point the point to test
          * @return {boolean} the result of the test
          */
-        containsPoint(point: vf.IPoint): boolean;
+        containsPoint(point: vf.Point): boolean;
         /**
          * Destroys the Mesh object.
          *
@@ -14323,10 +15227,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -14366,10 +15270,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -14399,15 +15303,6 @@ declare namespace vf {
          */
         calculateBounds(): void;
         /**
-         * Retrieves the local bounds of the displayObject as a rectangle object.
-         *
-         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-         * @param {boolean} [skipChildrenUpdate=false] Setting to `true` will stop re-calculation of children transforms,
-         *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
-         * @return {vf.Rectangle} The rectangular bounding area.
-         */
-        getLocalBounds(rect?: vf.Rectangle, skipChildrenUpdate?: boolean): vf.Rectangle;
-        /**
          * Renders the object using the WebGL renderer
          *
          * @param {vf.Renderer} renderer - The renderer
@@ -14420,14 +15315,6 @@ declare namespace vf {
          * @param {vf.Renderer} renderer - The renderer
          */
         protected renderAdvanced(renderer: vf.Renderer): void;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -14542,8 +15429,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -14585,44 +15473,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -14648,6 +15504,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -14663,26 +15524,33 @@ declare namespace vf {
          */
         getBounds(skipUpdate?: boolean, rect?: vf.Rectangle): vf.Rectangle;
         /**
+         * Retrieves the local bounds of the displayObject as a rectangle object.
+         *
+         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+         * @return {vf.Rectangle} The rectangular bounding area.
+         */
+        getLocalBounds(rect?: vf.Rectangle): vf.Rectangle;
+        /**
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -14705,11 +15573,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -14742,23 +15605,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -14910,11 +15773,12 @@ declare namespace vf {
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
     /**
-     * @param {vf.Texture} [texture=Texture.EMPTY] - The texture to use
-     * @param {Float32Array} [vertices] - if you want to specify the vertices
-     * @param {Float32Array} [uvs] - if you want to specify the uvs
-     * @param {Uint16Array} [indices] - if you want to specify the indices
-     * @param {number} [drawMode] - the drawMode, can be any of the Mesh.DRAW_MODES consts
+     * The Simple Mesh class mimics Mesh in PixiJS v4, providing easy-to-use constructor arguments.
+     * For more robust customization, use {@link vf.Mesh}.
+     *
+     * @class
+     * @extends vf.Mesh
+     * @memberof vf
      */
     class SimpleMesh extends vf.Mesh {
         constructor(texture?: vf.Texture, vertices?: Float32Array, uvs?: Float32Array, indices?: Uint16Array, drawMode?: number);
@@ -14992,9 +15856,9 @@ declare namespace vf {
         readonly verticesBuffer: vf.Buffer;
         /**
          * Alias for {@link vf.Mesh#shader}.
-         * @member {vf.MeshMaterial}
+         * @member {vf.Shader|vf.MeshMaterial}
          */
-        material: vf.MeshMaterial;
+        material: vf.Shader | vf.MeshMaterial;
         /**
          * The blend mode to be applied to the Mesh. Apply a value of
          * `vf.BLEND_MODES.NORMAL` to reset the blend mode.
@@ -15064,10 +15928,10 @@ declare namespace vf {
         /**
          * Tests if a point is inside this mesh. Works only for vf.DRAW_MODES.TRIANGLES.
          *
-         * @param {vf.IPoint} point the point to test
+         * @param {vf.Point} point the point to test
          * @return {boolean} the result of the test
          */
-        containsPoint(point: vf.IPoint): boolean;
+        containsPoint(point: vf.Point): boolean;
         /**
          * Destroys the Mesh object.
          *
@@ -15127,10 +15991,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -15170,10 +16034,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -15203,15 +16067,6 @@ declare namespace vf {
          */
         calculateBounds(): void;
         /**
-         * Retrieves the local bounds of the displayObject as a rectangle object.
-         *
-         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-         * @param {boolean} [skipChildrenUpdate=false] Setting to `true` will stop re-calculation of children transforms,
-         *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
-         * @return {vf.Rectangle} The rectangular bounding area.
-         */
-        getLocalBounds(rect?: vf.Rectangle, skipChildrenUpdate?: boolean): vf.Rectangle;
-        /**
          * Renders the object using the WebGL renderer
          *
          * @param {vf.Renderer} renderer - The renderer
@@ -15236,14 +16091,6 @@ declare namespace vf {
          * @member {number}
          */
         height: number;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -15358,8 +16205,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -15401,44 +16249,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -15464,6 +16280,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -15479,26 +16300,33 @@ declare namespace vf {
          */
         getBounds(skipUpdate?: boolean, rect?: vf.Rectangle): vf.Rectangle;
         /**
+         * Retrieves the local bounds of the displayObject as a rectangle object.
+         *
+         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+         * @return {vf.Rectangle} The rectangular bounding area.
+         */
+        getLocalBounds(rect?: vf.Rectangle): vf.Rectangle;
+        /**
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -15521,11 +16349,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -15558,23 +16381,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -15726,9 +16549,19 @@ declare namespace vf {
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
     /**
-     * @param {vf.Texture} texture - The texture to use on the SimplePlane.
-     * @param {number} verticesX - The number of vertices in the x-axis
-     * @param {number} verticesY - The number of vertices in the y-axis
+     * The SimplePlane allows you to draw a texture across several points and then manipulate these points
+     *
+     *```js
+     * for (let i = 0; i < 20; i++) {
+     *     points.push(new vf.Point(i * 50, 0));
+     * };
+     * let SimplePlane = new vf.SimplePlane(vf.Texture.from("snake.png"), points);
+     *  ```
+     *
+     * @class
+     * @extends vf.Mesh
+     * @memberof vf
+     *
      */
     class SimplePlane extends vf.Mesh {
         constructor(texture: vf.Texture, verticesX: number, verticesY: number);
@@ -15791,9 +16624,9 @@ declare namespace vf {
         readonly verticesBuffer: vf.Buffer;
         /**
          * Alias for {@link vf.Mesh#shader}.
-         * @member {vf.MeshMaterial}
+         * @member {vf.Shader|vf.MeshMaterial}
          */
-        material: vf.MeshMaterial;
+        material: vf.Shader | vf.MeshMaterial;
         /**
          * The blend mode to be applied to the Mesh. Apply a value of
          * `vf.BLEND_MODES.NORMAL` to reset the blend mode.
@@ -15863,10 +16696,10 @@ declare namespace vf {
         /**
          * Tests if a point is inside this mesh. Works only for vf.DRAW_MODES.TRIANGLES.
          *
-         * @param {vf.IPoint} point the point to test
+         * @param {vf.Point} point the point to test
          * @return {boolean} the result of the test
          */
-        containsPoint(point: vf.IPoint): boolean;
+        containsPoint(point: vf.Point): boolean;
         /**
          * Destroys the Mesh object.
          *
@@ -15926,10 +16759,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -15969,10 +16802,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -16002,15 +16835,6 @@ declare namespace vf {
          */
         calculateBounds(): void;
         /**
-         * Retrieves the local bounds of the displayObject as a rectangle object.
-         *
-         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-         * @param {boolean} [skipChildrenUpdate=false] Setting to `true` will stop re-calculation of children transforms,
-         *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
-         * @return {vf.Rectangle} The rectangular bounding area.
-         */
-        getLocalBounds(rect?: vf.Rectangle, skipChildrenUpdate?: boolean): vf.Rectangle;
-        /**
          * Renders the object using the WebGL renderer
          *
          * @param {vf.Renderer} renderer - The renderer
@@ -16035,14 +16859,6 @@ declare namespace vf {
          * @member {number}
          */
         height: number;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -16157,8 +16973,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -16200,44 +17017,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -16263,6 +17048,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -16278,26 +17068,33 @@ declare namespace vf {
          */
         getBounds(skipUpdate?: boolean, rect?: vf.Rectangle): vf.Rectangle;
         /**
+         * Retrieves the local bounds of the displayObject as a rectangle object.
+         *
+         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+         * @return {vf.Rectangle} The rectangular bounding area.
+         */
+        getLocalBounds(rect?: vf.Rectangle): vf.Rectangle;
+        /**
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -16320,11 +17117,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -16357,23 +17149,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -16525,11 +17317,19 @@ declare namespace vf {
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
     /**
-     * @param {vf.Texture} texture - The texture to use on the rope.
-     * @param {vf.Point[]} points - An array of {@link vf.Point} objects to construct this rope.
-     * @param {number} [textureScale=0] - Optional. Positive values scale rope texture
-     * keeping its aspect ratio. You can reduce alpha channel artifacts by providing a larger texture
-     * and downsampling here. If set to zero, texture will be streched instead.
+     * The rope allows you to draw a texture across several points and then manipulate these points
+     *
+     *```js
+     * for (let i = 0; i < 20; i++) {
+     *     points.push(new vf.Point(i * 50, 0));
+     * };
+     * let rope = new vf.SimpleRope(vf.Texture.from("snake.png"), points);
+     *  ```
+     *
+     * @class
+     * @extends vf.Mesh
+     * @memberof vf
+     *
      */
     class SimpleRope extends vf.Mesh {
         constructor(texture: vf.Texture, points: vf.Point[], textureScale?: number);
@@ -16593,9 +17393,9 @@ declare namespace vf {
         readonly verticesBuffer: vf.Buffer;
         /**
          * Alias for {@link vf.Mesh#shader}.
-         * @member {vf.MeshMaterial}
+         * @member {vf.Shader|vf.MeshMaterial}
          */
-        material: vf.MeshMaterial;
+        material: vf.Shader | vf.MeshMaterial;
         /**
          * The blend mode to be applied to the Mesh. Apply a value of
          * `vf.BLEND_MODES.NORMAL` to reset the blend mode.
@@ -16665,10 +17465,10 @@ declare namespace vf {
         /**
          * Tests if a point is inside this mesh. Works only for vf.DRAW_MODES.TRIANGLES.
          *
-         * @param {vf.IPoint} point the point to test
+         * @param {vf.Point} point the point to test
          * @return {boolean} the result of the test
          */
-        containsPoint(point: vf.IPoint): boolean;
+        containsPoint(point: vf.Point): boolean;
         /**
          * Destroys the Mesh object.
          *
@@ -16728,10 +17528,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -16771,10 +17571,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -16804,15 +17604,6 @@ declare namespace vf {
          */
         calculateBounds(): void;
         /**
-         * Retrieves the local bounds of the displayObject as a rectangle object.
-         *
-         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-         * @param {boolean} [skipChildrenUpdate=false] Setting to `true` will stop re-calculation of children transforms,
-         *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
-         * @return {vf.Rectangle} The rectangular bounding area.
-         */
-        getLocalBounds(rect?: vf.Rectangle, skipChildrenUpdate?: boolean): vf.Rectangle;
-        /**
          * Renders the object using the WebGL renderer
          *
          * @param {vf.Renderer} renderer - The renderer
@@ -16837,14 +17628,6 @@ declare namespace vf {
          * @member {number}
          */
         height: number;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -16959,8 +17742,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -17002,44 +17786,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -17065,6 +17817,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -17080,26 +17837,33 @@ declare namespace vf {
          */
         getBounds(skipUpdate?: boolean, rect?: vf.Rectangle): vf.Rectangle;
         /**
+         * Retrieves the local bounds of the displayObject as a rectangle object.
+         *
+         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+         * @return {vf.Rectangle} The rectangular bounding area.
+         */
+        getLocalBounds(rect?: vf.Rectangle): vf.Rectangle;
+        /**
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -17122,11 +17886,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -17159,23 +17918,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -17327,15 +18086,19 @@ declare namespace vf {
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
     /**
-     * @param {number} [width=200] - The width (i.e., thickness) of the rope.
-     * @param {vf.Point[]} [points] - An array of {@link vf.Point} objects to construct this rope.
-     * @param {number} [textureScale=0] - By default the rope texture will be stretched to match
-     *     rope length. If textureScale is positive this value will be treated as a scaling
-     *     factor and the texture will preserve its aspect ratio instead. To create a tiling rope
-     *     set baseTexture.wrapMode to {@link vf.WRAP_MODES.REPEAT} and use a power of two texture,
-     *     then set textureScale=1 to keep the original texture pixel size.
-     *     In order to reduce alpha channel artifacts provide a larger texture and downsample -
-     *     i.e. set textureScale=0.5 to scale it down twice.
+     * RopeGeometry allows you to draw a geometry across several points and then manipulate these points.
+     *
+     * ```js
+     * for (let i = 0; i < 20; i++) {
+     *     points.push(new vf.Point(i * 50, 0));
+     * };
+     * const rope = new vf.RopeGeometry(100, points);
+     * ```
+     *
+     * @class
+     * @extends vf.MeshGeometry
+     * @memberof vf
+     *
      */
     class RopeGeometry extends vf.MeshGeometry {
         constructor(width?: number, points?: vf.Point[], textureScale?: number);
@@ -17346,22 +18109,16 @@ declare namespace vf {
         points: vf.Point[];
         /**
          * The width (i.e., thickness) of the rope.
-         * @member {number} vf.RopeGeometry#_width
+         * @member {number} vf.RopeGeometry#width
          * @readOnly
          */
-        readonly _width: number;
+        readonly width: number;
         /**
          * Rope texture scale, if zero then the rope texture is stretched.
          * @member {number} vf.RopeGeometry#textureScale
          * @readOnly
          */
         readonly textureScale: number;
-        /**
-         * The width (i.e., thickness) of the rope.
-         * @member {number}
-         * @readOnly
-         */
-        readonly width: number;
         /**
          * refreshes vertices of Rope mesh
          */
@@ -17387,20 +18144,18 @@ declare namespace vf {
         /**
          *
          * Adds an attribute to the geometry
-         * Note: `stride` and `start` should be `undefined` if you dont know them, not 0!
          *
          * @param {String} id - the name of the attribute (matching up to a shader)
          * @param {vf.Buffer|number[]} [buffer] the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
          * @param {Number} [size=0] the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
          * @param {Boolean} [normalized=false] should the data be normalized.
          * @param {Number} [type=vf.TYPES.FLOAT] what type of number is the attribute. Check {vf.TYPES} to see the ones available
-         * @param {Number} [stride] How far apart (in floats) the start of each value is. (used for interleaving data)
-         * @param {Number} [start] How far into the array to start reading values (used for interleaving data)
-         * @param {boolean} [instance=false] Instancing flag
+         * @param {Number} [stride=0] How far apart (in floats) the start of each value is. (used for interleaving data)
+         * @param {Number} [start=0] How far into the array to start reading values (used for interleaving data)
          *
          * @return {vf.Geometry} returns self, useful for chaining.
          */
-        addAttribute(id: string, buffer?: vf.Buffer | number[], size?: number, normalized?: boolean, type?: number, stride?: number, start?: number, instance?: boolean): vf.Geometry;
+        addAttribute(id: string, buffer?: vf.Buffer | number[], size?: number, normalized?: boolean, type?: number, stride?: number, start?: number): vf.Geometry;
         /**
          * returns the requested attribute
          *
@@ -17453,18 +18208,31 @@ declare namespace vf {
         clone(): vf.Geometry;
     }
     /**
-     * @param {number} [maxSize=1500] - The maximum number of particles that can be rendered by the container.
-     *  Affects size of allocated buffers.
-     * @param {object} [properties] - The properties of children that should be uploaded to the gpu and applied.
-     * @param {boolean} [properties.vertices=false] - When true, vertices be uploaded and applied.
-     *                  if sprite's ` scale/anchor/trim/frame/orig` is dynamic, please set `true`.
-     * @param {boolean} [properties.position=true] - When true, position be uploaded and applied.
-     * @param {boolean} [properties.rotation=false] - When true, rotation be uploaded and applied.
-     * @param {boolean} [properties.uvs=false] - When true, uvs be uploaded and applied.
-     * @param {boolean} [properties.tint=false] - When true, alpha and tint be uploaded and applied.
-     * @param {number} [batchSize=16384] - Number of particles per batch. If less than maxSize, it uses maxSize instead.
-     * @param {boolean} [autoResize=false] If true, container allocates more batches in case
-     *  there are more than `maxSize` particles.
+     * The ParticleContainer class is a really fast version of the Container built solely for speed,
+     * so use when you need a lot of sprites or particles.
+     *
+     * The tradeoff of the ParticleContainer is that most advanced functionality will not work.
+     * ParticleContainer implements the basic object transform (position, scale, rotation)
+     * and some advanced functionality like tint (as of v4.5.6).
+     *
+     * Other more advanced functionality like masking, children, filters, etc will not work on sprites in this batch.
+     *
+     * It's extremely easy to use:
+     * ```js
+     * let container = new ParticleContainer();
+     *
+     * for (let i = 0; i < 100; ++i)
+     * {
+     *     let sprite = vf.Sprite.from("myImage.png");
+     *     container.addChild(sprite);
+     * }
+     * ```
+     *
+     * And here you have a hundred sprites that will be rendered at the speed of light.
+     *
+     * @class
+     * @extends vf.Container
+     * @memberof vf
      */
     class ParticleContainer extends vf.Container {
         constructor(maxSize?: number, properties?: {
@@ -17585,10 +18353,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -17628,10 +18396,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -17656,15 +18424,6 @@ declare namespace vf {
          *
          */
         calculateBounds(): void;
-        /**
-         * Retrieves the local bounds of the displayObject as a rectangle object.
-         *
-         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-         * @param {boolean} [skipChildrenUpdate=false] Setting to `true` will stop re-calculation of children transforms,
-         *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
-         * @return {vf.Rectangle} The rectangular bounding area.
-         */
-        getLocalBounds(rect?: vf.Rectangle, skipChildrenUpdate?: boolean): vf.Rectangle;
         /**
          * Recalculates the bounds of the object. Override this to
          * calculate the bounds of the specific object (not including children).
@@ -17698,14 +18457,6 @@ declare namespace vf {
          * @member {number}
          */
         height: number;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Returns the display object in the container.
          *
@@ -17812,8 +18563,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -17855,44 +18607,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -17918,6 +18638,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -17933,26 +18658,33 @@ declare namespace vf {
          */
         getBounds(skipUpdate?: boolean, rect?: vf.Rectangle): vf.Rectangle;
         /**
+         * Retrieves the local bounds of the displayObject as a rectangle object.
+         *
+         * @param {vf.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
+         * @return {vf.Rectangle} The rectangular bounding area.
+         */
+        getLocalBounds(rect?: vf.Rectangle): vf.Rectangle;
+        /**
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -17975,11 +18707,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -18012,23 +18739,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -18180,7 +18907,10 @@ declare namespace vf {
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
     /**
-     * @param {vf.Renderer} renderer - The renderer this sprite batch works for.
+     * Renderer for Particles that is designer for speed over feature set.
+     *
+     * @class
+     * @memberof vf
      */
     class ParticleRenderer {
         constructor(renderer: vf.Renderer);
@@ -18226,7 +18956,7 @@ declare namespace vf {
          */
         uploadPosition(children: vf.DisplayObject[], startIndex: number, amount: number, array: number[], stride: number, offset: number): void;
         /**
-         * Uploads the rotation.
+         * Uploads the rotiation.
          *
          * @param {vf.DisplayObject[]} children - the array of display objects to render
          * @param {number} startIndex - the index to start from in the children array
@@ -18264,7 +18994,27 @@ declare namespace vf {
         destroy(): void;
     }
     /**
-     * @param {vf.AbstractRenderer} renderer - A reference to the current renderer
+     * The prepare manager provides functionality to upload content to the GPU.
+     *
+     * BasePrepare handles basic queuing functionality and is extended by
+     * {@link vf.Prepare} and {@link vf.CanvasPrepare}
+     * to provide preparation capabilities specific to their respective renderers.
+     *
+     * @example
+     * // Create a sprite
+     * const sprite = vf.Sprite.from('something.png');
+     *
+     * // Load object into GPU
+     * app.renderer.plugins.prepare.upload(sprite, () => {
+     *
+     *     //Texture(s) has been uploaded to GPU
+     *     app.stage.addChild(sprite);
+     *
+     * })
+     *
+     * @abstract
+     * @class
+     * @memberof vf
      */
     class BasePrepare {
         constructor(renderer: vf.AbstractRenderer);
@@ -18326,7 +19076,11 @@ declare namespace vf {
         destroy(): void;
     }
     /**
-     * @param {number} maxItemsPerFrame - The maximum number of items that can be prepared each frame.
+     * CountLimiter limits the number of items handled by a {@link vf.BasePrepare} to a specified
+     * number of items per frame.
+     *
+     * @class
+     * @memberof vf
      */
     class CountLimiter {
         constructor(maxItemsPerFrame: number);
@@ -18341,7 +19095,35 @@ declare namespace vf {
         allowedToUpload(): boolean;
     }
     /**
-     * @param {vf.Renderer} renderer - A reference to the current renderer
+     * The prepare plugin provides renderer-specific plugins for pre-rendering DisplayObjects. These plugins are useful for
+     * asynchronously preparing and uploading to the GPU assets, textures, graphics waiting to be displayed.
+     *
+     * Do not instantiate this plugin directly. It is available from the `renderer.plugins` property.
+     * See {@link vf.CanvasRenderer#plugins} or {@link vf.Renderer#plugins}.
+     * @example
+     * // Create a new application
+     * const app = new vf.Application();
+     * document.body.appendChild(app.view);
+     *
+     * // Don't start rendering right away
+     * app.stop();
+     *
+     * // create a display object
+     * const rect = new vf.Graphics()
+     *     .beginFill(0x00ff00)
+     *     .drawRect(40, 40, 200, 200);
+     *
+     * // Add to the stage
+     * app.stage.addChild(rect);
+     *
+     * // Don't start rendering until the graphic is uploaded to the GPU
+     * app.renderer.plugins.prepare.upload(app.stage, () => {
+     *     app.start();
+     * });
+     *
+     * @class
+     * @extends vf.BasePrepare
+     * @memberof vf
      */
     class Prepare extends vf.BasePrepare {
         constructor(renderer: vf.Renderer);
@@ -18403,7 +19185,11 @@ declare namespace vf {
         destroy(): void;
     }
     /**
-     * @param {number} maxMilliseconds - The maximum milliseconds that can be spent preparing items each frame.
+     * TimeLimiter limits the number of items handled by a {@link vf.BasePrepare} to a specified
+     * number of milliseconds per frame.
+     *
+     * @class
+     * @memberof vf
      */
     class TimeLimiter {
         constructor(maxMilliseconds: number);
@@ -18418,7 +19204,49 @@ declare namespace vf {
         allowedToUpload(): boolean;
     }
     /**
-     *  @param {string} name the function name that will be executed on the listeners added to this Runner.
+     * A Runner is a highly performant and simple alternative to signals. Best used in situations
+     * where events are dispatched to many objects at high frequency (say every frame!)
+     *
+     *
+     * like a signal..
+     * ```
+     * import { Runner } from '@pixi/runner';
+     *
+     * const myObject = {
+     *     loaded: new Runner('loaded')
+     * }
+     *
+     * const listener = {
+     *     loaded: function(){
+     *         // thin
+     *     }
+     * }
+     *
+     * myObject.update.add(listener);
+     *
+     * myObject.loaded.emit();
+     * ```
+     *
+     * Or for handling calling the same function on many items
+     * ```
+     * import { Runner } from '@pixi/runner';
+     *
+     * const myGame = {
+     *     update: new Runner('update')
+     * }
+     *
+     * const gameObject = {
+     *     update: function(time){
+     *         // update my gamey state
+     *     }
+     * }
+     *
+     * myGame.update.add(gameObject1);
+     *
+     * myGame.update.emit(time);
+     * ```
+     * @class
+     * @memberof vf
      */
     class Runner {
         constructor(name: string);
@@ -18661,6 +19489,7 @@ declare namespace vf {
          * @property {HTMLCanvasElement} view=null
          * @property {number} resolution=1
          * @property {boolean} antialias=false
+         * @property {boolean} forceFXAA=false
          * @property {boolean} autoDensity=false
          * @property {boolean} transparent=false
          * @property {number} backgroundColor=0x000000
@@ -18674,6 +19503,7 @@ declare namespace vf {
             view: HTMLCanvasElement;
             resolution: number;
             antialias: boolean;
+            forceFXAA: boolean;
             autoDensity: boolean;
             transparent: boolean;
             backgroundColor: number;
@@ -18820,7 +19650,30 @@ declare namespace vf {
         var FAIL_IF_MAJOR_PERFORMANCE_CAVEAT: boolean;
     }
     /**
-     * @param {vf.Texture} [texture] - The texture for this sprite.
+     * The Sprite object is the base for all textured objects that are rendered to the screen
+    *
+     * A sprite can be created directly from an image like this:
+     *
+     * ```js
+     * let sprite = vf.Sprite.from('assets/image.png');
+     * ```
+     *
+     * The more efficient way to create sprites is using a {@link vf.Spritesheet},
+     * as swapping base textures when rendering to the screen is inefficient.
+     *
+     * ```js
+     * vf.Loader.shared.add("assets/spritesheet.json").load(setup);
+     *
+     * function setup() {
+     *   let sheet = vf.Loader.shared.resources["assets/spritesheet.json"].spritesheet;
+     *   let sprite = new vf.Sprite(sheet.textures["image.png"]);
+     *   ...
+     * }
+     * ```
+     *
+     * @class
+     * @extends vf.Container
+     * @memberof vf
      */
     class Sprite extends vf.Container {
         constructor(texture?: vf.Texture);
@@ -18832,20 +19685,6 @@ declare namespace vf {
          */
         protected _tintedCanvas: HTMLCanvasElement;
         /**
-         * The width of the sprite (this is initially set by the texture)
-         *
-         * @protected
-         * @member {number} vf.Sprite#_width
-         */
-        protected _width: number;
-        /**
-         * The height of the sprite (this is initially set by the texture)
-         *
-         * @protected
-         * @member {number} vf.Sprite#_height
-         */
-        protected _height: number;
-        /**
          * The blend mode to be applied to the sprite. Apply a value of `vf.BLEND_MODES.NORMAL` to reset the blend mode.
          *
          * @member {number} vf.Sprite#blendMode
@@ -18853,6 +19692,12 @@ declare namespace vf {
          * @see vf.BLEND_MODES
          */
         blendMode: number;
+        /**
+         * The shader that will be used to render the sprite. Set to null to remove a current shader.
+         *
+         * @member {vf.Filter|vf.Shader} vf.Sprite#shader
+         */
+        shader: vf.Filter | vf.Shader;
         /**
          * Cached tint value so we can tell when the tint is changed.
          * Value is used for 2d CanvasRenderer.
@@ -18875,12 +19720,6 @@ declare namespace vf {
          * @member {boolean} vf.Sprite#isSprite
          */
         isSprite: boolean;
-        /**
-         * When the texture is updated, this event will fire to update the scale and frame
-         *
-         * @protected
-         */
-        protected _onTextureUpdate(): void;
         /**
          * calculates worldTransform * vertices, store it in vertexData
          */
@@ -18914,10 +19753,10 @@ declare namespace vf {
         /**
          * Tests if a point is inside this sprite
          *
-         * @param {vf.IPoint} point - the point to test
+         * @param {vf.Point} point - the point to test
          * @return {boolean} the result of the test
          */
-        containsPoint(point: vf.IPoint): boolean;
+        containsPoint(point: vf.Point): boolean;
         /**
          * Destroys this sprite and optionally its texture and children
          *
@@ -19046,10 +19885,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -19089,10 +19928,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -19134,14 +19973,6 @@ declare namespace vf {
          * @param {vf.Renderer} renderer - The renderer
          */
         protected renderAdvanced(renderer: vf.Renderer): void;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -19256,8 +20087,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -19299,44 +20131,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -19357,6 +20157,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -19375,23 +20180,23 @@ declare namespace vf {
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -19414,11 +20219,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -19451,23 +20251,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -19632,9 +20432,37 @@ declare namespace vf {
         };
     }
     /**
-     * @param {vf.Texture[]|vf.AnimatedSprite.FrameObject[]} textures - An array of {@link vf.Texture} or frame
-     *  objects that make up the animation.
-     * @param {boolean} [autoUpdate=true] - Whether to use vf.Ticker.shared to auto update animation time.
+     * An AnimatedSprite is a simple way to display an animation depicted by a list of textures.
+     *
+     * ```js
+     * let alienImages = ["image_sequence_01.png","image_sequence_02.png","image_sequence_03.png","image_sequence_04.png"];
+     * let textureArray = [];
+     *
+     * for (let i=0; i < 4; i++)
+     * {
+     *      let texture = vf.Texture.from(alienImages[i]);
+     *      textureArray.push(texture);
+     * };
+     *
+     * let animatedSprite = new vf.AnimatedSprite(textureArray);
+     * ```
+     *
+     * The more efficient and simpler way to create an animated sprite is using a {@link vf.Spritesheet}
+     * containing the animation definitions:
+     *
+     * ```js
+     * vf.Loader.shared.add("assets/spritesheet.json").load(setup);
+     *
+     * function setup() {
+     *   let sheet = vf.Loader.shared.resources["assets/spritesheet.json"].spritesheet;
+     *   animatedSprite = new vf.AnimatedSprite(sheet.animations["image_sequence"]);
+     *   ...
+     * }
+     * ```
+     *
+     * @class
+     * @extends vf.Sprite
+     * @memberof vf
      */
     class AnimatedSprite extends vf.Sprite {
         constructor(textures: vf.Texture[] | vf.AnimatedSprite.FrameObject[], autoUpdate?: boolean);
@@ -19731,17 +20559,17 @@ declare namespace vf {
          *
          * @static
          * @param {string[]} frames - The array of frames ids the AnimatedSprite will use as its texture frames.
-         * @return {vf.AnimatedSprite} The new animated sprite with the specified frames.
+         * @return {AnimatedSprite} The new animated sprite with the specified frames.
          */
-        static fromFrames(frames: string[]): vf.AnimatedSprite;
+        static fromFrames(frames: string[]): AnimatedSprite;
         /**
          * A short hand way of creating an AnimatedSprite from an array of image ids.
          *
          * @static
          * @param {string[]} images - The array of image urls the AnimatedSprite will use as its texture frames.
-         * @return {vf.AnimatedSprite} The new animate sprite with the specified images as frames.
+         * @return {AnimatedSprite} The new animate sprite with the specified images as frames.
          */
-        static fromImages(images: string[]): vf.AnimatedSprite;
+        static fromImages(images: string[]): AnimatedSprite;
         /**
          * The total number of frames in the AnimatedSprite. This is the same as number of textures
          * assigned to the AnimatedSprite.
@@ -19785,20 +20613,6 @@ declare namespace vf {
          */
         protected _tintedCanvas: HTMLCanvasElement;
         /**
-         * The width of the sprite (this is initially set by the texture)
-         *
-         * @protected
-         * @member {number} vf.Sprite#_width
-         */
-        protected _width: number;
-        /**
-         * The height of the sprite (this is initially set by the texture)
-         *
-         * @protected
-         * @member {number} vf.Sprite#_height
-         */
-        protected _height: number;
-        /**
          * The blend mode to be applied to the sprite. Apply a value of `vf.BLEND_MODES.NORMAL` to reset the blend mode.
          *
          * @member {number} vf.Sprite#blendMode
@@ -19806,6 +20620,12 @@ declare namespace vf {
          * @see vf.BLEND_MODES
          */
         blendMode: number;
+        /**
+         * The shader that will be used to render the sprite. Set to null to remove a current shader.
+         *
+         * @member {vf.Filter|vf.Shader} vf.Sprite#shader
+         */
+        shader: vf.Filter | vf.Shader;
         /**
          * Cached tint value so we can tell when the tint is changed.
          * Value is used for 2d CanvasRenderer.
@@ -19828,12 +20648,6 @@ declare namespace vf {
          * @member {boolean} vf.Sprite#isSprite
          */
         isSprite: boolean;
-        /**
-         * When the texture is updated, this event will fire to update the scale and frame
-         *
-         * @protected
-         */
-        protected _onTextureUpdate(): void;
         /**
          * calculates worldTransform * vertices, store it in vertexData
          */
@@ -19867,10 +20681,10 @@ declare namespace vf {
         /**
          * Tests if a point is inside this sprite
          *
-         * @param {vf.IPoint} point - the point to test
+         * @param {vf.Point} point - the point to test
          * @return {boolean} the result of the test
          */
-        containsPoint(point: vf.IPoint): boolean;
+        containsPoint(point: vf.Point): boolean;
         /**
          * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
          * Advantages can include sharper image quality (like text) and faster rendering on canvas.
@@ -19974,10 +20788,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -20017,10 +20831,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -20062,14 +20876,6 @@ declare namespace vf {
          * @param {vf.Renderer} renderer - The renderer
          */
         protected renderAdvanced(renderer: vf.Renderer): void;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -20184,8 +20990,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -20227,44 +21034,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -20285,6 +21060,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -20303,23 +21083,23 @@ declare namespace vf {
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -20342,11 +21122,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -20379,23 +21154,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -20547,9 +21322,11 @@ declare namespace vf {
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
     /**
-     * @param {vf.Texture} texture - the texture of the tiling sprite
-     * @param {number} [width=100] - the width of the tiling sprite
-     * @param {number} [height=100] - the height of the tiling sprite
+     * A tiling sprite is a fast way of rendering a tiling image
+     *
+     * @class
+     * @extends vf.Sprite
+     * @memberof vf
      */
     class TilingSprite extends vf.Sprite {
         static from(source: number | string | vf.Texture | HTMLCanvasElement | HTMLVideoElement, options?: any): vf.Sprite;
@@ -20613,10 +21390,6 @@ declare namespace vf {
          */
         tilePosition: vf.ObservablePoint;
         /**
-         * @protected
-         */
-        protected _onTextureUpdate(): void;
-        /**
          * Renders the object using the WebGL renderer
          *
          * @protected
@@ -20639,10 +21412,10 @@ declare namespace vf {
         /**
          * Checks if a point is inside this tiling sprite.
          *
-         * @param {vf.IPoint} point - the point to check
+         * @param {vf.Point} point - the point to check
          * @return {boolean} Whether or not the sprite contains the point.
          */
-        containsPoint(point: vf.IPoint): boolean;
+        containsPoint(point: vf.Point): boolean;
         /**
          * Destroys this sprite and optionally its texture and children
          *
@@ -20664,15 +21437,34 @@ declare namespace vf {
          *
          * @static
          * @param {string|vf.Texture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
-         * @param {Object} options - See {@link vf.BaseTexture}'s constructor for options.
-         * @param {number} options.width - required width of the tiling sprite
-         * @param {number} options.height - required height of the tiling sprite
+         * @param {number} width - the width of the tiling sprite
+         * @param {number} height - the height of the tiling sprite
          * @return {vf.TilingSprite} The newly created texture
          */
-        static from(source: string | vf.Texture | HTMLCanvasElement | HTMLVideoElement, options: {
-            width: number;
-            height: number;
-        }): vf.TilingSprite;
+        static from(source: string | vf.Texture | HTMLCanvasElement | HTMLVideoElement, width: number, height: number): vf.TilingSprite;
+        /**
+         * Helper function that creates a tiling sprite that will use a texture from the TextureCache based on the frameId
+         * The frame ids are created when a Texture packer file has been loaded
+         *
+         * @static
+         * @param {string} frameId - The frame Id of the texture in the cache
+         * @param {number} width - the width of the tiling sprite
+         * @param {number} height - the height of the tiling sprite
+         * @return {vf.TilingSprite} A new TilingSprite using a texture from the texture cache matching the frameId
+         */
+        static fromFrame(frameId: string, width: number, height: number): vf.TilingSprite;
+        /**
+         * Helper function that creates a sprite that will contain a texture based on an image url
+         * If the image is not in the texture cache it will be loaded
+         *
+         * @static
+         * @param {string} imageId - The image url of the texture
+         * @param {number} width - the width of the tiling sprite
+         * @param {number} height - the height of the tiling sprite
+         * @param {Object} [options] - See {@link vf.BaseTexture}'s constructor for options.
+         * @return {vf.TilingSprite} A new TilingSprite using a texture from the texture cache matching the image id
+         */
+        static fromImage(imageId: string, width: number, height: number, options?: any): vf.TilingSprite;
         /**
          * The width of the sprite, setting this will actually modify the scale to achieve the value set
          *
@@ -20700,6 +21492,12 @@ declare namespace vf {
          * @see vf.BLEND_MODES
          */
         blendMode: number;
+        /**
+         * The shader that will be used to render the sprite. Set to null to remove a current shader.
+         *
+         * @member {vf.Filter|vf.Shader} vf.Sprite#shader
+         */
+        shader: vf.Filter | vf.Shader;
         /**
          * Cached tint value so we can tell when the tint is changed.
          * Value is used for 2d CanvasRenderer.
@@ -20814,10 +21612,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -20857,10 +21655,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -20902,14 +21700,6 @@ declare namespace vf {
          * @param {vf.Renderer} renderer - The renderer
          */
         protected renderAdvanced(renderer: vf.Renderer): void;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -21024,8 +21814,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -21067,44 +21858,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -21125,6 +21884,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -21143,23 +21907,23 @@ declare namespace vf {
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -21182,11 +21946,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -21219,23 +21978,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -21387,9 +22146,11 @@ declare namespace vf {
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
     /**
-     * constructor for renderer
+     * WebGL renderer plugin for tiling sprites
      *
-     * @param {vf.Renderer} renderer The renderer this tiling awesomeness works for.
+     * @class
+     * @memberof vf
+     * @extends vf.ObjectRenderer
      */
     class TilingSpriteRenderer extends vf.ObjectRenderer {
         constructor(renderer: vf.Renderer);
@@ -21435,16 +22196,40 @@ declare namespace vf {
         stop(): void;
     }
     /**
-     * @param {vf.BaseTexture} baseTexture Reference to the source BaseTexture object.
-     * @param {Object} data - Spritesheet image data.
-     * @param {string} [resolutionFilename] - The filename to consider when determining
-     *        the resolution of the spritesheet. If not provided, the imageUrl will
-     *        be used on the BaseTexture.
+     * Utility class for maintaining reference to a collection
+     * of Textures on a single Spritesheet.
+     *
+     * To access a sprite sheet from your code pass its JSON data file to Pixi's loader:
+     *
+     * ```js
+     * vf.Loader.shared.add("images/spritesheet.json").load(setup);
+     *
+     * function setup() {
+     *   let sheet = vf.Loader.shared.resources["images/spritesheet.json"].spritesheet;
+     *   ...
+     * }
+     * ```
+     * With the `sheet.textures` you can create Sprite objects,`sheet.animations` can be used to create an AnimatedSprite.
+     *
+     * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},
+     * {@link https://renderhjs.net/shoebox/|Shoebox} or {@link https://github.com/krzysztof-o/spritesheet.js|Spritesheet.js}.
+     * Default anchor points (see {@link vf.Texture#defaultAnchor}) and grouping of animation sprites are currently only
+     * supported by TexturePacker.
+     *
+     * @class
+     * @memberof vf
      */
     class Spritesheet {
-        constructor(baseTexture: vf.BaseTexture, data: any, resolutionFilename?: string);
+        constructor(baseTexture: vf.BaseTexture | vf.Texture, data: any, resolutionFilename?: string);
         /**
-         * Reference to ths source texture
+         * The maximum number of Textures to build per process.
+         *
+         * @type {number}
+         * @default 1000
+         */
+        static BATCH_SIZE: number;
+        /**
+         * Reference to ths source texture.
          * @type {vf.BaseTexture}
          */
         baseTexture: vf.BaseTexture;
@@ -21490,13 +22275,6 @@ declare namespace vf {
          * @param {boolean} [destroyBase=false] Whether to destroy the base texture as well
          */
         destroy(destroyBase?: boolean): void;
-        /**
-         * The maximum number of Textures to build per process.
-         *
-         * @type {number}
-         * @default 1000
-         */
-        static BATCH_SIZE: number;
     }
     interface SpritesheetLoader extends vf.ILoaderPlugin {
     }
@@ -21526,9 +22304,29 @@ declare namespace vf {
         static getResourcePath(resource: vf.LoaderResource, baseUrl: string): void;
     }
     /**
-     * @param {string} text - The string that you would like the text to display
-     * @param {object|vf.TextStyle} [style] - The style parameters
-     * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
+     * A Text Object will create a line or multiple lines of text.
+     *
+     * The text is created using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).
+     *
+     * The primary advantage of this class over BitmapText is that you have great control over the style of the next,
+     * which you can change at runtime.
+     *
+     * The primary disadvantages is that each piece of text has it's own texture, which can use more memory.
+     * When text changes, this texture has to be re-generated and re-uploaded to the GPU, taking up time.
+     *
+     * To split a line you can use '\n' in your text string, or, on the `style` object,
+     * change its `wordWrap` property to true and and give the `wordWrapWidth` property a value.
+     *
+     * A Text can be created directly from a string and a style object,
+     * which can be generated [here](https://pixijs.io/pixi-text-style).
+     *
+     * ```js
+     * let text = new vf.Text('This is a PixiJS text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
+     * ```
+     *
+     * @class
+     * @extends vf.Sprite
+     * @memberof vf
      */
     class Text extends vf.Sprite {
         constructor(text: string, style?: any | vf.TextStyle, canvas?: HTMLCanvasElement);
@@ -21550,22 +22348,6 @@ declare namespace vf {
          * @default 1
          */
         _resolution: number;
-        /**
-         * Renders text to its canvas, and updates its texture.
-         * By default this is used internally to ensure the texture is correct before rendering,
-         * but it can be used called externally, for example from this class to 'pre-generate' the texture from a piece of text,
-         * and then shared across multiple Sprites.
-         *
-         * @param {boolean} respectDirty - Whether to abort updating the text if the Text isn't dirty and the function is called.
-         */
-        updateText(respectDirty: boolean): void;
-        /**
-         * Renders the object using the WebGL renderer
-         *
-         * @protected
-         * @param {vf.Renderer} renderer - The renderer
-         */
-        protected _render(renderer: vf.Renderer): void;
         /**
          * Gets the local bounds of the text object.
          *
@@ -21635,20 +22417,6 @@ declare namespace vf {
          */
         protected _tintedCanvas: HTMLCanvasElement;
         /**
-         * The width of the sprite (this is initially set by the texture)
-         *
-         * @protected
-         * @member {number} vf.Sprite#_width
-         */
-        protected _width: number;
-        /**
-         * The height of the sprite (this is initially set by the texture)
-         *
-         * @protected
-         * @member {number} vf.Sprite#_height
-         */
-        protected _height: number;
-        /**
          * The blend mode to be applied to the sprite. Apply a value of `vf.BLEND_MODES.NORMAL` to reset the blend mode.
          *
          * @member {number} vf.Sprite#blendMode
@@ -21656,6 +22424,12 @@ declare namespace vf {
          * @see vf.BLEND_MODES
          */
         blendMode: number;
+        /**
+         * The shader that will be used to render the sprite. Set to null to remove a current shader.
+         *
+         * @member {vf.Filter|vf.Shader} vf.Sprite#shader
+         */
+        shader: vf.Filter | vf.Shader;
         /**
          * Cached tint value so we can tell when the tint is changed.
          * Value is used for 2d CanvasRenderer.
@@ -21679,12 +22453,6 @@ declare namespace vf {
          */
         isSprite: boolean;
         /**
-         * When the texture is updated, this event will fire to update the scale and frame
-         *
-         * @protected
-         */
-        protected _onTextureUpdate(): void;
-        /**
          * calculates worldTransform * vertices, store it in vertexData
          */
         calculateVertices(): void;
@@ -21696,10 +22464,10 @@ declare namespace vf {
         /**
          * Tests if a point is inside this sprite
          *
-         * @param {vf.IPoint} point - the point to test
+         * @param {vf.Point} point - the point to test
          * @return {boolean} the result of the test
          */
-        containsPoint(point: vf.IPoint): boolean;
+        containsPoint(point: vf.Point): boolean;
         /**
          * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
          * Advantages can include sharper image quality (like text) and faster rendering on canvas.
@@ -21791,10 +22559,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -21834,10 +22602,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -21879,14 +22647,6 @@ declare namespace vf {
          * @param {vf.Renderer} renderer - The renderer
          */
         protected renderAdvanced(renderer: vf.Renderer): void;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -22001,8 +22761,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -22044,44 +22805,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -22102,6 +22831,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -22120,23 +22854,23 @@ declare namespace vf {
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -22159,11 +22893,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -22196,23 +22925,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -22378,15 +23107,15 @@ declare namespace vf {
         fontSize: number;
     };
     /**
-     * @param {string} text - the text that was measured
-     * @param {vf.TextStyle} style - the style that was measured
-     * @param {number} width - the measured width of the text
-     * @param {number} height - the measured height of the text
-     * @param {string[]} lines - an array of the lines of text broken by new lines and wrapping if specified in style
-     * @param {number[]} lineWidths - an array of the line widths for each line matched to `lines`
-     * @param {number} lineHeight - the measured line height for this style
-     * @param {number} maxLineWidth - the maximum line width for all measured lines
-     * @param {Object} fontProperties - the font properties object from TextMetrics.measureFont
+     * The TextMetrics object represents the measurement of a block of text with a specified style.
+     *
+     * ```js
+     * let style = new vf.TextStyle({fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'})
+     * let textMetrics = vf.TextMetrics.measureText('Your text', style)
+     * ```
+     *
+     * @class
+     * @memberof vf
      */
     class TextMetrics {
         constructor(text: string, style: vf.TextStyle, width: number, height: number, lines: string[], lineWidths: number[], lineHeight: number, maxLineWidth: number, fontProperties: any);
@@ -22469,6 +23198,22 @@ declare namespace vf {
         /**
          * Overridable helper method used internally by TextMetrics, exposed to allow customizing the class's behavior.
          *
+         * It allows one to determine whether a pair of characters
+         * should be broken by newlines
+         * For example certain characters in CJK langs or numbers.
+         * It must return a boolean.
+         *
+         * @param  {string}  char      The character
+         * @param  {string}  nextChar  The next character
+         * @param  {string}  token     The token/word the characters are from
+         * @param  {number}  index     The index in the token of the char
+         * @param  {boolean}  breakWords  The style attr break words
+         * @return {boolean} whether to break word or not
+         */
+        static canBreakChars(char: string, nextChar: string, token: string, index: number, breakWords: boolean): boolean;
+        /**
+         * Overridable helper method used internally by TextMetrics, exposed to allow customizing the class's behavior.
+         *
          * It is called when a token (usually a word) has to be split into separate pieces
          * in order to determine the point to break a word.
          * It must return an array of characters.
@@ -22529,52 +23274,14 @@ declare namespace vf {
         static BASELINE_MULTIPLIER: number;
     }
     /**
-     * @param {object} [style] - The style parameters
-     * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'),
-     *  does not affect single line text
-     * @param {boolean} [style.breakWords=false] - Indicates if lines can be wrapped within words, it
-     *  needs wordWrap to be set to true
-     * @param {boolean} [style.dropShadow=false] - Set a drop shadow for the text
-     * @param {number} [style.dropShadowAlpha=1] - Set alpha for the drop shadow
-     * @param {number} [style.dropShadowAngle=Math.PI/6] - Set a angle of the drop shadow
-     * @param {number} [style.dropShadowBlur=0] - Set a shadow blur radius
-     * @param {string|number} [style.dropShadowColor='black'] - A fill style to be used on the dropshadow e.g 'red', '#00FF00'
-     * @param {number} [style.dropShadowDistance=5] - Set a distance of the drop shadow
-     * @param {string|string[]|number|number[]|CanvasGradient|CanvasPattern} [style.fill='black'] - A canvas
-     *  fillstyle that will be used on the text e.g 'red', '#00FF00'. Can be an array to create a gradient
-     *  eg ['#000000','#FFFFFF']
-     * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
-     * @param {number} [style.fillGradientType=vf.TEXT_GRADIENT.LINEAR_VERTICAL] - If fill is an array of colours
-     *  to create a gradient, this can change the type/direction of the gradient. See {@link vf.TEXT_GRADIENT}
-     * @param {number[]} [style.fillGradientStops] - If fill is an array of colours to create a gradient, this array can set
-     * the stop points (numbers between 0 and 1) for the color, overriding the default behaviour of evenly spacing them.
-     * @param {string|string[]} [style.fontFamily='Arial'] - The font family
-     * @param {number|string} [style.fontSize=26] - The font size (as a number it converts to px, but as a string,
-     *  equivalents are '26px','20pt','160%' or '1.6em')
-     * @param {string} [style.fontStyle='normal'] - The font style ('normal', 'italic' or 'oblique')
-     * @param {string} [style.fontVariant='normal'] - The font variant ('normal' or 'small-caps')
-     * @param {string} [style.fontWeight='normal'] - The font weight ('normal', 'bold', 'bolder', 'lighter' and '100',
-     *  '200', '300', '400', '500', '600', '700', '800' or '900')
-     * @param {number} [style.leading=0] - The space between lines
-     * @param {number} [style.letterSpacing=0] - The amount of spacing between letters, default is 0
-     * @param {number} [style.lineHeight] - The line height, a number that represents the vertical space that a letter uses
-     * @param {string} [style.lineJoin='miter'] - The lineJoin property sets the type of corner created, it can resolve
-     *      spiked text issues. Possible values "miter" (creates a sharp corner), "round" (creates a round corner) or "bevel"
-     *      (creates a squared corner).
-     * @param {number} [style.miterLimit=10] - The miter limit to use when using the 'miter' lineJoin mode. This can reduce
-     *      or increase the spikiness of rendered text.
-     * @param {number} [style.padding=0] - Occasionally some fonts are cropped. Adding some padding will prevent this from
-     *     happening by adding padding to all sides of the text.
-     * @param {string|number} [style.stroke='black'] - A canvas fillstyle that will be used on the text stroke
-     *  e.g 'blue', '#FCFF00'
-     * @param {number} [style.strokeThickness=0] - A number that represents the thickness of the stroke.
-     *  Default is 0 (no stroke)
-     * @param {boolean} [style.trim=false] - Trim transparent borders
-     * @param {string} [style.textBaseline='alphabetic'] - The baseline of the text that is rendered.
-     * @param {string} [style.whiteSpace='pre'] - Determines whether newlines & spaces are collapsed or preserved "normal"
-     *      (collapse, collapse), "pre" (preserve, preserve) | "pre-line" (preserve, collapse). It needs wordWrap to be set to true
-     * @param {boolean} [style.wordWrap=false] - Indicates if word wrap should be used
-     * @param {number} [style.wordWrapWidth=100] - The width at which text will wrap, it needs wordWrap to be set to true
+     * A TextStyle Object contains information to decorate a Text objects.
+     *
+     * An instance can be shared between multiple Text objects; then changing the style will update all text objects using it.
+     *
+     * A tool can be used to generate a text style [here](https://pixijs.io/pixi-text-style).
+     *
+     * @class
+     * @memberof vf
      */
     class TextStyle {
         constructor(style?: {
@@ -22835,165 +23542,6 @@ declare namespace vf {
         LINEAR_VERTICAL: number;
         LINEAR_HORIZONTAL: number;
     };
-    class BitmapFont {
-        constructor(data: vf.BitmapFontData, textures: vf.Texture[] | {
-            [key: string]: vf.Texture;
-        });
-        /**
-         * The name of the font face.
-         *
-         * @member {string} vf.BitmapFont#font
-         * @readOnly
-         */
-        readonly font: string;
-        /**
-         * The size of the font face in pixels.
-         *
-         * @member {number} vf.BitmapFont#size
-         * @readOnly
-         */
-        readonly size: number;
-        /**
-         * The line-height of the font face in pixels.
-         *
-         * @member {number} vf.BitmapFont#lineHeight
-         * @readOnly
-         */
-        readonly lineHeight: number;
-        /**
-         * The map of characters by character code.
-         *
-         * @member {object} vf.BitmapFont#chars
-         * @readOnly
-         */
-        readonly chars: any;
-        /**
-         * Remove references to created glyph textures.
-         */
-        destroy(): void;
-        /**
-         * Register a new bitmap font.
-         *
-         * @static
-         * @param {XMLDocument|string|vf.BitmapFontData} data - The
-         *        characters map that could be provided as xml or raw string.
-         * @param {Object.<string, vf.Texture>|vf.Texture|vf.Texture[]}
-         *        textures - List of textures for each page.
-         * @return {vf.BitmapFont} Result font object with font, size, lineHeight
-         *         and char fields.
-         */
-        static install(data: XMLDocument | string | vf.BitmapFontData, textures: {
-            [key: string]: vf.Texture;
-        } | vf.Texture | vf.Texture[]): vf.BitmapFont;
-        /**
-         * Remove bitmap font by name.
-         *
-         * @static
-         * @param {string} name
-         */
-        static uninstall(name: string): void;
-        /**
-         * Collection of available fonts.
-         *
-         * @readOnly
-         * @static
-         * @member {Object.<string, vf.BitmapFont>}
-         */
-        static readonly available: {
-            [key: string]: vf.BitmapFont;
-        };
-    }
-    /**
-     * @memberof vf
-     * @typedef {object} IBitmapFontDataInfo
-     * @property {string} face
-     * @property {number} size
-     */
-    type IBitmapFontDataInfo = {
-        face: string;
-        size: number;
-    };
-    /**
-     * @memberof vf
-     * @typedef {object} IBitmapFontDataCommon
-     * @property {number} lineHeight
-     */
-    type IBitmapFontDataCommon = {
-        lineHeight: number;
-    };
-    /**
-     * @memberof vf
-     * @typedef {object} IBitmapFontDataPage
-     * @property {number} id
-     * @property {string} file
-     */
-    type IBitmapFontDataPage = {
-        id: number;
-        file: string;
-    };
-    /**
-     * @memberof vf
-     * @typedef {object} IBitmapFontDataChar
-     * @property {string} id
-     * @property {number} page
-     * @property {number} x
-     * @property {number} y
-     * @property {number} width
-     * @property {number} height
-     * @property {number} xoffset
-     * @property {number} yoffset
-     * @property {number} xadvance
-     */
-    type IBitmapFontDataChar = {
-        id: string;
-        page: number;
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-        xoffset: number;
-        yoffset: number;
-        xadvance: number;
-    };
-    /**
-     * @memberof vf
-     * @typedef {object} IBitmapFontDataKerning
-     * @property {number} first
-     * @property {number} second
-     * @property {number} amount
-     */
-    type IBitmapFontDataKerning = {
-        first: number;
-        second: number;
-        amount: number;
-    };
-    class BitmapFontData {
-        /**
-         * @member {vf.IBitmapFontDataInfo[]} vf.BitmapFontData#info
-         * @readOnly
-         */
-        readonly info: vf.IBitmapFontDataInfo[];
-        /**
-         * @member {vf.IBitmapFontDataCommon[]} vf.BitmapFontData#common
-         * @readOnly
-         */
-        readonly common: vf.IBitmapFontDataCommon[];
-        /**
-         * @member {vf.IBitmapFontDataPage[]} vf.BitmapFontData#page
-         * @readOnly
-         */
-        readonly page: vf.IBitmapFontDataPage[];
-        /**
-         * @member {vf.IBitmapFontDataChar[]} vf.BitmapFontData#char
-         * @readOnly
-         */
-        readonly char: vf.IBitmapFontDataChar[];
-        /**
-         * @member {vf.IBitmapFontDataKerning[]} vf.BitmapFontData#kerning
-         * @readOnly
-         */
-        readonly kerning: vf.IBitmapFontDataKerning[];
-    }
     interface BitmapFontLoader extends vf.ILoaderPlugin {
     }
     /**
@@ -23004,6 +23552,13 @@ declare namespace vf {
      * @implements vf.ILoaderPlugin
      */
     class BitmapFontLoader implements vf.ILoaderPlugin {
+        /**
+         * Register a BitmapText font from loader resource.
+         *
+         * @param {vf.LoaderResource} resource - Loader resource.
+         * @param {vf.Texture} texture - Reference to texture.
+         */
+        static parse(resource: vf.LoaderResource, texture: vf.Texture): void;
         /**
          * Called when the plugin is installed.
          *
@@ -23019,15 +23574,30 @@ declare namespace vf {
         static use(resource: vf.LoaderResource, next: (...params: any[]) => any): void;
     }
     /**
-     * @param {string} text - A string that you would like the text to display.
-     * @param {object} style - The style parameters.
-     * @param {string|object} style.font - The font descriptor for the object, can be passed as a string of form
-     *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
-     * @param {string} [style.font.name] - The bitmap font id.
-     * @param {number} [style.font.size] - The size of the font in pixels, e.g. 24
-     * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'), does not affect
-     *      single line text.
-     * @param {number} [style.tint=0xFFFFFF] - The tint color.
+     * A BitmapText object will create a line or multiple lines of text using bitmap font.
+     *
+     * The primary advantage of this class over Text is that all of your textures are pre-generated and loading,
+     * meaning that rendering is fast, and changing text has no performance implications.
+     *
+     * The primary disadvantage is that you need to preload the bitmap font assets, and thus the styling is set in stone.
+     * Supporting character sets other than latin, such as CJK languages, may be impractical due to the number of characters.
+     *
+     * To split a line you can use '\n', '\r' or '\r\n' in your string.
+     *
+     * You can generate the fnt files using
+     * http://www.angelcode.com/products/bmfont/ for Windows or
+     * http://www.bmglyph.com/ for Mac.
+     *
+     * A BitmapText can only be created when the font is loaded.
+     *
+     * ```js
+     * // in this case the font is in a file called 'desyrel.fnt'
+     * let bitmapText = new vf.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
+     * ```
+     *
+     * @class
+     * @extends vf.Container
+     * @memberof vf
      */
     class BitmapText extends vf.Container {
         constructor(text: string, style: {
@@ -23138,23 +23708,15 @@ declare namespace vf {
         /**
          * Register a bitmap font with data and a texture.
          *
-         * @deprecated since 5.3.0
-         * @see vf.BitmapFont.install
          * @static
+         * @param {XMLDocument} xml - The XML document data.
+         * @param {Object.<string, vf.Texture>|vf.Texture|vf.Texture[]} textures - List of textures for each page.
+         *  If providing an object, the key is the `<page>` element's `file` attribute in the FNT file.
+         * @return {Object} Result font object with font, size, lineHeight and char fields.
          */
-        static registerFont(): void;
-        /**
-         * Get the list of installed fonts.
-         *
-         * @see vf.BitmapFont.available
-         * @deprecated since 5.3.0
-         * @static
-         * @readonly
-         * @member {Object.<string, vf.BitmapFont>}
-         */
-        static readonly fonts: {
-            [key: string]: vf.BitmapFont;
-        };
+        static registerFont(xml: XMLDocument, textures: {
+            [key: string]: vf.Texture;
+        } | vf.Texture | vf.Texture[]): any;
         /**
          * To be overridden by the subclass
          * @method _renderCanvas
@@ -23211,10 +23773,10 @@ declare namespace vf {
          *
          * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to add to the container
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to add to the container
          * @return {vf.DisplayObject} The first child that was added.
          */
-        addChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        addChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
          *
@@ -23254,10 +23816,10 @@ declare namespace vf {
         /**
          * Removes one or more children from the container.
          *
-         * @param {...vf.DisplayObject} children - The DisplayObject(s) to remove
+         * @param {...vf.DisplayObject} child - The DisplayObject(s) to remove
          * @return {vf.DisplayObject} The first child that was removed.
          */
-        removeChild(...children: vf.DisplayObject[]): vf.DisplayObject;
+        removeChild<TChildren extends vf.DisplayObject[]>(...child: TChildren): TChildren[0];
         /**
          * Removes a child from the specified index position.
          *
@@ -23339,14 +23901,6 @@ declare namespace vf {
          * @member {number}
          */
         height: number;
-        /**
-         * Container default updateTransform, does update children of container.
-         * Will crash if there's no parent element.
-         *
-         * @memberof vf.Container#
-         * @function containerUpdateTransform
-         */
-        containerUpdateTransform(): void;
         /**
          * Determines if the children to the displayObject can be clicked/touched
          * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
@@ -23461,8 +24015,9 @@ declare namespace vf {
          * The display object container that contains this display object.
          *
          * @member {vf.Container} vf.DisplayObject#parent
+         * @readonly
          */
-        parent: vf.Container;
+        readonly parent: vf.Container;
         /**
          * The multiplied alpha of the displayObject.
          *
@@ -23504,44 +24059,12 @@ declare namespace vf {
          */
         filters: vf.Filter[];
         /**
-         * Currently enabled filters
-         * @member {vf.Filter[]} vf.DisplayObject#_enabledFilters
-         * @protected
-         */
-        protected _enabledFilters: vf.Filter[];
-        /**
          * The bounds object, this is used to calculate and store the bounds of the displayObject.
          *
          * @member {vf.Bounds} vf.DisplayObject#_bounds
-         */
-        _bounds: vf.Bounds;
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBounds
-         */
-        _localBounds: vf.Bounds;
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number} vf.DisplayObject#_boundsID
          * @protected
          */
-        protected _boundsID: number;
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_boundsRect
-         * @protected
-         */
-        protected _boundsRect: vf.Bounds;
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {vf.Bounds} vf.DisplayObject#_localBoundsRect
-         * @protected
-         */
-        protected _localBoundsRect: vf.Bounds;
+        protected _bounds: vf.Bounds;
         /**
          * The original, cached mask of the object.
          *
@@ -23567,6 +24090,11 @@ declare namespace vf {
          */
         isMask: boolean;
         /**
+         * @protected
+         * @member {vf.DisplayObject}
+         */
+        protected _tempDisplayObjectParent: vf.DisplayObject;
+        /**
          * Recursively updates transform of all objects from the root to this one
          * internal function for toLocal()
          */
@@ -23585,23 +24113,23 @@ declare namespace vf {
          * Calculates the global position of the display object.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-         * @return {vf.Point} A point object representing the position of this object.
+         * @return {vf.IPoint} A point object representing the position of this object.
          */
-        toGlobal(position: vf.IPoint, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toGlobal(position: vf.IPoint, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Calculates the local position of the display object relative to another point.
          *
          * @param {vf.IPoint} position - The world origin to calculate from.
          * @param {vf.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-         * @param {vf.Point} [point] - A Point object in which to store the value, optional
+         * @param {vf.IPoint} [point] - A Point object in which to store the value, optional
          *  (otherwise will create a new Point).
          * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-         * @return {vf.Point} A point object representing the position of this object
+         * @return {vf.IPoint} A point object representing the position of this object
          */
-        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.Point, skipUpdate?: boolean): vf.Point;
+        toLocal(position: vf.IPoint, from?: vf.DisplayObject, point?: vf.IPoint, skipUpdate?: boolean): vf.IPoint;
         /**
          * Set the parent Container of this DisplayObject.
          *
@@ -23624,11 +24152,6 @@ declare namespace vf {
          * @return {vf.DisplayObject} The DisplayObject instance
          */
         setTransform(x?: number, y?: number, scaleX?: number, scaleY?: number, rotation?: number, skewX?: number, skewY?: number, pivotX?: number, pivotY?: number): vf.DisplayObject;
-        /**
-         * @protected
-         * @member {vf.Container}
-         */
-        protected _tempDisplayObjectParent: vf.Container;
         /**
          * The position of the displayObject on the x axis relative to the local coordinates of the parent.
          * An alias to position.x
@@ -23661,23 +24184,23 @@ declare namespace vf {
          * The coordinate of the object relative to the local coordinates of the parent.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        position: vf.ObservablePoint;
+        position: vf.IPoint;
         /**
          * The scale factor of the object.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        scale: vf.ObservablePoint;
+        scale: vf.IPoint;
         /**
          * The pivot point of the displayObject that it rotates around.
          * Assignment by value since pixi-v4.
          *
-         * @member {vf.ObservablePoint}
+         * @member {vf.IPoint}
          */
-        pivot: vf.ObservablePoint;
+        pivot: vf.IPoint;
         /**
          * The skew factor for the object in radians.
          * Assignment by value since pixi-v4.
@@ -23828,7 +24351,17 @@ declare namespace vf {
          */
         getGlobalPosition(point?: vf.Point, skipUpdate?: boolean): vf.Point;
     }
+    /**
+     * A Ticker class that runs an update loop that other objects listen to.
+     *
+     * This class is composed around listeners meant for execution on the next requested animation frame.
+     * Animation frames are requested only when necessary, e.g. When the ticker is started and the emitter has listeners.
+     *
+     * @class
+     * @memberof vf
+     */
     class Ticker {
+        constructor();
         /**
          * Whether or not this ticker should invoke the method
          * {@link vf.Ticker#start} automatically
@@ -23936,12 +24469,11 @@ declare namespace vf {
          */
         remove(fn: (...params: any[]) => any, context?: any): vf.Ticker;
         /**
-         * The number of listeners on this ticker, calculated by walking through linked list
+         * Counts the number of listeners on this ticker.
          *
-         * @readonly
-         * @member {number}
+         * @returns {number} The number of listeners on this ticker
          */
-        readonly count: number;
+        count: any;
         /**
          * Starts the ticker. If the ticker has listeners
          * a new animation frame is requested at this point.
@@ -24088,9 +24620,9 @@ declare namespace vf {
      * @property {number} HIGH=25 High priority updating, {@link vf.VideoBaseTexture} and {@link vf.AnimatedSprite}
      * @property {number} NORMAL=0 Default priority for ticker events, see {@link vf.Ticker#add}.
      * @property {number} LOW=-25 Low priority used for {@link vf.Application} rendering.
-     * @property {number} UTILITY=-50 Lowest priority used for {@link vf.BasePrepare} utility.
+     * @property {number} UTILITY=-50 Lowest priority used for {@link vf.prepare.BasePrepare} utility.
      */
-    const enum UPDATE_PRIORITY {
+    enum UPDATE_PRIORITY {
         INTERACTION,
         HIGH,
         NORMAL,
@@ -24430,9 +24962,10 @@ declare namespace vf {
          */
         function deprecation(version: string, message: string, ignoreDepth?: number): void;
         /**
-         * @param {number} width - the width for the newly created canvas
-         * @param {number} height - the height for the newly created canvas
-         * @param {number} [resolution=1] - The resolution / device pixel ratio of the canvas
+         * Creates a Canvas element of the given size to be used as a target for rendering to.
+         *
+         * @class
+         * @memberof vf.utils
          */
         class CanvasRenderTarget {
             constructor(width: number, height: number, resolution?: number);
@@ -24740,7 +25273,7 @@ declare namespace vf {
 }
 
 declare namespace vf {
-    export interface Loader {
+    export interface Loader extends utils.EventEmitter {
         baseUrl: string;
         progress: number;
         loading: boolean;
@@ -24763,6 +25296,21 @@ declare namespace vf {
         load(cb?: (loader: Loader, resources: Partial<Record<string, LoaderResource>>) => void): this;
 
         destroy(): void;
+
+        // depreciation
+
+        on(event: "complete", fn: (loader: Loader, object: any) => void, context?: any): this;
+        on(event: "error", fn: (error: Error, loader: Loader, resource: LoaderResource) => void, context?: any): this;
+        on(event: "load" | "progress", fn: (loader: Loader, resource: LoaderResource) => void, context?: any): this;
+        on(event: "start", fn: (loader: Loader) => void, context?: any): this;
+
+        once(event: "complete", fn: (loader: Loader, object: any) => void, context?: any): this;
+        once(event: "error", fn: (error: Error, loader: Loader, resource: LoaderResource) => void, context?: any): this;
+        once(event: "load" | "progress", fn: (loader: Loader, resource: LoaderResource) => void, context?: any): this;
+        once(event: "start", fn: (loader: Loader) => void, context?: any): this;
+        //tslint:disable-next-line:ban-types forbidden-types
+        off(event: "complete" | "error" | "load" | "progress" | "start" | string, fn?: Function, context?: any): this;
+
     }
 
     export interface IResourceDictionary {
@@ -24924,7 +25472,7 @@ export interface ISystemInfo {
  * 播放完成 ended
  *
  */
-export interface IAudio extends PIXI.utils.EventEmitter{
+export interface IAudio extends vf.utils.EventEmitter{
 
     /**
      * 声音名称。
@@ -24969,14 +25517,14 @@ export interface IAudio extends PIXI.utils.EventEmitter{
      */
     readonly paused: boolean;
     /**
-     * 声音播放接口
+     * 声音播放接口 （以秒为单位）
      *
      *  await sound.play()
      *
-    * @param {number} [time] - 等待播放时间
-    * @param {number} [offset] - 声音的开始偏移值
-    * @param {number} [length] - 声音持续时间 
-    */
+     * @param {number} [time] - 等待播放时间
+     * @param {number} [offset] - 声音的开始偏移值
+     * @param {number} [length] - 声音持续时间
+     */
     play(time?: number, offset?: number, length?: number): void;
     /**
     * 停止声音

@@ -117,6 +117,13 @@ export class VFStage extends vf.gui.Stage {
         this.createScene();
     }
     public dispose(): void {
+
+        if (this.app && this.app.ticker) {
+            this.app.ticker.stop();
+            this.app.ticker.remove(this.onGUITickerUpdata, this);
+            // this.app.ticker.destroy();
+        }
+
         this.releaseAll();
 
         if (this.curScene) {
@@ -128,11 +135,6 @@ export class VFStage extends vf.gui.Stage {
 
         // this.removeChildren();
 
-        if (this.app && this.app.ticker) {
-            this.app.ticker.remove(this.onGUITickerUpdata, this);
-            this.app.ticker.stop();
-            // this.app.ticker.destroy();
-        }
         if (this.res) {
             this.res.off(SceneEvent.LoadComplete, this.loadAssetCompleted, this);
             this.res.off(SceneEvent.LoadProgress, this.loadProgress, this);
