@@ -167,10 +167,12 @@ export class Player implements EngineAPI {
             this.stage.dispose();
         }
         vf.AudioEngine.Ins().dispose();
+
         if (this.app && this.app.stage) {
             this.app.destroy(removeView, { children: true, texture: true, baseTexture: true });
         }
-
+        this.stage = undefined;
+        this.app = null as any;
         this.onDispose();
         this.readyState = VFStateCode.DISABLED;
     }

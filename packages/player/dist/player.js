@@ -731,6 +731,8 @@ var Player = /** @class */ (function () {
         if (this.app && this.app.stage) {
             this.app.destroy(removeView, { children: true, texture: true, baseTexture: true });
         }
+        this.stage = undefined;
+        this.app = null;
         this.onDispose();
         this.readyState = "disabled" /* DISABLED */;
     };
@@ -7614,7 +7616,7 @@ var AbstractFilter = /** @class */ (function (_super) {
         this.uniforms.filterMatrix = maskMatrix;
         this.uniforms.resolution = vf.settings.RESOLUTION;
         // super.apply(filterManager, input, output, false); // 这样写ipad下会报错
-        filterManager.applyFilter(this, input, output, undefined);
+        filterManager.applyFilter(this, input, output, undefined || false);
     };
     AbstractFilter.prototype.setPreviousTexture = function (value) {
         this.uniforms.previousTexture = value;
@@ -8690,6 +8692,11 @@ var VFStage = /** @class */ (function (_super) {
         this.createScene();
     };
     VFStage.prototype.dispose = function () {
+        if (this.app && this.app.ticker) {
+            this.app.ticker.stop();
+            this.app.ticker.remove(this.onGUITickerUpdata, this);
+            // this.app.ticker.destroy();
+        }
         this.releaseAll();
         if (this.curScene) {
             this.curScene.dispose();
@@ -8698,11 +8705,6 @@ var VFStage = /** @class */ (function (_super) {
             this.tween.release();
         }
         // this.removeChildren();
-        if (this.app && this.app.ticker) {
-            this.app.ticker.remove(this.onGUITickerUpdata, this);
-            this.app.ticker.stop();
-            // this.app.ticker.destroy();
-        }
         if (this.res) {
             this.res.off("LoadComplete" /* LoadComplete */, this.loadAssetCompleted, this);
             this.res.off("LoadProgress" /* LoadProgress */, this.loadProgress, this);
