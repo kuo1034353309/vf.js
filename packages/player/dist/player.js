@@ -628,6 +628,7 @@ var Player = /** @class */ (function () {
         this.option = options;
         this.config = new _core_Config__WEBPACK_IMPORTED_MODULE_3__["default"](options);
         var config = this.config;
+        vf.gui.Utils.debug = config.debug;
         // eslint-disable-next-line no-console
         console.groupEnd();
         // 2. 初始化引擎
@@ -744,12 +745,14 @@ var Player = /** @class */ (function () {
     Player.prototype.reload = function () {
         var config = this.config;
         config.systemEvent.removeAllListeners();
+        vf.AudioEngine.Ins().dispose();
         if (this.stage) {
             this.stage.dispose();
         }
         if (this.app) {
             this.app.destroy(true, { children: true, texture: true, baseTexture: true });
         }
+        this.stage = undefined;
         this.app = new vf.Application({
             backgroundColor: parseInt(config.bgcolor || '0', 16),
             transparent: config.wmode === 'transparent',
@@ -791,8 +794,6 @@ var Player = /** @class */ (function () {
                 container.appendChild(this.app.view);
                 // 3、初始化基于PX容器的VF场景
                 this.stage = new _display_VFStage__WEBPACK_IMPORTED_MODULE_0__["VFStage"](this._data, this.config, this);
-                this.stage.app = this.app;
-                this.app.stage.addChild(this.stage.container);
                 // 4、 适配处理
                 // eslint-disable-next-line max-len
                 Object(_utils_CalculatePlayerSize__WEBPACK_IMPORTED_MODULE_1__["calculateUpdatePlayerSize"])(container, this.app.view, this.stage, this.config.scaleMode, this.app.renderer.resolution);
@@ -2000,6 +2001,10 @@ var RES = /** @class */ (function (_super) {
         return null;
     };
     RES.prototype.createComponent = function (libId, id) {
+        if (id === undefined || id === '') {
+            this.stage.systemEvent.emitError('E0004', [id], undefined, "libId = " + libId);
+            return null;
+        }
         var componentData = this.data.components[libId];
         var component = null;
         if (componentData) {
@@ -6596,7 +6601,7 @@ var Animation = /** @class */ (function () {
         this.lastTime = this.startTime;
         this.startTime -= this.curPlayTime;
         this._curPlayTimes = 0;
-        vf.Ticker.shared.add(this.tick, this);
+        vf.gui.TickerShared.add(this.tick, this);
     };
     Animation.prototype.gotoStop = function (name, frameIndex) {
         if (this.status === 1 /* PLAYING */) {
@@ -6632,7 +6637,7 @@ var Animation = /** @class */ (function () {
         this.gotoPlay(name, 0, times);
     };
     Animation.prototype.stop = function () {
-        vf.Ticker.shared.remove(this.tick, this);
+        vf.gui.TickerShared.remove(this.tick, this);
         this.status = 0 /* STOP */;
         this.skipNextEvent();
     };
@@ -7525,15 +7530,14 @@ var Transition = /** @class */ (function () {
             transition.setPreviousTexture(this.prevTexture);
             transition.progress = 0;
             transition.applyTranisition(this.vfStage.container);
-            var tween = this.vfStage.tween;
-            tween.setObject(transition);
+            var tween = vf.gui.Tween.to(transition, { progress: 1 }, this.data.duration);
             tween.once(vf.gui.Tween.Event.complete, function () {
                 transition.dispose();
                 systemEvent_1.emit("status" /* STATUS */, {
                     code: "TransitionEnd" /* TransitionEnd */, level: "status" /* STATUS */, data: null,
                 });
             });
-            tween.to({ progress: 1 }, this.data.duration).start();
+            tween.start();
             systemEvent_1.emit("status" /* STATUS */, {
                 code: "TransitionStart" /* TransitionStart */, level: "status" /* STATUS */, data: null,
             });
@@ -8612,27 +8616,23 @@ var STAGE_STATUS;
 var VFStage = /** @class */ (function (_super) {
     __extends(VFStage, _super);
     function VFStage(data, config, player) {
-        var _this = _super.call(this, config.width, config.height) || this;
+        var _this = _super.call(this, config.width, config.height, player.app) || this;
         _this.fps = 30;
-        /**
-         * 插件列表
-         */
-        _this.plugs = new Map();
+        _this.plugs = new Map(); // 插件列表
         _this.status = STAGE_STATUS.NONE;
         _this.data = data;
         _this.config = config;
         _this.player = player;
-        vf.gui.Utils.debug = config.debug;
-        // 配置数据后，创建各种管理器
         _this.res = new _core_RES__WEBPACK_IMPORTED_MODULE_2__["RES"](_this);
         _this.variableManager = new _core_VariableManager__WEBPACK_IMPORTED_MODULE_0__["VariableManager"]();
-        _this.soundManager = new _sound_SoundManager__WEBPACK_IMPORTED_MODULE_1__["SoundManager"](_this.res, _this);
-        _this.tween = new vf.gui.Tween();
-        // eslint-disable-next-line no-new
+        _this.soundManager = new _sound_SoundManager__WEBPACK_IMPORTED_MODULE_1__["SoundManager"](_this);
         new _plugs_PlugIndex__WEBPACK_IMPORTED_MODULE_4__["PlugIndex"]();
         return _this;
     }
     Object.defineProperty(VFStage.prototype, "systemEvent", {
+        /**
+         * 获取系统总线
+         */
         get: function () {
             return this.config.systemEvent;
         },
@@ -8647,21 +8647,16 @@ var VFStage = /** @class */ (function (_super) {
         if (msg.message === undefined) {
             msg.message = '';
         }
-        if (msg.target && msg.target['libId']) {
-            msg.message += ", id = " + msg.target['id'] + " , libId = " + msg.target['libId'];
+        if (msg.target && msg.target.libId) {
+            msg.message += ", id = " + msg.target.id + " , libId = " + msg.target.libId;
         }
         this.player.runtimeLog(msg);
     };
     VFStage.prototype.start = function () {
-        if (this.app) {
-            this.app.ticker.add(this.onGUITickerUpdata, this);
-        }
-        // TODO: 适配
         // 初始化加载界面
         this.status = STAGE_STATUS.LOADING;
         this.res.on("LoadComplete" /* LoadComplete */, this.loadAssetCompleted, this);
         this.res.on("LoadProgress" /* LoadProgress */, this.loadProgress, this);
-        // 开始加载
         this.res.loadData(this.data);
     };
     VFStage.prototype.pause = function () {
@@ -8694,20 +8689,14 @@ var VFStage = /** @class */ (function (_super) {
     VFStage.prototype.dispose = function () {
         if (this.app && this.app.ticker) {
             this.app.ticker.stop();
-            this.app.ticker.remove(this.onGUITickerUpdata, this);
             // this.app.ticker.destroy();
         }
         this.releaseAll();
         if (this.curScene) {
             this.curScene.dispose();
         }
-        if (this.tween) {
-            this.tween.release();
-        }
-        // this.removeChildren();
         if (this.res) {
-            this.res.off("LoadComplete" /* LoadComplete */, this.loadAssetCompleted, this);
-            this.res.off("LoadProgress" /* LoadProgress */, this.loadProgress, this);
+            this.res.removeAllListeners();
             this.res.destroy();
             this.res = null;
         }
@@ -8749,7 +8738,7 @@ var VFStage = /** @class */ (function (_super) {
             var prevTexture = void 0;
             if (this.curScene) {
                 if (this.curScene.transition || transitionData) {
-                    if (transitionData == null) {
+                    if (transitionData === undefined) {
                         transitionData = this.curScene.transition;
                     }
                     prevTexture = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__["renderTexture"])(this.app, this.container, this.container.width, this.container.height);
@@ -8770,7 +8759,7 @@ var VFStage = /** @class */ (function (_super) {
             }
         }
     };
-    VFStage.prototype.loadAssetCompleted = function (e) {
+    VFStage.prototype.loadAssetCompleted = function () {
         this.systemEvent.emit("status" /* STATUS */, {
             code: "LoadComplete" /* LoadComplete */, level: "status" /* STATUS */, data: null,
         });
@@ -8806,11 +8795,6 @@ var VFStage = /** @class */ (function (_super) {
             this.addChild(scene);
         }
         this.status = STAGE_STATUS.PLAYING;
-    };
-    VFStage.prototype.onGUITickerUpdata = function (deltaTime) {
-        if (this.app) {
-            vf.gui.TickerShared.update(deltaTime, this.app.ticker.lastTime, this.app.ticker.elapsedMS);
-        }
     };
     return VFStage;
 }(vf.gui.Stage));
@@ -9331,9 +9315,8 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SoundManager", function() { return SoundManager; });
 var SoundManager = /** @class */ (function () {
-    function SoundManager(res, vfStage) {
+    function SoundManager(vfStage) {
         this.trackIdMap = [];
-        this.res = res;
         this.stage = vfStage;
         // vfStage.config.vfvars.useNativeAudio // 如果使用了native播放，不要加载和设置PIXI.sound， 在互动课件中会有问题，教室中使用audioContext会出错。
     }
@@ -9402,7 +9385,7 @@ var SoundManager = /** @class */ (function () {
     };
     // tslint:disable-next-line: max-line-length
     SoundManager.prototype.playSound = function (data) {
-        var asset = this.res.data.assets[data.assetId.toString()];
+        var asset = this.stage.res.data.assets[data.assetId.toString()];
         if (asset === undefined || asset.url === undefined || asset.url === '') {
             console.warn('playback failed,missing assetId!', data);
             return;
@@ -9444,7 +9427,7 @@ var SoundManager = /** @class */ (function () {
         if (data === void 0) { data = {}; }
         var useNative = this.stage.config.vfvars.useNativeAudio;
         if (useNative) { // 先放这里，后期soundManager完成后，合并
-            var asset = this.res.getAsset(assetId);
+            var asset = this.stage.res.getAsset(assetId);
             this.stage.systemEvent.emit("message" /* MESSAGE */, {
                 code: "native" /* NATIVE */,
                 type: "native" /* NATIVE */,
@@ -9610,8 +9593,6 @@ function calculateUpdatePlayerSize(player, canvas, stage, scaleMode, canvasScale
     stage.container.hitArea = new vf.Rectangle(0, 0, stageWidth, stageHeight);
     stage.scaleX = canvasScaleX / canvasScaleFactor;
     stage.scaleY = canvasScaleY / canvasScaleFactor;
-    stage._stageWidth = canvas.width / canvasScaleFactor;
-    stage._stageHeight = canvas.height / canvasScaleFactor;
     return { width: canvas.width, height: canvas.height, scaleX: canvasScaleX, scaleY: canvasScaleY };
 }
 

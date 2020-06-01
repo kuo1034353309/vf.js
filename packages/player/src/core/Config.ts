@@ -12,7 +12,6 @@
 import BaseInfo from './BaseInfo';
 import {CDN, ScaleMode} from './model/IVFData';
 import {IVFOptions} from '../IVFEngine';
-import {Player} from '../Player';
 import I18N from './I18N';
 
 export default class Config extends BaseInfo {

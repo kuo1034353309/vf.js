@@ -67,6 +67,7 @@ export class Player implements EngineAPI {
         this.config = new Config(options);
         const config = this.config;
 
+        vf.gui.Utils.debug = config.debug;
         // eslint-disable-next-line no-console
         console.groupEnd();
 
@@ -228,10 +229,11 @@ export class Player implements EngineAPI {
     }
 
     private reload(): void {
-
         const config = this.config;
 
         config.systemEvent.removeAllListeners();
+
+        vf.AudioEngine.Ins().dispose();
 
         if (this.stage) {
             this.stage.dispose();
@@ -240,6 +242,7 @@ export class Player implements EngineAPI {
         if (this.app) {
             this.app.destroy(true, { children: true, texture: true, baseTexture: true });
         }
+        this.stage = undefined;
 
         this.app = new vf.Application({
             backgroundColor: parseInt(config.bgcolor || '0', 16),
@@ -285,9 +288,6 @@ export class Player implements EngineAPI {
 
         // 3、初始化基于PX容器的VF场景
         this.stage = new VFStage(this._data, this.config, this);
-        this.stage.app = this.app;
-        this.app.stage.addChild(this.stage.container);
-
         // 4、 适配处理
         // eslint-disable-next-line max-len
         calculateUpdatePlayerSize(container, this.app.view, this.stage, this.config.scaleMode as any, this.app.renderer.resolution);

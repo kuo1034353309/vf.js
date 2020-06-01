@@ -18,6 +18,11 @@
             border: 0;
             margin: 0;
             height: 100%;
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -khtml-user-select: none;
         }
     </style>
 </head>
@@ -32,24 +37,47 @@
         <button>reset</button>
         <button>pause</button>
         <button>resume</button>
-        <button>dispose</button>
+        <button param="1">dispose</button>
         <button param-type="object" param='{"code": "restore","level": "command","data": {"name": "restore","val": {}}}'>message</button>
         <button>switchToNextScene</button>
         <button>switchToPrevScene</button>
         <button param='2'>switchToSceneId</button>
+        <button param='https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN01/index.json'>disposeplay</button>
+        <button param='https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN03/index.json'>disposeplay</button>
     </div>
+    <script src="https://s.vipkidstatic.com/vf/engine/debug/stats.min.js"></script>
     <script src='./packages/launcher/dist/launcher.js'></script>
     <script>
-        
-        // import './packages/launcher/dist/launcher.js';
+                        
+// var stats = new (window).Stats();
 
+// stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+// document.body.appendChild(stats.dom);
+
+// var animate = () => {
+//     stats.begin();
+//     // monitored code goes here
+//     stats.end();
+//     requestAnimationFrame(animate);
+// };
+
+// requestAnimationFrame(animate);
+        // import './packages/launcher/dist/launcher.js';
+        
         if (location.href.indexOf("#") === -1) {
-            location.hash = "path/test/" + 'data/gotoPlay.json';
+            location.hash = "path/test/" + 'vf_sound/index.json';
             //location.reload();
         }
-
-        createVF({ container: document.getElementById("vf-container") , debug: true}, function (player) {
-
+        var $player = null;
+        createVF({ 
+            container: document.getElementById("vf-container") , 
+            debug: true,
+            // showFPS: true,
+            resolution:window.devicePixelRatio || 1,
+            // debugGuiPath: 'http://172.24.73.39:5501/dist/gui.js',
+        }, function (player) {
+            
+            $player = player;
             player.onReady = function() {
                 console.log("onReady"); //初始化完成
             }
@@ -75,12 +103,15 @@
             }else{
                 player.play(location.hash.substr(5));
             }
-            
+            vf.AudioEngine.Ins().useCustomUnlockedButton = true;
+            //vf.Ticker.shared.maxFPS = 24;
+            //player.app.ticker.maxFPS = 24;
             //player.play('test/VF_IC019/index.json');
             //player.play('https://s.vipkidstatic.com/fe-static/learning-stages/static/assets/CDNFiles/VF_IC035/index_v1.json?v=1');
 
             // ========  测试代码 ==============
             test(player);
+            
         });
 
 
@@ -92,18 +123,55 @@
             var buttons = document.getElementById('buttons').children;
             for (var i = 0; i < buttons.length; i++) {
                 var button = buttons[i];
-                var name = button.innerHTML;
-                var paramType = button.getAttribute('param-type') || "string";
-                var param = paramType === "string" ? button.getAttribute('param') : JSON.parse(button.getAttribute('param'));
                 button.addEventListener("click", function() {
+                    var button = this;
+                    var name = button.innerHTML;
+                    var paramType = button.getAttribute('param-type') || "string";
+                    var param = paramType === "string" ? button.getAttribute('param') : JSON.parse(button.getAttribute('param'));
                     console.clear();
-                    if(param){
-                        console.log(`执行方法:${name}(${param})`);
-                        player[name](param);
-                    }else{
-                        console.log(`执行方法:${name}()`);
-                        player[name]();
-                    }
+                    $player.playData(param);
+
+                    // if(name === 'disposeplay') {
+                    //     $player.dispose(true);
+                    //     $player = null;
+                    //     createVF({ 
+                    //         container: document.getElementById("vf-container") , 
+                    //         debug: true,
+                    //         resolution:window.devicePixelRatio || 1,
+                    //         // debugGuiPath: 'http://172.24.73.39:5501/dist/gui.js',
+                    //     }, function (player) {
+                    //         $player = player;
+                    //         player.onReady = function() {
+                    //             console.log("onReady"); //初始化完成
+                    //         }
+
+                    //         player.onSceneCreate = function() {
+                    //             console.log("onSceneCreate"); //资源加载完成
+                    //         }
+
+                    //         player.onMessage = function(msg) {
+                    //             console.log("onMessage ==>", msg);
+                    //         }
+
+                    //         player.onError = function(evt) {
+                    //             console.log("onError ==>", evt);
+                    //         }
+
+                    //         player.onDispose = function() {
+                    //             console.log("onDispose");
+                    //         }
+
+                    //         player.play(param);
+                    //     });
+                    //     return;
+                    // }
+                    // if(param){
+                    //     console.log(`执行方法:${name}(${param})`);
+                    //     player[name](param);
+                    // }else{
+                    //     console.log(`执行方法:${name}()`);
+                    //     player[name]();
+                    // }
 
                 });
             }

@@ -1,3 +1,4 @@
+/* eslint-disable no-new */
 import { ITransitionData, IVFDataV1, SceneEvent, VFStateCode } from '../core/model/IVFData';
 import { VariableManager } from '../core/VariableManager';
 import { SoundManager } from '../sound/SoundManager';
@@ -24,69 +25,55 @@ enum STAGE_STATUS {
 
 // eslint-disable-next-line no-undef
 export class VFStage extends vf.gui.Stage {
-    public variableManager: VariableManager;
-    public soundManager: SoundManager;
-    public tween: vf.gui.Tween;
     public fps = 30;
+    public readonly data: IVFDataV1;
     public readonly config: Config;
     public readonly player: Player;
-    /**
-     * 插件列表 
-     */
-    public readonly plugs = new Map<string, IPlug>();
-    //
-    private data: IVFDataV1;
+    public readonly res: RES;
+    public readonly variableManager: VariableManager;
+    public readonly soundManager: SoundManager;
+    public readonly plugs = new Map<string, IPlug>(); // 插件列表
+
     private curScene?: VFScene;
     private status: STAGE_STATUS = STAGE_STATUS.NONE;
 
-    private res: RES;
-
     constructor(data: IVFDataV1, config: Config, player: Player) {
-
-        super(config.width, config.height);
+        super(config.width, config.height, player.app);
         this.data = data;
         this.config = config;
         this.player = player;
-        vf.gui.Utils.debug = config.debug;
-        // 配置数据后，创建各种管理器
         this.res = new RES(this);
         this.variableManager = new VariableManager();
-        this.soundManager = new SoundManager(this.res, this);
-        this.tween = new vf.gui.Tween();
-        // eslint-disable-next-line no-new
+        this.soundManager = new SoundManager(this);
         new Plugs.PlugIndex();
     }
 
+    /**
+     * 获取系统总线
+     */
     public get systemEvent(): StateEvent {
         return this.config.systemEvent;
     }
 
     /**
      * 即使没有引用也不要删除这个接口，GUI在调用
-     * @param msg 
+     * @param msg
      */
     public inputLog(msg: IEvent): void {
         if (msg.message === undefined) {
             msg.message = '';
         }
-        if (msg.target && msg.target['libId']) {
-            msg.message += `, id = ${msg.target['id']} , libId = ${msg.target['libId']}`;
+        if (msg.target && msg.target.libId) {
+            msg.message += `, id = ${msg.target.id} , libId = ${msg.target.libId}`;
         }
         this.player.runtimeLog(msg);
     }
 
     public start(): void {
-
-        if (this.app) {
-            this.app.ticker.add(this.onGUITickerUpdata, this);
-        }
-
-        // TODO: 适配
         // 初始化加载界面
         this.status = STAGE_STATUS.LOADING;
         this.res.on(SceneEvent.LoadComplete, this.loadAssetCompleted, this);
         this.res.on(SceneEvent.LoadProgress, this.loadProgress, this);
-        // 开始加载
         this.res.loadData(this.data);
     }
     public pause(): void {
@@ -117,10 +104,8 @@ export class VFStage extends vf.gui.Stage {
         this.createScene();
     }
     public dispose(): void {
-
         if (this.app && this.app.ticker) {
             this.app.ticker.stop();
-            this.app.ticker.remove(this.onGUITickerUpdata, this);
             // this.app.ticker.destroy();
         }
 
@@ -129,18 +114,13 @@ export class VFStage extends vf.gui.Stage {
         if (this.curScene) {
             this.curScene.dispose();
         }
-        if (this.tween) {
-            this.tween.release();
-        }
-
-        // this.removeChildren();
 
         if (this.res) {
-            this.res.off(SceneEvent.LoadComplete, this.loadAssetCompleted, this);
-            this.res.off(SceneEvent.LoadProgress, this.loadProgress, this);
+            this.res.removeAllListeners();
             this.res.destroy();
-            this.res = null as any;
+            (this as any).res = null as any;
         }
+
         this.plugs.forEach((value) => {
             value.release();
         });
@@ -188,7 +168,7 @@ export class VFStage extends vf.gui.Stage {
 
             if (this.curScene) {
                 if (this.curScene.transition || transitionData) {
-                    if (transitionData == null) {
+                    if (transitionData === undefined) {
                         transitionData = this.curScene.transition;
                     }
                     prevTexture = renderTexture(this.app, this.container, this.container.width, this.container.height);
@@ -202,14 +182,15 @@ export class VFStage extends vf.gui.Stage {
             this.addChild(scene);
             if (transitionData && prevTexture) {
                 applyTransition(this, prevTexture, transitionData);
-            } else {
+            }
+            else {
                 this.emit(SceneEvent.TransitionStart);
                 this.emit(SceneEvent.TransitionEnd);
             }
         }
     }
 
-    private loadAssetCompleted(e: any): void {
+    private loadAssetCompleted(): void {
         this.systemEvent.emit(EventType.STATUS, {
             code: SceneEvent.LoadComplete, level: EventLevel.STATUS, data: null,
         });
@@ -251,15 +232,6 @@ export class VFStage extends vf.gui.Stage {
             this.addChild(scene);
         }
         this.status = STAGE_STATUS.PLAYING;
-    }
-
-    private onGUITickerUpdata(deltaTime: number): void {
-        if (this.app) {
-            vf.gui.TickerShared.update(deltaTime,
-                this.app.ticker.lastTime,
-                this.app.ticker.elapsedMS);
-        }
-
     }
 }
 

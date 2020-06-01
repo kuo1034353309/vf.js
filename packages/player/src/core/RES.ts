@@ -307,6 +307,11 @@ export class RES extends vf.utils.EventEmitter {
     }
 
     private createComponent(libId: string, id: string): vf.gui.DisplayObject | null {
+        if (id === undefined || id === '') {
+            this.stage.systemEvent.emitError('E0004', [id], undefined, `libId = ${libId}`);
+
+            return null;
+        }
         const componentData = this.data.components[libId] as ICustomComponent;
         let component: vf.gui.DisplayObject | null = null;
 

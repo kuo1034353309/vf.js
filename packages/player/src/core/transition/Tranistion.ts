@@ -36,15 +36,15 @@ export class Transition {
             transition.setPreviousTexture(this.prevTexture);
             transition.progress = 0;
             transition.applyTranisition(this.vfStage.container);
-            const tween = this.vfStage.tween;
-            tween.setObject(transition);
+            const tween = vf.gui.Tween.to(transition, { progress: 1 }, this.data.duration);
+
             tween.once(vf.gui.Tween.Event.complete, () => {
                 transition.dispose();
                 systemEvent.emit(EventType.STATUS, {
                     code: SceneEvent.TransitionEnd, level: EventLevel.STATUS, data: null,
                 });
             });
-            tween.to({progress: 1}, this.data.duration).start();
+            tween.start();
             systemEvent.emit(EventType.STATUS, {
                 code: SceneEvent.TransitionStart, level: EventLevel.STATUS, data: null,
             });
