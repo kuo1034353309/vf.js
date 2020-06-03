@@ -12,7 +12,7 @@ export interface IVFDataV1 {
     global?: { [id: string]: IVariableData };
     assets: { [id: string]: IAsset };
     components: { [id: string]: AllComponent };
- scenes: IScene[];
+    scenes: IScene[];
 }
 
 export const enum ScaleMode {
@@ -236,6 +236,7 @@ export interface IScene {
     id: string;
     libId: string;
     transition?: ITransitionData;
+    assets?: string[];
 }
 
 export type AllComponent = (IComponent | IDisplayComponent | ICustomComponent |

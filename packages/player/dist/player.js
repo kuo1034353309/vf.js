@@ -627,19 +627,8 @@ var Player = /** @class */ (function () {
         //  1. 初始化配置
         this.option = options;
         this.config = new _core_Config__WEBPACK_IMPORTED_MODULE_3__["default"](options);
-        var config = this.config;
-        vf.gui.Utils.debug = config.debug;
-        // eslint-disable-next-line no-console
-        console.groupEnd();
         // 2. 初始化引擎
-        // eslint-disable-next-line no-undef
-        this.app = new vf.Application({
-            backgroundColor: parseInt(config.bgcolor || '0', 16),
-            transparent: config.wmode === 'transparent',
-            antialias: true,
-            resolution: options.resolution,
-            forceCanvas: options.forceCanvas,
-        });
+        this.app = this.createApp();
         this._errpanel = new _error_ErrorDisplay__WEBPACK_IMPORTED_MODULE_4__["default"](this.config, options.useCustomErrorPanel);
         this.initSystemEvent();
         this._readyState = "init" /* INIT */;
@@ -659,6 +648,22 @@ var Player = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Player.prototype.createApp = function () {
+        var options = this.option;
+        var config = this.config;
+        // eslint-disable-next-line no-undef
+        var app = new vf.Application({
+            backgroundColor: parseInt(config.bgcolor || '0', 16),
+            transparent: config.wmode === 'transparent',
+            antialias: true,
+            resolution: options.resolution,
+            forceCanvas: options.forceCanvas,
+        });
+        app.ticker.maxFPS = options.frameRate || 30;
+        vf.gui.TickerShared.maxFPS = options.frameRate || 30;
+        vf.gui.Utils.debug = options.debug || false;
+        return app;
+    };
     Player.prototype.play = function (src) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -720,9 +725,6 @@ var Player = /** @class */ (function () {
         if (this.readyState === "disabled" /* DISABLED */) {
             return;
         }
-        // if (vf.sound) {
-        //     vf.sound.close();
-        // }
         this.option = null;
         this.config.systemEvent.removeAllListeners();
         if (this.stage) {
@@ -753,13 +755,7 @@ var Player = /** @class */ (function () {
             this.app.destroy(true, { children: true, texture: true, baseTexture: true });
         }
         this.stage = undefined;
-        this.app = new vf.Application({
-            backgroundColor: parseInt(config.bgcolor || '0', 16),
-            transparent: config.wmode === 'transparent',
-            antialias: true,
-            resolution: this.option.resolution,
-            forceCanvas: this.option.forceCanvas,
-        });
+        this.app = this.createApp();
         this.initSystemEvent();
     };
     /**
@@ -1727,32 +1723,40 @@ var RES = /** @class */ (function (_super) {
     __extends(RES, _super);
     function RES(stage) {
         var _this = _super.call(this) || this;
-        _this.pixiResources = {};
-        _this.data = null;
+        _this.vfResources = {};
         _this.vfActions = [];
         _this._resources = [];
         _this._sceneMap = {};
         _this._loadNum = 0;
         _this._assetFails = new Map();
+        _this._isLoadScript = false;
+        _this._isLoadResource = false;
         vf.gui.Utils.setSourcePath(_this.getImageAsset.bind(_this));
         vf.gui.Utils.setDisplayObjectPath(_this.getDisplayObject.bind(_this));
         _this.stage = stage;
         return _this;
     }
+    Object.defineProperty(RES.prototype, "data", {
+        get: function () {
+            return this.stage.data;
+        },
+        enumerable: true,
+        configurable: true
+    });
     RES.prototype.destroy = function () {
-        if (this.pixiResources) {
-            for (var id in this.pixiResources) {
-                if (this.pixiResources[id]) {
-                    var resource = this.pixiResources[id];
+        if (this.vfResources) {
+            for (var id in this.vfResources) {
+                if (this.vfResources[id]) {
+                    var resource = this.vfResources[id];
                     if (resource.texture) {
                         resource.texture.destroy(true);
-                        delete this.pixiResources[id];
+                        delete this.vfResources[id];
                     }
                     else if (resource.sound) {
                         if (resource.sound.media) {
                             resource.sound.destroy();
                         }
-                        delete this.pixiResources[id];
+                        delete this.vfResources[id];
                     }
                 }
             }
@@ -1760,30 +1764,31 @@ var RES = /** @class */ (function (_super) {
         vf.utils.destroyTextureCache();
         vf.utils.clearTextureCache();
         if (this._loader) {
+            this._loader.destroy;
             this._loader.destroy();
         }
         this.stage = undefined;
         this._sceneMap = {};
     };
-    RES.prototype.addResource = function (asset) {
-        this._resources.push(asset);
-    };
-    RES.prototype.loadData = function (data) {
+    RES.prototype.loadData = function (assets, js) {
         return __awaiter(this, void 0, void 0, function () {
+            var stage;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        this.data = data;
-                        if (!(this.data && this.data.assets)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this.loadAllScript()];
-                    case 1:
-                        _a.sent(); // 先加载脚本 loadAllAsset 非同步，后续单独提取assets同步加载，此处js并不算入进度
-                        return [4 /*yield*/, this.loadAllAsset()];
-                    case 2:
-                        _a.sent();
-                        return [3 /*break*/, 4];
-                    case 3:
+                        if (!(assets.length === 0 && js.length === 0)) return [3 /*break*/, 1];
                         this.emit("LoadComplete" /* LoadComplete */, null);
+                        return [3 /*break*/, 4];
+                    case 1:
+                        stage = this.stage;
+                        this._isLoadScript = false;
+                        this._isLoadResource = false;
+                        return [4 /*yield*/, this.loadAllScript(stage, js)];
+                    case 2:
+                        _a.sent(); // 先加载脚本 loadAllAsset 非同步，后续单独提取assets同步加载，此处js并不算入进度
+                        return [4 /*yield*/, this.loadAllAsset(stage, assets)];
+                    case 3:
+                        _a.sent();
                         _a.label = 4;
                     case 4: return [2 /*return*/];
                 }
@@ -1875,77 +1880,64 @@ var RES = /** @class */ (function (_super) {
     };
     RES.prototype.getAsset = function (index) {
         var assetData = this.data.assets[index];
-        if (assetData === undefined || assetData.id == null) {
+        if (assetData === undefined || assetData.id === undefined) {
             this.stage.systemEvent.emitError('E0003', [index], "warning" /* WARNING */);
             return undefined;
         }
-        return this.pixiResources[assetData.id.toString()];
+        return this.vfResources[assetData.id.toString()];
     };
-    RES.prototype.loadAllScript = function () {
+    RES.prototype.loadAllScript = function (stage, asstes) {
         return __awaiter(this, void 0, void 0, function () {
-            var assets, cdns, assetsItem, _a, _b, _i, id, cls;
-            var _this = this;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var item, i, cls;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        assets = this.data.assets;
-                        cdns = this.stage.config.cdns;
-                        _a = [];
-                        for (_b in assets)
-                            _a.push(_b);
-                        _i = 0;
-                        _c.label = 1;
+                        i = 0;
+                        _a.label = 1;
                     case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 4];
-                        id = _a[_i];
-                        assetsItem = assets[id];
-                        if (!(assetsItem && assetsItem.type === "js" /* JS */ && assetsItem.name)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, Object(_utils_ImportScript__WEBPACK_IMPORTED_MODULE_6__["default"])(assetsItem.url, cdns, assetsItem.name).catch(function (e) {
-                                _this.stage.systemEvent.error(e);
+                        if (!(i < asstes.length)) return [3 /*break*/, 4];
+                        item = asstes[i];
+                        return [4 /*yield*/, Object(_utils_ImportScript__WEBPACK_IMPORTED_MODULE_6__["default"])(item.url, stage.config.cdns, item.name).catch(function (e) {
+                                stage.systemEvent.error(e);
                             })];
                     case 2:
-                        cls = _c.sent();
+                        cls = _a.sent();
                         if (cls) {
-                            if (cls.isFilter) {
-                                vf.gui.Filter.list.set(assetsItem.name, cls); // 添加到滤镜列表
+                            if (cls.isFilter && item.name) {
+                                vf.gui.Filter.list.set(item.name, cls); // 添加到滤镜列表
                             }
                         }
-                        _c.label = 3;
+                        _a.label = 3;
                     case 3:
-                        _i++;
+                        ++i;
                         return [3 /*break*/, 1];
-                    case 4: return [2 /*return*/];
+                    case 4:
+                        this._isLoadScript = true;
+                        this.loadResourceComplete();
+                        return [2 /*return*/];
                 }
             });
         });
     };
-    RES.prototype.loadAllAsset = function () {
+    RES.prototype.loadAllAsset = function (stage, assets) {
         return __awaiter(this, void 0, void 0, function () {
-            var assets, assetsItem, id;
+            var _this = this;
             return __generator(this, function (_a) {
-                assets = this.data.assets;
-                for (id in assets) {
-                    if (assets[id]) {
-                        assetsItem = assets[id];
-                        if (assetsItem === undefined || assetsItem.type === undefined || assetsItem.url === undefined) {
-                            this.stage.systemEvent.emitError('E0001', [id]);
-                            continue;
-                        }
-                        if (assetsItem.url === '') {
-                            this.stage.systemEvent.emitError('E0003', [id], "warning" /* WARNING */);
-                            continue;
-                        }
-                        if (assetsItem.type === "audio" /* AUDIO */ && this.stage.config.vfvars.useNativeAudio) {
-                            this.stage.systemEvent.emitError('S0004', [id], "warning" /* WARNING */);
-                            continue;
-                        }
-                        if (assetsItem.type === "js" /* JS */) {
-                            continue;
-                        }
-                        assetsItem.id = id;
-                        this.addResource(assets[id]);
+                assets.forEach(function (assetsItem) {
+                    if (assetsItem.type === undefined) {
+                        stage.systemEvent.emitError('E0001', [assetsItem.id]);
+                        return;
                     }
-                }
+                    if (assetsItem.url === '' || assetsItem.url === undefined) {
+                        stage.systemEvent.emitError('E0003', [assetsItem.id], "warning" /* WARNING */);
+                        return;
+                    }
+                    if (assetsItem.type === "audio" /* AUDIO */ && stage.config.vfvars.useNativeAudio) {
+                        stage.systemEvent.emitError('S0004', [assetsItem.id], "warning" /* WARNING */);
+                        return;
+                    }
+                    _this._resources.push(assetsItem);
+                });
                 this.loadResources();
                 return [2 /*return*/];
             });
@@ -2151,6 +2143,11 @@ var RES = /** @class */ (function (_super) {
             target[filterKeys[filterKeys.length - 1]] = value;
         }
     };
+    RES.prototype.loadResourceComplete = function () {
+        if (this._isLoadResource && this._isLoadScript) {
+            this.emit("LoadComplete" /* LoadComplete */, [this._loader, this._resources]);
+        }
+    };
     RES.prototype.loadResources = function () {
         var _this = this;
         if (this._loader === undefined) {
@@ -2158,10 +2155,10 @@ var RES = /** @class */ (function (_super) {
         }
         var loader = this._loader;
         var urls = {};
+        var resources = this._resources;
         this._loadNum = 0;
-        for (var i = 0, len = this._resources.length; i < len; i++) {
-            var res = this._resources[i];
-            var id = res.id === undefined ? 'undefined' : res.id.toString();
+        for (var i = 0, len = resources.length; i < len; i++) {
+            var res = resources[i];
             if (urls[res.url]) {
                 urls[res.url].push(res.id);
                 continue;
@@ -2169,12 +2166,12 @@ var RES = /** @class */ (function (_super) {
             if (res.type === 'audio' || res.type === 'sound') {
                 // 微信wechat不能直接加载audio类型
                 // eslint-disable-next-line max-len
-                loader.add(id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuff' });
+                loader.add(res.id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuffer' });
             }
             else {
-                loader.add(id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl));
+                loader.add(res.id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl));
             }
-            urls[res.url] = [id];
+            urls[res.url] = [res.id];
         }
         var progressId = 0;
         var completeId = 0;
@@ -2184,18 +2181,19 @@ var RES = /** @class */ (function (_super) {
             _this.emit("LoadProgress" /* LoadProgress */, [loader2.progress, _this._loadNum, _this._resources.length, resources]);
         });
         completeId = loader.onComplete.add(function (loader2, resources) {
-            _this.pixiResources = resources;
+            _this.vfResources = resources;
             if (!_this.loadFailResources()) {
                 for (var key in urls) {
                     var id = urls[key].shift();
                     while (urls[key].length > 0) {
-                        _this.pixiResources[urls[key].shift()] = resources[id];
+                        _this.vfResources[urls[key].shift()] = resources[id];
                     }
                 }
                 loader.onComplete.detach(progressId);
                 loader.onComplete.detach(completeId);
                 loader.onComplete.detach(errorId);
-                _this.emit("LoadComplete" /* LoadComplete */, [loader2, resources]);
+                _this._isLoadResource = true;
+                _this.loadResourceComplete();
             }
         });
         errorId = loader.onError.add(function (error, loader2, loaderResource) {
@@ -8243,6 +8241,98 @@ var FadeoutTran = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./packages/player/src/display/SceneDataUtils.ts":
+/*!*******************************************************!*\
+  !*** ./packages/player/src/display/SceneDataUtils.ts ***!
+  \*******************************************************/
+/*! exports provided: getSceneData, getSceneJS, getSceneAssets, assetsRepair */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSceneData", function() { return getSceneData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSceneJS", function() { return getSceneJS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSceneAssets", function() { return getSceneAssets; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "assetsRepair", function() { return assetsRepair; });
+/**
+ * 获取场景数据
+ * @param data 需要处理的完整json数据
+ * @param id 不传id,获取第一个场景数据
+ */
+function getSceneData(data, id) {
+    var scenes = data.scenes;
+    if (scenes) {
+        if (id === undefined && scenes[0]) {
+            return scenes[0];
+        }
+        for (var i = 0, len = scenes.length; i < len; i++) {
+            if (scenes[i].id === id) {
+                return scenes[i];
+            }
+        }
+    }
+    return undefined;
+}
+/**
+ * 获取当前场景需要的js库
+ * @param data json完整数据
+ * @param cdns cdn路径
+ */
+function getSceneJS(data) {
+    var assets = [];
+    for (var key in data.assets) {
+        var item = data.assets[key];
+        if (item.type === "js" /* JS */) {
+            if (item.name === undefined) {
+                throw new Error("loader " + item.url + " failed, missing name field");
+            }
+            assets.push(item);
+        }
+    }
+    return assets;
+}
+/**
+ * 获取当前场景的资源加载项
+ * @param data json完整数据
+ * @param sceneData 场景数据
+ */
+function getSceneAssets(data, sceneData) {
+    var assets = [];
+    // 场景是否单独配置加载策略
+    if (sceneData.assets === undefined) {
+        for (var key in data.assets) {
+            assets.push(data.assets[key]);
+        }
+    }
+    else {
+        var item_1;
+        sceneData.assets.forEach(function (value) {
+            item_1 = data.assets[value];
+            if (item_1) {
+                assets.push(item_1);
+            }
+        });
+    }
+    return assets;
+}
+/**
+ * 修复资源数据,补充ID
+ * @param data
+ */
+function assetsRepair(data) {
+    var item;
+    for (var key in data.assets) {
+        item = data.assets[key];
+        if (item.id === undefined) {
+            item.id = key;
+        }
+    }
+    return data;
+}
+
+
+/***/ }),
+
 /***/ "./packages/player/src/display/VFComponent.ts":
 /*!****************************************************!*\
   !*** ./packages/player/src/display/VFComponent.ts ***!
@@ -8585,6 +8675,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_RES__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/RES */ "./packages/player/src/core/RES.ts");
 /* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
 /* harmony import */ var _plugs_PlugIndex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./plugs/PlugIndex */ "./packages/player/src/display/plugs/PlugIndex.ts");
+/* harmony import */ var _SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./SceneDataUtils */ "./packages/player/src/display/SceneDataUtils.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -8598,6 +8689,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+
 
 
 
@@ -8617,7 +8709,6 @@ var VFStage = /** @class */ (function (_super) {
     __extends(VFStage, _super);
     function VFStage(data, config, player) {
         var _this = _super.call(this, config.width, config.height, player.app) || this;
-        _this.fps = 30;
         _this.plugs = new Map(); // 插件列表
         _this.status = STAGE_STATUS.NONE;
         _this.data = data;
@@ -8657,7 +8748,12 @@ var VFStage = /** @class */ (function (_super) {
         this.status = STAGE_STATUS.LOADING;
         this.res.on("LoadComplete" /* LoadComplete */, this.loadAssetCompleted, this);
         this.res.on("LoadProgress" /* LoadProgress */, this.loadProgress, this);
-        this.res.loadData(this.data);
+        var data = Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["assetsRepair"])(this.data);
+        var sceneData = Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["getSceneData"])(data, this.curSceneId);
+        if (sceneData === undefined) {
+            throw new Error("scene creation failed");
+        }
+        this.res.loadData(Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["getSceneAssets"])(data, sceneData), Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["getSceneJS"])(data));
     };
     VFStage.prototype.pause = function () {
         if (this.curScene) {
@@ -8687,6 +8783,7 @@ var VFStage = /** @class */ (function (_super) {
         this.createScene();
     };
     VFStage.prototype.dispose = function () {
+        this.curSceneId = undefined;
         if (this.app && this.app.ticker) {
             this.app.ticker.stop();
             // this.app.ticker.destroy();

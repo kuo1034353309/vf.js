@@ -1,5 +1,5 @@
 /* eslint-disable no-new */
-import { ITransitionData, IVFDataV1, SceneEvent, VFStateCode } from '../core/model/IVFData';
+import { ITransitionData, IVFDataV1, SceneEvent, VFStateCode, IScene, LoadMode } from '../core/model/IVFData';
 import { VariableManager } from '../core/VariableManager';
 import { SoundManager } from '../sound/SoundManager';
 import { VFScene } from './VFScene';
@@ -13,6 +13,7 @@ import { EventType } from '../event/EventType';
 import { Player } from '../Player';
 import IEvent from '../event/IEvent';
 import StateEvent from '@player/event/StateEvent';
+import { getSceneData, getSceneAssets, getSceneJS, assetsRepair } from './SceneDataUtils';
 
 enum STAGE_STATUS {
     NONE,
@@ -25,7 +26,6 @@ enum STAGE_STATUS {
 
 // eslint-disable-next-line no-undef
 export class VFStage extends vf.gui.Stage {
-    public fps = 30;
     public readonly data: IVFDataV1;
     public readonly config: Config;
     public readonly player: Player;
@@ -35,6 +35,8 @@ export class VFStage extends vf.gui.Stage {
     public readonly plugs = new Map<string, IPlug>(); // 插件列表
 
     private curScene?: VFScene;
+    private curSceneId?: string;
+
     private status: STAGE_STATUS = STAGE_STATUS.NONE;
 
     constructor(data: IVFDataV1, config: Config, player: Player) {
@@ -74,8 +76,18 @@ export class VFStage extends vf.gui.Stage {
         this.status = STAGE_STATUS.LOADING;
         this.res.on(SceneEvent.LoadComplete, this.loadAssetCompleted, this);
         this.res.on(SceneEvent.LoadProgress, this.loadProgress, this);
-        this.res.loadData(this.data);
+
+        const data = assetsRepair(this.data);
+
+        const sceneData = getSceneData(data, this.curSceneId);
+
+        if (sceneData === undefined) {
+            throw new Error(`scene creation failed`);
+        }
+
+        this.res.loadData(getSceneAssets(data, sceneData), getSceneJS(data));
     }
+
     public pause(): void {
         if (this.curScene) {
             this.status = STAGE_STATUS.PAUSED;
@@ -104,6 +116,8 @@ export class VFStage extends vf.gui.Stage {
         this.createScene();
     }
     public dispose(): void {
+        this.curSceneId = undefined;
+
         if (this.app && this.app.ticker) {
             this.app.ticker.stop();
             // this.app.ticker.destroy();

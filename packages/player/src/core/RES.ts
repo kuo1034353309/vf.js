@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 import {
     IVFDataV1, IAsset, IAssetFail, IScene, ComponentType, ICustomComponent, IDisplayComponent,
-    AssetType, SceneEvent, IAction, ActionType, IActionDefineVariable, AllAction,
+    AssetType, SceneEvent, IAction, ActionType, IActionDefineVariable, AllAction, CDN,
 } from './model/IVFData';
 import { VFStage } from '../display/VFStage';
 import { VFScene } from '../display/VFScene';
@@ -18,9 +18,8 @@ import IEvent from '../event/IEvent';
 import { getUrl } from '../utils/getUrl';
 
 export class RES extends vf.utils.EventEmitter {
-    public pixiResources: { [id: string]: vf.LoaderResource } = {};
+    public vfResources: { [id: string]: vf.LoaderResource } = {};
 
-    public data: IVFDataV1 = null as any;
     public vfActions: IAction[] = [];
     private stage: VFStage;
 
@@ -30,6 +29,9 @@ export class RES extends vf.utils.EventEmitter {
     private _loader?: vf.Loader;
     private _assetFails = new Map<string, IAssetFail>();
 
+    private _isLoadScript = false;
+    private _isLoadResource = false;
+
     constructor(stage: VFStage) {
         super();
         vf.gui.Utils.setSourcePath(this.getImageAsset.bind(this) as any);
@@ -37,21 +39,25 @@ export class RES extends vf.utils.EventEmitter {
         this.stage = stage;
     }
 
+    public get data(): IVFDataV1 {
+        return this.stage.data;
+    }
+
     public destroy(): void {
-        if (this.pixiResources) {
-            for (const id in this.pixiResources) {
-                if (this.pixiResources[id]) {
-                    const resource = this.pixiResources[id];
+        if (this.vfResources) {
+            for (const id in this.vfResources) {
+                if (this.vfResources[id]) {
+                    const resource = this.vfResources[id];
 
                     if (resource.texture) {
                         resource.texture.destroy(true);
-                        delete this.pixiResources[id];
+                        delete this.vfResources[id];
                     }
                     else if ((resource as any).sound) {
                         if ((resource as any).sound.media) {
                             (resource as any).sound.destroy();
                         }
-                        delete this.pixiResources[id];
+                        delete this.vfResources[id];
                     }
                 }
             }
@@ -59,23 +65,25 @@ export class RES extends vf.utils.EventEmitter {
         vf.utils.destroyTextureCache();
         vf.utils.clearTextureCache();
         if (this._loader) {
+            this._loader.destroy
             this._loader.destroy();
         }
         this.stage = undefined as any;
         this._sceneMap = {};
     }
-    public addResource(asset: IAsset): void {
-        this._resources.push(asset);
-    }
 
-    public async loadData(data: IVFDataV1): Promise<void> {
-        this.data = data;
-        if (this.data && this.data.assets) {
-            await this.loadAllScript(); // 先加载脚本 loadAllAsset 非同步，后续单独提取assets同步加载，此处js并不算入进度
-            await this.loadAllAsset();
+    public async loadData(assets: IAsset[], js: IAsset[]): Promise<void> {
+
+        if (assets.length === 0 && js.length === 0) {
+            this.emit(SceneEvent.LoadComplete, null);
         }
         else {
-            this.emit(SceneEvent.LoadComplete, null);
+            const stage = this.stage;
+
+            this._isLoadScript = false;
+            this._isLoadResource = false;
+            await this.loadAllScript(stage, js); // 先加载脚本 loadAllAsset 非同步，后续单独提取assets同步加载，此处js并不算入进度
+            await this.loadAllAsset(stage, assets);
         }
     }
 
@@ -190,62 +198,55 @@ export class RES extends vf.utils.EventEmitter {
     public getAsset(index: number | string): any {
         const assetData = this.data.assets[index];
 
-        if (assetData === undefined || assetData.id == null) {
+        if (assetData === undefined || assetData.id === undefined) {
             this.stage.systemEvent.emitError('E0003', [index], EventLevel.WARNING);
 
             return undefined;
         }
 
-        return this.pixiResources[assetData.id.toString()];
+        return this.vfResources[assetData.id.toString()];
     }
 
-    private async loadAllScript(): Promise<void> {
-        const assets = this.data.assets;
-        const cdns = this.stage.config.cdns;
-        let assetsItem: IAsset;
+    private async loadAllScript(stage: VFStage, asstes: IAsset[]): Promise<void> {
+        let item: IAsset;
 
-        for (const id in assets) {
-            assetsItem = assets[id];
-            if (assetsItem && assetsItem.type === AssetType.JS && assetsItem.name) {
-                const cls = await importScript(assetsItem.url, cdns, assetsItem.name).catch((e: IEvent) => {
-                    this.stage.systemEvent.error(e);
-                });
+        for (let i = 0; i < asstes.length; ++i) {
+            item = asstes[i];
+            const cls = await importScript(item.url, stage.config.cdns, item.name).catch((e: IEvent) => {
+                stage.systemEvent.error(e);
+            });
 
-                if (cls) {
-                    if (cls.isFilter) {
-                        vf.gui.Filter.list.set(assetsItem.name, cls); // 添加到滤镜列表
-                    }
+            if (cls) {
+                if (cls.isFilter && item.name) {
+                    vf.gui.Filter.list.set(item.name, cls); // 添加到滤镜列表
                 }
             }
         }
+        this._isLoadScript = true;
+        this.loadResourceComplete();
     }
 
-    private async loadAllAsset(): Promise<void> {
-        const assets = this.data.assets;
-        let assetsItem: IAsset;
+    private async loadAllAsset(stage: VFStage, assets: IAsset[]): Promise<void> {
+        assets.forEach((assetsItem) => {
+            if (assetsItem.type === undefined) {
+                stage.systemEvent.emitError('E0001', [assetsItem.id]);
 
-        for (const id in assets) {
-            if (assets[id]) {
-                assetsItem = assets[id];
-                if (assetsItem === undefined || assetsItem.type === undefined || assetsItem.url === undefined) {
-                    this.stage.systemEvent.emitError('E0001', [id]);
-                    continue;
-                }
-                if (assetsItem.url === '') {
-                    this.stage.systemEvent.emitError('E0003', [id], EventLevel.WARNING);
-                    continue;
-                }
-                if (assetsItem.type === AssetType.AUDIO && this.stage.config.vfvars.useNativeAudio) {
-                    this.stage.systemEvent.emitError('S0004', [id], EventLevel.WARNING);
-                    continue;
-                }
-                if (assetsItem.type === AssetType.JS) {
-                    continue;
-                }
-                assetsItem.id = id;
-                this.addResource(assets[id]);
+                return;
             }
-        }
+            if (assetsItem.url === '' || assetsItem.url === undefined) {
+                stage.systemEvent.emitError('E0003', [assetsItem.id], EventLevel.WARNING);
+
+                return;
+            }
+            if (assetsItem.type === AssetType.AUDIO && stage.config.vfvars.useNativeAudio) {
+                stage.systemEvent.emitError('S0004', [assetsItem.id], EventLevel.WARNING);
+
+                return;
+            }
+
+            this._resources.push(assetsItem);
+        });
+
         this.loadResources();
     }
 
@@ -268,7 +269,7 @@ export class RES extends vf.utils.EventEmitter {
             }
         }
     }
-    private getSceneData(id: string): IScene | null {
+    public getSceneData(id: string): IScene | null {
         if (this.data.scenes) {
             for (let i = 0, len: number = this.data.scenes.length; i < len; i++) {
                 if (this.data.scenes[i].id === id) {
@@ -430,7 +431,7 @@ export class RES extends vf.utils.EventEmitter {
             }
         }
         if (customData.animations) {
-            let realFPS = this.stage.config.realFPS;
+            const realFPS = this.stage.config.realFPS;
             const animation = new Animation(vfComponent, customData.animations, this.data.fps, realFPS);
 
             vfComponent.animation = animation;
@@ -480,18 +481,24 @@ export class RES extends vf.utils.EventEmitter {
         }
     }
 
+    private loadResourceComplete(): void{
+        if (this._isLoadResource && this._isLoadScript) {
+            this.emit(SceneEvent.LoadComplete, [this._loader, this._resources]);
+        }
+    }
+
     private loadResources(): void {
         if (this._loader === undefined) {
             this._loader = new vf.Loader();
         }
         const loader = this._loader;
         const urls: any = {};
+        const resources = this._resources;
 
         this._loadNum = 0;
 
-        for (let i = 0, len: number = this._resources.length; i < len; i++) {
-            const res = this._resources[i];
-            const id = res.id === undefined ? 'undefined' : res.id.toString();
+        for (let i = 0, len = resources.length; i < len; i++) {
+            const res = resources[i];
 
             if (urls[res.url]) {
                 urls[res.url].push(res.id);
@@ -501,13 +508,13 @@ export class RES extends vf.utils.EventEmitter {
             if (res.type === 'audio' || res.type === 'sound') {
                 // 微信wechat不能直接加载audio类型
                 // eslint-disable-next-line max-len
-                loader.add(id, getUrl(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuff' });
+                loader.add(res.id, getUrl(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuffer' });
             }
             else {
-                loader.add(id, getUrl(res.url, this.data.baseUrl));
+                loader.add(res.id, getUrl(res.url, this.data.baseUrl));
             }
 
-            urls[res.url] = [id];
+            urls[res.url] = [res.id];
         }
         let progressId = 0;
         let completeId = 0;
@@ -518,22 +525,23 @@ export class RES extends vf.utils.EventEmitter {
             this.emit(SceneEvent.LoadProgress, [loader2.progress, this._loadNum, this._resources.length, resources]);
         });
         completeId = loader.onComplete.add((loader2: vf.Loader, resources: any) => {
-            this.pixiResources = resources;
+            this.vfResources = resources;
             if (!this.loadFailResources()) {
                 for (const key in urls) {
                     const id = urls[key].shift();
 
                     while (urls[key].length > 0) {
-                        this.pixiResources[urls[key].shift()] = resources[id];
+                        this.vfResources[urls[key].shift()] = resources[id];
                     }
                 }
                 loader.onComplete.detach(progressId);
                 loader.onComplete.detach(completeId);
                 loader.onComplete.detach(errorId);
-                this.emit(SceneEvent.LoadComplete, [loader2, resources]);
+                this._isLoadResource = true;
+                this.loadResourceComplete();
             }
         });
-        errorId = loader.onError.add((error: Error, loader2: vf.Loader, loaderResource: vf.LoaderResource)=>{
+        errorId = loader.onError.add((error: Error, loader2: vf.Loader, loaderResource: vf.LoaderResource) => {
             const assetFail = this._assetFails.get(loaderResource.name);
 
             if (assetFail) {

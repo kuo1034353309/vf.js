@@ -65,15 +65,23 @@ export class Player implements EngineAPI {
         //  1. 初始化配置
         this.option = options;
         this.config = new Config(options);
-        const config = this.config;
-
-        vf.gui.Utils.debug = config.debug;
-        // eslint-disable-next-line no-console
-        console.groupEnd();
 
         // 2. 初始化引擎
+        this.app = this.createApp();
+        this._errpanel = new ErrorDisplay(this.config, options.useCustomErrorPanel);
+        this.initSystemEvent();
+        this._readyState = VFStateCode.INIT;
+
+        //  3、如果配了资源地址，则启动数据加载
+        if (this.config.src) { this.play(this.config.src); }
+    }
+
+    private createApp(): vf.Application {
+        const options = this.option;
+        const config = this.config;
+
         // eslint-disable-next-line no-undef
-        this.app = new vf.Application({
+        const app = new vf.Application({
             backgroundColor: parseInt(config.bgcolor || '0', 16),
             transparent: config.wmode === 'transparent',
             antialias: true,
@@ -81,14 +89,11 @@ export class Player implements EngineAPI {
             forceCanvas: options.forceCanvas,
         });
 
-        this._errpanel = new ErrorDisplay(this.config, options.useCustomErrorPanel);
+        app.ticker.maxFPS = options.frameRate || 30;
+        vf.gui.TickerShared.maxFPS = options.frameRate || 30;
+        vf.gui.Utils.debug = options.debug || false;
 
-        this.initSystemEvent();
-
-        this._readyState = VFStateCode.INIT;
-
-        //  3、如果配了资源地址，则启动数据加载
-        if (this.config.src) { this.play(this.config.src); }
+        return app;
     }
 
     public async play(src?: any): Promise<void> {
@@ -157,9 +162,7 @@ export class Player implements EngineAPI {
         if (this.readyState === VFStateCode.DISABLED) {
             return;
         }
-        // if (vf.sound) {
-        //     vf.sound.close();
-        // }
+
         this.option = null as any;
 
         this.config.systemEvent.removeAllListeners();
@@ -182,42 +185,42 @@ export class Player implements EngineAPI {
      * 接口，避免写入逻辑
      */
     // eslint-disable-next-line handle-callback-err
-    public onError = (err: any) => {
+    public readonly onError = (err: any) => {
         //
     };
 
     /**
      * 接口，避免写入逻辑
      */
-    public onInit = () => {
+    public readonly onInit = () => {
         //
     };
 
     /**
      * 接口，避免写入逻辑
      */
-    public onReady = () => {
+    public readonly onReady = () => {
         //
     };
 
     /**
      * 接口，避免写入逻辑
      */
-    public onSceneCreate = () => {
+    public readonly onSceneCreate = () => {
         //
     };
 
     /**
      * 接口，避免写入逻辑
      */
-    public onMessage = (msg: IEvent) => {
+    public readonly onMessage = (msg: IEvent) => {
         //
     };
 
     /**
      * 接口，避免写入逻辑
      */
-    public onDispose = () => {
+    public readonly onDispose = () => {
         //
     };
 
@@ -244,13 +247,7 @@ export class Player implements EngineAPI {
         }
         this.stage = undefined;
 
-        this.app = new vf.Application({
-            backgroundColor: parseInt(config.bgcolor || '0', 16),
-            transparent: config.wmode === 'transparent',
-            antialias: true,
-            resolution: this.option.resolution,
-            forceCanvas: this.option.forceCanvas,
-        });
+        this.app = this.createApp();
 
         this.initSystemEvent();
     }
