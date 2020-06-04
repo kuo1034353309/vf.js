@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-new */
 import { ITransitionData, IVFDataV1, SceneEvent, VFStateCode, IScene, LoadMode } from '../core/model/IVFData';
 import { VariableManager } from '../core/VariableManager';
@@ -13,7 +14,7 @@ import { EventType } from '../event/EventType';
 import { Player } from '../Player';
 import IEvent from '../event/IEvent';
 import StateEvent from '@player/event/StateEvent';
-import { getSceneData, getSceneAssets, getSceneJS, assetsRepair } from './SceneDataUtils';
+import { getSceneData, getSceneAssets, getSceneJS, assetsRepair, getNextSceneData, getPrevSceneData, getSceneDataByIndex } from './SceneDataUtils';
 
 enum STAGE_STATUS {
     NONE,
@@ -36,18 +37,22 @@ export class VFStage extends vf.gui.Stage {
 
     private curScene?: VFScene;
     private curSceneId?: string;
+    private curSceneTransition?: ITransitionData;
 
     private status: STAGE_STATUS = STAGE_STATUS.NONE;
 
     constructor(data: IVFDataV1, config: Config, player: Player) {
         super(config.width, config.height, player.app);
-        this.data = data;
+        this.data = assetsRepair(data);
         this.config = config;
         this.player = player;
-        this.res = new RES(this);
         this.variableManager = new VariableManager();
         this.soundManager = new SoundManager(this);
         new Plugs.PlugIndex();
+        const res = this.res = new RES(this);
+
+        res.on(SceneEvent.LoadComplete, this.loadAssetCompleted, this);
+        res.on(SceneEvent.LoadProgress, this.loadProgress, this);
     }
 
     /**
@@ -55,6 +60,11 @@ export class VFStage extends vf.gui.Stage {
      */
     public get systemEvent(): StateEvent {
         return this.config.systemEvent;
+    }
+
+    /** 获取当前的场景 */
+    public getCurScene(): VFScene | undefined {
+        return this.curScene;
     }
 
     /**
@@ -74,17 +84,16 @@ export class VFStage extends vf.gui.Stage {
     public start(): void {
         // 初始化加载界面
         this.status = STAGE_STATUS.LOADING;
-        this.res.on(SceneEvent.LoadComplete, this.loadAssetCompleted, this);
-        this.res.on(SceneEvent.LoadProgress, this.loadProgress, this);
 
-        const data = assetsRepair(this.data);
+        const data = this.data;
 
         const sceneData = getSceneData(data, this.curSceneId);
 
         if (sceneData === undefined) {
-            throw new Error(`scene creation failed`);
+            throw new Error(`scene does not exist!`);
         }
 
+        this.curSceneId = sceneData.id;// 首次加载curSceneId = null.
         this.res.loadData(getSceneAssets(data, sceneData), getSceneJS(data));
     }
 
@@ -113,10 +122,11 @@ export class VFStage extends vf.gui.Stage {
         }
         this.variableManager.clear();
         this.soundManager.clear();
-        this.createScene();
+        this.start();
     }
     public dispose(): void {
         this.curSceneId = undefined;
+        this.curSceneTransition = undefined;
 
         if (this.app && this.app.ticker) {
             this.app.ticker.stop();
@@ -140,38 +150,33 @@ export class VFStage extends vf.gui.Stage {
         });
     }
 
-    /** 获取当前的场景 */
-    public getCurScene(): VFScene | undefined {
-        return this.curScene;
+    public switchToSceneId(sceneId: string, transition?: ITransitionData): void {
+        this.curSceneId = sceneId;
+        this.curSceneTransition = transition;
+        this.start();
+    }
+
+    public switchToSceneIndex(index: number, transition?: ITransitionData): void {
+        const sceneData = getSceneDataByIndex(this.data, parseInt(index as any, 0));
+
+        if (sceneData) {
+            this.switchToSceneId(sceneData.id, transition);
+        }
     }
 
     public switchToNextScene(transition?: ITransitionData): void {
-        if (this.curScene) {
-            const curSceneId = this.curScene.id;
-            const nextScene = this.res.createNextScene(curSceneId, this);
+        const sceneData = getNextSceneData(this.data, this.curSceneId);
 
-            if (nextScene) {
-                this.switchToScene(nextScene, transition);
-            }
+        if (sceneData) {
+            this.switchToSceneId(sceneData.id, transition);
         }
     }
 
     public switchToPrevScene(transition?: ITransitionData): void {
-        if (this.curScene) {
-            const curSceneId = this.curScene.id;
-            const prevScene = this.res.createPrevScene(curSceneId, this);
+        const sceneData = getPrevSceneData(this.data, this.curSceneId);
 
-            if (prevScene) {
-                this.switchToScene(prevScene, transition);
-            }
-        }
-    }
-
-    public switchToSceneId(sceneId: string, transition?: ITransitionData): void {
-        const scene = this.res.createScene(sceneId, this);
-
-        if (scene) {
-            this.switchToScene(scene, transition);
+        if (sceneData) {
+            this.switchToSceneId(sceneData.id, transition);
         }
     }
 
@@ -201,6 +206,7 @@ export class VFStage extends vf.gui.Stage {
                 this.emit(SceneEvent.TransitionStart);
                 this.emit(SceneEvent.TransitionEnd);
             }
+            this.status = STAGE_STATUS.PLAYING;
         }
     }
 
@@ -210,11 +216,19 @@ export class VFStage extends vf.gui.Stage {
         });
         // 加载完毕
         this.status = STAGE_STATUS.READY;
-        this.createScene();
-        this.createPlugs();
-        this.systemEvent.emit(EventType.STATUS, {
-            code: VFStateCode.SCENE_CREATE, level: EventLevel.STATUS, data: null,
-        });
+
+        if (this.curSceneId !== undefined) {
+            const scene = this.res.createScene(this.curSceneId, this);
+
+            if (scene) {
+                this.switchToScene(scene, this.curSceneTransition);
+            }
+
+            this.createPlugs();
+            this.systemEvent.emit(EventType.STATUS, {
+                code: VFStateCode.SCENE_CREATE, level: EventLevel.STATUS, data: null,
+            });
+        }
     }
 
     private loadProgress(e: any): void {
@@ -235,17 +249,6 @@ export class VFStage extends vf.gui.Stage {
                 plug.load(value);
             }
         }
-    }
-
-    private createScene(): void {
-        // 创建场景
-        const scene = this.res.createFirstScene(this);
-
-        if (scene) {
-            this.curScene = scene;
-            this.addChild(scene);
-        }
-        this.status = STAGE_STATUS.PLAYING;
     }
 }
 

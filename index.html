@@ -32,8 +32,7 @@
     <div id="vf-container"
         style="background:rgb(56, 56, 55);width: 100%; height: 100%;padding:0;margin:0;overflow: hidden; position: absolute;">
     </div>
-    <div style="z-index: 999; position: absolute; left: 10px; top:10px;" id="buttons">
-        <button param='test/data/animTest.json'>play</button>
+    <div style="z-index: 999; position: absolute; left: 10px; bottom:1px" id="buttons">
         <button>reset</button>
         <button>pause</button>
         <button>resume</button>
@@ -41,38 +40,32 @@
         <button param-type="object" param='{"code": "restore","level": "command","data": {"name": "restore","val": {}}}'>message</button>
         <button>switchToNextScene</button>
         <button>switchToPrevScene</button>
-        <button param='2'>switchToSceneId</button>
         <button param='https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN01/index.json'>disposeplay</button>
         <button param='https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN03/index.json'>disposeplay</button>
+    </div>
+    <div style="position: absolute;">
+        <input id="selectUrl" type="text" name="sceneTag" value="test/vf_ppt/index.json" placeholder="输入要加载的json" style="width: 300px;">
+        <input id="selectText" type="text" name="sceneTag" value="" placeholder="输入场景ID或索引">
+        <select id="select" style="height: 23px;">
+            <option value ="id">ID</option>
+            <option value ="index">索引</option>
+          </select>
+          <button id="playSelect">跳转</button>
     </div>
     <script src="https://s.vipkidstatic.com/vf/engine/debug/stats.min.js"></script>
     <script src='./packages/launcher/dist/launcher.js'></script>
     <script>
                         
-// var stats = new (window).Stats();
-
-// stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-// document.body.appendChild(stats.dom);
-
-// var animate = () => {
-//     stats.begin();
-//     // monitored code goes here
-//     stats.end();
-//     requestAnimationFrame(animate);
-// };
-
-// requestAnimationFrame(animate);
-        // import './packages/launcher/dist/launcher.js';
         
         if (location.href.indexOf("#") === -1) {
-            location.hash = "path/test/" + 'vf_sound/index.json';
+            location.hash = "path/test/" + 'ppt/index.json';
             //location.reload();
         }
         var $player = null;
         createVF({ 
             container: document.getElementById("vf-container") , 
             debug: true,
-            showFPS: true,
+            showFPS: false,
             resolution:window.devicePixelRatio || 1,
             // debugGuiPath: 'http://172.24.73.39:5501/dist/gui.js',
         }, function (player) {
@@ -98,16 +91,12 @@
                 console.log("onDispose");
             }
 
-            if (location.hash.indexOf('http')!==-1) {
-                player.play(location.hash.substr(1));
-            }else{
-                player.play(location.hash.substr(5));
-            }
+            // if (location.hash.indexOf('http')!==-1) {
+            //     player.play(location.hash.substr(1));
+            // }else{
+            //     player.play(location.hash.substr(5));
+            // }
             vf.AudioEngine.Ins().useCustomUnlockedButton = true;
-            //vf.Ticker.shared.maxFPS = 24;
-            //player.app.ticker.maxFPS = 24;
-            //player.play('test/VF_IC019/index.json');
-            //player.play('https://s.vipkidstatic.com/fe-static/learning-stages/static/assets/CDNFiles/VF_IC035/index_v1.json?v=1');
 
             // ========  测试代码 ==============
             test(player);
@@ -120,6 +109,24 @@
     <script>
         function test(player){
             // ========  测试代码 ==============
+            document.getElementById('playSelect').addEventListener("click",function(e){
+                if($player == null){
+                    return;
+                }
+                var url = document.getElementById('selectUrl').value;;
+                var idOrIndex = document.getElementById('selectText').value;
+                var type = document.getElementById('select').value;
+                $player.play(url);
+                switch(type){
+                    case "id":
+                        $player.switchToSceneId(idOrIndex);
+                        break;
+                    case "index":
+                        $player.switchToSceneIndex(idOrIndex);
+                        break;
+                }
+            });
+
             var buttons = document.getElementById('buttons').children;
             for (var i = 0; i < buttons.length; i++) {
                 var button = buttons[i];
@@ -129,49 +136,49 @@
                     var paramType = button.getAttribute('param-type') || "string";
                     var param = paramType === "string" ? button.getAttribute('param') : JSON.parse(button.getAttribute('param'));
                     console.clear();
-                    $player.playData(param);
+                    if(name === 'disposeplay') {
+                        $player.dispose(true);
+                        $player = null;
+                        createVF({ 
+                            container: document.getElementById("vf-container") , 
+                            debug: true,
+                            resolution:window.devicePixelRatio || 1,
+                            // debugGuiPath: 'http://172.24.73.39:5501/dist/gui.js',
+                        }, function (player) {
+                            $player = player;
+                            player.onReady = function() {
+                                console.log("onReady"); //初始化完成
+                            }
 
-                    // if(name === 'disposeplay') {
-                    //     $player.dispose(true);
-                    //     $player = null;
-                    //     createVF({ 
-                    //         container: document.getElementById("vf-container") , 
-                    //         debug: true,
-                    //         resolution:window.devicePixelRatio || 1,
-                    //         // debugGuiPath: 'http://172.24.73.39:5501/dist/gui.js',
-                    //     }, function (player) {
-                    //         $player = player;
-                    //         player.onReady = function() {
-                    //             console.log("onReady"); //初始化完成
-                    //         }
+                            player.onSceneCreate = function() {
+                                console.log("onSceneCreate"); //资源加载完成
+                            }
 
-                    //         player.onSceneCreate = function() {
-                    //             console.log("onSceneCreate"); //资源加载完成
-                    //         }
+                            player.onMessage = function(msg) {
+                                console.log("onMessage ==>", msg);
+                            }
 
-                    //         player.onMessage = function(msg) {
-                    //             console.log("onMessage ==>", msg);
-                    //         }
+                            player.onError = function(evt) {
+                                console.log("onError ==>", evt);
+                            }
 
-                    //         player.onError = function(evt) {
-                    //             console.log("onError ==>", evt);
-                    //         }
+                            player.onDispose = function() {
+                                console.log("onDispose");
+                            }
 
-                    //         player.onDispose = function() {
-                    //             console.log("onDispose");
-                    //         }
-
-                    //         player.play(param);
-                    //     });
-                    //     return;
-                    // }
-                    // if(param){
-                    //     console.log(`执行方法:${name}(${param})`);
-                    //     player[name](param);
-                    // }else{
-                    //     console.log(`执行方法:${name}()`);
-                    //     player[name]();
-                    // }
+                            player.play(param);
+                        });
+                        return;
+                    }
+                    if(param){
+                        console.log(`执行方法:${name}(${param})`);
+                        player[name](param);
+                        player.switchToSceneIndex(2);
+                        
+                    }else{
+                        console.log(`执行方法:${name}()`);
+                        player[name]();
+                    }
 
                 });
             }

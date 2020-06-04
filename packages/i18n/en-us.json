@@ -20,6 +20,9 @@
   "S0004": {
     "message": "Play with Native, ignore audio loading:${0}"
   },
+  "S0005": {
+    "message": "Scene creation failed${0}"
+  },
   "E0000": {
     "message": "Unknown exception, please refresh and try again!!"
   },

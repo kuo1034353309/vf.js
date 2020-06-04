@@ -37,6 +37,7 @@ export class RES extends vf.utils.EventEmitter {
         vf.gui.Utils.setSourcePath(this.getImageAsset.bind(this) as any);
         vf.gui.Utils.setDisplayObjectPath(this.getDisplayObject.bind(this) as any);
         this.stage = stage;
+        this.initGlobalVariable();
     }
 
     public get data(): IVFDataV1 {
@@ -65,7 +66,6 @@ export class RES extends vf.utils.EventEmitter {
         vf.utils.destroyTextureCache();
         vf.utils.clearTextureCache();
         if (this._loader) {
-            this._loader.destroy
             this._loader.destroy();
         }
         this.stage = undefined as any;
@@ -500,11 +500,13 @@ export class RES extends vf.utils.EventEmitter {
         for (let i = 0, len = resources.length; i < len; i++) {
             const res = resources[i];
 
+            if (res.id && loader.resources[res.id]) {
+                continue;
+            }
             if (urls[res.url]) {
                 urls[res.url].push(res.id);
                 continue;
             }
-
             if (res.type === 'audio' || res.type === 'sound') {
                 // 微信wechat不能直接加载audio类型
                 // eslint-disable-next-line max-len

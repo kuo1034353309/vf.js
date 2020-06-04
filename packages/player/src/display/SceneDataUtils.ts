@@ -1,5 +1,4 @@
-import { IVFDataV1, IScene, IAsset, AssetType } from '../core/model/IVFData';
-import { VFStage } from './VFStage';
+import { IVFDataV1, IScene, IAsset, AssetType, LoadMode } from '../core/model/IVFData';
 
 /**
  * 获取场景数据
@@ -10,12 +9,63 @@ export function getSceneData(data: IVFDataV1, id?: string): IScene | undefined {
     const scenes = data.scenes;
 
     if (scenes) {
-        if (id === undefined && scenes[0]) {
+        if ((id === undefined || id === '') && scenes[0]) {
             return scenes[0];
         }
+        id = id?.toString();
         for (let i = 0, len = scenes.length; i < len; i++) {
-            if (scenes[i].id === id) {
+            if (scenes[i].id.toString() === id) {
                 return scenes[i];
+            }
+        }
+    }
+
+    return undefined;
+}
+
+/**
+ * 根据索引获取场景数据
+ * @param data 需要处理的完整json数据
+ * @param index 索引号
+ */
+export function getSceneDataByIndex(data: IVFDataV1, index: number): IScene | undefined {
+    const scenes = data.scenes;
+
+    if (scenes && scenes[index]) {
+        return scenes[index];
+    }
+
+    return undefined;
+}
+
+/**
+ * 获取下一个场景数据
+ * @param curId
+ */
+export function getNextSceneData(data: IVFDataV1, curId?: string): IScene | undefined {
+    if (data.scenes && curId) {
+        for (let i = 0, len = data.scenes.length; i < len; i++) {
+            if (data.scenes[i].id === curId) {
+                if (i < len - 1) {
+                    return data.scenes[i + 1];
+                }
+            }
+        }
+    }
+
+    return undefined;
+}
+/**
+ * 获取上一个场景数据
+ * @param curId
+ */
+export function getPrevSceneData(data: IVFDataV1, curId?: string): IScene | undefined {
+    if (data.scenes && curId) {
+        for (let i = 0, len = data.scenes.length; i < len; i++) {
+            if (data.scenes[i].id === curId) {
+                if (i > 0) {
+                    return data.scenes[i - 1];
+                }
             }
         }
     }
@@ -53,9 +103,11 @@ export function getSceneAssets(data: IVFDataV1, sceneData: IScene): IAsset[] {
     const assets: IAsset[] = [];
 
     // 场景是否单独配置加载策略
-    if (sceneData.assets === undefined) {
+    if (data.loadMode === LoadMode.ALL || sceneData.assets === undefined) {
         for (const key in data.assets) {
-            assets.push(data.assets[key]);
+            if (data.assets[key].type !== AssetType.JS) {
+                assets.push(data.assets[key]);
+            }
         }
     }
     else {
@@ -63,7 +115,7 @@ export function getSceneAssets(data: IVFDataV1, sceneData: IScene): IAsset[] {
 
         sceneData.assets.forEach((value) => {
             item = data.assets[value];
-            if (item) {
+            if (item && item.type !== AssetType.JS) {
                 assets.push(item);
             }
         });
@@ -88,3 +140,4 @@ export function assetsRepair(data: IVFDataV1): IVFDataV1 {
 
     return data;
 }
+
