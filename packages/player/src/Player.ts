@@ -11,7 +11,6 @@ import Config from './core/Config';
 import { EventType } from './event/EventType';
 import { EventLevel } from './event/EventLevel';
 import ErrorDisplay from './error/ErrorDisplay';
-import readFileSync from './utils/readFileSync';
 
 declare let VFBUILDDATE: any; // webpack全局变量，prod环境使用
 
@@ -34,6 +33,10 @@ export class Player implements EngineAPI {
      */
     private _data?: IVFDataV1;
 
+    /**
+     * 首次打开时，默认的场景
+     */
+    private defaultScene?: { callBack: Function;params: any[] };
     /**
      * @private
      * @type {VFStage}
@@ -73,7 +76,7 @@ export class Player implements EngineAPI {
         this._readyState = VFStateCode.INIT;
 
         //  3、如果配了资源地址，则启动数据加载
-        if (this.config.src) { this.play(this.config.src); }
+        if (options.src) { this.play(options.src); }
     }
 
     private createApp(): vf.Application {
@@ -153,8 +156,21 @@ export class Player implements EngineAPI {
     }
 
     public switchToSceneId(sceneId: string, transition?: ITransitionData): void {
+        sceneId = sceneId.toString();
         if (this.stage) {
             this.stage.switchToSceneId(sceneId, transition);
+        }
+        else {
+            this.defaultScene = { callBack: this.switchToSceneId, params: [sceneId, transition] };
+        }
+    }
+
+    public switchToSceneIndex(index: number, transition?: ITransitionData): void {
+        if (this.stage) {
+            this.stage.switchToSceneIndex(index, transition);
+        }
+        else {
+            this.defaultScene = { callBack: this.switchToSceneIndex, params: [index, transition] };
         }
     }
 
@@ -164,6 +180,7 @@ export class Player implements EngineAPI {
         }
 
         this.option = null as any;
+        this.defaultScene = undefined;
 
         this.config.systemEvent.removeAllListeners();
 
@@ -293,7 +310,12 @@ export class Player implements EngineAPI {
         this.readyState = VFStateCode.READY;
 
         // 6、加载场景资源
-        this.stage.start();
+        if (this.defaultScene) {
+            this.defaultScene.callBack.call(this, this.defaultScene.params[0], this.defaultScene.params[1]);
+        }
+        else {
+            this.stage.start();
+        }
     }
 
     private async loadData(src: any): Promise<void> {
@@ -304,7 +326,7 @@ export class Player implements EngineAPI {
         await this.config.i18n.load(this.config.cdns.default, onStatus);
 
         if (typeof src === 'string') {
-            this._data = await readFileSync(src, { responseType: 'json' }).catch((value) => { onStatus(value); });
+            this._data = await vf.utils.readFileSync(src, { responseType: 'json' }).catch((value) => { onStatus(value); });
         }
         else if (typeof src === 'object') {
             this._data = src;

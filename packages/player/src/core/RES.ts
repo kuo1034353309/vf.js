@@ -1,9 +1,11 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import {
-    IVFDataV1, IAsset, IAssetFail, IScene, ComponentType, ICustomComponent, IDisplayComponent,
-    AssetType, SceneEvent, IAction, ActionType, IActionDefineVariable, AllAction, CDN,
+    IVFDataV1, IAsset, IAssetFail, ComponentType, ICustomComponent, IDisplayComponent,
+    AssetType, SceneEvent, IAction, ActionType, IActionDefineVariable, AllAction,
 } from './model/IVFData';
+import importScript from '../utils/ImportScript';
+import IEvent from '../event/IEvent';
 import { VFStage } from '../display/VFStage';
 import { VFScene } from '../display/VFScene';
 import { VariableManager } from './VariableManager';
@@ -13,9 +15,8 @@ import { Animation } from './animation/Animation';
 import { EventLevel } from '../event/EventLevel';
 import { getAssetType } from '../../../assets/Assets';
 import { AssetsType } from '../../../assets/IAssets';
-import importScript from '../utils/ImportScript';
-import IEvent from '../event/IEvent';
 import { getUrl } from '../utils/getUrl';
+import { getSceneData } from '../display/SceneDataUtils';
 
 export class RES extends vf.utils.EventEmitter {
     public vfResources: { [id: string]: vf.LoaderResource } = {};
@@ -87,37 +88,8 @@ export class RES extends vf.utils.EventEmitter {
         }
     }
 
-    public createFirstScene(vfStage: VFStage): VFScene | null {
-        this.initGlobalVariable();
-        if (this.data.scenes && this.data.scenes.length > 0) {
-            return this.createScene(this.data.scenes[0].id, vfStage);
-        }
-
-        return null;
-    }
-
-    public createNextScene(curId: string, vfStage: VFStage): VFScene | null {
-        const nextSceneData = this.getNextSceneData(curId);
-
-        if (nextSceneData) {
-            return this.createScene(nextSceneData.id, vfStage);
-        }
-
-        return null;
-    }
-
-    public createPrevScene(curId: string, vfStage: VFStage): VFScene | null {
-        const nextSceneData = this.getPrevSceneData(curId);
-
-        if (nextSceneData) {
-            return this.createScene(nextSceneData.id, vfStage);
-        }
-
-        return null;
-    }
-
     public createScene(id: string, vfStage: VFStage): VFScene | null {
-        const sceneData = this.getSceneData(id);
+        const sceneData = getSceneData(this.data, id);
 
         if (sceneData) {
             let vfScene: VFScene = this._sceneMap[id];
@@ -268,43 +240,6 @@ export class RES extends vf.utils.EventEmitter {
                 }
             }
         }
-    }
-    public getSceneData(id: string): IScene | null {
-        if (this.data.scenes) {
-            for (let i = 0, len: number = this.data.scenes.length; i < len; i++) {
-                if (this.data.scenes[i].id === id) {
-                    return this.data.scenes[i];
-                }
-            }
-        }
-
-        return null;
-    }
-    private getNextSceneData(curId: string): IScene | null {
-        if (this.data.scenes) {
-            for (let i = 0, len: number = this.data.scenes.length; i < len; i++) {
-                if (this.data.scenes[i].id === curId) {
-                    if (i < len - 1) {
-                        return this.data.scenes[i + 1];
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-    private getPrevSceneData(curId: string): IScene | null {
-        if (this.data.scenes) {
-            for (let i = 0, len: number = this.data.scenes.length; i < len; i++) {
-                if (this.data.scenes[i].id === curId) {
-                    if (i > 0) {
-                        return this.data.scenes[i - 1];
-                    }
-                }
-            }
-        }
-
-        return null;
     }
 
     private createComponent(libId: string, id: string): vf.gui.DisplayObject | null {
