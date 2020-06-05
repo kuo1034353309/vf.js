@@ -122,6 +122,17 @@ export class Player implements EngineAPI {
         }
     }
 
+    /**
+     * 发消息到stage（实际上是uiStage）
+     * @param msg 
+     */
+    public sendtoStage(msg: IEvent): void {
+        const stage = this.stage as any;
+        if(stage && stage.fromPlayer){
+            stage.receiveFromPlayer(msg);
+        }
+    }
+
     public switchToNextScene(transition?: ITransitionData): void {
         if (this.stage) {
             this.stage.switchToNextScene(transition);

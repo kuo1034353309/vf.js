@@ -57,6 +57,10 @@ export class VFStage extends vf.gui.Stage {
         new Plugs.PlugIndex();
     }
 
+    public getSystemEvent(): StateEvent{
+        return this.config.systemEvent;
+    }
+
     public get systemEvent(): StateEvent {
         return this.config.systemEvent;
     }
@@ -65,7 +69,7 @@ export class VFStage extends vf.gui.Stage {
      * 即使没有引用也不要删除这个接口，GUI在调用
      * @param msg 
      */
-    public inputLog(msg: IEvent): void {
+    public sendToPlayer(msg: IEvent): void {
         if (msg.message === undefined) {
             msg.message = '';
         }
