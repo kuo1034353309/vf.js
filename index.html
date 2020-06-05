@@ -171,12 +171,12 @@
                         return;
                     }
                     if(param){
-                        console.log(`执行方法:${name}(${param})`);
+                        //console.log(`执行方法:${name}(${param})`); // ios8 error
                         player[name](param);
                         player.switchToSceneIndex(2);
                         
                     }else{
-                        console.log(`执行方法:${name}()`);
+                        //console.log(`执行方法:${name}()`); // ios8 error
                         player[name]();
                     }
 
