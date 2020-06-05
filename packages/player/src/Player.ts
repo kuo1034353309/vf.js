@@ -6,7 +6,7 @@ import { calculateUpdatePlayerSize, getBoundingClientRect } from './utils/Calcul
 import importScript from './utils/ImportScript';
 import IEvent from './event/IEvent';
 import { IVFOptions, EngineAPI } from './IVFEngine';
-import { IVFDataV1, ScaleMode, VFStateCode, ITransitionData } from './core/model/IVFData';
+import { IVFDataV1, ScaleMode, VFStateCode, ITransitionData, SceneEvent } from './core/model/IVFData';
 import Config from './core/Config';
 import { EventType } from './event/EventType';
 import { EventLevel } from './event/EventLevel';
@@ -223,6 +223,12 @@ export class Player implements EngineAPI {
     /**
      * 接口，避免写入逻辑
      */
+    public readonly onSceneLoad = () => {
+        //
+    };
+    /**
+     * 接口，避免写入逻辑
+     */
     public readonly onSceneCreate = () => {
         //
     };
@@ -393,7 +399,12 @@ export class Player implements EngineAPI {
                     this.onReady();
                 }
                 break;
-            case VFStateCode.SCENE_CREATE:
+            case SceneEvent.SceneLoad:
+                if (this.onSceneLoad) {
+                    this.onSceneLoad();
+                }
+                break;
+            case SceneEvent.ScenComplete:
                 if (this.onSceneCreate) {
                     this.onSceneCreate();
                 }

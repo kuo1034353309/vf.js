@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable no-new */
-import { ITransitionData, IVFDataV1, SceneEvent, VFStateCode, IScene, LoadMode } from '../core/model/IVFData';
+import { ITransitionData, IVFDataV1, SceneEvent } from '../core/model/IVFData';
 import { VariableManager } from '../core/VariableManager';
 import { SoundManager } from '../sound/SoundManager';
 import { VFScene } from './VFScene';
@@ -92,7 +92,9 @@ export class VFStage extends vf.gui.Stage {
         if (sceneData === undefined) {
             throw new Error(`scene does not exist!`);
         }
-
+        this.systemEvent.emit(EventType.STATUS, {
+            code: SceneEvent.SceneLoad, level: EventLevel.STATUS, data: [this.curSceneId],
+        });
         this.curSceneId = sceneData.id;// 首次加载curSceneId = null.
         this.res.loadData(getSceneAssets(data, sceneData), getSceneJS(data));
     }
@@ -212,7 +214,7 @@ export class VFStage extends vf.gui.Stage {
 
     private loadAssetCompleted(): void {
         this.systemEvent.emit(EventType.STATUS, {
-            code: SceneEvent.LoadComplete, level: EventLevel.STATUS, data: null,
+            code: SceneEvent.LoadComplete, level: EventLevel.STATUS, data: [this.curSceneId],
         });
         // 加载完毕
         this.status = STAGE_STATUS.READY;
@@ -226,7 +228,7 @@ export class VFStage extends vf.gui.Stage {
 
             this.createPlugs();
             this.systemEvent.emit(EventType.STATUS, {
-                code: VFStateCode.SCENE_CREATE, level: EventLevel.STATUS, data: null,
+                code: SceneEvent.ScenComplete, level: EventLevel.STATUS, data: null,
             });
         }
     }

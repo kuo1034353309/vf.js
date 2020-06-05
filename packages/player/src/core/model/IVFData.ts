@@ -274,8 +274,7 @@ export const enum VFStateCode {
     LOAD = 'load',
     LOADED = 'loaded',
     READY = 'ready',
-    DISABLED = 'disabled',
-    SCENE_CREATE = 'sceneCreate',
+    DISABLED = 'disabled'
 }
 
 export const enum ActionType {
@@ -337,6 +336,8 @@ export const enum SceneEvent {
     TransitionEnd = 'TransitionEnd',
     LoadProgress = 'LoadProgress',
     LoadComplete = 'LoadComplete',
+    SceneLoad = 'SceneLoad',
+    ScenComplete = 'ScenComplete',
 }
 export const enum AnimationEvent {
     AnimationComplete = 'AnimationComplete',

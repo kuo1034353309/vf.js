@@ -4,8 +4,7 @@
  *  1、负责验证外部消息通讯/接口调用的合法性。
  *  2、负责拦截/中转外部容器与引擎的消息通讯。
  */
-import { EventEmitter } from 'eventemitter3';
-export default class API extends EventEmitter  {
+export default class API extends  vf.utils.EventEmitter  {
     constructor(){
         super();
     }
