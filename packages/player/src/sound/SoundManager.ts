@@ -9,6 +9,7 @@ export class SoundManager {
     private res: RES;
     private stage: VFStage;
     private trackIdMap: string[] = [];
+    private assetIdMap = new Map<string, string>();
 
     constructor(res: RES, vfStage: VFStage) {
         this.res = res;
@@ -116,15 +117,23 @@ export class SoundManager {
 
         let audio = this.getAudio(data.trackId);
 
+        //by ziye+ 允许同一个trackId播放不同的声音
         if (audio) {
-            audio.play(0, 0);
+            if(this.assetIdMap.get(data.trackId) === asset.url){
+                audio.play(0, 0);
+                return;
+            }
+            else{
+                audio.dispose();
+                vf.AudioEngine.Ins().map.delete(this.stage.config.uuid.toString() + data.trackId);
+            }
+           
         }
-        else {
-            // eslint-disable-next-line max-len
-            audio = vf.AudioEngine.Ins().createAudio(this.stage.config.uuid.toString() + data.trackId, asset.url, { autoplay: false } as any);
-            audio.play(data.time, data.offset, data.length);
-            this.trackIdMap.push(data.trackId);
-        }
+        // eslint-disable-next-line max-len
+        audio = vf.AudioEngine.Ins().createAudio(this.stage.config.uuid.toString() + data.trackId, asset.url, { autoplay: false } as any);
+        audio.play(data.time, data.offset, data.length);
+        this.trackIdMap.push(data.trackId);
+        this.assetIdMap.set(data.trackId, asset.url);
     }
 
     public isWeixin(): boolean {
@@ -161,6 +170,7 @@ export class SoundManager {
                     id: data.trackId || 0,
                     src: asset.url,
                     mode: data.mode || 'sound',
+                    signalling: data.signalling || false
                 },
             });
 

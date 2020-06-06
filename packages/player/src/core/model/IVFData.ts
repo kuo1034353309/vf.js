@@ -394,6 +394,7 @@ export interface IActionCallFunction extends IAction {
 export interface IActionSound extends IAction {
         assetId: number | string | any[];
         trackId: string;
+        signalling?: boolean;  //信令触发的播放声音
         time?: number;
         offset?: number;
         length?: number;
