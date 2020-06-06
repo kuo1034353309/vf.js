@@ -367,3 +367,13 @@ export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) 
 
     launcher.debugGuiPath = (options as any).debugGuiPath;
 }
+
+export function deleteVF() {
+    const list = document.getElementsByName('vf-script');
+
+    while (list.length) {
+        list[0].remove();
+    }
+    delete window.vf;
+    delete (window as any).PIXI;
+}

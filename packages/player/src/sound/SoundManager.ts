@@ -1,18 +1,15 @@
 /* eslint-disable no-unused-vars */
-import { RES } from '../core/RES';
 import { VFStage } from '../display/VFStage';
 import { IActionSound } from '../core/model/IVFData';
 import { EventLevel } from '../event/EventLevel';
 import { EventType } from '../event/EventType';
 
 export class SoundManager {
-    private res: RES;
     private stage: VFStage;
     private trackIdMap: string[] = [];
     private assetIdMap = new Map<string, string>();
 
-    constructor(res: RES, vfStage: VFStage) {
-        this.res = res;
+    constructor(vfStage: VFStage) {
         this.stage = vfStage;
         // vfStage.config.vfvars.useNativeAudio // 如果使用了native播放，不要加载和设置PIXI.sound， 在互动课件中会有问题，教室中使用audioContext会出错。
     }
@@ -99,7 +96,7 @@ export class SoundManager {
 
     // tslint:disable-next-line: max-line-length
     public playSound(data: IActionSound): void {
-        const asset = this.res.data.assets[data.assetId.toString()];
+        const asset = this.stage.res.data.assets[data.assetId.toString()];
 
         if (asset === undefined || asset.url === undefined || asset.url === '') {
             console.warn('playback failed,missing assetId!', data);
@@ -159,7 +156,7 @@ export class SoundManager {
         const useNative = this.stage.config.vfvars.useNativeAudio;
 
         if (useNative) { // 先放这里，后期soundManager完成后，合并
-            const asset = this.res.getAsset(assetId);
+            const asset = this.stage.res.getAsset(assetId);
 
             this.stage.systemEvent.emit(EventType.MESSAGE, {
                 code: EventLevel.NATIVE,

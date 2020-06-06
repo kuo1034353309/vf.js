@@ -12,7 +12,6 @@
 import BaseInfo from './BaseInfo';
 import {CDN, ScaleMode} from './model/IVFData';
 import {IVFOptions} from '../IVFEngine';
-import {Player} from '../Player';
 import I18N from './I18N';
 
 export default class Config extends BaseInfo {
@@ -69,6 +68,8 @@ export default class Config extends BaseInfo {
 
     public cdns: CDN;
 
+    public realFPS: boolean = true;
+
     constructor(options: IVFOptions) {
         super();
         this._container = options.container;
@@ -106,6 +107,7 @@ export default class Config extends BaseInfo {
         }
         this._language = options.language || vf.utils.getSystemInfo().language;
         this._i18n = new I18N(this._language);
+        this.realFPS = options.realFPS === false ? false : true;
     }
 
     public get container(): HTMLElement {

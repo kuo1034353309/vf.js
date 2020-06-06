@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
 import { VFStage } from './display/VFStage';
-import {calculateUpdatePlayerSize, getBoundingClientRect } from './utils/CalculatePlayerSize';
+import { calculateUpdatePlayerSize, getBoundingClientRect } from './utils/CalculatePlayerSize';
 import importScript from './utils/ImportScript';
 import IEvent from './event/IEvent';
 import { IVFOptions, EngineAPI } from './IVFEngine';
@@ -59,11 +59,15 @@ export class Player implements EngineAPI {
      */
     private config: Config;
 
+    private option: IVFOptions;
+
     constructor(options: IVFOptions) {
         //  1. 初始化配置
+        this.option = options;
         this.config = new Config(options);
         const config = this.config;
 
+        vf.gui.Utils.debug = config.debug;
         // eslint-disable-next-line no-console
         console.groupEnd();
 
@@ -74,9 +78,10 @@ export class Player implements EngineAPI {
             transparent: config.wmode === 'transparent',
             antialias: true,
             resolution: options.resolution,
+            forceCanvas: options.forceCanvas,
         });
 
-        this._errpanel = new ErrorDisplay(this.config);
+        this._errpanel = new ErrorDisplay(this.config, options.useCustomErrorPanel);
 
         this.initSystemEvent();
 
@@ -92,6 +97,14 @@ export class Player implements EngineAPI {
             this.reload();
         }
         this.loadData(src);
+    }
+
+    public playData(src?: any, data?: any) {
+        if (data) {
+            this.config.conversionData = data;
+        }
+
+        this.play(src);
     }
 
     public pause(): void {
@@ -158,17 +171,20 @@ export class Player implements EngineAPI {
         // if (vf.sound) {
         //     vf.sound.close();
         // }
+        this.option = null as any;
 
         this.config.systemEvent.removeAllListeners();
 
         if (this.stage) {
             this.stage.dispose();
         }
+        vf.AudioEngine.Ins().dispose();
 
         if (this.app && this.app.stage) {
             this.app.destroy(removeView, { children: true, texture: true, baseTexture: true });
         }
-
+        this.stage = undefined;
+        this.app = null as any;
         this.onDispose();
         this.readyState = VFStateCode.DISABLED;
     }
@@ -224,7 +240,11 @@ export class Player implements EngineAPI {
     }
 
     private reload(): void {
-        this.config.systemEvent.removeAllListeners();
+        const config = this.config;
+
+        config.systemEvent.removeAllListeners();
+
+        vf.AudioEngine.Ins().dispose();
 
         if (this.stage) {
             this.stage.dispose();
@@ -233,6 +253,15 @@ export class Player implements EngineAPI {
         if (this.app) {
             this.app.destroy(true, { children: true, texture: true, baseTexture: true });
         }
+        this.stage = undefined;
+
+        this.app = new vf.Application({
+            backgroundColor: parseInt(config.bgcolor || '0', 16),
+            transparent: config.wmode === 'transparent',
+            antialias: true,
+            resolution: this.option.resolution,
+            forceCanvas: this.option.forceCanvas,
+        });
 
         this.initSystemEvent();
     }
@@ -270,9 +299,6 @@ export class Player implements EngineAPI {
 
         // 3、初始化基于PX容器的VF场景
         this.stage = new VFStage(this._data, this.config, this);
-        this.stage.app = this.app;
-        this.app.stage.addChild(this.stage.container);
-
         // 4、 适配处理
         // eslint-disable-next-line max-len
         calculateUpdatePlayerSize(container, this.app.view, this.stage, this.config.scaleMode as any, this.app.renderer.resolution);

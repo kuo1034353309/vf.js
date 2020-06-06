@@ -36,9 +36,10 @@ export class Animation {
         private curAnimationTotalTime: number = 0;
         private _curPlayTimes: number = 0;
 
-        constructor(component: VFComponent, data: IAnimation[], fps: number = 30) {
+        constructor(component: VFComponent, data: IAnimation[], fps: number = 30, realFPS: boolean = true) {
             this.component = component;
             this.data = data;
+            this.realFPS = realFPS;
             if (fps > 0) {
                 this.fps = fps;
             }
@@ -111,7 +112,7 @@ export class Animation {
             this.lastTime = this.startTime;
             this.startTime -= this.curPlayTime;
             this._curPlayTimes = 0;
-            vf.Ticker.shared.add(this.tick, this);
+            vf.gui.TickerShared.add(this.tick, this);
         }
         public gotoStop(name: string, frameIndex: number): void {
             if (this.status === AnimationStatus.PLAYING) {
@@ -143,12 +144,12 @@ export class Animation {
             this.tick();
         }
 
-        public play(name: string, times: number = 1): void {
-           this.gotoPlay(name, 0, times);
+        public play(name: string, times = 1): void {
+            this.gotoPlay(name, 0, times);
         }
 
         public stop(): void {
-            vf.Ticker.shared.remove(this.tick, this);
+            vf.gui.TickerShared.remove(this.tick, this);
             this.status = AnimationStatus.STOP;
             this.skipNextEvent();
         }

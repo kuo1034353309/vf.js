@@ -307,6 +307,11 @@ export class RES extends vf.utils.EventEmitter {
     }
 
     private createComponent(libId: string, id: string): vf.gui.DisplayObject | null {
+        if (id === undefined || id === '') {
+            this.stage.systemEvent.emitError('E0004', [id], undefined, `libId = ${libId}`);
+
+            return null;
+        }
         const componentData = this.data.components[libId] as ICustomComponent;
         let component: vf.gui.DisplayObject | null = null;
 
@@ -425,7 +430,8 @@ export class RES extends vf.utils.EventEmitter {
             }
         }
         if (customData.animations) {
-            const animation = new Animation(vfComponent, customData.animations, this.data.fps);
+            let realFPS = this.stage.config.realFPS;
+            const animation = new Animation(vfComponent, customData.animations, this.data.fps, realFPS);
 
             vfComponent.animation = animation;
         }
@@ -492,7 +498,7 @@ export class RES extends vf.utils.EventEmitter {
                 continue;
             }
 
-            if (res.type === 'audio') {
+            if (res.type === 'audio' || res.type === 'sound') {
                 // 微信wechat不能直接加载audio类型
                 // eslint-disable-next-line max-len
                 loader.add(id, getUrl(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuff' });

@@ -91,7 +91,7 @@ export class DoomScreenFilter extends vf.Filter implements ITransition {
             // filterManager.calculateNormalizedScreenSpaceMatrix(maskMatrix);
             this.uniforms.filterMatrix = maskMatrix;
             this.uniforms.resolution = vf.settings.RESOLUTION;
-            super.apply(filterManager, input, output, vf.CLEAR_MODES.NO);
+            super.apply(filterManager, input, output, (vf as any).CLEAR_MODES.NO);
         }
 
         /**

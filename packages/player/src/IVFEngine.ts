@@ -112,6 +112,7 @@ export interface IVFOptions {
     debug?: boolean;
     logAdvancedTrace?: boolean;
     language?: string;
+    realFPS?: boolean;
     /**
      * 动态数据
      */
@@ -133,4 +134,12 @@ export interface IVFOptions {
      * 分辨率 devicePixelRatio
      */
     resolution?: number;
+    /**
+     * 强制使用Canvas 渲染
+     */
+    forceCanvas: boolean;
+    /**
+     * 开启错误面板
+     */
+    useCustomErrorPanel?: boolean;
 }
