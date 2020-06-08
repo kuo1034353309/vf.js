@@ -92,8 +92,11 @@ export class Player implements EngineAPI {
             forceCanvas: options.forceCanvas,
         });
 
-        app.ticker.maxFPS = options.frameRate || 30;
-        vf.gui.TickerShared.maxFPS = options.frameRate || 30;
+        const frameRate = options.frameRate || 30;
+        app.ticker.maxFPS = frameRate;
+        vf.Ticker.system.maxFPS = frameRate;
+        vf.Ticker.shared.maxFPS = frameRate;
+        vf.gui.TickerShared.maxFPS = frameRate;
         vf.gui.Utils.debug = options.debug || false;
 
         return app;
@@ -315,7 +318,7 @@ export class Player implements EngineAPI {
         // 5、初始化API模块，并通知外部'vf[hashid] api is ready'
         this.readyState = VFStateCode.READY;
 
-        // 6、加载场景资源
+        // 6、加载场景资源 
         if (this.defaultScene) {
             this.defaultScene.callBack.call(this, this.defaultScene.params[0], this.defaultScene.params[1]);
         }

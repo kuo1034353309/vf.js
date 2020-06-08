@@ -96,354 +96,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "./node_modules/eventemitter3/index.js":
-/*!*********************************************!*\
-  !*** ./node_modules/eventemitter3/index.js ***!
-  \*********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var has = Object.prototype.hasOwnProperty
-  , prefix = '~';
-
-/**
- * Constructor to create a storage for our `EE` objects.
- * An `Events` instance is a plain object whose properties are event names.
- *
- * @constructor
- * @private
- */
-function Events() {}
-
-//
-// We try to not inherit from `Object.prototype`. In some engines creating an
-// instance in this way is faster than calling `Object.create(null)` directly.
-// If `Object.create(null)` is not supported we prefix the event names with a
-// character to make sure that the built-in object properties are not
-// overridden or used as an attack vector.
-//
-if (Object.create) {
-  Events.prototype = Object.create(null);
-
-  //
-  // This hack is needed because the `__proto__` property is still inherited in
-  // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
-  //
-  if (!new Events().__proto__) prefix = false;
-}
-
-/**
- * Representation of a single event listener.
- *
- * @param {Function} fn The listener function.
- * @param {*} context The context to invoke the listener with.
- * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
- * @constructor
- * @private
- */
-function EE(fn, context, once) {
-  this.fn = fn;
-  this.context = context;
-  this.once = once || false;
-}
-
-/**
- * Add a listener for a given event.
- *
- * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
- * @param {(String|Symbol)} event The event name.
- * @param {Function} fn The listener function.
- * @param {*} context The context to invoke the listener with.
- * @param {Boolean} once Specify if the listener is a one-time listener.
- * @returns {EventEmitter}
- * @private
- */
-function addListener(emitter, event, fn, context, once) {
-  if (typeof fn !== 'function') {
-    throw new TypeError('The listener must be a function');
-  }
-
-  var listener = new EE(fn, context || emitter, once)
-    , evt = prefix ? prefix + event : event;
-
-  if (!emitter._events[evt]) emitter._events[evt] = listener, emitter._eventsCount++;
-  else if (!emitter._events[evt].fn) emitter._events[evt].push(listener);
-  else emitter._events[evt] = [emitter._events[evt], listener];
-
-  return emitter;
-}
-
-/**
- * Clear event by name.
- *
- * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
- * @param {(String|Symbol)} evt The Event name.
- * @private
- */
-function clearEvent(emitter, evt) {
-  if (--emitter._eventsCount === 0) emitter._events = new Events();
-  else delete emitter._events[evt];
-}
-
-/**
- * Minimal `EventEmitter` interface that is molded against the Node.js
- * `EventEmitter` interface.
- *
- * @constructor
- * @public
- */
-function EventEmitter() {
-  this._events = new Events();
-  this._eventsCount = 0;
-}
-
-/**
- * Return an array listing the events for which the emitter has registered
- * listeners.
- *
- * @returns {Array}
- * @public
- */
-EventEmitter.prototype.eventNames = function eventNames() {
-  var names = []
-    , events
-    , name;
-
-  if (this._eventsCount === 0) return names;
-
-  for (name in (events = this._events)) {
-    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
-  }
-
-  if (Object.getOwnPropertySymbols) {
-    return names.concat(Object.getOwnPropertySymbols(events));
-  }
-
-  return names;
-};
-
-/**
- * Return the listeners registered for a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @returns {Array} The registered listeners.
- * @public
- */
-EventEmitter.prototype.listeners = function listeners(event) {
-  var evt = prefix ? prefix + event : event
-    , handlers = this._events[evt];
-
-  if (!handlers) return [];
-  if (handlers.fn) return [handlers.fn];
-
-  for (var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) {
-    ee[i] = handlers[i].fn;
-  }
-
-  return ee;
-};
-
-/**
- * Return the number of listeners listening to a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @returns {Number} The number of listeners.
- * @public
- */
-EventEmitter.prototype.listenerCount = function listenerCount(event) {
-  var evt = prefix ? prefix + event : event
-    , listeners = this._events[evt];
-
-  if (!listeners) return 0;
-  if (listeners.fn) return 1;
-  return listeners.length;
-};
-
-/**
- * Calls each of the listeners registered for a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @returns {Boolean} `true` if the event had listeners, else `false`.
- * @public
- */
-EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
-  var evt = prefix ? prefix + event : event;
-
-  if (!this._events[evt]) return false;
-
-  var listeners = this._events[evt]
-    , len = arguments.length
-    , args
-    , i;
-
-  if (listeners.fn) {
-    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
-
-    switch (len) {
-      case 1: return listeners.fn.call(listeners.context), true;
-      case 2: return listeners.fn.call(listeners.context, a1), true;
-      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
-      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
-      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
-      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
-    }
-
-    for (i = 1, args = new Array(len -1); i < len; i++) {
-      args[i - 1] = arguments[i];
-    }
-
-    listeners.fn.apply(listeners.context, args);
-  } else {
-    var length = listeners.length
-      , j;
-
-    for (i = 0; i < length; i++) {
-      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
-
-      switch (len) {
-        case 1: listeners[i].fn.call(listeners[i].context); break;
-        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
-        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
-        case 4: listeners[i].fn.call(listeners[i].context, a1, a2, a3); break;
-        default:
-          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
-            args[j - 1] = arguments[j];
-          }
-
-          listeners[i].fn.apply(listeners[i].context, args);
-      }
-    }
-  }
-
-  return true;
-};
-
-/**
- * Add a listener for a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @param {Function} fn The listener function.
- * @param {*} [context=this] The context to invoke the listener with.
- * @returns {EventEmitter} `this`.
- * @public
- */
-EventEmitter.prototype.on = function on(event, fn, context) {
-  return addListener(this, event, fn, context, false);
-};
-
-/**
- * Add a one-time listener for a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @param {Function} fn The listener function.
- * @param {*} [context=this] The context to invoke the listener with.
- * @returns {EventEmitter} `this`.
- * @public
- */
-EventEmitter.prototype.once = function once(event, fn, context) {
-  return addListener(this, event, fn, context, true);
-};
-
-/**
- * Remove the listeners of a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @param {Function} fn Only remove the listeners that match this function.
- * @param {*} context Only remove the listeners that have this context.
- * @param {Boolean} once Only remove one-time listeners.
- * @returns {EventEmitter} `this`.
- * @public
- */
-EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
-  var evt = prefix ? prefix + event : event;
-
-  if (!this._events[evt]) return this;
-  if (!fn) {
-    clearEvent(this, evt);
-    return this;
-  }
-
-  var listeners = this._events[evt];
-
-  if (listeners.fn) {
-    if (
-      listeners.fn === fn &&
-      (!once || listeners.once) &&
-      (!context || listeners.context === context)
-    ) {
-      clearEvent(this, evt);
-    }
-  } else {
-    for (var i = 0, events = [], length = listeners.length; i < length; i++) {
-      if (
-        listeners[i].fn !== fn ||
-        (once && !listeners[i].once) ||
-        (context && listeners[i].context !== context)
-      ) {
-        events.push(listeners[i]);
-      }
-    }
-
-    //
-    // Reset the array, or remove it completely if we have no more listeners.
-    //
-    if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
-    else clearEvent(this, evt);
-  }
-
-  return this;
-};
-
-/**
- * Remove all listeners, or those of the specified event.
- *
- * @param {(String|Symbol)} [event] The event name.
- * @returns {EventEmitter} `this`.
- * @public
- */
-EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
-  var evt;
-
-  if (event) {
-    evt = prefix ? prefix + event : event;
-    if (this._events[evt]) clearEvent(this, evt);
-  } else {
-    this._events = new Events();
-    this._eventsCount = 0;
-  }
-
-  return this;
-};
-
-//
-// Alias methods names because people roll like that.
-//
-EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
-EventEmitter.prototype.addListener = EventEmitter.prototype.on;
-
-//
-// Expose the prefix.
-//
-EventEmitter.prefixed = prefix;
-
-//
-// Allow `EventEmitter` to be imported as module namespace.
-//
-EventEmitter.EventEmitter = EventEmitter;
-
-//
-// Expose the module.
-//
-if (true) {
-  module.exports = EventEmitter;
-}
-
-
-/***/ }),
-
 /***/ "./packages/assets/Assets.ts":
 /*!***********************************!*\
   !*** ./packages/assets/Assets.ts ***!
@@ -539,7 +191,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_ImportScript__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/ImportScript */ "./packages/player/src/utils/ImportScript.ts");
 /* harmony import */ var _core_Config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./core/Config */ "./packages/player/src/core/Config.ts");
 /* harmony import */ var _error_ErrorDisplay__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./error/ErrorDisplay */ "./packages/player/src/error/ErrorDisplay.ts");
-/* harmony import */ var _utils_readFileSync__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/readFileSync */ "./packages/player/src/utils/readFileSync.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -584,7 +235,6 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 
-
 var Player = /** @class */ (function () {
     function Player(options) {
         /**
@@ -604,6 +254,12 @@ var Player = /** @class */ (function () {
          * 接口，避免写入逻辑
          */
         this.onReady = function () {
+            //
+        };
+        /**
+         * 接口，避免写入逻辑
+         */
+        this.onSceneLoad = function () {
             //
         };
         /**
@@ -633,8 +289,8 @@ var Player = /** @class */ (function () {
         this.initSystemEvent();
         this._readyState = "init" /* INIT */;
         //  3、如果配了资源地址，则启动数据加载
-        if (this.config.src) {
-            this.play(this.config.src);
+        if (options.src) {
+            this.play(options.src);
         }
     }
     Object.defineProperty(Player.prototype, "readyState", {
@@ -645,7 +301,7 @@ var Player = /** @class */ (function () {
             this._readyState = value;
             this.config.systemEvent.emit("status" /* STATUS */, { code: value, level: "status" /* STATUS */, data: value });
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Player.prototype.createApp = function () {
@@ -659,8 +315,11 @@ var Player = /** @class */ (function () {
             resolution: options.resolution,
             forceCanvas: options.forceCanvas,
         });
-        app.ticker.maxFPS = options.frameRate || 30;
-        vf.gui.TickerShared.maxFPS = options.frameRate || 30;
+        var frameRate = options.frameRate || 30;
+        app.ticker.maxFPS = frameRate;
+        vf.Ticker.system.maxFPS = frameRate;
+        vf.Ticker.shared.maxFPS = frameRate;
+        vf.gui.TickerShared.maxFPS = frameRate;
         vf.gui.Utils.debug = options.debug || false;
         return app;
     };
@@ -716,8 +375,20 @@ var Player = /** @class */ (function () {
         }
     };
     Player.prototype.switchToSceneId = function (sceneId, transition) {
+        sceneId = sceneId.toString();
         if (this.stage) {
             this.stage.switchToSceneId(sceneId, transition);
+        }
+        else {
+            this.defaultScene = { callBack: this.switchToSceneId, params: [sceneId, transition] };
+        }
+    };
+    Player.prototype.switchToSceneIndex = function (index, transition) {
+        if (this.stage) {
+            this.stage.switchToSceneIndex(index, transition);
+        }
+        else {
+            this.defaultScene = { callBack: this.switchToSceneIndex, params: [index, transition] };
         }
     };
     Player.prototype.dispose = function (removeView) {
@@ -726,6 +397,7 @@ var Player = /** @class */ (function () {
             return;
         }
         this.option = null;
+        this.defaultScene = undefined;
         this.config.systemEvent.removeAllListeners();
         if (this.stage) {
             this.stage.dispose();
@@ -795,8 +467,13 @@ var Player = /** @class */ (function () {
                 Object(_utils_CalculatePlayerSize__WEBPACK_IMPORTED_MODULE_1__["calculateUpdatePlayerSize"])(container, this.app.view, this.stage, this.config.scaleMode, this.app.renderer.resolution);
                 // 5、初始化API模块，并通知外部'vf[hashid] api is ready'
                 this.readyState = "ready" /* READY */;
-                // 6、加载场景资源
-                this.stage.start();
+                // 6、加载场景资源 
+                if (this.defaultScene) {
+                    this.defaultScene.callBack.call(this, this.defaultScene.params[0], this.defaultScene.params[1]);
+                }
+                else {
+                    this.stage.start();
+                }
                 return [2 /*return*/];
             });
         });
@@ -815,7 +492,7 @@ var Player = /** @class */ (function () {
                         _b.sent();
                         if (!(typeof src === 'string')) return [3 /*break*/, 3];
                         _a = this;
-                        return [4 /*yield*/, Object(_utils_readFileSync__WEBPACK_IMPORTED_MODULE_5__["default"])(src, { responseType: 'json' }).catch(function (value) { onStatus(value); })];
+                        return [4 /*yield*/, vf.utils.readFileSync(src, { responseType: 'json' }).catch(function (value) { onStatus(value); })];
                     case 2:
                         _a._data = _b.sent();
                         return [3 /*break*/, 4];
@@ -891,7 +568,12 @@ var Player = /** @class */ (function () {
                     this.onReady();
                 }
                 break;
-            case "sceneCreate" /* SCENE_CREATE */:
+            case "SceneLoad" /* SceneLoad */:
+                if (this.onSceneLoad) {
+                    this.onSceneLoad();
+                }
+                break;
+            case "ScenComplete" /* ScenComplete */:
                 if (this.onSceneCreate) {
                     this.onSceneCreate();
                 }
@@ -1009,7 +691,7 @@ var BaseInfo = /** @class */ (function () {
         get: function () {
             return {};
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     BaseInfo.prototype.output = function (ttl, obj) {
@@ -1139,7 +821,7 @@ var Config = /** @class */ (function (_super) {
             this._container = value;
             this.propertyChange('container');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "id", {
@@ -1153,7 +835,7 @@ var Config = /** @class */ (function (_super) {
             this._id = value;
             this.propertyChange('id');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "src", {
@@ -1167,7 +849,7 @@ var Config = /** @class */ (function (_super) {
             this._src = value;
             this.propertyChange('src');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "play", {
@@ -1181,7 +863,7 @@ var Config = /** @class */ (function (_super) {
             this._play = value;
             this.propertyChange('play');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "loop", {
@@ -1195,7 +877,7 @@ var Config = /** @class */ (function (_super) {
             this._loop = value;
             this.propertyChange('loop');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "menu", {
@@ -1209,7 +891,7 @@ var Config = /** @class */ (function (_super) {
             this._menu = value;
             this.propertyChange('menu');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "scaleMode", {
@@ -1223,7 +905,7 @@ var Config = /** @class */ (function (_super) {
             this._scaleMode = value;
             this.propertyChange('scaleMode');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "align", {
@@ -1237,7 +919,7 @@ var Config = /** @class */ (function (_super) {
             this._align = value;
             this.propertyChange('align');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "wmode", {
@@ -1251,7 +933,7 @@ var Config = /** @class */ (function (_super) {
             this._wmode = value;
             this.propertyChange('wmode');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "bgcolor", {
@@ -1265,7 +947,7 @@ var Config = /** @class */ (function (_super) {
             this._bgcolor = value;
             this.propertyChange('bgcolor');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "vfvars", {
@@ -1285,7 +967,7 @@ var Config = /** @class */ (function (_super) {
             this._vfvars = value;
             this.propertyChange('vfvars');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "plugs", {
@@ -1295,7 +977,7 @@ var Config = /** @class */ (function (_super) {
         set: function (value) {
             this._plugs = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "frameRate", {
@@ -1309,7 +991,7 @@ var Config = /** @class */ (function (_super) {
             this._frameRate = value;
             this.propertyChange('frameRate');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "width", {
@@ -1323,7 +1005,7 @@ var Config = /** @class */ (function (_super) {
             this._width = value;
             this.propertyChange('width');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "height", {
@@ -1337,7 +1019,7 @@ var Config = /** @class */ (function (_super) {
             this._height = value;
             this.propertyChange('height');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "orientation", {
@@ -1351,7 +1033,7 @@ var Config = /** @class */ (function (_super) {
             this._orientation = value;
             this.propertyChange('orientation');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "maxTouches", {
@@ -1365,7 +1047,7 @@ var Config = /** @class */ (function (_super) {
             this._maxTouches = value;
             this.propertyChange('maxTouches');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "showFPS", {
@@ -1379,7 +1061,7 @@ var Config = /** @class */ (function (_super) {
             this._showFPS = value;
             this.propertyChange('showFPS');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "showLog", {
@@ -1393,7 +1075,7 @@ var Config = /** @class */ (function (_super) {
             this._showLog = value;
             this.propertyChange('showLog');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "conversionData", {
@@ -1407,7 +1089,7 @@ var Config = /** @class */ (function (_super) {
             this._conversionData = value;
             this.propertyChange('conversionData');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "debug", {
@@ -1421,7 +1103,7 @@ var Config = /** @class */ (function (_super) {
             this._debug = value;
             this.propertyChange('debug');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "logAdvancedTrace", {
@@ -1435,7 +1117,7 @@ var Config = /** @class */ (function (_super) {
             this._logAdvancedTrace = value;
             this.propertyChange('logAdvancedTrace');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "language", {
@@ -1449,14 +1131,14 @@ var Config = /** @class */ (function (_super) {
             this._language = value;
             this.propertyChange('language');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "i18n", {
         get: function () {
             return this._i18n;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "info", {
@@ -1488,7 +1170,7 @@ var Config = /** @class */ (function (_super) {
                 i18n: this.i18n.info,
             };
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Config;
@@ -1592,14 +1274,14 @@ var I18N = /** @class */ (function (_super) {
         set: function (value) {
             this._readyState = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(I18N.prototype, "info", {
         get: function () {
             return ['zh-CN', 'en-US'];
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     I18N.prototype.t = function (key, param) {
@@ -1654,14 +1336,16 @@ var I18N = /** @class */ (function (_super) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RES", function() { return RES; });
-/* harmony import */ var _display_VFScene__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../display/VFScene */ "./packages/player/src/display/VFScene.ts");
-/* harmony import */ var _VariableManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./VariableManager */ "./packages/player/src/core/VariableManager.ts");
-/* harmony import */ var _display_VFComponent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../display/VFComponent */ "./packages/player/src/display/VFComponent.ts");
-/* harmony import */ var _actionTask_ActionList__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./actionTask/ActionList */ "./packages/player/src/core/actionTask/ActionList.ts");
-/* harmony import */ var _animation_Animation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./animation/Animation */ "./packages/player/src/core/animation/Animation.ts");
-/* harmony import */ var _assets_Assets__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../assets/Assets */ "./packages/assets/Assets.ts");
-/* harmony import */ var _utils_ImportScript__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/ImportScript */ "./packages/player/src/utils/ImportScript.ts");
+/* harmony import */ var _utils_ImportScript__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/ImportScript */ "./packages/player/src/utils/ImportScript.ts");
+/* harmony import */ var _display_VFScene__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../display/VFScene */ "./packages/player/src/display/VFScene.ts");
+/* harmony import */ var _VariableManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./VariableManager */ "./packages/player/src/core/VariableManager.ts");
+/* harmony import */ var _display_VFComponent__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../display/VFComponent */ "./packages/player/src/display/VFComponent.ts");
+/* harmony import */ var _actionTask_ActionList__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./actionTask/ActionList */ "./packages/player/src/core/actionTask/ActionList.ts");
+/* harmony import */ var _animation_Animation__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./animation/Animation */ "./packages/player/src/core/animation/Animation.ts");
+/* harmony import */ var _assets_Assets__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../assets/Assets */ "./packages/assets/Assets.ts");
 /* harmony import */ var _utils_getUrl__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/getUrl */ "./packages/player/src/utils/getUrl.ts");
+/* harmony import */ var _utils_base64toBlob__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/base64toBlob */ "./packages/player/src/utils/base64toBlob.ts");
+/* harmony import */ var _display_SceneDataUtils__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../display/SceneDataUtils */ "./packages/player/src/display/SceneDataUtils.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1719,6 +1403,8 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 
+
+
 var RES = /** @class */ (function (_super) {
     __extends(RES, _super);
     function RES(stage) {
@@ -1734,13 +1420,14 @@ var RES = /** @class */ (function (_super) {
         vf.gui.Utils.setSourcePath(_this.getImageAsset.bind(_this));
         vf.gui.Utils.setDisplayObjectPath(_this.getDisplayObject.bind(_this));
         _this.stage = stage;
+        _this.initGlobalVariable();
         return _this;
     }
     Object.defineProperty(RES.prototype, "data", {
         get: function () {
             return this.stage.data;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     RES.prototype.destroy = function () {
@@ -1764,7 +1451,6 @@ var RES = /** @class */ (function (_super) {
         vf.utils.destroyTextureCache();
         vf.utils.clearTextureCache();
         if (this._loader) {
-            this._loader.destroy;
             this._loader.destroy();
         }
         this.stage = undefined;
@@ -1795,33 +1481,12 @@ var RES = /** @class */ (function (_super) {
             });
         });
     };
-    RES.prototype.createFirstScene = function (vfStage) {
-        this.initGlobalVariable();
-        if (this.data.scenes && this.data.scenes.length > 0) {
-            return this.createScene(this.data.scenes[0].id, vfStage);
-        }
-        return null;
-    };
-    RES.prototype.createNextScene = function (curId, vfStage) {
-        var nextSceneData = this.getNextSceneData(curId);
-        if (nextSceneData) {
-            return this.createScene(nextSceneData.id, vfStage);
-        }
-        return null;
-    };
-    RES.prototype.createPrevScene = function (curId, vfStage) {
-        var nextSceneData = this.getPrevSceneData(curId);
-        if (nextSceneData) {
-            return this.createScene(nextSceneData.id, vfStage);
-        }
-        return null;
-    };
     RES.prototype.createScene = function (id, vfStage) {
-        var sceneData = this.getSceneData(id);
+        var sceneData = Object(_display_SceneDataUtils__WEBPACK_IMPORTED_MODULE_9__["getSceneData"])(this.data, id);
         if (sceneData) {
             var vfScene = this._sceneMap[id];
             if (vfScene == null) {
-                vfScene = new _display_VFScene__WEBPACK_IMPORTED_MODULE_0__["VFScene"](vfStage);
+                vfScene = new _display_VFScene__WEBPACK_IMPORTED_MODULE_1__["VFScene"](vfStage);
                 vfScene.transition = sceneData.transition;
             }
             vfScene.id = id;
@@ -1838,10 +1503,18 @@ var RES = /** @class */ (function (_super) {
         }
         return null;
     };
+    RES.prototype.dataURLtoBlob = function (dataurl) {
+        var arr = dataurl.split(',');
+        var mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    };
     RES.prototype.getImageAsset = function (index) {
         // base64
         if (index.toString().substr(0, 4) === 'data') {
-            return index.toString();
+            return Object(_utils_base64toBlob__WEBPACK_IMPORTED_MODULE_8__["compatible"])(index);
         }
         var resource = this.getAsset(index);
         if (resource) {
@@ -1862,7 +1535,7 @@ var RES = /** @class */ (function (_super) {
             return undefined;
         }
         // 单独写组件ID为创建一个组件复制到显示对象，如果是从场景ID - ID - ID为查找
-        if (id.toString().substr(0, 4) === 'this' && target && target.parent instanceof _display_VFComponent__WEBPACK_IMPORTED_MODULE_2__["VFComponent"]) {
+        if (id.toString().substr(0, 4) === 'this' && target && target.parent instanceof _display_VFComponent__WEBPACK_IMPORTED_MODULE_3__["VFComponent"]) {
             var childIds = id.split('#');
             childIds.shift();
             var child = target.parent;
@@ -1897,7 +1570,7 @@ var RES = /** @class */ (function (_super) {
                     case 1:
                         if (!(i < asstes.length)) return [3 /*break*/, 4];
                         item = asstes[i];
-                        return [4 /*yield*/, Object(_utils_ImportScript__WEBPACK_IMPORTED_MODULE_6__["default"])(item.url, stage.config.cdns, item.name).catch(function (e) {
+                        return [4 /*yield*/, Object(_utils_ImportScript__WEBPACK_IMPORTED_MODULE_0__["default"])(item.url, stage.config.cdns, item.name).catch(function (e) {
                                 stage.systemEvent.error(e);
                             })];
                     case 2:
@@ -1945,7 +1618,7 @@ var RES = /** @class */ (function (_super) {
     };
     RES.prototype.initGlobalVariable = function () {
         if (this.data.global) {
-            this.stage.variableManager.addVariableConfig(_VariableManager__WEBPACK_IMPORTED_MODULE_1__["VariableManager"].GLOBAL_ID, this.data.global);
+            this.stage.variableManager.addVariableConfig(_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID, this.data.global);
             this.stage.variableManager.addVariableToGlobal(this.data.global);
         }
         if (this.vfActions) {
@@ -1957,40 +1630,6 @@ var RES = /** @class */ (function (_super) {
                 }
             }
         }
-    };
-    RES.prototype.getSceneData = function (id) {
-        if (this.data.scenes) {
-            for (var i = 0, len = this.data.scenes.length; i < len; i++) {
-                if (this.data.scenes[i].id === id) {
-                    return this.data.scenes[i];
-                }
-            }
-        }
-        return null;
-    };
-    RES.prototype.getNextSceneData = function (curId) {
-        if (this.data.scenes) {
-            for (var i = 0, len = this.data.scenes.length; i < len; i++) {
-                if (this.data.scenes[i].id === curId) {
-                    if (i < len - 1) {
-                        return this.data.scenes[i + 1];
-                    }
-                }
-            }
-        }
-        return null;
-    };
-    RES.prototype.getPrevSceneData = function (curId) {
-        if (this.data.scenes) {
-            for (var i = 0, len = this.data.scenes.length; i < len; i++) {
-                if (this.data.scenes[i].id === curId) {
-                    if (i > 0) {
-                        return this.data.scenes[i - 1];
-                    }
-                }
-            }
-        }
-        return null;
     };
     RES.prototype.createComponent = function (libId, id) {
         if (id === undefined || id === '') {
@@ -2063,7 +1702,7 @@ var RES = /** @class */ (function (_super) {
     RES.prototype.createCustomComponent = function (libId, id) {
         var componentData = this.data.components[libId];
         var customData = componentData;
-        var vfComponent = new _display_VFComponent__WEBPACK_IMPORTED_MODULE_2__["VFComponent"]();
+        var vfComponent = new _display_VFComponent__WEBPACK_IMPORTED_MODULE_3__["VFComponent"]();
         vfComponent.name = customData.name;
         vfComponent.libId = libId;
         vfComponent.id = id;
@@ -2089,19 +1728,19 @@ var RES = /** @class */ (function (_super) {
             }
         }
         if (customData.actionList && customData.actionList !== '') {
-            var actionList = new _actionTask_ActionList__WEBPACK_IMPORTED_MODULE_3__["ActionList"](vfComponent, customData.actionList);
+            var actionList = new _actionTask_ActionList__WEBPACK_IMPORTED_MODULE_4__["ActionList"](vfComponent, customData.actionList);
             vfComponent.actionList = actionList;
         }
         else if (libId !== undefined) {
             var actions = this.getVfsByComponentId(libId.toString());
             if (actions) {
-                var actionList = new _actionTask_ActionList__WEBPACK_IMPORTED_MODULE_3__["ActionList"](vfComponent, actions);
+                var actionList = new _actionTask_ActionList__WEBPACK_IMPORTED_MODULE_4__["ActionList"](vfComponent, actions);
                 vfComponent.actionList = actionList;
             }
         }
         if (customData.animations) {
             var realFPS = this.stage.config.realFPS;
-            var animation = new _animation_Animation__WEBPACK_IMPORTED_MODULE_4__["Animation"](vfComponent, customData.animations, this.data.fps, realFPS);
+            var animation = new _animation_Animation__WEBPACK_IMPORTED_MODULE_5__["Animation"](vfComponent, customData.animations, this.data.fps, realFPS);
             vfComponent.animation = animation;
         }
         return vfComponent;
@@ -2159,6 +1798,9 @@ var RES = /** @class */ (function (_super) {
         this._loadNum = 0;
         for (var i = 0, len = resources.length; i < len; i++) {
             var res = resources[i];
+            if (res.id && loader.resources[res.id]) {
+                continue;
+            }
             if (urls[res.url]) {
                 urls[res.url].push(res.id);
                 continue;
@@ -2224,7 +1866,7 @@ var RES = /** @class */ (function (_super) {
         var loader = this._loader;
         var cdns = this.stage.config.cdns;
         this._assetFails.forEach(function (res) {
-            var type = Object(_assets_Assets__WEBPACK_IMPORTED_MODULE_5__["getAssetType"])(res.extension);
+            var type = Object(_assets_Assets__WEBPACK_IMPORTED_MODULE_6__["getAssetType"])(res.extension);
             var cdn;
             switch (type) {
                 case 4 /* Image */:
@@ -2966,13 +2608,12 @@ var VariableManager = /** @class */ (function () {
     };
     VariableManager.prototype.emitError = function (component, code, params, level) {
         if (level === void 0) { level = "error" /* ERROR */; }
-        var _a;
         if (component && component.vfStage) {
             var vfStage = component.vfStage;
             vfStage.systemEvent.emitError(code, params, level);
         }
         else {
-            throw new Error(code + ': ' + ((_a = params) === null || _a === void 0 ? void 0 : _a.join(' ')));
+            throw new Error(code + ': ' + (params === null || params === void 0 ? void 0 : params.join(' ')));
         }
     };
     VariableManager.GLOBAL_ID = 'global';
@@ -4380,7 +4021,7 @@ var CallProtoFunctionTask = /** @class */ (function (_super) {
         get: function () {
             return Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(this.component, this.data.target);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     CallProtoFunctionTask.prototype.run = function () {
@@ -5560,7 +5201,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(SetIntervalTask.prototype, "times", {
@@ -5585,7 +5226,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
             }
             return times;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     SetIntervalTask.prototype.run = function () {
@@ -5793,7 +5434,7 @@ var SetTimeoutTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     SetTimeoutTask.prototype.run = function () {
@@ -5963,7 +5604,7 @@ var WaitTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     WaitTask.prototype.run = function () {
@@ -6199,35 +5840,35 @@ var BaseTask = /** @class */ (function (_super) {
         get: function () {
             return this._asynchronous;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isRunning", {
         get: function () {
             return this._isRunning;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isCompleted", {
         get: function () {
             return this._isCompleted;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isFailed", {
         get: function () {
             return this._isFailed;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isPaused", {
         get: function () {
             return this._isPaused;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return BaseTask;
@@ -6354,7 +5995,7 @@ var QueueTask = /** @class */ (function (_super) {
         get: function () {
             return this._tasks;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     QueueTask.prototype.run = function () {
@@ -6651,7 +6292,7 @@ var Animation = /** @class */ (function () {
                 }
             }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Animation.prototype.tick = function () {
@@ -6870,7 +6511,7 @@ var AnimationClip = /** @class */ (function () {
         get: function () {
             return this.target;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(AnimationClip.prototype, "curTime", {
@@ -6885,7 +6526,7 @@ var AnimationClip = /** @class */ (function () {
             }
             this.applyTimeline();
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     AnimationClip.prototype.skipNextEvent = function () {
@@ -7357,14 +6998,14 @@ var Timeline = /** @class */ (function () {
             this._defaultValue = value;
             this._curValue = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Timeline.prototype, "curValue", {
         get: function () {
             return this._curValue;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Timeline.prototype, "globalTime", {
@@ -7373,7 +7014,7 @@ var Timeline = /** @class */ (function () {
             this.tick();
             this._lastGlobalTime = v;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Timeline.prototype.getProgress = function (cur, min, max, curve) {
@@ -7632,7 +7273,7 @@ var AbstractFilter = /** @class */ (function (_super) {
             value = Math.max(0, value);
             this.uniforms.progress = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     AbstractFilter.prototype.applyTranisition = function (target) {
@@ -7849,7 +7490,7 @@ var DoomScreenFilter = /** @class */ (function (_super) {
             value = Math.max(0, value);
             this.uniforms.progress = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     DoomScreenFilter.prototype.applyTranisition = function (target) {
@@ -8208,7 +7849,7 @@ var FadeoutTran = /** @class */ (function () {
                 this.prevSprite.alpha = (1 - this._progress);
             }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     FadeoutTran.prototype.setPreviousTexture = function (value) {
@@ -8245,12 +7886,15 @@ var FadeoutTran = /** @class */ (function () {
 /*!*******************************************************!*\
   !*** ./packages/player/src/display/SceneDataUtils.ts ***!
   \*******************************************************/
-/*! exports provided: getSceneData, getSceneJS, getSceneAssets, assetsRepair */
+/*! exports provided: getSceneData, getSceneDataByIndex, getNextSceneData, getPrevSceneData, getSceneJS, getSceneAssets, assetsRepair */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSceneData", function() { return getSceneData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSceneDataByIndex", function() { return getSceneDataByIndex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNextSceneData", function() { return getNextSceneData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPrevSceneData", function() { return getPrevSceneData; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSceneJS", function() { return getSceneJS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSceneAssets", function() { return getSceneAssets; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "assetsRepair", function() { return assetsRepair; });
@@ -8262,12 +7906,57 @@ __webpack_require__.r(__webpack_exports__);
 function getSceneData(data, id) {
     var scenes = data.scenes;
     if (scenes) {
-        if (id === undefined && scenes[0]) {
+        if ((id === undefined || id === '') && scenes[0]) {
             return scenes[0];
         }
+        id = id === null || id === void 0 ? void 0 : id.toString();
         for (var i = 0, len = scenes.length; i < len; i++) {
-            if (scenes[i].id === id) {
+            if (scenes[i].id.toString() === id) {
                 return scenes[i];
+            }
+        }
+    }
+    return undefined;
+}
+/**
+ * 根据索引获取场景数据
+ * @param data 需要处理的完整json数据
+ * @param index 索引号
+ */
+function getSceneDataByIndex(data, index) {
+    var scenes = data.scenes;
+    if (scenes && scenes[index]) {
+        return scenes[index];
+    }
+    return undefined;
+}
+/**
+ * 获取下一个场景数据
+ * @param curId
+ */
+function getNextSceneData(data, curId) {
+    if (data.scenes && curId) {
+        for (var i = 0, len = data.scenes.length; i < len; i++) {
+            if (data.scenes[i].id === curId) {
+                if (i < len - 1) {
+                    return data.scenes[i + 1];
+                }
+            }
+        }
+    }
+    return undefined;
+}
+/**
+ * 获取上一个场景数据
+ * @param curId
+ */
+function getPrevSceneData(data, curId) {
+    if (data.scenes && curId) {
+        for (var i = 0, len = data.scenes.length; i < len; i++) {
+            if (data.scenes[i].id === curId) {
+                if (i > 0) {
+                    return data.scenes[i - 1];
+                }
             }
         }
     }
@@ -8299,16 +7988,18 @@ function getSceneJS(data) {
 function getSceneAssets(data, sceneData) {
     var assets = [];
     // 场景是否单独配置加载策略
-    if (sceneData.assets === undefined) {
+    if (data.loadMode === "all" /* ALL */ || sceneData.assets === undefined) {
         for (var key in data.assets) {
-            assets.push(data.assets[key]);
+            if (data.assets[key].type !== "js" /* JS */) {
+                assets.push(data.assets[key]);
+            }
         }
     }
     else {
         var item_1;
         sceneData.assets.forEach(function (value) {
             item_1 = data.assets[value];
-            if (item_1) {
+            if (item_1 && item_1.type !== "js" /* JS */) {
                 assets.push(item_1);
             }
         });
@@ -8383,7 +8074,7 @@ var VFComponent = /** @class */ (function (_super) {
                 }
             }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     VFComponent.prototype.pause = function () {
@@ -8711,13 +8402,15 @@ var VFStage = /** @class */ (function (_super) {
         var _this = _super.call(this, config.width, config.height, player.app) || this;
         _this.plugs = new Map(); // 插件列表
         _this.status = STAGE_STATUS.NONE;
-        _this.data = data;
+        _this.data = Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["assetsRepair"])(data);
         _this.config = config;
         _this.player = player;
-        _this.res = new _core_RES__WEBPACK_IMPORTED_MODULE_2__["RES"](_this);
         _this.variableManager = new _core_VariableManager__WEBPACK_IMPORTED_MODULE_0__["VariableManager"]();
         _this.soundManager = new _sound_SoundManager__WEBPACK_IMPORTED_MODULE_1__["SoundManager"](_this);
         new _plugs_PlugIndex__WEBPACK_IMPORTED_MODULE_4__["PlugIndex"]();
+        var res = _this.res = new _core_RES__WEBPACK_IMPORTED_MODULE_2__["RES"](_this);
+        res.on("LoadComplete" /* LoadComplete */, _this.loadAssetCompleted, _this);
+        res.on("LoadProgress" /* LoadProgress */, _this.loadProgress, _this);
         return _this;
     }
     Object.defineProperty(VFStage.prototype, "systemEvent", {
@@ -8727,9 +8420,13 @@ var VFStage = /** @class */ (function (_super) {
         get: function () {
             return this.config.systemEvent;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
+    /** 获取当前的场景 */
+    VFStage.prototype.getCurScene = function () {
+        return this.curScene;
+    };
     /**
      * 即使没有引用也不要删除这个接口，GUI在调用
      * @param msg
@@ -8746,13 +8443,15 @@ var VFStage = /** @class */ (function (_super) {
     VFStage.prototype.start = function () {
         // 初始化加载界面
         this.status = STAGE_STATUS.LOADING;
-        this.res.on("LoadComplete" /* LoadComplete */, this.loadAssetCompleted, this);
-        this.res.on("LoadProgress" /* LoadProgress */, this.loadProgress, this);
-        var data = Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["assetsRepair"])(this.data);
+        var data = this.data;
         var sceneData = Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["getSceneData"])(data, this.curSceneId);
         if (sceneData === undefined) {
-            throw new Error("scene creation failed");
+            throw new Error("scene does not exist!");
         }
+        this.systemEvent.emit("status" /* STATUS */, {
+            code: "SceneLoad" /* SceneLoad */, level: "status" /* STATUS */, data: [this.curSceneId],
+        });
+        this.curSceneId = sceneData.id; // 首次加载curSceneId = null.
         this.res.loadData(Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["getSceneAssets"])(data, sceneData), Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["getSceneJS"])(data));
     };
     VFStage.prototype.pause = function () {
@@ -8780,10 +8479,11 @@ var VFStage = /** @class */ (function (_super) {
         }
         this.variableManager.clear();
         this.soundManager.clear();
-        this.createScene();
+        this.start();
     };
     VFStage.prototype.dispose = function () {
         this.curSceneId = undefined;
+        this.curSceneTransition = undefined;
         if (this.app && this.app.ticker) {
             this.app.ticker.stop();
             // this.app.ticker.destroy();
@@ -8801,32 +8501,27 @@ var VFStage = /** @class */ (function (_super) {
             value.release();
         });
     };
-    /** 获取当前的场景 */
-    VFStage.prototype.getCurScene = function () {
-        return this.curScene;
+    VFStage.prototype.switchToSceneId = function (sceneId, transition) {
+        this.curSceneId = sceneId;
+        this.curSceneTransition = transition;
+        this.start();
+    };
+    VFStage.prototype.switchToSceneIndex = function (index, transition) {
+        var sceneData = Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["getSceneDataByIndex"])(this.data, parseInt(index, 0));
+        if (sceneData) {
+            this.switchToSceneId(sceneData.id, transition);
+        }
     };
     VFStage.prototype.switchToNextScene = function (transition) {
-        if (this.curScene) {
-            var curSceneId = this.curScene.id;
-            var nextScene = this.res.createNextScene(curSceneId, this);
-            if (nextScene) {
-                this.switchToScene(nextScene, transition);
-            }
+        var sceneData = Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["getNextSceneData"])(this.data, this.curSceneId);
+        if (sceneData) {
+            this.switchToSceneId(sceneData.id, transition);
         }
     };
     VFStage.prototype.switchToPrevScene = function (transition) {
-        if (this.curScene) {
-            var curSceneId = this.curScene.id;
-            var prevScene = this.res.createPrevScene(curSceneId, this);
-            if (prevScene) {
-                this.switchToScene(prevScene, transition);
-            }
-        }
-    };
-    VFStage.prototype.switchToSceneId = function (sceneId, transition) {
-        var scene = this.res.createScene(sceneId, this);
-        if (scene) {
-            this.switchToScene(scene, transition);
+        var sceneData = Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["getPrevSceneData"])(this.data, this.curSceneId);
+        if (sceneData) {
+            this.switchToSceneId(sceneData.id, transition);
         }
     };
     VFStage.prototype.switchToScene = function (scene, transition) {
@@ -8854,19 +8549,25 @@ var VFStage = /** @class */ (function (_super) {
                 this.emit("TransitionStart" /* TransitionStart */);
                 this.emit("TransitionEnd" /* TransitionEnd */);
             }
+            this.status = STAGE_STATUS.PLAYING;
         }
     };
     VFStage.prototype.loadAssetCompleted = function () {
         this.systemEvent.emit("status" /* STATUS */, {
-            code: "LoadComplete" /* LoadComplete */, level: "status" /* STATUS */, data: null,
+            code: "LoadComplete" /* LoadComplete */, level: "status" /* STATUS */, data: [this.curSceneId],
         });
         // 加载完毕
         this.status = STAGE_STATUS.READY;
-        this.createScene();
-        this.createPlugs();
-        this.systemEvent.emit("status" /* STATUS */, {
-            code: "sceneCreate" /* SCENE_CREATE */, level: "status" /* STATUS */, data: null,
-        });
+        if (this.curSceneId !== undefined) {
+            var scene = this.res.createScene(this.curSceneId, this);
+            if (scene) {
+                this.switchToScene(scene, this.curSceneTransition);
+            }
+            this.createPlugs();
+            this.systemEvent.emit("status" /* STATUS */, {
+                code: "ScenComplete" /* ScenComplete */, level: "status" /* STATUS */, data: null,
+            });
+        }
     };
     VFStage.prototype.loadProgress = function (e) {
         this.systemEvent.emit("status" /* STATUS */, {
@@ -8883,15 +8584,6 @@ var VFStage = /** @class */ (function (_super) {
                 plug.load(value);
             }
         }
-    };
-    VFStage.prototype.createScene = function () {
-        // 创建场景
-        var scene = this.res.createFirstScene(this);
-        if (scene) {
-            this.curScene = scene;
-            this.addChild(scene);
-        }
-        this.status = STAGE_STATUS.PLAYING;
     };
     return VFStage;
 }(vf.gui.Stage));
@@ -9320,8 +9012,6 @@ var ErrorDisplay = /** @class */ (function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var eventemitter3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! eventemitter3 */ "./node_modules/eventemitter3/index.js");
-/* harmony import */ var eventemitter3__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(eventemitter3__WEBPACK_IMPORTED_MODULE_0__);
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -9335,7 +9025,6 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-
 var StateEvent = /** @class */ (function (_super) {
     __extends(StateEvent, _super);
     function StateEvent() {
@@ -9378,7 +9067,7 @@ var StateEvent = /** @class */ (function (_super) {
         this.emit("status" /* STATUS */, msg);
     };
     return StateEvent;
-}(eventemitter3__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]));
+}(vf.utils.EventEmitter));
 /* harmony default export */ __webpack_exports__["default"] = (StateEvent);
 
 
@@ -9652,16 +9341,20 @@ function calculateUpdatePlayerSize(player, canvas, stage, scaleMode, canvasScale
     if (isWebGl === void 0) { isWebGl = true; }
     var top = 0;
     var clientRect = getBoundingClientRect(player);
-    var boundingClientWidth = clientRect.width;
-    var boundingClientHeight = clientRect.height;
-    var screenWidth = boundingClientWidth;
-    var screenHeight = boundingClientHeight;
-    var stageSize = calculateStageSize(scaleMode, screenWidth, screenHeight, stage.width, stage.height);
+    console.log(clientRect, canvas.width, canvas.height);
+    var screenWidth = clientRect.width;
+    var screenHeight = clientRect.height;
+    var stageSize = calculateStageSize(scaleMode, screenWidth, screenHeight, stage.width || canvas.width, stage.height || canvas.height);
     var stageWidth = stageSize.stageWidth;
     var stageHeight = stageSize.stageHeight;
     var displayWidth = stageSize.displayWidth;
     var displayHeight = stageSize.displayHeight;
-    canvas.style.transformOrigin = '0% 0% 0px';
+    if (canvas.style.transformOrigin) {
+        canvas.style.transformOrigin = '0% 0% 0px';
+    }
+    else {
+        canvas.style.webkitTransformOrigin = '0% 0% 0px';
+    }
     if (canvas.width !== stageWidth) {
         canvas.width = stageWidth;
     }
@@ -9669,8 +9362,8 @@ function calculateUpdatePlayerSize(player, canvas, stage, scaleMode, canvasScale
         canvas.height = stageHeight;
     }
     var rotation = 0;
-    canvas.style.top = top + ((boundingClientHeight - displayHeight) / 2) + "px";
-    canvas.style.left = (boundingClientWidth - displayWidth) / 2 + "px";
+    canvas.style.top = top + ((screenHeight - displayHeight) / 2) + "px";
+    canvas.style.left = (screenWidth - displayWidth) / 2 + "px";
     var scalex = displayWidth / stageWidth;
     var scaley = displayHeight / stageHeight;
     var canvasScaleX = scalex * canvasScaleFactor;
@@ -9684,9 +9377,16 @@ function calculateUpdatePlayerSize(player, canvas, stage, scaleMode, canvasScale
     m.scale(scalex / canvasScaleX, scaley / canvasScaleY);
     m.rotate(rotation * Math.PI / 180);
     canvas.style.position = 'absolute';
-    canvas.style.transform = "matrix(" + m.a + "," + m.b + "," + m.c + "," + m.d + "," + m.tx + "," + m.ty + ")";
+    if (canvas.style.transform) {
+        canvas.style.transform = "matrix(" + m.a + "," + m.b + "," + m.c + "," + m.d + "," + m.tx + "," + m.ty + ")";
+    }
+    else {
+        canvas.style.webkitTransform = "matrix(" + m.a + "," + m.b + "," + m.c + "," + m.d + "," + m.tx + "," + m.ty + ")";
+    }
     canvas.width = stageWidth * canvasScaleX;
     canvas.height = stageHeight * canvasScaleY;
+    canvas.style.border = '5px solid red';
+    console.log(canvas.style);
     stage.container.hitArea = new vf.Rectangle(0, 0, stageWidth, stageHeight);
     stage.scaleX = canvasScaleX / canvasScaleFactor;
     stage.scaleY = canvasScaleY / canvasScaleFactor;
@@ -10343,6 +10043,43 @@ function stringFormat(str) {
 
 /***/ }),
 
+/***/ "./packages/player/src/utils/base64toBlob.ts":
+/*!***************************************************!*\
+  !*** ./packages/player/src/utils/base64toBlob.ts ***!
+  \***************************************************/
+/*! exports provided: dataURLtoBlob, getObjectURL, compatible */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dataURLtoBlob", function() { return dataURLtoBlob; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getObjectURL", function() { return getObjectURL; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "compatible", function() { return compatible; });
+function dataURLtoBlob(dataurl) {
+    var arr = dataurl.split(',');
+    var mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+}
+function getObjectURL(base64) {
+    var data = URL.createObjectURL(dataURLtoBlob(base64));
+    return data;
+}
+function compatible(base64) {
+    if (vf.utils.getSystemInfo().os.name === 'iOS') {
+        var osVersion = parseFloat(vf.utils.getSystemInfo().os.version);
+        if (osVersion < 9) {
+            return getObjectURL(base64);
+        }
+    }
+    return base64;
+}
+
+
+/***/ }),
+
 /***/ "./packages/player/src/utils/getFileExtension.ts":
 /*!*******************************************************!*\
   !*** ./packages/player/src/utils/getFileExtension.ts ***!
@@ -10442,12 +10179,11 @@ function getUrl(url, baseUrl, cdns, index) {
 /*!***************************************************!*\
   !*** ./packages/player/src/utils/readFileSync.ts ***!
   \***************************************************/
-/*! exports provided: default, readFileSyncExt */
+/*! exports provided: readFileSyncExt */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return readFileSync; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "readFileSyncExt", function() { return readFileSyncExt; });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -10485,123 +10221,8 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-function parseJson(text, result) {
-    try {
-        result.data = ((typeof text) === 'string') ? JSON.parse(text) : text;
-        return result;
-    }
-    catch (e) {
-        result.code = 'S0000';
-        result.level = "error" /* ERROR */;
-        result.data = e;
-        return result;
-    }
-}
-function geXHRtData(target) {
-    var xhr = target;
-    if (xhr.readyState === 4 && xhr.status >= 400) {
-        return;
-    }
-    var msg = {
-        code: '0',
-        level: "command" /* COMMAND */,
-        message: undefined,
-        data: null,
-    };
-    try {
-        var response = xhr.response || xhr.responseText;
-        switch (xhr.responseType) {
-            case 'json':
-                parseJson(response, msg);
-                break;
-            default:
-                msg.data = response;
-        }
-        return msg;
-    }
-    catch (error) {
-        msg.code = 'S0002';
-        msg.level = "error" /* ERROR */;
-        msg.data = xhr.responseURL + " , " + error;
-        return msg;
-    }
-}
-// eslint-disable-next-line max-len
-function removeEventListener(xhr, listener) {
-    if (listener) {
-        listener.forEach(function (value) {
-            xhr.removeEventListener(value[0], value[1]);
-        });
-        listener.length = 0;
-    }
-    xhr.onload = null;
-    xhr.onerror = null;
-    xhr.onreadystatechange = null;
-}
 /**
  * 读取文件
- * @param url 文件路径
- * @param options 文件配置
- * @param listener 监听回调
- */
-// eslint-disable-next-line max-len
-function readFileSync(url, options, listener) {
-    if (options === void 0) { options = {}; }
-    return new Promise(function (resolve, reject) {
-        var errorCount = { cur: 0, max: options.errorCount || 1 };
-        var xhr = new XMLHttpRequest();
-        var method = options.method || 'GET';
-        xhr.timeout = options.timeout || 0;
-        xhr.responseType = options.responseType || 'text';
-        if (listener) {
-            listener.forEach(function (value) {
-                xhr.addEventListener(value[0], value[1]);
-            });
-        }
-        xhr.onload = function (evt) {
-            var msg = geXHRtData(evt.target);
-            if (msg) {
-                if (msg.level === "error" /* ERROR */) {
-                    return reject(msg);
-                }
-                removeEventListener(xhr, listener);
-                return resolve(msg.data);
-            }
-        };
-        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-        xhr.onreadystatechange = function (evt) {
-            if (evt === undefined) {
-                return;
-            }
-            var xhr = evt.currentTarget;
-            if ((xhr.readyState === 2 || xhr.readyState === 4) && xhr.status >= 400) {
-                if (errorCount.cur >= errorCount.max) {
-                    removeEventListener(xhr, listener);
-                    return reject({ code: 'S0001', level: "error" /* ERROR */, data: [xhr.responseURL || url, xhr.status] });
-                }
-                errorCount.cur++;
-                xhr.abort();
-                xhr.open(method, url, true);
-                xhr.send();
-            }
-        };
-        xhr.onerror = function (evt) {
-            var xhr = evt.currentTarget;
-            if (errorCount.cur >= errorCount.max) {
-                removeEventListener(xhr, listener);
-                return reject({ code: 'S0001', level: "error" /* ERROR */, data: [xhr.responseURL || url, xhr.status] });
-            }
-            errorCount.cur++;
-            xhr.abort();
-            xhr.open(method, url, true);
-            xhr.send();
-        };
-        xhr.open(method, url, true);
-        xhr.send();
-    });
-}
-/**
- * 赌球文件
  * @param url 文件路径
  * @param cdns  CDN路径 ，如果设置CDN，最终的地址为 cdn + url
  * @param options 选项
@@ -10618,7 +10239,7 @@ function readFileSyncExt(url, cdns, options, listener) {
             switch (_a.label) {
                 case 0:
                     if (!(cdns.length === 0)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, readFileSync(url, options, listener)];
+                    return [4 /*yield*/, vf.utils.readFileSync(url, options, listener)];
                 case 1: return [2 /*return*/, _a.sent()];
                 case 2:
                     _i = 0, cdns_1 = cdns;
@@ -10626,7 +10247,9 @@ function readFileSyncExt(url, cdns, options, listener) {
                 case 3:
                     if (!(_i < cdns_1.length)) return [3 /*break*/, 6];
                     value = cdns_1[_i];
-                    return [4 /*yield*/, readFileSync((value || '') + url, options, listener).catch(function (error) { err = error; })];
+                    return [4 /*yield*/, vf.utils.readFileSync((value || '') + url, options, listener).catch(function (error) {
+                            err = error;
+                        })];
                 case 4:
                     data = _a.sent();
                     if (data) {
