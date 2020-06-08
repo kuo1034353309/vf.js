@@ -193,7 +193,7 @@ export class VFStage extends vf.gui.Stage {
                 this.emit(SceneEvent.TransitionStart);
                 this.emit(SceneEvent.TransitionEnd);
             }
-            //对齐syncManager时间
+            //对齐syncManager时间  
             this.syncManager && this.syncManager.init();
         }
     }
