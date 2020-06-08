@@ -168,7 +168,8 @@ export class Animation {
         protected tick(): void {
             const curTime = new Date().getTime();
             this.curTime = curTime;
-            const dt = this.curTime - this.lastTime;
+            //const dt = this.curTime - this.lastTime;
+            const dt = vf.gui.TickerShared.deltaMS;//by ziye 使用gui的ticker获取帧间隔
             this.curPlayTime += dt;
             if (this.realFPS) {
                 this.deltaT += dt;
