@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { VFStage } from '../display/VFStage';
-import { IActionSound } from '../core/model/IVFData';
-import { EventLevel } from '../event/EventLevel';
-import { EventType } from '../event/EventType';
+import { VFStage } from "../display/VFStage";
+import { IActionSound } from "../core/model/IVFData";
+import { EventLevel } from "../event/EventLevel";
+import { EventType } from "../event/EventType";
 
 export class SoundManager {
     private stage: VFStage;
@@ -65,13 +65,18 @@ export class SoundManager {
     public pauseSound(data: IActionSound = {} as any): void {
         const asset = this.stage.res.data.assets[data.assetId.toString()];
 
-        if (asset === undefined || asset.url === undefined || asset.url === '') {
-            console.warn('playback failed,missing assetId!', data);
+        if (asset === undefined || asset.url === undefined || asset.url === "") {
+            console.warn("playback failed,missing assetId!", data);
 
             return;
         }
 
-        if (this.nativeEmit(asset.url, 'pauseAudio', data)) {
+        //如果处于恢复状态，不播放声音
+        if (this.stage.syncManager && this.stage.syncManager.resumeStatusFlag) {
+            return;
+        }
+
+        if (this.nativeEmit(asset.url, "pauseAudio", data)) {
             return;
         }
 
@@ -89,13 +94,18 @@ export class SoundManager {
     public resumeSound(data: IActionSound): void {
         const asset = this.stage.res.data.assets[data.assetId.toString()];
 
-        if (asset === undefined || asset.url === undefined || asset.url === '') {
-            console.warn('playback failed,missing assetId!', data);
+        if (asset === undefined || asset.url === undefined || asset.url === "") {
+            console.warn("playback failed,missing assetId!", data);
 
             return;
         }
 
-        if (this.nativeEmit(asset.url, 'resumeAudio', data)) {
+        //如果处于恢复状态，不播放声音
+        if (this.stage.syncManager && this.stage.syncManager.resumeStatusFlag) {
+            return;
+        }
+
+        if (this.nativeEmit(asset.url, "resumeAudio", data)) {
             return;
         }
 
@@ -114,13 +124,18 @@ export class SoundManager {
     public playSound(data: IActionSound): void {
         const asset = this.stage.res.data.assets[data.assetId.toString()];
 
-        if (asset === undefined || asset.url === undefined || asset.url === '') {
-            console.warn('playback failed,missing assetId!', data);
+        if (asset === undefined || asset.url === undefined || asset.url === "") {
+            console.warn("playback failed,missing assetId!", data);
 
             return;
         }
 
-        if (this.nativeEmit(asset.url, 'playAudio', data)) {
+        //如果处于恢复状态，不播放声音
+        if (this.stage.syncManager && this.stage.syncManager.resumeStatusFlag) {
+            return;
+        }
+
+        if (this.nativeEmit(asset.url, "playAudio", data)) {
             return;
         }
 
@@ -132,18 +147,18 @@ export class SoundManager {
 
         //by ziye+ 允许同一个trackId播放不同的声音
         if (audio) {
-            if(this.assetIdMap.get(data.trackId) === asset.url){
+            if (this.assetIdMap.get(data.trackId) === asset.url) {
                 audio.play(0, 0);
                 return;
-            }
-            else{
+            } else {
                 audio.dispose();
                 vf.AudioEngine.Ins().map.delete(this.stage.config.uuid.toString() + data.trackId);
             }
-           
         }
         // eslint-disable-next-line max-len
-        audio = vf.AudioEngine.Ins().createAudio(this.stage.config.uuid.toString() + data.trackId, asset.url, { autoplay: false } as any);
+        audio = vf.AudioEngine.Ins().createAudio(this.stage.config.uuid.toString() + data.trackId, asset.url, {
+            autoplay: false,
+        } as any);
         audio.play(data.time, data.offset, data.length);
         this.trackIdMap.push(data.trackId);
         this.assetIdMap.set(data.trackId, asset.url);
@@ -152,7 +167,7 @@ export class SoundManager {
     public isWeixin(): boolean {
         const ua = window.navigator.userAgent.toLowerCase();
 
-        return (/micromessenger/).test(ua);
+        return /micromessenger/.test(ua);
     }
 
     private weixinEmit(): boolean {
@@ -171,7 +186,8 @@ export class SoundManager {
     private nativeEmit(url: string, typeTag: string, data: IActionSound = {} as any): boolean {
         const useNative = this.stage.config.vfvars.useNativeAudio;
 
-        if (useNative) { // 先放这里，后期soundManager完成后，合并
+        if (useNative) {
+            // 先放这里，后期soundManager完成后，合并
 
             this.stage.systemEvent.emit(EventType.MESSAGE, {
                 code: EventLevel.NATIVE,
@@ -181,8 +197,8 @@ export class SoundManager {
                     type: typeTag,
                     id: data.trackId || 0,
                     src: url,
-                    mode: data.mode || 'sound',
-                    signalling: data.signalling || false
+                    mode: data.mode || "sound",
+                    signalling: data.signalling || false,
                 },
             });
 
