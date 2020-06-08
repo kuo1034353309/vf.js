@@ -28,7 +28,7 @@ export class EnterFrameTask extends ContainerTask {
                     }
                     
                     if(!this.tickHandler) {
-                        this.tickHandler = vf.gui.Scheduler.setEnterFrame(this.tick);
+                        this.tickHandler = vf.gui.Scheduler.setEnterFrame(this.tick.bind(this));
                     } else {
                         this.tickHandler.restart();
                     }
