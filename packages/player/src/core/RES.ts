@@ -16,6 +16,7 @@ import { EventLevel } from '../event/EventLevel';
 import { getAssetType } from '../../../assets/Assets';
 import { AssetsType } from '../../../assets/IAssets';
 import { getUrl } from '../utils/getUrl';
+import { compatible } from '../utils/base64toBlob';
 import { getSceneData } from '../display/SceneDataUtils';
 
 export class RES extends vf.utils.EventEmitter {
@@ -116,10 +117,20 @@ export class RES extends vf.utils.EventEmitter {
         return null;
     }
 
+    private dataURLtoBlob(dataurl: string) {
+        let arr = dataurl.split(',') as any[];
+        let mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    }
+
     public getImageAsset(index: number | string): vf.Texture | string | undefined {
         // base64
         if (index.toString().substr(0, 4) === 'data') {
-            return index.toString();
+            return compatible(index as string);
         }
 
         const resource = this.getAsset(index);
