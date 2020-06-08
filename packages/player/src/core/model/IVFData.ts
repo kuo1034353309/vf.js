@@ -322,6 +322,7 @@ export const enum ActionType {
         SetTimeout,
         SetInterval,
         EnterFrame,
+        EnterFrameCall,
     }
 export const enum ComponentEvent {
     Add = 'Add',
@@ -477,4 +478,6 @@ export interface IActionDefineVariable extends IAction {
 export interface IActionInterval extends IAction {
     times?: number | ExpressItem;
 }
-
+export interface IActionEnterFrame extends IAction {
+    funName?: string;
+}
