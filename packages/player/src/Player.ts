@@ -141,7 +141,7 @@ export class Player implements EngineAPI {
      */
     public sendToStage(msg: IEvent): void {
         const stage = this.stage as any;
-        if(stage && stage.fromPlayer){
+        if(stage && stage.receiveFromPlayer){
             stage.receiveFromPlayer(msg);
         }
     }

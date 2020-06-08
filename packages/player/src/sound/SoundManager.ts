@@ -63,7 +63,15 @@ export class SoundManager {
     }
 
     public pauseSound(data: IActionSound = {} as any): void {
-        if (this.nativeEmit(data.assetId as number, 'pauseAudio', data)) {
+        const asset = this.stage.res.data.assets[data.assetId.toString()];
+
+        if (asset === undefined || asset.url === undefined || asset.url === '') {
+            console.warn('playback failed,missing assetId!', data);
+
+            return;
+        }
+
+        if (this.nativeEmit(asset.url, 'pauseAudio', data)) {
             return;
         }
 
@@ -79,7 +87,15 @@ export class SoundManager {
     }
 
     public resumeSound(data: IActionSound): void {
-        if (this.nativeEmit(data.assetId as number, 'resumeAudio', data)) {
+        const asset = this.stage.res.data.assets[data.assetId.toString()];
+
+        if (asset === undefined || asset.url === undefined || asset.url === '') {
+            console.warn('playback failed,missing assetId!', data);
+
+            return;
+        }
+
+        if (this.nativeEmit(asset.url, 'resumeAudio', data)) {
             return;
         }
 
@@ -104,7 +120,7 @@ export class SoundManager {
             return;
         }
 
-        if (this.nativeEmit(data.assetId as number, 'playAudio', data)) {
+        if (this.nativeEmit(asset.url, 'playAudio', data)) {
             return;
         }
 
@@ -152,11 +168,10 @@ export class SoundManager {
         }
     }
 
-    private nativeEmit(assetId: number | string, typeTag: string, data: IActionSound = {} as any): boolean {
+    private nativeEmit(url: string, typeTag: string, data: IActionSound = {} as any): boolean {
         const useNative = this.stage.config.vfvars.useNativeAudio;
 
         if (useNative) { // 先放这里，后期soundManager完成后，合并
-            const asset = this.stage.res.getAsset(assetId);
 
             this.stage.systemEvent.emit(EventType.MESSAGE, {
                 code: EventLevel.NATIVE,
@@ -165,7 +180,7 @@ export class SoundManager {
                 data: {
                     type: typeTag,
                     id: data.trackId || 0,
-                    src: asset.url,
+                    src: url,
                     mode: data.mode || 'sound',
                     signalling: data.signalling || false
                 },
