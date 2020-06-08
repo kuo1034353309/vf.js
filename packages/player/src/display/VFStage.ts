@@ -106,6 +106,8 @@ export class VFStage extends vf.gui.Stage {
         this.variableManager.clear();
         this.soundManager.clear();
         this.createScene();
+        //对齐syncManager时间
+        this.syncManager && this.syncManager.init();
     }
     public dispose(): void {
         if (this.app && this.app.ticker) {
@@ -191,6 +193,8 @@ export class VFStage extends vf.gui.Stage {
                 this.emit(SceneEvent.TransitionStart);
                 this.emit(SceneEvent.TransitionEnd);
             }
+            //对齐syncManager时间
+            this.syncManager && this.syncManager.init();
         }
     }
 
@@ -205,6 +209,8 @@ export class VFStage extends vf.gui.Stage {
         this.systemEvent.emit(EventType.STATUS, {
             code: VFStateCode.SCENE_CREATE, level: EventLevel.STATUS, data: null,
         });
+        //对齐syncManager时间
+        this.syncManager && this.syncManager.init();
     }
 
     private loadProgress(e: any): void {
