@@ -20,7 +20,6 @@ export class Animation {
 
         private realFPS: boolean = false;
         private curTime: number = 0;
-        private lastTime: number = 0;
         private curPlayTime: number = 0;
         private startTime: number = 0;
         private passedTime: number = 0;
@@ -31,9 +30,9 @@ export class Animation {
         private fps: number = 30;
         private curAnimatinName: string = '';
         private curAnimatinDuration: number = 0;
-        private curAnimatinDurationTime: number = 0;
+        private curAnimatinDurationTime: number = 0; //每一个loop的持续时间
         private curAnimationTimes: number = 0;
-        private curAnimationTotalTime: number = 0;
+        private curAnimationTotalTime: number = 0;  //当前动画总持续时间（每个loop帧 * 帧间隔 * loop次数）
         private _curPlayTimes: number = 0;
 
         constructor(component: VFComponent, data: IAnimation[], fps: number = 30, realFPS: boolean = true) {
@@ -107,9 +106,8 @@ export class Animation {
             this.deltaT = 0;
             this.setCurTime(this.curPlayTime);
             this.status = AnimationStatus.PLAYING;
-            this.startTime = new Date().getTime();
+            this.startTime = 0;
             this.curTime = this.startTime;
-            this.lastTime = this.startTime;
             this.startTime -= this.curPlayTime;
             this._curPlayTimes = 0;
             vf.gui.TickerShared.add(this.tick, this);
@@ -136,9 +134,8 @@ export class Animation {
             this.deltaT = 0;
             this.setCurTime(this.curPlayTime);
             this.status = AnimationStatus.STOP;
-            this.startTime = new Date().getTime();
+            this.startTime = 0;
             this.curTime = this.startTime;
-            this.lastTime = this.startTime;
             this.startTime -= this.curPlayTime;
             this._curPlayTimes = 0;
             this.tick();
@@ -166,15 +163,12 @@ export class Animation {
             }
         }
         protected tick(): void {
-            const curTime = new Date().getTime();
-            this.curTime = curTime;
-            //const dt = this.curTime - this.lastTime;
             const dt = vf.gui.TickerShared.deltaMS;//by ziye 使用gui的ticker获取帧间隔
+            this.curTime += dt;
             this.curPlayTime += dt;
             if (this.realFPS) {
                 this.deltaT += dt;
                 if (this.deltaT < this.minDeltaT) {
-                    this.lastTime = this.curTime;
                     this.passedTime = this.curTime - this.startTime;
 
                     if (this.curAnimationTimes > 0 && 
@@ -196,7 +190,6 @@ export class Animation {
             }
             this.setCurTime(this.curPlayTime);
 
-            this.lastTime = this.curTime;
             this.passedTime = this.curTime - this.startTime;
 
             if (this.curAnimationTimes > 0 && 
