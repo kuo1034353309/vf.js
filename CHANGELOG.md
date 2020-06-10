@@ -7,6 +7,8 @@
 1. 增加场景按需加载，通过配置json中的`loadMode:single`,开启场景按需下载。 后续通过设置场景的`assets`字段设置当前场景所用到的所有资源项
 
         ```
+           //场景资源预加载模式 “single|all”
+        "loadMode":"single",
         "scenes":[
             {
                 "id":80,//场景的id
