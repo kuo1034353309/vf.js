@@ -16,12 +16,6 @@
         ]
         ```
 
-1. 默认自定义组件 `custom` 取消触摸鼠标事件，需手动开启，可通过设置 `interactabled:true` 开启
-
-1. 更新布局方式，当元素为 visible = false 时，布局失效，位置与大小不会被带入计算。 默认的值为显示设定的值
-
-1. 兼容 iOS 8 设备
-
 1. 增加接口 `onSceneLoad(): void;` 场景加载前触发，通过监听onSceneLoad、onSceneCreate 可动态设置loading相关操作
 
 1. 增加接口 `switchToSceneIndex(index: number, transition?: ITransitionData): void;` ，当配置场景按需加载后，可通过switchToSceneId，switchToSceneIndex切换场景，switchToSceneIndex索引从0开始
@@ -34,6 +28,17 @@
 
     ```
 
+1. 兼容 iOS 8 设备
+
+1. 性能优化
+
+> 下述更新会影响兼容性，根据下述说明调整程序
+
+1. 默认自定义组件 `custom` 取消触摸鼠标事件，需手动开启，可通过设置 `interactabled:true` 开启
+
+1. 更新布局方式，当元素为 visible = false 时，布局失效，位置与大小不会被带入计算。 默认的值为显示设定的值
+
+
 1. 帧率设置 `frameRate`
 
     ```
@@ -42,5 +47,3 @@
     })
 
     ```
-
-1. 性能优化
