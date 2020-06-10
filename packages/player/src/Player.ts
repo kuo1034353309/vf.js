@@ -90,11 +90,13 @@ export class Player implements EngineAPI {
             antialias: true,
             resolution: options.resolution,
             forceCanvas: options.forceCanvas,
+            powerPreference: 'low-power'
         });
 
         const frameRate = options.frameRate || 30;
         app.ticker.maxFPS = frameRate;
         vf.Ticker.system.maxFPS = frameRate;
+        vf.Ticker.shared.stop();
         vf.Ticker.shared.maxFPS = frameRate;
         vf.gui.TickerShared.maxFPS = frameRate;
         vf.gui.Utils.debug = options.debug || false;

@@ -314,10 +314,12 @@ var Player = /** @class */ (function () {
             antialias: true,
             resolution: options.resolution,
             forceCanvas: options.forceCanvas,
+            powerPreference: 'low-power'
         });
         var frameRate = options.frameRate || 30;
         app.ticker.maxFPS = frameRate;
         vf.Ticker.system.maxFPS = frameRate;
+        vf.Ticker.shared.stop();
         vf.Ticker.shared.maxFPS = frameRate;
         vf.gui.TickerShared.maxFPS = frameRate;
         vf.gui.Utils.debug = options.debug || false;
@@ -8056,7 +8058,7 @@ var VFComponent = /** @class */ (function (_super) {
         _this.id = '0';
         _this.childrenMap = {};
         _this.pauseData = undefined;
-        _this.interactabled = true;
+        _this.interactabled = false;
         return _this;
     }
     Object.defineProperty(VFComponent.prototype, "vfStage", {
@@ -8712,9 +8714,7 @@ var DigitalLibraryPlug = /** @class */ (function (_super) {
     __extends(DigitalLibraryPlug, _super);
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     function DigitalLibraryPlug(className, parent) {
-        var _this = _super.call(this, className, parent) || this;
-        console.log(className);
-        return _this;
+        return _super.call(this, className, parent) || this;
     }
     DigitalLibraryPlug.prototype.onLoad = function () {
         var _a;
@@ -9341,7 +9341,6 @@ function calculateUpdatePlayerSize(player, canvas, stage, scaleMode, canvasScale
     if (isWebGl === void 0) { isWebGl = true; }
     var top = 0;
     var clientRect = getBoundingClientRect(player);
-    console.log(clientRect, canvas.width, canvas.height);
     var screenWidth = clientRect.width;
     var screenHeight = clientRect.height;
     var stageSize = calculateStageSize(scaleMode, screenWidth, screenHeight, stage.width || canvas.width, stage.height || canvas.height);
@@ -9386,7 +9385,6 @@ function calculateUpdatePlayerSize(player, canvas, stage, scaleMode, canvasScale
     canvas.width = stageWidth * canvasScaleX;
     canvas.height = stageHeight * canvasScaleY;
     canvas.style.border = '5px solid red';
-    console.log(canvas.style);
     stage.container.hitArea = new vf.Rectangle(0, 0, stageWidth, stageHeight);
     stage.scaleX = canvasScaleX / canvasScaleFactor;
     stage.scaleY = canvasScaleY / canvasScaleFactor;
@@ -9488,6 +9486,9 @@ function importScript(url, cdns, moduleName, loadCompleteCallBack) {
                                 return resolve(gui[moduleName]);
                             }
                             return resolve(false);
+                        }
+                        else {
+                            console.log(moduleName + 'module load failed');
                         }
                         resolve(true);
                     };

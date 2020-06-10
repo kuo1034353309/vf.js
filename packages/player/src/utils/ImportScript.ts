@@ -61,6 +61,9 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
 
                 return resolve(false);
             }
+            else {
+                console.log(moduleName + 'module load failed');
+            }
             resolve(true);
         };
         const loadError = function (this: HTMLScriptElement, e: Event) {

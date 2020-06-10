@@ -106,7 +106,6 @@ export function calculateUpdatePlayerSize(player: HTMLElement, canvas: HTMLCanva
     const top = 0;
 
     const clientRect = getBoundingClientRect(player);
-    console.log(clientRect,canvas.width,canvas.height);
     const screenWidth = clientRect.width;
     const screenHeight = clientRect.height;
 
@@ -164,9 +163,6 @@ export function calculateUpdatePlayerSize(player: HTMLElement, canvas: HTMLCanva
     canvas.width = stageWidth * canvasScaleX;
     canvas.height = stageHeight * canvasScaleY;
     canvas.style.border = '5px solid red';
-
-    console.log(canvas.style);
-
     stage.container.hitArea = new vf.Rectangle(0, 0, stageWidth, stageHeight);
     stage.scaleX = canvasScaleX / canvasScaleFactor;
     stage.scaleY = canvasScaleY / canvasScaleFactor;
