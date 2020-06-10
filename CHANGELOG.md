@@ -18,7 +18,7 @@
         ]
         ```
 
-1. 增加接口 `onSceneLoad(): void;` 场景加载前触发，通过监听onSceneLoad、onSceneCreate 可动态设置loading相关操作
+1. 增加接口 `onSceneLoad(): void;` 场景加载前触发，通过监听onSceneLoad、加载完成监听onSceneCreate， 可动态设置loading显隐操作
 
 1. 增加接口 `switchToSceneIndex(index: number, transition?: ITransitionData): void;` ，当配置场景按需加载后，可通过switchToSceneId，switchToSceneIndex切换场景，switchToSceneIndex索引从0开始
 
