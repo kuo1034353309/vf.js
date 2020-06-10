@@ -66,7 +66,10 @@ async function buildEngineList() {
     else {
         engineList = { default: '', list: {} };
     }
-    engineList.default = package.version;
+
+    if (package.status !== 'debug') {
+        engineList.default = package.version;
+    }
     engineList.list[package.version] = { status: package.status, data: dateStr };
     fs.writeFileSync(engineListPath, JSON.stringify(engineList));
     console.log(`update ${engineListPath}`);

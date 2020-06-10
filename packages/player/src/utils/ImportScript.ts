@@ -52,18 +52,19 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
                 loadCompleteCallBack();
             }
             if (moduleName) {
-                if (gui.module.hasOwnProperty(moduleName)) {
+                if (gui.module && gui.module.hasOwnProperty(moduleName)) {
                     gui[moduleName] = gui.module[moduleName];
                     gui.module = null;
 
                     return resolve(gui[moduleName]);
                 }
 
+                // eslint-disable-next-line no-console
+                console.log(`${moduleName}module load failed`);
+
                 return resolve(false);
             }
-            else {
-                console.log(moduleName + 'module load failed');
-            }
+
             resolve(true);
         };
         const loadError = function (this: HTMLScriptElement, e: Event) {
