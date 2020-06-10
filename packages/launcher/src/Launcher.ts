@@ -389,6 +389,12 @@ export function deleteVF() {
     while (list.length) {
         list[0].remove();
     }
-    delete window.vf;
-    delete (window as any).PIXI;
+
+    const w = window as any;
+    if (w) {
+        delete w.vf;
+        delete w.gui;
+        delete w.PIXI;
+        delete w.VFConversion;
+    }
 }

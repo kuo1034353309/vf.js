@@ -134,9 +134,9 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
-        this.version = "0.4.3";
+        this.version = "0.5.1";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "6/3/2020, 10:05:04 AM";
+        this.buildInfo = "2020-6-10 11:05:34";
         this._extendsLibsUrl = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
@@ -200,8 +200,19 @@ var VIPKIDLauncher = /** @class */ (function () {
                     url = "./libs/" + version + "/" + name + ".js";
             }
         }
-        if (name === 'gui' && this.debugGuiPath) {
-            url = this.debugGuiPath;
+        switch (name) {
+            case "vf":
+                if (this.debugVFPath)
+                    url = this.debugVFPath;
+                break;
+            case "gui":
+                if (this.debugGuiPath)
+                    url = this.debugGuiPath;
+                break;
+            case "player":
+                if (this.debugPlayerPath)
+                    url = this.debugPlayerPath;
+                break;
         }
         return { url: url, version: version };
     };
@@ -224,8 +235,8 @@ var VIPKIDLauncher = /** @class */ (function () {
         extendsLibsUrl.forEach(function (value) {
             libs.push(_this.getLibUrl(value));
         });
-        libs.push(this.getLibUrl("gui-v1.4.3", cdn, 'gui'));
-        libs.push(this.getLibUrl("player-v" + "0.4.3", cdn, 'player'));
+        libs.push(this.getLibUrl("gui-v1.5.1", cdn, 'gui'));
+        libs.push(this.getLibUrl("player-v" + "0.5.1", cdn, 'player'));
         libs.forEach(function (value) {
             // eslint-disable-next-line eqeqeq
             if (document.getElementById(value.version) == null) {
@@ -317,7 +328,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             script.setAttribute('name', 'vf-script');
             script.type = 'text/javascript';
             script.id = item.version;
-            script.title = "0.4.3";
+            script.title = "0.5.1";
             script.async = false;
             script.src = item.url;
             script.addEventListener('load', this.onJsComplete.bind(this), false);
@@ -395,7 +406,7 @@ var VIPKIDLauncher = /** @class */ (function () {
 }());
 function createVF(options, completeCall, errorCall) {
     var scripts = document.getElementsByName('vf-script');
-    var version = "0.4.3";
+    var version = "0.5.1";
     if (scripts.length > 0 && scripts[0].title !== version) {
         scripts.forEach(function (value) {
             if (value.parentNode) {
@@ -406,15 +417,22 @@ function createVF(options, completeCall, errorCall) {
     }
     // eslint-disable-next-line no-new
     var launcher = new VIPKIDLauncher(options, completeCall, errorCall);
+    launcher.debugVFPath = options.debugVFPath;
     launcher.debugGuiPath = options.debugGuiPath;
+    launcher.debugPlayerPath = options.debugPlayerPath;
 }
 function deleteVF() {
     var list = document.getElementsByName('vf-script');
     while (list.length) {
         list[0].remove();
     }
-    delete window.vf;
-    delete window.PIXI;
+    var w = window;
+    if (w) {
+        delete w.vf;
+        delete w.gui;
+        delete w.PIXI;
+        delete w.VFConversion;
+    }
 }
 
 
