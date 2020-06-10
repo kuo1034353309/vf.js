@@ -86,7 +86,6 @@ export function getBoundingClientRect(dom: HTMLElement): DOMRect {
 
     rect.width = dom.offsetWidth;
     rect.height = dom.offsetHeight;
-
     return rect;
 }
 /**
@@ -107,21 +106,22 @@ export function calculateUpdatePlayerSize(player: HTMLElement, canvas: HTMLCanva
     const top = 0;
 
     const clientRect = getBoundingClientRect(player);
+    const screenWidth = clientRect.width;
+    const screenHeight = clientRect.height;
 
-    const boundingClientWidth = clientRect.width;
-    const boundingClientHeight = clientRect.height;
-
-    const screenWidth = boundingClientWidth;
-    const screenHeight = boundingClientHeight;
-
-    const stageSize = calculateStageSize(scaleMode, screenWidth, screenHeight, stage.width, stage.height);
+    const stageSize = calculateStageSize(scaleMode, screenWidth, screenHeight, stage.width || canvas.width, stage.height || canvas.height);
 
     const stageWidth = stageSize.stageWidth;
     const stageHeight = stageSize.stageHeight;
     const displayWidth = stageSize.displayWidth;
     const displayHeight = stageSize.displayHeight;
 
-    canvas.style.transformOrigin = '0% 0% 0px';
+    if (canvas.style.transformOrigin) {
+        canvas.style.transformOrigin = '0% 0% 0px';
+    }
+    else {
+        canvas.style.webkitTransformOrigin = '0% 0% 0px';
+    }
 
     if (canvas.width !== stageWidth) {
         canvas.width = stageWidth;
@@ -132,8 +132,8 @@ export function calculateUpdatePlayerSize(player: HTMLElement, canvas: HTMLCanva
 
     const rotation = 0;
 
-    canvas.style.top = `${top + ((boundingClientHeight - displayHeight) / 2)}px`;
-    canvas.style.left = `${(boundingClientWidth - displayWidth) / 2}px`;
+    canvas.style.top = `${top + ((screenHeight - displayHeight) / 2)}px`;
+    canvas.style.left = `${(screenWidth - displayWidth) / 2}px`;
 
     const scalex = displayWidth / stageWidth;
     const scaley = displayHeight / stageHeight;
@@ -153,10 +153,16 @@ export function calculateUpdatePlayerSize(player: HTMLElement, canvas: HTMLCanva
     m.rotate(rotation * Math.PI / 180);
 
     canvas.style.position = 'absolute';
-    canvas.style.transform = `matrix(${m.a},${m.b},${m.c},${m.d},${m.tx},${m.ty})`;
+    if (canvas.style.transform) {
+        canvas.style.transform = `matrix(${m.a},${m.b},${m.c},${m.d},${m.tx},${m.ty})`;
+    }
+    else {
+        canvas.style.webkitTransform = `matrix(${m.a},${m.b},${m.c},${m.d},${m.tx},${m.ty})`;
+    }
+
     canvas.width = stageWidth * canvasScaleX;
     canvas.height = stageHeight * canvasScaleY;
-
+    canvas.style.border = '5px solid red';
     stage.container.hitArea = new vf.Rectangle(0, 0, stageWidth, stageHeight);
     stage.scaleX = canvasScaleX / canvasScaleFactor;
     stage.scaleY = canvasScaleY / canvasScaleFactor;
