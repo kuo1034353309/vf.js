@@ -49,3 +49,4 @@
     })
 
     ```
+1. 圆形（Circle） `anchorX` , `anchorY` 取值设置范围修改为0-1。
