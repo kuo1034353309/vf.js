@@ -60,7 +60,7 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
                 }
 
                 // eslint-disable-next-line no-console
-                console.log(`${moduleName}module load failed`);
+                console.log(`[VF LOG]error gui module (${moduleName}) load failed`);
 
                 return resolve(false);
             }
