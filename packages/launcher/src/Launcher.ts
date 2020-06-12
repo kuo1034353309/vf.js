@@ -44,8 +44,9 @@ class VIPKIDLauncher {
     private _loadcount = 0;
     private _loadMaxCount = 40;
 
+    public debugVFPath?: string;
     public debugGuiPath?: string;
-
+    public debugPlayerPath?: string;
     /**
      * 对外接口 IVFEngineAPI
      */
@@ -117,8 +118,20 @@ class VIPKIDLauncher {
                     url = `./libs/${version}/${name}.js`;
             }
         }
-        if (name === 'gui' && this.debugGuiPath) {
-            url = this.debugGuiPath;
+
+        switch(name){
+            case "vf":
+                if(this.debugVFPath)
+                    url = this.debugVFPath;
+            break;
+            case "gui":
+                if(this.debugGuiPath)
+                    url = this.debugGuiPath;
+            break;
+            case "player":
+                if(this.debugPlayerPath)
+                    url = this.debugPlayerPath;
+            break;
         }
 
         return { url, version };
@@ -335,10 +348,10 @@ class VIPKIDLauncher {
 
                 requestAnimationFrame(animate);
             }
+                        
             // eslint-disable-next-line no-undef
             vf.utils.skipHello();
             const player = new (window as any)['vf']['player']['Player'](this._config);
-
             // eslint-disable-next-line no-undef
             vf.utils.versionPrint(this.version);
             this.completeCall(player);
@@ -365,7 +378,9 @@ export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) 
     // eslint-disable-next-line no-new
     const launcher = new VIPKIDLauncher(options, completeCall, errorCall);
 
+    launcher.debugVFPath = (options as any).debugVFPath;
     launcher.debugGuiPath = (options as any).debugGuiPath;
+    launcher.debugPlayerPath = (options as any).debugPlayerPath;
 }
 
 export function deleteVF() {
@@ -374,6 +389,12 @@ export function deleteVF() {
     while (list.length) {
         list[0].remove();
     }
-    delete window.vf;
-    delete (window as any).PIXI;
+
+    const w = window as any;
+    if (w) {
+        delete w.vf;
+        delete w.gui;
+        delete w.PIXI;
+        delete w.VFConversion;
+    }
 }
