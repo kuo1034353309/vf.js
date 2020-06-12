@@ -703,7 +703,7 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
     * 标记提交过需要验证组件尺寸，以便在稍后屏幕更新期间调用该组件的 measure(),updatesize() 方法。
     */
     DisplayLayoutAbstract.prototype.invalidateSize = function () {
-        if (this.visible) { // 隐藏元素后，布局失效
+        if (!this.visible) { // 隐藏元素后，布局失效
             var values = this.$values;
             if (!values[UIKeys.invalidateSizeFlag]) {
                 values[UIKeys.invalidateSizeFlag] = true;
@@ -716,7 +716,7 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
     * 标记需要验证显示列表，以便在稍后屏幕更新期间调用该组件的 updateDisplayList() 方法。
     */
     DisplayLayoutAbstract.prototype.invalidateDisplayList = function () {
-        if (this.visible) { // 隐藏元素后，布局失效
+        if (!this.visible) { // 隐藏元素后，布局失效
             var values = this.$values;
             if (!values[UIKeys.invalidateDisplayListFlag]) {
                 values[UIKeys.invalidateDisplayListFlag] = true;
@@ -729,7 +729,7 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
      * 标记父级容器的尺寸和显示列表为失效
      */
     DisplayLayoutAbstract.prototype.invalidateParentLayout = function () {
-        if (this.visible) { // 隐藏元素后，布局失效
+        if (!this.visible) { // 隐藏元素后，布局失效
             var parent_1 = this.parent;
             if (!parent_1) {
                 return;
@@ -2576,10 +2576,10 @@ var DisplayObjectAbstract = /** @class */ (function (_super) {
             if (this._visible === value) {
                 return;
             }
+            this._visible = value;
             if (value === true) {
                 this.allInvalidate();
             }
-            this._visible = value;
             this.container.visible = value;
         },
         enumerable: true,
@@ -3571,8 +3571,7 @@ var Audio = /** @class */ (function (_super) {
         _this._loop = false;
         _this._playbackRate = 1;
         _this._volume = 1;
-        if (_this._src)
-            _this.initAudio();
+        _this._id = Utils_1.now().toString();
         return _this;
     }
     Audio.prototype.initAudio = function () {
@@ -3607,6 +3606,7 @@ var Audio = /** @class */ (function (_super) {
         });
         this.audio.on("ended", function (e) {
             _this.emit("ended", e);
+            _this.dispose();
         }, this);
     };
     Object.defineProperty(Audio.prototype, "src", {
@@ -3722,7 +3722,13 @@ var Audio = /** @class */ (function (_super) {
      * @param {number} [length] - 声音持续时间（以秒为单位）
      */
     Audio.prototype.play = function (time, offset, length) {
-        this.audio && this.audio.play(time, offset, length);
+        if (this.audio) {
+            this.audio.play(time, offset, length);
+        }
+        else {
+            this.initAudio();
+            this.audio.play(time, offset, length);
+        }
     };
     /**
     * 停止声音
@@ -3756,6 +3762,7 @@ var Audio = /** @class */ (function (_super) {
         if (this.audio) {
             this.audio.removeAllListeners();
             this.audio.dispose();
+            this.audio = undefined;
         }
     };
     Object.defineProperty(Audio.prototype, "isPlaying", {
@@ -3769,7 +3776,7 @@ var Audio = /** @class */ (function (_super) {
         configurable: true
     });
     Audio.prototype.commitProperties = function () {
-        this.initAudio();
+        //
     };
     return Audio;
 }(DisplayObject_1.DisplayObject));
@@ -13829,13 +13836,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.5.1.1.5.1.1.5.1) ==1.5.1.1.5.1.1.5.1;
+//     return this.lastIndexOf(word, pos1.5.7.1.5.7.1.5.7) ==1.5.7.1.5.7.1.5.7;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.5.1";
+window.vf.gui.version = "1.5.7";
 
 
 /***/ })

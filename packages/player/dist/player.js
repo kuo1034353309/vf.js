@@ -9488,7 +9488,7 @@ function importScript(url, cdns, moduleName, loadCompleteCallBack) {
                                 return resolve(gui[moduleName]);
                             }
                             // eslint-disable-next-line no-console
-                            console.log(moduleName + "module load failed");
+                            console.log("[VF LOG]error gui module (" + moduleName + ") load failed");
                             return resolve(false);
                         }
                         resolve(true);
