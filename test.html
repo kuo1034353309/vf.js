@@ -51,8 +51,29 @@
     <script>
         var demoIndex = 0;
         var demos = [
+            `test/vf_demo/audio.json`,
+            `test/vf_demo/button.json`,
+            `test/vf_demo/checkbox.json`,
+            `test/vf_demo/circle.json`,
+            `test/vf_demo/connectline.json`,
+            `test/vf_demo/dragExample.json`,
+            `test/vf_demo/image.json`,
+            `test/vf_demo/label.json`,
+            `test/vf_demo/rect.json`,
+            `test/vf_demo/scrollbar.json`,
+            `test/vf_demo/slider.json`,
+            `test/vf_demo/soundTest.json`,
+            `test/vf_demo/spriteanimated.json`,
+            `test/vf_demo/textChoiceExample.json`,
+            `test/vf_demo/textFillBlanksExample.json`,
+            `test/vf_demo/textinput.json`,
+            `test/vf_demo/tracingExample.json`,
             `https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN01/index.json`,
-            `https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN03/index.json`
+            `https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN03/index.json`,
+            `test/vf_demo/ic032.json`,
+            `test/vf_demo/ic035.json`,
+            `test/vf_demo/ic036.json`,
+            `test/vf_demo/ic037.json`,
         ];
         var $player = null;
         var version = '';
@@ -121,7 +142,9 @@
                 player.onReady = function () {
                     console.log("onReady"); //初始化完成
                 }
-
+                player.onSceneLoad = function () {
+                    console.log("onSceneLoad"); //资源加载完成
+                }
                 player.onSceneCreate = function () {
                     console.log("onSceneCreate"); //资源加载完成
                 }
