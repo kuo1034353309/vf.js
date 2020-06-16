@@ -88,6 +88,8 @@
                 alert('已经是最后一个示例～');
                 return;
             }
+            console.log('当前示例索引:' + demoIndex);
+            console.log('当前示例地址:' + demos[demoIndex]);
             $player.play(demos[demoIndex]);
         });
 
