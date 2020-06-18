@@ -151,4 +151,8 @@ export interface IVFOptions {
      * 开启错误面板
      */
     useCustomErrorPanel?: boolean;
+    /**
+     * 需要排除的类库文件
+     */
+    exclude?: string[];
 }
