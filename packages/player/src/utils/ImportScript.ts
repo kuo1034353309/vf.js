@@ -52,15 +52,19 @@ export default async function importScript(url: string, cdns?: CDN, moduleName?:
                 loadCompleteCallBack();
             }
             if (moduleName) {
-                if (gui.module.hasOwnProperty(moduleName)) {
+                if (gui.module && gui.module.hasOwnProperty(moduleName)) {
                     gui[moduleName] = gui.module[moduleName];
                     gui.module = null;
 
                     return resolve(gui[moduleName]);
                 }
 
+                // eslint-disable-next-line no-console
+                console.log(`[VF LOG]error gui module (${moduleName}) load failed`);
+
                 return resolve(false);
             }
+
             resolve(true);
         };
         const loadError = function (this: HTMLScriptElement, e: Event) {

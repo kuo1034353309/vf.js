@@ -24,6 +24,10 @@ export interface APIHook {
      */
     onReady(): void;
     /**
+     * 场景加载
+     */
+    onSceneLoad(): void;
+    /**
      * 场景加载完成时回调
      */
     onSceneCreate(): void;
@@ -83,6 +87,11 @@ export interface APICommand {
      * @param transition
      */
     switchToSceneId(sceneId: string, transition?: ITransitionData): void;
+    /**
+     * 切换场景
+     * @param transition
+     */
+    switchToSceneIndex(index: number, transition?: ITransitionData): void;
 }
 
 export interface EngineAPI extends APIHook, APICommand {
@@ -142,4 +151,8 @@ export interface IVFOptions {
      * 开启错误面板
      */
     useCustomErrorPanel?: boolean;
+    /**
+     * 需要排除的类库文件
+     */
+    exclude?: string[];
 }

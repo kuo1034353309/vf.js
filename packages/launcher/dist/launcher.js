@@ -134,9 +134,9 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
-        this.version = "0.4.3";
+        this.version = "0.5.10-debug";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "2020/6/8 下午3:11:59";
+        this.buildInfo = "6/20/2020, 11:01:58 AM";
         this._extendsLibsUrl = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
@@ -159,6 +159,7 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._config = options;
         this.completeCall = completeCall;
         this.errorCall = errorCall;
+        this._exclude = options.exclude || [];
         this.loadJs();
     }
     /**
@@ -200,8 +201,22 @@ var VIPKIDLauncher = /** @class */ (function () {
                     url = "./libs/" + version + "/" + name + ".js";
             }
         }
-        if (name === 'gui' && this.debugGuiPath) {
-            url = this.debugGuiPath;
+        switch (name) {
+            case 'vf':
+                if (this.debugVFPath) {
+                    url = this.debugVFPath;
+                }
+                break;
+            case 'gui':
+                if (this.debugGuiPath) {
+                    url = this.debugGuiPath;
+                }
+                break;
+            case 'player':
+                if (this.debugPlayerPath) {
+                    url = this.debugPlayerPath;
+                }
+                break;
         }
         return { url: url, version: version };
     };
@@ -220,12 +235,18 @@ var VIPKIDLauncher = /** @class */ (function () {
         if (this._config.showFPS) {
             libs.push(this.getLibUrl("https://s.vipkidstatic.com/vf/engine/debug/stats.min.js"));
         }
-        libs.push(this.getLibUrl("vf-v5.2.4-v25", cdn, 'vf'));
+        if (this._exclude.indexOf('vf') === -1) {
+            libs.push(this.getLibUrl("vf-v5.2.4-v25", cdn, 'vf'));
+        }
         extendsLibsUrl.forEach(function (value) {
             libs.push(_this.getLibUrl(value));
         });
-        libs.push(this.getLibUrl("gui-v1.4.3", cdn, 'gui'));
-        libs.push(this.getLibUrl("player-v" + "0.4.3", cdn, 'player'));
+        if (this._exclude.indexOf('gui') === -1) {
+            libs.push(this.getLibUrl("gui-v1.5.10", cdn, 'gui'));
+        }
+        if (this._exclude.indexOf('player') === -1) {
+            libs.push(this.getLibUrl("player-v" + "0.5.5", cdn, 'player'));
+        }
         libs.forEach(function (value) {
             // eslint-disable-next-line eqeqeq
             if (document.getElementById(value.version) == null) {
@@ -317,7 +338,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             script.setAttribute('name', 'vf-script');
             script.type = 'text/javascript';
             script.id = item.version;
-            script.title = "0.4.3";
+            script.title = "0.5.10-debug";
             script.async = false;
             script.src = item.url;
             script.addEventListener('load', this.onJsComplete.bind(this), false);
@@ -380,12 +401,17 @@ var VIPKIDLauncher = /** @class */ (function () {
                 };
                 requestAnimationFrame(animate_1);
             }
-            // eslint-disable-next-line no-undef
-            vf.utils.skipHello();
-            var player = new window['vf']['player']['Player'](this._config);
-            // eslint-disable-next-line no-undef
-            vf.utils.versionPrint(this.version);
-            this.completeCall(player);
+            if (this._exclude.indexOf('player') === -1) {
+                // eslint-disable-next-line no-undef
+                vf.utils.skipHello();
+                var player = new window['vf']['player']['Player'](this._config);
+                // eslint-disable-next-line no-undef
+                vf.utils.versionPrint(this.version);
+                this.completeCall(player);
+            }
+            else {
+                this.completeCall(null);
+            }
             this.completeCall = undefined;
             this.errorCall = undefined;
         }
@@ -395,7 +421,7 @@ var VIPKIDLauncher = /** @class */ (function () {
 }());
 function createVF(options, completeCall, errorCall) {
     var scripts = document.getElementsByName('vf-script');
-    var version = "0.4.3";
+    var version = "0.5.10-debug";
     if (scripts.length > 0 && scripts[0].title !== version) {
         scripts.forEach(function (value) {
             if (value.parentNode) {
@@ -406,15 +432,21 @@ function createVF(options, completeCall, errorCall) {
     }
     // eslint-disable-next-line no-new
     var launcher = new VIPKIDLauncher(options, completeCall, errorCall);
+    launcher.debugVFPath = options.debugVFPath;
     launcher.debugGuiPath = options.debugGuiPath;
+    launcher.debugPlayerPath = options.debugPlayerPath;
 }
 function deleteVF() {
     var list = document.getElementsByName('vf-script');
     while (list.length) {
         list[0].remove();
     }
-    delete window.vf;
-    delete window.PIXI;
+    var w = window;
+    if (w) {
+        delete w.vf;
+        delete w.gui;
+        delete w.VFConversion;
+    }
 }
 
 

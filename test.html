@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="true" />
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    <title>vf - player</title>
+    <style>
+        html,
+        body {
+            padding: 0;
+            border: 0;
+            margin: 0;
+            height: 100%;
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -khtml-user-select: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 播放器的容器，调整播放器大小，可以改变这里 -->
+    <div id="vf-container"
+        style="background:rgb(56, 56, 55);width: 100%; height: 100%;padding:0;margin:0;overflow: hidden; position: absolute;">
+    </div>
+    <div style="z-index: 999; position: absolute; left: 10px; bottom:1px" id="buttons">
+        <button>reset</button>
+        <button>pause</button>
+        <button>resume</button>
+        <button param="1">dispose</button>
+        <button param-type="object"
+            param='{"code": "restore","level": "command","data": {"name": "restore","val": {}}}'>message</button>
+        <button>switchToNextScene</button>
+        <button>switchToPrevScene</button>
+    </div>
+    <div style="position: absolute; right: 0px; width: 150px;">
+        <select id="select" style="height: 23px;width: 100%;">
+        </select>
+        <button id='demoBtn' style="height: 23px;width: 100%; margin-top: 15px;">下一个示例</button>
+    </div>
+
+    <script>
+        var demoIndex = 0;
+        var demos = [
+            `./vf_demo/image.json`,
+            `./vf_demo/label.json`,
+            `./vf_demo/rect.json`,
+            `./vf_demo/button.json`,
+            `./vf_demo/checkbox.json`,
+            `./vf_demo/circle.json`,
+            `./vf_demo/slider.json`,
+            `./vf_demo/textinput.json`,
+            `./vf_demo/soundTest.json`,
+            `./vf_demo/spriteanimated.json`,
+            `./vf_demo/connectline.json`,
+            `./vf_demo/dragExample.json`,
+            `./vf_demo/scrollbar.json`,
+            `./vf_demo/textChoiceExample.json`,
+            `./vf_demo/textFillBlanksExample.json`,
+            `./vf_demo/tracingExample.json`,
+            `https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN01/index.json`,
+            `./vf_demo/ic037.json`,
+        ];
+        var $player = null;
+        var version = '';
+        var url = "https://s.vipkidstatic.com/vf/engine/engine.json?v=" + Date.now().toString().substr(0, 9);
+        var select = document.getElementById("select");
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onload = function (e) {
+            if (xmlhttp.status == 200 || xmlhttp.status == 304) {
+                var json = JSON.parse(xmlhttp.responseText);
+                var index = 0;
+                for (var key in json.list) {
+                    var option = new Option(key + " - 引擎版本", key);
+                    select.options.add(option);
+                    index++;
+                }
+                select.options.selectedIndex = index - 1;
+                version = select.value;
+                onLoad();
+            }
+        }
+        xmlhttp.open("GET", url, true);
+        // 发送的信息
+        xmlhttp.send(null);
+
+        document.getElementById('demoBtn').addEventListener('click', function (e) {
+            demoIndex++;
+            if($player == null) {
+                alert('播放器未初始化～');
+                return;
+            }
+            if(demoIndex >= demos.length) {
+                demoIndex--;
+                alert('已经是最后一个示例～');
+                return;
+            }
+            console.log('当前示例索引:' + demoIndex);
+            console.log('当前示例地址:' + demos[demoIndex]);
+            $player.play(demos[demoIndex]);
+        });
+
+        select.addEventListener("change", function (e) {
+            version = select.value;
+            // if(deleteVF){
+            //     deleteVF();
+            // }
+            if($player){
+                $player.dispose(true);
+            }
+            var list = document.getElementsByName('vf-script');
+            while (list.length) {
+                list[0].remove();
+            }
+            onLoad();
+        });
+
+        function onLauncher(){
+
+            createVF({
+                container: document.getElementById("vf-container"),
+                debug: true,
+                showFPS: true,
+                resolution: window.devicePixelRatio || 1,
+            }, function (player) {
+
+                $player = player;
+                player.onReady = function () {
+                    console.log("onReady"); //初始化完成
+                }
+                player.onSceneLoad = function () {
+                    console.log("onSceneLoad"); //资源加载完成
+                }
+                player.onSceneCreate = function () {
+                    console.log("onSceneCreate"); //资源加载完成
+                }
+
+                player.onMessage = function (msg) {
+                    console.log("onMessage ==>", msg);
+                }
+
+                player.onError = function (evt) {
+                    console.log("onError ==>", evt);
+                }
+
+                player.onDispose = function () {
+                    console.log("onDispose");
+                }
+
+                player.play(demos[demoIndex]);
+                
+                test();
+            });
+        }
+
+        function onLoad() {
+
+            const s = document.createElement('script');
+            s.async = false;
+            s.setAttribute('name', 'vf-script');
+            s.type = 'text/javascript';
+            s.id = version;
+            s.title = version;
+            s.src = 'https://s.vipkidstatic.com/vf/engine/launcher-v' + version + '/launcher.min.js';
+            s.addEventListener('load', function() {
+                onLauncher();
+            }, false);
+            document.body.appendChild(s);
+        }
+        function test() {
+            player = $player;
+
+            var buttons = document.getElementById('buttons').children;
+            for (var i = 0; i < buttons.length; i++) {
+                var button = buttons[i];
+               
+                button.onclick = function () {
+                    var button = this;
+                    var name = button.innerHTML;
+                    var paramType = button.getAttribute('param-type') || "string";
+                    var param = paramType === "string" ? button.getAttribute('param') : JSON.parse(button.getAttribute('param'));
+                    console.clear();
+                    if (param) {
+                        //console.log(`执行方法:${name}(${param})`); // ios8 error
+                        player[name](param);
+                        player.switchToSceneIndex(2);
+
+                    } else {
+                        //console.log(`执行方法:${name}()`); // ios8 error
+                        player[name]();
+                    }
+
+                };
+            }
+        }
+    </script>
+</body>
+
+</html>

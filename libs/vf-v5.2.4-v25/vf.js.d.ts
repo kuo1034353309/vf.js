@@ -25117,12 +25117,12 @@ declare namespace vf {
          *
          * @memberof vf.utils
          * @function readFileSync
-         * @param {string} url - 文件网络路径
-         * @param {object} options - the defaultValue if no filename prefix is set.
-         * @param {array} listener - resolution / device pixel ratio of an asset
-         * @return {object|undefined}
+         * @param {string} url - 文件路径
+         * @param {object} options - 文件配置
+         * @param {any[]} [listener=null] - 监听回调
+         * @return {Promise<object>}
          */
-        function readFileSync(url: string, options: any, listener: array): any | undefined;
+        function readFileSync(url: string, options: any, listener?: any[]): Promise<any>;
     }
 }
 

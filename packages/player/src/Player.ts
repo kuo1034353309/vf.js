@@ -6,12 +6,11 @@ import { calculateUpdatePlayerSize, getBoundingClientRect } from './utils/Calcul
 import importScript from './utils/ImportScript';
 import IEvent from './event/IEvent';
 import { IVFOptions, EngineAPI } from './IVFEngine';
-import { IVFDataV1, ScaleMode, VFStateCode, ITransitionData } from './core/model/IVFData';
+import { IVFDataV1, ScaleMode, VFStateCode, ITransitionData, SceneEvent } from './core/model/IVFData';
 import Config from './core/Config';
 import { EventType } from './event/EventType';
 import { EventLevel } from './event/EventLevel';
 import ErrorDisplay from './error/ErrorDisplay';
-import readFileSync from './utils/readFileSync';
 
 declare let VFBUILDDATE: any; // webpack全局变量，prod环境使用
 
@@ -34,6 +33,10 @@ export class Player implements EngineAPI {
      */
     private _data?: IVFDataV1;
 
+    /**
+     * 首次打开时，默认的场景
+     */
+    private defaultScene?: { callBack: Function;params: any[] };
     /**
      * @private
      * @type {VFStage}
@@ -65,30 +68,40 @@ export class Player implements EngineAPI {
         //  1. 初始化配置
         this.option = options;
         this.config = new Config(options);
-        const config = this.config;
-
-        vf.gui.Utils.debug = config.debug;
-        // eslint-disable-next-line no-console
-        console.groupEnd();
 
         // 2. 初始化引擎
+        this.app = this.createApp();
+        this._errpanel = new ErrorDisplay(this.config, options.useCustomErrorPanel);
+        this.initSystemEvent();
+        this._readyState = VFStateCode.INIT;
+
+        //  3、如果配了资源地址，则启动数据加载
+        if (options.src) { this.play(options.src); }
+    }
+
+    private createApp(): vf.Application {
+        const options = this.option;
+        const config = this.config;
+
         // eslint-disable-next-line no-undef
-        this.app = new vf.Application({
+        const app = new vf.Application({
             backgroundColor: parseInt(config.bgcolor || '0', 16),
             transparent: config.wmode === 'transparent',
             antialias: true,
             resolution: options.resolution,
             forceCanvas: options.forceCanvas,
+            powerPreference: 'low-power'
         });
 
-        this._errpanel = new ErrorDisplay(this.config, options.useCustomErrorPanel);
+        const frameRate = options.frameRate || 30;
+        app.ticker.maxFPS = frameRate;
+        vf.Ticker.system.maxFPS = frameRate;
+        vf.Ticker.shared.stop();
+        vf.Ticker.shared.maxFPS = frameRate;
+        vf.gui.TickerShared.maxFPS = frameRate;
+        vf.gui.Utils.debug = options.debug || false;
 
-        this.initSystemEvent();
-
-        this._readyState = VFStateCode.INIT;
-
-        //  3、如果配了资源地址，则启动数据加载
-        if (this.config.src) { this.play(this.config.src); }
+        return app;
     }
 
     public async play(src?: any): Promise<void> {
@@ -159,8 +172,21 @@ export class Player implements EngineAPI {
     }
 
     public switchToSceneId(sceneId: string, transition?: ITransitionData): void {
+        sceneId = sceneId.toString();
         if (this.stage) {
             this.stage.switchToSceneId(sceneId, transition);
+        }
+        else {
+            this.defaultScene = { callBack: this.switchToSceneId, params: [sceneId, transition] };
+        }
+    }
+
+    public switchToSceneIndex(index: number, transition?: ITransitionData): void {
+        if (this.stage) {
+            this.stage.switchToSceneIndex(index, transition);
+        }
+        else {
+            this.defaultScene = { callBack: this.switchToSceneIndex, params: [index, transition] };
         }
     }
 
@@ -168,10 +194,9 @@ export class Player implements EngineAPI {
         if (this.readyState === VFStateCode.DISABLED) {
             return;
         }
-        // if (vf.sound) {
-        //     vf.sound.close();
-        // }
+
         this.option = null as any;
+        this.defaultScene = undefined;
 
         this.config.systemEvent.removeAllListeners();
 
@@ -193,42 +218,48 @@ export class Player implements EngineAPI {
      * 接口，避免写入逻辑
      */
     // eslint-disable-next-line handle-callback-err
-    public onError = (err: any) => {
+    public readonly onError = (err: any) => {
         //
     };
 
     /**
      * 接口，避免写入逻辑
      */
-    public onInit = () => {
+    public readonly onInit = () => {
         //
     };
 
     /**
      * 接口，避免写入逻辑
      */
-    public onReady = () => {
+    public readonly onReady = () => {
         //
     };
 
     /**
      * 接口，避免写入逻辑
      */
-    public onSceneCreate = () => {
+    public readonly onSceneLoad = () => {
+        //
+    };
+    /**
+     * 接口，避免写入逻辑
+     */
+    public readonly onSceneCreate = () => {
         //
     };
 
     /**
      * 接口，避免写入逻辑
      */
-    public onMessage = (msg: IEvent) => {
+    public readonly onMessage = (msg: IEvent) => {
         //
     };
 
     /**
      * 接口，避免写入逻辑
      */
-    public onDispose = () => {
+    public readonly onDispose = () => {
         //
     };
 
@@ -255,13 +286,7 @@ export class Player implements EngineAPI {
         }
         this.stage = undefined;
 
-        this.app = new vf.Application({
-            backgroundColor: parseInt(config.bgcolor || '0', 16),
-            transparent: config.wmode === 'transparent',
-            antialias: true,
-            resolution: this.option.resolution,
-            forceCanvas: this.option.forceCanvas,
-        });
+        this.app = this.createApp();
 
         this.initSystemEvent();
     }
@@ -306,8 +331,13 @@ export class Player implements EngineAPI {
         // 5、初始化API模块，并通知外部'vf[hashid] api is ready'
         this.readyState = VFStateCode.READY;
 
-        // 6、加载场景资源
-        this.stage.start();
+        // 6、加载场景资源 
+        if (this.defaultScene) {
+            this.defaultScene.callBack.call(this, this.defaultScene.params[0], this.defaultScene.params[1]);
+        }
+        else {
+            this.stage.start();
+        }
     }
 
     private async loadData(src: any): Promise<void> {
@@ -318,7 +348,7 @@ export class Player implements EngineAPI {
         await this.config.i18n.load(this.config.cdns.default, onStatus);
 
         if (typeof src === 'string') {
-            this._data = await readFileSync(src, { responseType: 'json' }).catch((value) => { onStatus(value); });
+            this._data = await vf.utils.readFileSync(src, { responseType: 'json' }).catch((value) => { onStatus(value); });
         }
         else if (typeof src === 'object') {
             this._data = src;
@@ -385,7 +415,12 @@ export class Player implements EngineAPI {
                     this.onReady();
                 }
                 break;
-            case VFStateCode.SCENE_CREATE:
+            case SceneEvent.SceneLoad:
+                if (this.onSceneLoad) {
+                    this.onSceneLoad();
+                }
+                break;
+            case SceneEvent.ScenComplete:
                 if (this.onSceneCreate) {
                     this.onSceneCreate();
                 }

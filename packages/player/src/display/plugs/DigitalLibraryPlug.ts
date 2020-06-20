@@ -9,7 +9,6 @@ export class DigitalLibraryPlug extends Plug {
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor(className: string, parent: VFStage) {
         super(className, parent);
-        console.log(className);
     }
 
     protected onLoad(): void {

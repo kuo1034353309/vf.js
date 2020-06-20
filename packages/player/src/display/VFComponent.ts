@@ -19,7 +19,7 @@ export class VFComponent extends vf.gui.ScrollingContainer {
         protected pauseData?: {animation: string, frame: number, times: number} = undefined;
         constructor() {
             super();
-            this.interactabled = true;
+            this.interactabled = false;
         }
 
         public set vfStage(stage: VFStage | undefined) {

@@ -81,6 +81,1237 @@ declare module 'src/event/TouchMouseEvent' {
 	};
 
 }
+declare module 'src/core/ContainerBase' {
+	///   types="@vf.js/vf" />
+	/** 容器扩展类，后续便于做延时渲染 */
+	export class ContainerBase extends vf.Container {
+	    constructor();
+	    isEmitRender: boolean;
+	    render(renderer: vf.Renderer): void;
+	}
+
+}
+declare module 'src/tween/Easing' {
+	/**
+	 * 完整的缓动曲线列表
+	 *
+	 * @example vf.gui.Easing.Linear.None;
+	 *
+	 *
+	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
+	 */
+	export const Easing: {
+	    Linear: {
+	        None(k: number): number;
+	    };
+	    Quadratic: {
+	        In(k: number): number;
+	        Out(k: number): number;
+	        InOut(k: number): number;
+	    };
+	    Cubic: {
+	        In(k: number): number;
+	        Out(k: number): number;
+	        InOut(k: number): number;
+	    };
+	    Quartic: {
+	        In(k: number): number;
+	        Out(k: number): number;
+	        InOut(k: number): number;
+	    };
+	    Quintic: {
+	        In(k: number): number;
+	        Out(k: number): number;
+	        InOut(k: number): number;
+	    };
+	    Sinusoidal: {
+	        In(k: number): number;
+	        Out(k: number): number;
+	        InOut(k: number): number;
+	    };
+	    Exponential: {
+	        In(k: number): number;
+	        Out(k: number): number;
+	        InOut(k: number): number;
+	    };
+	    Circular: {
+	        In(k: number): number;
+	        Out(k: number): number;
+	        InOut(k: number): number;
+	    };
+	    Elastic: {
+	        In(k: number): number;
+	        Out(k: number): number;
+	        InOut(k: number): number;
+	    };
+	    Back: {
+	        In(k: number): number;
+	        Out(k: number): number;
+	        InOut(k: number): number;
+	    };
+	    Bounce: {
+	        In(k: number): number;
+	        Out(k: number): number;
+	        InOut(k: number): number;
+	    };
+	    Stepped: {
+	        steps: (steps: number) => (k: number) => number;
+	    };
+	};
+
+}
+declare module 'src/tween/private/constants' {
+	/**
+	 * 卡帧后的平滑处理帧率
+	 */
+	export const FRAME_MS: number;
+	/**
+	 * 平滑处理允许的触发时间
+	 */
+	export const TOO_LONG_FRAME_MS = 250;
+	/**
+	 * 链式补间动画的key前缀
+	 */
+	export const CHAINED_TWEENS = "_chainedTweens";
+	export const STRING_PROP = "STRING_PROP";
+	export const NUM_REGEX: RegExp;
+	export function decomposeString(fromValue: string | any): any;
+	export function decompose(prop: any, obj: any, from: any, to: any): any;
+	export const RGB = "rgb(";
+	export const RGBA = "rgba(";
+	export function isRGBColor(v: any, i: number, r?: string): boolean;
+	export function recompose(prop: any, obj: any, from: any, to: any, t: any, originalT: any, stringBuffer?: any): any;
+	export const SET_NESTED: (nested: any) => any;
+
+}
+declare module 'src/tween/private/Interpolation' {
+	/**
+	 * 差值计算列表
+	 * @example
+	 *
+	 * let bezier = vf.gui.tween.Interpolation.Bezier
+	 * new vf.gui.tween.Tween({x:0}).to({x:[0, 4, 8, 12, 15, 20, 30, 40, 20, 40, 10, 50]}, 1000).interpolation(bezier).start()
+	 * @memberof vf.gui.tween
+	 */
+	export const Interpolation: {
+	    Linear(v: any, k: number, value: any): any;
+	    Bezier(v: any, k: number, value: any): any;
+	    CatmullRom(v: any, k: number, value: any): any;
+	    Utils: {
+	        Linear(p0: any, p1: any, t: any, v: any): any;
+	        Reset(value: any): any;
+	        Bernstein(n: any, i: any): number;
+	        Factorial: (n: any) => number;
+	        CatmullRom(p0: any, p1: any, p2: any, p3: any, t: any, v?: any): any;
+	    };
+	};
+
+}
+declare module 'src/event/TweenEvent' {
+	/**
+	 * 缓动事件
+	 */
+	export const TweenEvent: {
+	    /**
+	     *
+	     */
+	    Callback: string;
+	    /**
+	     * 每次改变
+	     */
+	    update: string;
+	    /**
+	     * 完成
+	     */
+	    complete: string;
+	    /**
+	     * 开始时
+	     */
+	    start: string;
+	    /**
+	     * 每次重复时
+	     */
+	    repeat: string;
+	    /**
+	     * 反向时
+	     */
+	    reverse: string;
+	    /**
+	     * 暂停时
+	     */
+	    pause: string;
+	    /**
+	     * 播放时
+	     */
+	    play: string;
+	    /**
+	     * 重新开始时
+	     */
+	    restart: string;
+	    /**
+	     * 停止时
+	     */
+	    stop: string;
+	};
+
+}
+declare module 'src/tween/Tween' {
+	///   types="@vf.js/vf" />
+	import { add, get, getAll, remove, removeAll, removeDisplay, update } from 'src/tween/private/core';
+	/**
+	 * 缓动动画
+	 *
+	 * @example let tween = new vf.gui.Tween(myObject).to({width:'300px'}, 2000).start()
+	 *
+	 *
+	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
+	 */
+	export class Tween extends vf.utils.EventEmitter {
+	    static core: {
+	        add: typeof add;
+	        get: typeof get;
+	        getAll: typeof getAll;
+	        remove: typeof remove;
+	        removeAll: typeof removeAll;
+	        removeDisplay: typeof removeDisplay;
+	        update: typeof update;
+	    };
+	    static Event: {
+	        Callback: string;
+	        update: string;
+	        complete: string;
+	        start: string;
+	        repeat: string;
+	        reverse: string;
+	        pause: string;
+	        play: string;
+	        restart: string;
+	        stop: string;
+	    };
+	    /**
+	     * Easier way to call the Tween
+	     * @param {object} object - Initial value
+	     * @param {object} to - Target value
+	     * @param {object} params - Options of tweens
+	     * @example Tween.fromTo(myObject, {x:0}, {x:200},1000)
+	     * @memberof vf.gui.Tween
+	     * @static
+	     */
+	    static fromTo(object: any, to: any, duration?: number): Tween;
+	    /**
+	     * Easier way calling constructor only applies the `to` value, useful for CSS Animation
+	     * @param {any} object object
+	     * @param {object} to - Target value
+	     * @param {object} params - Options of tweens
+	     * @example Tween.to(myObject, {x:200}, 1000)
+	     * @memberof vf.gui.Tween
+	     * @static
+	     */
+	    static to(object: any | any[], to: any, duration?: number): Tween;
+	    /**
+	     * Easier way calling constructor only applies the `from` value, useful for CSS Animation
+	     * @param {any} object object
+	     * @param {object} from - Initial value
+	     * @param {object} params - Options of tweens
+	     * @example Tween.from(myObject, {x:200}, 1000)
+	     * @memberof vf.gui.Tween
+	     * @static
+	     */
+	    static from(object: any, from: any, duration?: number): Tween;
+	    constructor(object?: any);
+	    id: number;
+	    object: any;
+	    private _valuesEnd;
+	    private _valuesStart;
+	    protected _duration: number;
+	    private _easingFunction;
+	    private _easingReverse;
+	    private _interpolationFunction;
+	    protected _startTime: number;
+	    protected _delayTime: number;
+	    private _repeat;
+	    private _initRepeat;
+	    _isPlaying: boolean;
+	    private _yoyo;
+	    private _reversed;
+	    private _onStartCallbackFired;
+	    private _isFinite;
+	    private _prevTime;
+	    private _rendered;
+	    private _reverseDelayTime;
+	    /** 附加数据 */
+	    data: {
+	        [key: string]: any;
+	    };
+	    setObject(object: any): void;
+	    /**
+	     * 是否在播放中
+	     * @return {boolean}
+	     * @example tween.isPlaying()
+	     * @memberof vf.gui.Tween
+	     */
+	    readonly isPlaying: boolean;
+	    /**
+	     * 是否开始播放
+	     * @return {boolean}
+	     * @example tween.isStarted()
+	     * @memberof vf.gui.Tween
+	     */
+	    readonly isStarted: boolean;
+	    /**
+	     * 获取动画的开始时间
+	     */
+	    /**
+	    * 获取动画的开始时间
+	    */
+	    startTime: number;
+	    /**
+	     * 设置缓动时长
+	     * @param {number} amount 持续的毫秒值
+	     * @example tween.duration(2000)
+	     * @memberof vf.gui.Tween
+	     * @deprecated 不推荐使用这个方法，内部使用
+	     * @private
+	     */
+	    duration: number | Function;
+	    /**
+	     * 逆向缓动
+	     * @example tween.reverse()
+	     * @param {boolean=} state 是否逆向
+	     * @memberof vf.gui.Tween
+	     */
+	    reverse(state?: boolean): this;
+	    /**
+	     * 当前动画是否逆转
+	     * @return {boolean}
+	     * @example tween.reversed() true逆向中
+	     * @memberof vf.gui.Tween
+	     */
+	    reversed(): boolean;
+	    /**
+	     * 暂停缓动
+	     * @example tween.pause()
+	     * @memberof vf.gui.Tween
+	     */
+	    pause(): boolean | this;
+	    /**
+	     * 播放或恢复播放
+	     * @example tween.play()
+	     * @memberof vf.gui.Tween
+	     */
+	    play(): boolean | this;
+	    /**
+	     * 设置要缓动的目标属性与持续时间
+	     * @param {object} properties 目标属性值
+	     * @param {number|Object=} [duration=1000] 持续时间
+	     * @example let tween = new vf.gui.Tween({x:0}).to({x:100}, 2000)
+	     * @memberof vf.gui.Tween
+	     */
+	    to(properties: any, duration?: number): this;
+	    private render;
+	    /**
+	     * 开始执行缓动
+	     * @example tween.start()
+	     * @memberof vf.gui.Tween
+	     */
+	    start(): this;
+	    /**
+	     * 停止缓动
+	     * @example tween.stop()
+	     * @memberof vf.gui.Tween
+	     */
+	    stop(): boolean | this;
+	    /**
+	     * 设置延迟执行时间
+	     * @param {number} amount 延迟等待的时间，毫秒
+	     * @example tween.delay(500)
+	     * @memberof vf.gui.Tween
+	     */
+	    delay(amount: number): this;
+	    /**
+	     * 设置重复执行的次数
+	     * @param {number} amount 重复次数
+	     * @example tween.repeat(5)
+	     * @memberof vf.gui.Tween
+	     */
+	    repeat(amount: number): this;
+	    /**
+	     * 设置每个重复执行过程的延迟时间，毫秒
+	     * @param {number} amount 延迟值
+	     * @example tween.reverseDelay(500)
+	     * @memberof vf.gui.Tween
+	     */
+	    reverseDelay(amount: number): this;
+	    /**
+	     * 是否在重复执行中启用反向动画
+	     * @param {boolean} state true启动
+	     * @param {Function=} _easingReverse 反向时的Easing function
+	     * @example tween.yoyo(true)
+	     * @memberof vf.gui.Tween
+	     */
+	    yoyo(state?: boolean | Function, _easingReverse?: (k: number) => number): this;
+	    /**
+	     * 设置缓动函数
+	     * @param {Function} _easingFunction 缓动函数的公式，如果设置yoyo的第二个值会应用于逆向缓动
+	     * @example tween.easing(Easing.Elastic.InOut)
+	     * @memberof vf.gui.Tween
+	     */
+	    easing(_easingFunction: ((k: number) => number) | any): this;
+	    /**
+	     * 设置差值
+	     * @param {Function} _interpolationFunction 差值的函数
+	     * @example tween.interpolation(Interpolation.Bezier)
+	     * @memberof vf.gui.Tween
+	     */
+	    interpolation(_interpolationFunction: (v: any, k: number, value: any) => any): this;
+	    /**
+	     * 更新动画到指定时间点，进行播放
+	     * @param time
+	     */
+	    gotoAndPlay(time: number): void;
+	    /**
+	     * 更新动画到指定时间点，停止播放
+	     * @param time
+	     */
+	    gotoAndStop(time: number): void;
+	    /**
+	     * 更新动画到指定时间点，停止播放
+	     * @param time
+	     */
+	    gotoAndEnd(): void;
+	    /**
+	     * 更新函数，通过给定的 `time` 设置目标属性变化
+	    * @param {number=} deltaTime 帧间隔
+	    * @param {Boolean=} preserve 完成后，防止删除动画对象
+	     * @param {boolean=} forceTime 强制进行更新渲染，不关心时间是否匹配
+	     * @example tween.update(100)
+	     * @memberof vf.gui.Tween
+	     */
+	    update(deltaTime: number, preserve?: boolean, forceTime?: boolean): boolean;
+	    release(): void;
+	}
+
+}
+declare module 'src/core/Ticker' {
+	 class Ticker extends vf.Ticker {
+	    constructor();
+	    /**
+	     * 时间穿越， 单位ms
+	     * @param duration
+	     */
+	    crossingTime(duration: number): void;
+	}
+	export const TickerShared: Ticker;
+	export {};
+
+}
+declare module 'src/tween/private/core' {
+	import { Tween } from 'src/tween/Tween';
+	/**
+	 * 插件存储器
+	 * @memberof vf.gui.tween
+	 * @example
+	 * let num = Plugins.num = function (node, start, end) {
+	  * return t => start + (end - start) * t
+	  * }
+	  *
+	  * @static
+	  */
+	export const Plugins: any;
+	/**
+	 * 添加对象到缓动列表
+	 * @param {Tween} tween Tween 实例
+	 * @memberof vf.gui.tween
+	 * @example
+	 * let tween = new vf.gui.tween.Tween({x:0})
+	 * tween.to({x:200}, 1000)
+	 * vf.gui.tween.add(tween)
+	 */
+	export function add(tween: Tween): void;
+	/**
+	 * 没有缓动后，设置运行多少帧后，停止
+	 * @param {number} frameCount=120 删除所有动画后，要运行的剩余帧
+	 * @memberof vf.gui.tween
+	 * @example
+	 * vf.gui.tween.FrameThrottle(60)
+	 */
+	export function FrameThrottle(frameCount?: number): void;
+	/**
+	 * 延时处理，针对插件、canvas、dom
+	 * @param {number} state=true 是否平滑处理
+	 * @memberof vf.gui.tween
+	 * @example
+	 * vf.gui.tween.ToggleLagSmoothing(false)
+	 */
+	export function ToggleLagSmoothing(_state?: boolean): void;
+	/**
+	 * 获得所有缓动对象
+	 * @memberof vf.gui.tween
+	 * vf.gui.tween.getAll()
+	 */
+	export function getAll(): Tween[];
+	/**
+	 * 移除所有动画对象
+	 * @example  vf.gui.tween.removeAll()
+	 * @memberof vf.gui.tween
+	 */
+	export function removeAll(): void;
+	/**
+	 * 获取对象
+	 * @param {Tween} tween 缓动对象实例
+	 * @return {Tween} 返回对象或null
+	 * @memberof vf.gui.tween
+	 * @example
+	 * vf.gui.tween.get(tween)
+	 */
+	export function get(tween: Tween): Tween | null;
+	/**
+	 * 从缓动列表移除对象
+	 * @param {Tween} tween Tween instance
+	 * @memberof vf.gui.tween
+	 * @example
+	 * vf.gui.tween.remove(tween)
+	 */
+	export function remove(tween: Tween): void;
+	export function removeDisplay(uuid: string): void;
+	/**
+	 * 按给定时间更新缓动
+	 * @param {number=} time 时间戳
+	 * @param {Boolean=} preserve 完成后，防止删除动画对象
+	 * @memberof vf.gui.tween
+	 * @example
+	 * vf.gui.tween.update(500)
+	 */
+	export function update(deltaTime: number): boolean;
+	/**
+	 * 是否正在运行中
+	 * @return {Boolean} 只要还有缓动在运行，返回true
+	 * @memberof vf.gui.tween
+	 * @example vf.gui.tween.isRunning()
+	 */
+	export function isRunning(): boolean;
+	/**
+	 * 返回是否开启延迟平滑状态
+	 * @return {Boolean}
+	 * @memberof vf.gui.tween
+	 * @example vf.gui.tween.isRunning()
+	 */
+	export function isLagSmoothing(): boolean;
+
+}
+declare module 'src/utils/ObjectPool' {
+	 class ObjectPool {
+	    constructor();
+	    /**
+	     * 作为对象池的词典dict
+	     */
+	    private objPoolDict;
+	    /**
+	     * 向对象池中放入对象，以便重复利用
+	     */
+	    push<T extends Lifecycle, S>(keyClass: S, oldObj: T): void;
+	    /**
+	     * 从对象池中取出需要的对象
+	     * @return 取出的相应对象
+	     *
+	     */
+	    pop<T>(keyClass: T): any;
+	}
+	/**
+	 * 对象池实例
+	 */
+	export const objectPoolShared: ObjectPool;
+	export {};
+
+}
+declare module 'src/tween/Timeline' {
+	 class Node {
+	    constructor(node?: Node);
+	    parent: Node | undefined;
+	    default: number;
+	    start: any;
+	    end: any;
+	    easing: any;
+	    duration: number;
+	    startFrame: number;
+	    endFrame: number;
+	    prevTime: number;
+	    release(): void;
+	    load(): void;
+	    destroy(): void;
+	}
+	/**
+	 * 基于帧的时间轴控制类
+	 *
+	 * @example let timeline = new vf.gui.Timeline();
+	 *
+	 *
+	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
+	 */
+	export class Timeline extends vf.utils.EventEmitter implements Lifecycle {
+	    constructor();
+	    id: number;
+	    private _object;
+	    private _frames;
+	    private _frameCount;
+	    private _elapsedMS;
+	    private _prevTime;
+	    private _isStop;
+	    private _lastNode;
+	    private _isSetDefault;
+	    loop: boolean;
+	    setDefault(object: any, _duration: number, fps: number): this;
+	    addProperty(property: string, value: number | string | boolean, endFrame: number, easing?: any): this;
+	    stop(): void;
+	    play(): void;
+	    gotoAndPlay(frame: number): void;
+	    gotoAndStop(frame: number): void;
+	    private seekLastNode;
+	    private goto;
+	    update(a: number, b?: number, elapsedMS?: number): true | undefined;
+	    updateobject(key: string, node: Node): boolean;
+	    load(): void;
+	    release(): void;
+	}
+	export {};
+
+}
+declare module 'src/tween/private/index' {
+	import { add, get, getAll, isRunning, FrameThrottle, ToggleLagSmoothing, Plugins, remove, removeAll, removeDisplay, update } from 'src/tween/private/core';
+	import { Interpolation } from 'src/tween/private/Interpolation';
+	import * as utils from 'src/tween/private/constants';
+	import { TweenEvent } from 'src/event/TweenEvent';
+	import { Timeline } from 'src/tween/Timeline';
+	export { Plugins, get, getAll, removeAll, remove, removeDisplay, add, update, isRunning, FrameThrottle, ToggleLagSmoothing, Interpolation, TweenEvent, Timeline, utils };
+
+}
+declare module 'src/core/DisplayLayoutKeys' {
+	/** 标记属性失效 */
+	export const invalidatePropertiesFlag: symbol;
+	/** 标记大小失效 */
+	export const invalidateSizeFlag: symbol;
+	/** 标记显示失效 */
+	export const invalidateDisplayListFlag: symbol;
+	export const explicitWidth: symbol;
+	export const explicitHeight: symbol;
+	export const width: symbol;
+	export const height: symbol;
+	export const minWidth: symbol;
+	export const maxWidth: symbol;
+	export const minHeight: symbol;
+	export const maxHeight: symbol;
+	export const percentWidth: symbol;
+	export const percentHeight: symbol;
+	export const scaleX: symbol;
+	export const scaleY: symbol;
+	export const x: symbol;
+	export const y: symbol;
+	export const skewX: symbol;
+	export const skewY: symbol;
+	export const pivotX: symbol;
+	export const pivotY: symbol;
+	export const rotation: symbol;
+	export const zIndex: symbol;
+	export const measuredWidth: symbol;
+	export const measuredHeight: symbol;
+	export const oldPreferWidth: symbol;
+	export const oldPreferHeight: symbol;
+	export const oldX: symbol;
+	export const oldY: symbol;
+	export const oldWidth: symbol;
+	export const oldHeight: symbol;
+	export const left: symbol;
+	export const right: symbol;
+	export const top: symbol;
+	export const bottom: symbol;
+	export const horizontalCenter: symbol;
+	export const verticalCenter: symbol;
+
+}
+declare module 'src/core/DisplayLayoutValidator' {
+	///   types="@vf.js/vf" />
+	import { DisplayLayoutAbstract } from 'src/core/DisplayLayoutAbstract'; class UIValidator extends vf.utils.EventEmitter {
+	    /**
+	     * @private
+	     * 创建一个Validator对象
+	     */
+	    constructor();
+	    /**
+	     * @private
+	     */
+	    private targetLevel;
+	    /**
+	     * @private
+	     */
+	    private invalidatePropertiesFlag;
+	    /**
+	     * @private
+	     */
+	    private invalidateClientPropertiesFlag;
+	    /**
+	     * @private
+	     */
+	    private invalidatePropertiesQueue;
+	    /**
+	     * @private
+	     * 标记组件属性失效
+	     */
+	    invalidateProperties(target: DisplayLayoutAbstract): void;
+	    /**
+	     * @private
+	     * 验证失效的属性
+	     */
+	    private validateProperties;
+	    /**
+	     * @private
+	     */
+	    private invalidateSizeFlag;
+	    /**
+	     * @private
+	     */
+	    private invalidateClientSizeFlag;
+	    /**
+	     * @private
+	     */
+	    private invalidateSizeQueue;
+	    /**
+	     * @private
+	     * 标记需要重新测量尺寸
+	     */
+	    invalidateSize(target: DisplayLayoutAbstract): void;
+	    /**
+	     * @private
+	     * 测量尺寸
+	     */
+	    private validateSize;
+	    /**
+	     * @private
+	     */
+	    private invalidateDisplayListFlag;
+	    /**
+	     * @private
+	     */
+	    private invalidateDisplayListQueue;
+	    /**
+	     * @private
+	     * 标记需要重新布局
+	     */
+	    invalidateDisplayList(client: DisplayLayoutAbstract): void;
+	    /**
+	     * @private
+	     * 重新布局
+	     */
+	    private validateDisplayList;
+	    /**
+	     * @private
+	     * 是否已经添加了事件监听
+	     */
+	    private listenersAttached;
+	    /**
+	     * @private
+	     * 添加事件监听
+	     */
+	    private attachListeners;
+	    /**
+	     * @private
+	     * 执行属性应用
+	     */
+	    private doPhasedInstantiationCallBack;
+	    /**
+	     * @private
+	     */
+	    private doPhasedInstantiation;
+	    /**
+	     * @private
+	     * 使大于等于指定组件层级的元素立即应用属性
+	     * @param target 要立即应用属性的组件
+	     */
+	    validateClient(target: DisplayLayoutAbstract): void;
+	    removeDepthQueueAll(): void;
+	} const validatorShared: UIValidator;
+	export default validatorShared;
+
+}
+declare module 'src/core/DisplayLayoutAbstract' {
+	///   types="@vf.js/vf" />
+	import { DisplayObjectAbstract } from 'src/core/DisplayObjectAbstract';
+	export const $tempLocalBounds: vf.Rectangle;
+	/**
+	 * UI 布局的基础属性类
+	 */
+	export class DisplayLayoutAbstract extends DisplayObjectAbstract {
+	    constructor();
+	    isContainer: boolean;
+	    /**
+	     * @private
+	     */
+	    $values: any;
+	    includeInLayout: boolean;
+	    /**
+	     * @private
+	     * 定义的所有变量请不要添加任何初始值，必须统一在此处初始化。
+	     */
+	    protected initializeUIValues(): void;
+	    /**
+	     * @private
+	     * 检查属性失效标记并应用
+	     */
+	    protected checkInvalidateFlag(): void;
+	    /**
+	     * @private
+	     * 验证组件的属性
+	     */
+	    validateProperties(): void;
+	    /**
+	     * @private
+	     * 验证组件的尺寸
+	     */
+	    validateSize(recursive?: boolean): void;
+	    /**
+	     * @private
+	     * 验证子项的位置和大小，并绘制其他可视内容
+	     */
+	    validateDisplayList(): void;
+	    /**
+	     * @private
+	     * 提交属性，子类在调用完invalidateProperties()方法后，应覆盖此方法以应用属性
+	     */
+	    protected commitProperties(): void;
+	    /**
+	     * @private
+	     * 测量组件尺寸
+	     */
+	    protected measure(): void;
+	    /**
+	     * @private
+	     * 测量组件尺寸，返回尺寸是否发生变化
+	     */
+	    private measureSizes;
+	    /**
+	     * @private
+	     * 设置测量结果。
+	     * @param width 测量宽度
+	     * @param height 测量高度
+	     */
+	    setMeasuredSize(width: number, height: number): void;
+	    /**
+	     * @private
+	     *
+	     * @returns
+	     */
+	    protected getPreferredUWidth(): number;
+	    /**
+	     * @private
+	     */
+	    protected getPreferredUHeight(): number;
+	    /**
+	     * @private
+	     * 获取组件的首选尺寸,常用于父级的measure()方法中
+	     * 按照：外部显式设置尺寸>测量尺寸 的优先级顺序返回尺寸，
+	     */
+	    getPreferredBounds(bounds: vf.Rectangle): vf.Rectangle;
+	    /**
+	    * @private
+	    * 标记提交过需要延迟应用的属性，以便在稍后屏幕更新期间调用该组件的 commitProperties() 方法。
+	    *
+	    * 例如，要更改文本颜色和大小，如果在更改颜色后立即进行更新，然后在设置大小后再更新大小，就有些浪费。
+	    * 同时更改两个属性后再使用新的大小和颜色一次性呈示文本，效率会更高。<p/>
+	    *
+	    * 通常，子类应覆盖 commitProperties() 方法，而不是覆盖此方法。
+	     */
+	    invalidateProperties(): void;
+	    /**
+	    * @private
+	    * 标记提交过需要验证组件尺寸，以便在稍后屏幕更新期间调用该组件的 measure(),updatesize() 方法。
+	    */
+	    invalidateSize(): void;
+	    /**
+	    * @private
+	    * 标记需要验证显示列表，以便在稍后屏幕更新期间调用该组件的 updateDisplayList() 方法。
+	    */
+	    invalidateDisplayList(): void;
+	    /**
+	     * @private
+	     * 标记父级容器的尺寸和显示列表为失效
+	     */
+	    protected invalidateParentLayout(): void;
+	    /**
+	     * @private
+	     * 设置组件的布局位置
+	     */
+	    setPosition(x: number, y: number): void;
+	    /**
+	     * @private
+	     * 设置组件的宽高。此方法不同于直接设置width,height属性，
+	     * 不会影响显式标记尺寸属性
+	     */
+	    setActualSize(w: number, h: number): void;
+	    /**
+	     * @private
+	     * 更新最终的组件宽高
+	     */
+	    private updateSize;
+	    updateTransform(): void;
+	    /**
+	     * 更新显示列表,子类重写，实现布局
+	     */
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    /**
+	     * @private
+	     * 立即应用组件及其子项的所有属性
+	     */
+	    validateNow(): void;
+	    /**
+	     * @private
+	    * 验证并更新此对象的属性和布局，如果需要的话重绘对象。
+	    *
+	    * 通常只有当脚本执行完毕后，才会处理要求进行大量计算的处理属性。<p/>
+	    *
+	    * 例如，对 width 属性的设置可能会延迟，因为此设置需要重新计算这些对象的子项或父项的宽度。
+	    * 如果脚本多次设置了 width 属性，则延迟处理可防止进行多次处理。此方法允许您手动覆盖此行为。
+	     */
+	    validateSizeNow(): void;
+	    /**
+	     * @private
+	     * 距父级容器离左边距离
+	     */
+	    left: any;
+	    /**
+	     * @private
+	     * 距父级容器右边距离
+	     */
+	    right: any;
+	    /**
+	     * @private
+	     * 距父级容器顶部距离
+	     */
+	    top: any;
+	    /**
+	     * @private
+	     * 距父级容器底部距离
+	     */
+	    bottom: any;
+	    /**
+	     * @private
+	     * 在父级容器中距水平中心位置的距离
+	     */
+	    horizontalCenter: any;
+	    /**
+	     * @private
+	     * 在父级容器中距竖直中心位置的距离
+	     */
+	    verticalCenter: any;
+	    /**
+	     * @private
+	     * 相对父级容器宽度的百分比
+	     */
+	    percentWidth: number;
+	    /**
+	     * @private
+	     * 相对父级容器高度的百分比
+	     */
+	    percentHeight: number;
+	    /**
+	     * @private
+	     * 外部显式指定的宽度
+	     */
+	    readonly explicitWidth: number;
+	    /**
+	     * @private
+	     * 外部显式指定的高度
+	     */
+	    readonly explicitHeight: number;
+	    readonly _width: number;
+	    readonly _height: number;
+	    /**
+	     * @private
+	     * 组件宽度设置为undefined将使用组件的measure()方法自动计算尺寸
+	     */
+	    /**
+	    * @private
+	    *
+	    * @param value
+	    */
+	    width: number;
+	    allInvalidate(): void;
+	    /**
+	     * @private
+	     * 组件高度,默认值为NaN,设置为NaN将使用组件的measure()方法自动计算尺寸
+	     */
+	    /**
+	    * @private
+	    *
+	    * @param value
+	    */
+	    height: number;
+	    /**
+	     * @private
+	     * 组件的最小宽度,此属性设置为大于maxWidth的值时无效。同时影响测量和自动布局的尺寸。
+	     */
+	    minWidth: number;
+	    /**
+	     * @private
+	     * 组件的最大高度。同时影响测量和自动布局的尺寸。
+	     */
+	    maxWidth: number;
+	    /**
+	     * @private
+	     * 组件的最小高度,此属性设置为大于maxHeight的值时无效。同时影响测量和自动布局的尺寸。
+	     */
+	    minHeight: number;
+	    /**
+	     * @private
+	     * 组件的最大高度,同时影响测量和自动布局的尺寸。
+	     */
+	    maxHeight: number;
+	    scaleX: number;
+	    scaleY: number;
+	    x: number;
+	    y: number;
+	    skewX: any;
+	    skewY: any;
+	    pivotX: any;
+	    pivotY: any;
+	    rotation: any;
+	    /**
+	     *  =不可用= 设置索引层级，每次父级变化时，会排序 （未实现）
+	     */
+	    zIndex: any;
+	}
+
+}
+declare module 'src/core/Stage' {
+	///   types="@vf.js/vf" />
+	import { DisplayLayoutAbstract } from 'src/core/DisplayLayoutAbstract';
+	import { SyncManager } from 'src/interaction/SyncManager';
+	/**
+	 * UI的舞台对象，展示所有UI组件
+	 *
+	 * @class
+	 * @param width {Number} 舞台宽度
+	 * @param height {Number} 舞台高度
+	 */
+	export class Stage extends DisplayLayoutAbstract {
+	    constructor(width: number, height: number, app: vf.Application);
+	    app: vf.Application | any;
+	    syncManager: SyncManager | undefined;
+	    /**
+	     * 是否组织原始数据继续传递
+	     */
+	    originalEventPreventDefault: boolean;
+	    /**
+	     * 是否同步交互事件
+	     */
+	    private _syncInteractiveFlag;
+	    syncInteractiveFlag: boolean;
+	    readonly stageWidth: number;
+	    readonly stageHeight: number;
+	    scaleX: number;
+	    scaleY: number;
+	    Scale: vf.Point;
+	    release(): void;
+	    releaseAll(): void;
+	    resize(): void;
+	    /**
+	     * 接收来自player的消息
+	     * @param msg
+	     */
+	    receiveFromPlayer(msg: any): void;
+	    /**
+	     * 虚接口，子类可以扩充,往player发消息
+	     */
+	    sendToPlayer(msg: any): void;
+	    getSystemEvent(): vf.utils.EventEmitter;
+	}
+
+}
+declare module 'src/core/DisplayObjectAbstract' {
+	///   types="@vf.js/vf" />
+	import { ContainerBase } from 'src/core/ContainerBase';
+	import { Stage } from 'src/core/Stage';
+	import { DisplayObject } from 'src/core/DisplayObject';
+	export class DisplayObjectAbstract extends vf.utils.EventEmitter implements LifecycleHook, Lifecycle {
+	    constructor();
+	    /**
+	     * 全局唯一ID
+	     */
+	    readonly uuid: number;
+	    id: string;
+	    /**
+	     * 自定义组价名
+	     */
+	    name: string;
+	    /**
+	     * @private
+	     * 这个对象在显示列表中的嵌套深度，舞台为1，它的子项为2，子项的子项为3，以此类推。当对象不在显示列表中时此属性值为0.
+	     */
+	    $nestLevel: number;
+	    /**
+	     * 是否初始化
+	     * @default
+	     */
+	    initialized: boolean;
+	    /**
+	     * 舞台引用
+	     */
+	    $stage?: Stage;
+	    /**
+	     * 父容器
+	     */
+	    parent: DisplayObject | Stage | undefined;
+	    /**
+	     * 节点列表
+	     */
+	    uiChildren: DisplayObjectAbstract[];
+	    /** 没有功能实现，内部编辑器 */
+	    container: ContainerBase;
+	    /** 添加显示对象，需集成Core */
+	    addChild<T extends DisplayObjectAbstract>(item: T): T;
+	    addChildAt<T extends DisplayObjectAbstract>(item: T, index: number): T;
+	    getChildAt(index: number): DisplayObjectAbstract;
+	    getChildByUUID(uuid: number): DisplayObjectAbstract | undefined;
+	    _getChildById(id: string): DisplayObjectAbstract | undefined;
+	    getChildByPath(ids: string[]): DisplayObjectAbstract | undefined;
+	    /**
+	     * 移除已添加的UI组件
+	     * @param UIObject 要移除的UI组件
+	     */
+	    removeChild<T extends DisplayObjectAbstract>(item: T): T;
+	    removeChildAt<T>(index: number): T;
+	    removeChildren(beginIndex?: number | undefined, endIndex?: number | undefined): void;
+	    /**
+	     * 是否绘制显示对象，如果false不进行绘制，不过仍然会进行相关的更新计算。
+	     * 只影响父级的递归调用。
+	     */
+	    renderable: boolean;
+	    /**
+	     * 缓存当前的显示对象，如果移除缓存，设置false即可
+	     * 在设置这个值时，请确保你的纹理位图已经加载
+	     */
+	    cacheAsBitmap: boolean;
+	    private _interactive;
+	    private _interactiveChildren;
+	    /**
+	     * 对象是否可以接收事件
+	     */
+	    interactive: boolean;
+	    /**
+	     * 子对象是否可以接收事件，设置false后，会绕过HitTest方法的递归
+	     */
+	    interactiveChildren: boolean;
+	    /**
+	     * 标记全部失效，子类实现
+	     */
+	    allInvalidate(): void;
+	    private _enabled;
+	    enabled: boolean;
+	    /**
+	     * 是否可见
+	     */
+	    private _visible;
+	    visible: boolean;
+	    /** 清除全部事件 */
+	    offAll(event?: string | symbol): this;
+	    readonly stage: Stage | undefined;
+	    protected checkInvalidateFlag(): void;
+	    load(): void;
+	    release(): void;
+	    $onInit(): void;
+	    $onLoad(): void;
+	    $onRelease(): void;
+	    $onAddStage(): void;
+	    $onRemoveStage(): void;
+	}
+
+}
+declare module 'src/interaction/SyncManager' {
+	/**
+	 * 用于同步输入事件
+	 * by ziye
+	 */
+	import { InteractionEvent } from 'src/event/InteractionEvent';
+	import { Stage } from 'src/UI';
+	import { DisplayObjectAbstract } from 'src/core/DisplayObjectAbstract';
+	export class SyncManager {
+	    constructor(stage: Stage);
+	    /**
+	     * 对应一个stage有一个syncManager的实例
+	     */
+	    static getInstance(stage: Stage | undefined): SyncManager | undefined;
+	    resumeStatusFlag: boolean;
+	    offsetTime: number;
+	    private _resetTimeFlag;
+	    private _crossTime;
+	    private _initTime;
+	    private _interactionEvent;
+	    private _obj;
+	    private _stage;
+	    private _lostEvent;
+	    private _throttleFlag;
+	    private _throttleTimer;
+	    private _evtDataList;
+	    private _lastMoveEvent;
+	    /**
+	     * 开始同步
+	     */
+	    init(): void;
+	    release(): void;
+	    /**
+	     * 收集交互事件
+	     */
+	    collectEvent(e: InteractionEvent, obj: DisplayObjectAbstract): void;
+	    /**
+	     * 收集自定义事件
+	     * data
+	     */
+	    sendCustomEvent(customData: any): void;
+	    /**
+	     * 接收操作
+	     * @signalType 信令类型  live-实时信令   history-历史信令
+	     */
+	    receiveEvent(eventData: any, signalType?: string): void;
+	    /**
+	     * 获取当前时间
+	     */
+	    private currentTime;
+	    /**
+	     * 构造一个新的e，用于同步，数据要尽量精简
+	     */
+	    private createEventData;
+	    /**
+	     * 发送操作
+	     */
+	    private sendEvent;
+	    /**
+	     * 更新节流状态
+	     */
+	    private throttleUpdate;
+	    /**
+	     * 节流，每100ms发送一次
+	     * @param eventData
+	     */
+	    private throttle;
+	    private resetStage;
+	    /**
+	     * 解析收到的event
+	     */
+	    private parseEventData;
+	    /**
+	     * 时间未到，需要穿越到未来
+	     */
+	    private crossTime;
+	    /**
+	     * 处理历史信令，将历史输入事件按时间顺序放置到一个数组
+	     * @param eventData
+	     */
+	    private dealHistoryEvent;
+	    /**
+	     * 恢复状态
+	     */
+	    private resumeStatus;
+	}
+
+}
 declare module 'src/interaction/ClickEvent' {
 	import { DisplayObject } from 'src/core/DisplayObject';
 	import { InteractionEvent } from 'src/event/InteractionEvent';
@@ -246,49 +1477,6 @@ declare module 'src/interaction/DragEvent' {
 	}
 
 }
-declare module 'src/core/DisplayLayoutKeys' {
-	/** 标记属性失效 */
-	export const invalidatePropertiesFlag: unique symbol;
-	/** 标记大小失效 */
-	export const invalidateSizeFlag: unique symbol;
-	/** 标记显示失效 */
-	export const invalidateDisplayListFlag: unique symbol;
-	export const explicitWidth: unique symbol;
-	export const explicitHeight: unique symbol;
-	export const width: unique symbol;
-	export const height: unique symbol;
-	export const minWidth: unique symbol;
-	export const maxWidth: unique symbol;
-	export const minHeight: unique symbol;
-	export const maxHeight: unique symbol;
-	export const percentWidth: unique symbol;
-	export const percentHeight: unique symbol;
-	export const scaleX: unique symbol;
-	export const scaleY: unique symbol;
-	export const x: unique symbol;
-	export const y: unique symbol;
-	export const skewX: unique symbol;
-	export const skewY: unique symbol;
-	export const pivotX: unique symbol;
-	export const pivotY: unique symbol;
-	export const rotation: unique symbol;
-	export const zIndex: unique symbol;
-	export const measuredWidth: unique symbol;
-	export const measuredHeight: unique symbol;
-	export const oldPreferWidth: unique symbol;
-	export const oldPreferHeight: unique symbol;
-	export const oldX: unique symbol;
-	export const oldY: unique symbol;
-	export const oldWidth: unique symbol;
-	export const oldHeight: unique symbol;
-	export const left: unique symbol;
-	export const right: unique symbol;
-	export const top: unique symbol;
-	export const bottom: unique symbol;
-	export const horizontalCenter: unique symbol;
-	export const verticalCenter: unique symbol;
-
-}
 declare module 'src/display/Label' {
 	///   types="@vf.js/vf" />
 	import { DisplayObject } from 'src/core/DisplayObject';
@@ -369,7 +1557,7 @@ declare module 'src/display/Image' {
 	     * 设置scale后，可设置scale9Grid进行调整缩放区域
 	     */
 	    private _fillMode?;
-	    fillMode: "no-repeat" | "repeat" | "scale" | undefined;
+	    fillMode: "repeat" | "no-repeat" | "scale" | undefined;
 	    /**
 	     * 锚点，调整位图的坐标中点 0-1
 	     */
@@ -784,1081 +1972,6 @@ declare module 'src/interaction/Index' {
 	export { ClickEvent, DragDropController, DragEvent, InputController, MouseScrollEvent, InteractionEvent, TouchMouseEvent, ComponentEvent, GroupController };
 
 }
-declare module 'src/core/Ticker' {
-	///   types="@vf.js/vf" />
-	export const TickerShared: vf.Ticker;
-
-}
-declare module 'src/core/DisplayLayoutValidator' {
-	///   types="@vf.js/vf" />
-	import { DisplayLayoutAbstract } from 'src/core/DisplayLayoutAbstract'; class UIValidator extends vf.utils.EventEmitter {
-	    /**
-	     * @private
-	     * 创建一个Validator对象
-	     */
-	    constructor();
-	    /**
-	     * @private
-	     */
-	    private targetLevel;
-	    /**
-	     * @private
-	     */
-	    private invalidatePropertiesFlag;
-	    /**
-	     * @private
-	     */
-	    private invalidateClientPropertiesFlag;
-	    /**
-	     * @private
-	     */
-	    private invalidatePropertiesQueue;
-	    /**
-	     * @private
-	     * 标记组件属性失效
-	     */
-	    invalidateProperties(target: DisplayLayoutAbstract): void;
-	    /**
-	     * @private
-	     * 验证失效的属性
-	     */
-	    private validateProperties;
-	    /**
-	     * @private
-	     */
-	    private invalidateSizeFlag;
-	    /**
-	     * @private
-	     */
-	    private invalidateClientSizeFlag;
-	    /**
-	     * @private
-	     */
-	    private invalidateSizeQueue;
-	    /**
-	     * @private
-	     * 标记需要重新测量尺寸
-	     */
-	    invalidateSize(target: DisplayLayoutAbstract): void;
-	    /**
-	     * @private
-	     * 测量尺寸
-	     */
-	    private validateSize;
-	    /**
-	     * @private
-	     */
-	    private invalidateDisplayListFlag;
-	    /**
-	     * @private
-	     */
-	    private invalidateDisplayListQueue;
-	    /**
-	     * @private
-	     * 标记需要重新布局
-	     */
-	    invalidateDisplayList(client: DisplayLayoutAbstract): void;
-	    /**
-	     * @private
-	     * 重新布局
-	     */
-	    private validateDisplayList;
-	    /**
-	     * @private
-	     * 是否已经添加了事件监听
-	     */
-	    private listenersAttached;
-	    /**
-	     * @private
-	     * 添加事件监听
-	     */
-	    private attachListeners;
-	    /**
-	     * @private
-	     * 执行属性应用
-	     */
-	    private doPhasedInstantiationCallBack;
-	    /**
-	     * @private
-	     */
-	    private doPhasedInstantiation;
-	    /**
-	     * @private
-	     * 使大于等于指定组件层级的元素立即应用属性
-	     * @param target 要立即应用属性的组件
-	     */
-	    validateClient(target: DisplayLayoutAbstract): void;
-	    removeDepthQueueAll(): void;
-	} const validatorShared: UIValidator;
-	export default validatorShared;
-
-}
-declare module 'src/core/ContainerBase' {
-	///   types="@vf.js/vf" />
-	/** 容器扩展类，后续便于做延时渲染 */
-	export class ContainerBase extends vf.Container {
-	    constructor();
-	    isEmitRender: boolean;
-	    render(renderer: vf.Renderer): void;
-	}
-
-}
-declare module 'src/tween/Easing' {
-	/**
-	 * 完整的缓动曲线列表
-	 *
-	 * @example vf.gui.Easing.Linear.None;
-	 *
-	 *
-	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
-	 */
-	export const Easing: {
-	    Linear: {
-	        None(k: number): number;
-	    };
-	    Quadratic: {
-	        In(k: number): number;
-	        Out(k: number): number;
-	        InOut(k: number): number;
-	    };
-	    Cubic: {
-	        In(k: number): number;
-	        Out(k: number): number;
-	        InOut(k: number): number;
-	    };
-	    Quartic: {
-	        In(k: number): number;
-	        Out(k: number): number;
-	        InOut(k: number): number;
-	    };
-	    Quintic: {
-	        In(k: number): number;
-	        Out(k: number): number;
-	        InOut(k: number): number;
-	    };
-	    Sinusoidal: {
-	        In(k: number): number;
-	        Out(k: number): number;
-	        InOut(k: number): number;
-	    };
-	    Exponential: {
-	        In(k: number): number;
-	        Out(k: number): number;
-	        InOut(k: number): number;
-	    };
-	    Circular: {
-	        In(k: number): number;
-	        Out(k: number): number;
-	        InOut(k: number): number;
-	    };
-	    Elastic: {
-	        In(k: number): number;
-	        Out(k: number): number;
-	        InOut(k: number): number;
-	    };
-	    Back: {
-	        In(k: number): number;
-	        Out(k: number): number;
-	        InOut(k: number): number;
-	    };
-	    Bounce: {
-	        In(k: number): number;
-	        Out(k: number): number;
-	        InOut(k: number): number;
-	    };
-	    Stepped: {
-	        steps: (steps: number) => (k: number) => number;
-	    };
-	};
-
-}
-declare module 'src/tween/private/constants' {
-	/**
-	 * 卡帧后的平滑处理帧率
-	 */
-	export const FRAME_MS: number;
-	/**
-	 * 平滑处理允许的触发时间
-	 */
-	export const TOO_LONG_FRAME_MS = 250;
-	/**
-	 * 链式补间动画的key前缀
-	 */
-	export const CHAINED_TWEENS = "_chainedTweens";
-	export const STRING_PROP = "STRING_PROP";
-	export const NUM_REGEX: RegExp;
-	export function decomposeString(fromValue: string | any): any;
-	export function decompose(prop: any, obj: any, from: any, to: any): any;
-	export const RGB = "rgb(";
-	export const RGBA = "rgba(";
-	export function isRGBColor(v: any, i: number, r?: string): boolean;
-	export function recompose(prop: any, obj: any, from: any, to: any, t: any, originalT: any, stringBuffer?: any): any;
-	export const SET_NESTED: (nested: any) => any;
-
-}
-declare module 'src/tween/private/Interpolation' {
-	/**
-	 * 差值计算列表
-	 * @example
-	 *
-	 * let bezier = vf.gui.tween.Interpolation.Bezier
-	 * new vf.gui.tween.Tween({x:0}).to({x:[0, 4, 8, 12, 15, 20, 30, 40, 20, 40, 10, 50]}, 1000).interpolation(bezier).start()
-	 * @memberof vf.gui.tween
-	 */
-	export const Interpolation: {
-	    Linear(v: any, k: number, value: any): any;
-	    Bezier(v: any, k: number, value: any): any;
-	    CatmullRom(v: any, k: number, value: any): any;
-	    Utils: {
-	        Linear(p0: any, p1: any, t: any, v: any): any;
-	        Reset(value: any): any;
-	        Bernstein(n: any, i: any): number;
-	        Factorial: (n: any) => number;
-	        CatmullRom(p0: any, p1: any, p2: any, p3: any, t: any, v?: any): any;
-	    };
-	};
-
-}
-declare module 'src/event/TweenEvent' {
-	/**
-	 * 缓动事件
-	 */
-	export const TweenEvent: {
-	    /**
-	     *
-	     */
-	    Callback: string;
-	    /**
-	     * 每次改变
-	     */
-	    update: string;
-	    /**
-	     * 完成
-	     */
-	    complete: string;
-	    /**
-	     * 开始时
-	     */
-	    start: string;
-	    /**
-	     * 每次重复时
-	     */
-	    repeat: string;
-	    /**
-	     * 反向时
-	     */
-	    reverse: string;
-	    /**
-	     * 暂停时
-	     */
-	    pause: string;
-	    /**
-	     * 播放时
-	     */
-	    play: string;
-	    /**
-	     * 重新开始时
-	     */
-	    restart: string;
-	    /**
-	     * 停止时
-	     */
-	    stop: string;
-	};
-
-}
-declare module 'src/tween/Tween' {
-	///   types="@vf.js/vf" />
-	import { add, get, getAll, remove, removeAll, removeDisplay, update } from 'src/tween/private/core';
-	/**
-	 * 缓动动画
-	 *
-	 * @example let tween = new vf.gui.Tween(myObject).to({width:'300px'}, 2000).start()
-	 *
-	 *
-	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTween
-	 */
-	export class Tween extends vf.utils.EventEmitter {
-	    static core: {
-	        add: typeof add;
-	        get: typeof get;
-	        getAll: typeof getAll;
-	        remove: typeof remove;
-	        removeAll: typeof removeAll;
-	        removeDisplay: typeof removeDisplay;
-	        update: typeof update;
-	    };
-	    static Event: {
-	        Callback: string;
-	        update: string;
-	        complete: string;
-	        start: string;
-	        repeat: string;
-	        reverse: string;
-	        pause: string;
-	        play: string;
-	        restart: string;
-	        stop: string;
-	    };
-	    /**
-	     * Easier way to call the Tween
-	     * @param {object} object - Initial value
-	     * @param {object} to - Target value
-	     * @param {object} params - Options of tweens
-	     * @example Tween.fromTo(myObject, {x:0}, {x:200},1000)
-	     * @memberof vf.gui.Tween
-	     * @static
-	     */
-	    static fromTo(object: any, to: any, duration?: number): Tween;
-	    /**
-	     * Easier way calling constructor only applies the `to` value, useful for CSS Animation
-	     * @param {any} object object
-	     * @param {object} to - Target value
-	     * @param {object} params - Options of tweens
-	     * @example Tween.to(myObject, {x:200}, 1000)
-	     * @memberof vf.gui.Tween
-	     * @static
-	     */
-	    static to(object: any | any[], to: any, duration?: number): Tween;
-	    /**
-	     * Easier way calling constructor only applies the `from` value, useful for CSS Animation
-	     * @param {any} object object
-	     * @param {object} from - Initial value
-	     * @param {object} params - Options of tweens
-	     * @example Tween.from(myObject, {x:200}, 1000)
-	     * @memberof vf.gui.Tween
-	     * @static
-	     */
-	    static from(object: any, from: any, duration?: number): Tween;
-	    constructor(object?: any);
-	    id: number;
-	    object: any;
-	    private _valuesEnd;
-	    private _valuesStart;
-	    protected _duration: number;
-	    private _easingFunction;
-	    private _easingReverse;
-	    private _interpolationFunction;
-	    protected _startTime: number;
-	    protected _delayTime: number;
-	    private _repeat;
-	    private _initRepeat;
-	    _isPlaying: boolean;
-	    private _yoyo;
-	    private _reversed;
-	    private _onStartCallbackFired;
-	    private _isFinite;
-	    private _prevTime;
-	    private _rendered;
-	    private _reverseDelayTime;
-	    /** 附加数据 */
-	    data: {
-	        [key: string]: any;
-	    };
-	    setObject(object: any): void;
-	    /**
-	     * 是否在播放中
-	     * @return {boolean}
-	     * @example tween.isPlaying()
-	     * @memberof vf.gui.Tween
-	     */
-	    readonly isPlaying: boolean;
-	    /**
-	     * 是否开始播放
-	     * @return {boolean}
-	     * @example tween.isStarted()
-	     * @memberof vf.gui.Tween
-	     */
-	    readonly isStarted: boolean;
-	    /**
-	     * 获取动画的开始时间
-	     */
-	    /**
-	    * 获取动画的开始时间
-	    */
-	    startTime: number;
-	    /**
-	     * 设置缓动时长
-	     * @param {number} amount 持续的毫秒值
-	     * @example tween.duration(2000)
-	     * @memberof vf.gui.Tween
-	     * @deprecated 不推荐使用这个方法，内部使用
-	     * @private
-	     */
-	    duration: number | Function;
-	    /**
-	     * 逆向缓动
-	     * @example tween.reverse()
-	     * @param {boolean=} state 是否逆向
-	     * @memberof vf.gui.Tween
-	     */
-	    reverse(state?: boolean): this;
-	    /**
-	     * 当前动画是否逆转
-	     * @return {boolean}
-	     * @example tween.reversed() true逆向中
-	     * @memberof vf.gui.Tween
-	     */
-	    reversed(): boolean;
-	    /**
-	     * 暂停缓动
-	     * @example tween.pause()
-	     * @memberof vf.gui.Tween
-	     */
-	    pause(): boolean | this;
-	    /**
-	     * 播放或恢复播放
-	     * @example tween.play()
-	     * @memberof vf.gui.Tween
-	     */
-	    play(): boolean | this;
-	    /**
-	     * 设置要缓动的目标属性与持续时间
-	     * @param {object} properties 目标属性值
-	     * @param {number|Object=} [duration=1000] 持续时间
-	     * @example let tween = new vf.gui.Tween({x:0}).to({x:100}, 2000)
-	     * @memberof vf.gui.Tween
-	     */
-	    to(properties: any, duration?: number): this;
-	    private render;
-	    /**
-	     * 开始执行缓动
-	     * @example tween.start()
-	     * @memberof vf.gui.Tween
-	     */
-	    start(): this;
-	    /**
-	     * 停止缓动
-	     * @example tween.stop()
-	     * @memberof vf.gui.Tween
-	     */
-	    stop(): boolean | this;
-	    /**
-	     * 设置延迟执行时间
-	     * @param {number} amount 延迟等待的时间，毫秒
-	     * @example tween.delay(500)
-	     * @memberof vf.gui.Tween
-	     */
-	    delay(amount: number): this;
-	    /**
-	     * 设置重复执行的次数
-	     * @param {number} amount 重复次数
-	     * @example tween.repeat(5)
-	     * @memberof vf.gui.Tween
-	     */
-	    repeat(amount: number): this;
-	    /**
-	     * 设置每个重复执行过程的延迟时间，毫秒
-	     * @param {number} amount 延迟值
-	     * @example tween.reverseDelay(500)
-	     * @memberof vf.gui.Tween
-	     */
-	    reverseDelay(amount: number): this;
-	    /**
-	     * 是否在重复执行中启用反向动画
-	     * @param {boolean} state true启动
-	     * @param {Function=} _easingReverse 反向时的Easing function
-	     * @example tween.yoyo(true)
-	     * @memberof vf.gui.Tween
-	     */
-	    yoyo(state?: boolean | Function, _easingReverse?: (k: number) => number): this;
-	    /**
-	     * 设置缓动函数
-	     * @param {Function} _easingFunction 缓动函数的公式，如果设置yoyo的第二个值会应用于逆向缓动
-	     * @example tween.easing(Easing.Elastic.InOut)
-	     * @memberof vf.gui.Tween
-	     */
-	    easing(_easingFunction: ((k: number) => number) | any): this;
-	    /**
-	     * 设置差值
-	     * @param {Function} _interpolationFunction 差值的函数
-	     * @example tween.interpolation(Interpolation.Bezier)
-	     * @memberof vf.gui.Tween
-	     */
-	    interpolation(_interpolationFunction: (v: any, k: number, value: any) => any): this;
-	    /**
-	     * 更新动画到指定时间点，进行播放
-	     * @param time
-	     */
-	    gotoAndPlay(time: number): void;
-	    /**
-	     * 更新动画到指定时间点，停止播放
-	     * @param time
-	     */
-	    gotoAndStop(time: number): void;
-	    /**
-	     * 更新动画到指定时间点，停止播放
-	     * @param time
-	     */
-	    gotoAndEnd(): void;
-	    /**
-	     * 更新函数，通过给定的 `time` 设置目标属性变化
-	    * @param {number=} deltaTime 帧间隔
-	    * @param {Boolean=} preserve 完成后，防止删除动画对象
-	     * @param {boolean=} forceTime 强制进行更新渲染，不关心时间是否匹配
-	     * @example tween.update(100)
-	     * @memberof vf.gui.Tween
-	     */
-	    update(deltaTime: number, preserve?: boolean, forceTime?: boolean): boolean;
-	    release(): void;
-	}
-
-}
-declare module 'src/tween/private/core' {
-	import { Tween } from 'src/tween/Tween';
-	/**
-	 * 插件存储器
-	 * @memberof vf.gui.tween
-	 * @example
-	 * let num = Plugins.num = function (node, start, end) {
-	  * return t => start + (end - start) * t
-	  * }
-	  *
-	  * @static
-	  */
-	export const Plugins: any;
-	/**
-	 * 添加对象到缓动列表
-	 * @param {Tween} tween Tween 实例
-	 * @memberof vf.gui.tween
-	 * @example
-	 * let tween = new vf.gui.tween.Tween({x:0})
-	 * tween.to({x:200}, 1000)
-	 * vf.gui.tween.add(tween)
-	 */
-	export function add(tween: Tween): void;
-	/**
-	 * 没有缓动后，设置运行多少帧后，停止
-	 * @param {number} frameCount=120 删除所有动画后，要运行的剩余帧
-	 * @memberof vf.gui.tween
-	 * @example
-	 * vf.gui.tween.FrameThrottle(60)
-	 */
-	export function FrameThrottle(frameCount?: number): void;
-	/**
-	 * 延时处理，针对插件、canvas、dom
-	 * @param {number} state=true 是否平滑处理
-	 * @memberof vf.gui.tween
-	 * @example
-	 * vf.gui.tween.ToggleLagSmoothing(false)
-	 */
-	export function ToggleLagSmoothing(_state?: boolean): void;
-	/**
-	 * 获得所有缓动对象
-	 * @memberof vf.gui.tween
-	 * vf.gui.tween.getAll()
-	 */
-	export function getAll(): Tween[];
-	/**
-	 * 移除所有动画对象
-	 * @example  vf.gui.tween.removeAll()
-	 * @memberof vf.gui.tween
-	 */
-	export function removeAll(): void;
-	/**
-	 * 获取对象
-	 * @param {Tween} tween 缓动对象实例
-	 * @return {Tween} 返回对象或null
-	 * @memberof vf.gui.tween
-	 * @example
-	 * vf.gui.tween.get(tween)
-	 */
-	export function get(tween: Tween): Tween | null;
-	/**
-	 * 从缓动列表移除对象
-	 * @param {Tween} tween Tween instance
-	 * @memberof vf.gui.tween
-	 * @example
-	 * vf.gui.tween.remove(tween)
-	 */
-	export function remove(tween: Tween): void;
-	export function removeDisplay(uuid: string): void;
-	/**
-	 * 按给定时间更新缓动
-	 * @param {number=} time 时间戳
-	 * @param {Boolean=} preserve 完成后，防止删除动画对象
-	 * @memberof vf.gui.tween
-	 * @example
-	 * vf.gui.tween.update(500)
-	 */
-	export function update(deltaTime: number): boolean;
-	/**
-	 * 是否正在运行中
-	 * @return {Boolean} 只要还有缓动在运行，返回true
-	 * @memberof vf.gui.tween
-	 * @example vf.gui.tween.isRunning()
-	 */
-	export function isRunning(): boolean;
-	/**
-	 * 返回是否开启延迟平滑状态
-	 * @return {Boolean}
-	 * @memberof vf.gui.tween
-	 * @example vf.gui.tween.isRunning()
-	 */
-	export function isLagSmoothing(): boolean;
-
-}
-declare module 'src/utils/ObjectPool' {
-	 class ObjectPool {
-	    constructor();
-	    /**
-	     * 作为对象池的词典dict
-	     */
-	    private objPoolDict;
-	    /**
-	     * 向对象池中放入对象，以便重复利用
-	     */
-	    push<T extends Lifecycle, S>(keyClass: S, oldObj: T): void;
-	    /**
-	     * 从对象池中取出需要的对象
-	     * @return 取出的相应对象
-	     *
-	     */
-	    pop<T>(keyClass: T): any;
-	}
-	/**
-	 * 对象池实例
-	 */
-	export const objectPoolShared: ObjectPool;
-	export {};
-
-}
-declare module 'src/tween/Timeline' {
-	 class Node {
-	    constructor(node?: Node);
-	    parent: Node | undefined;
-	    default: number;
-	    start: any;
-	    end: any;
-	    easing: any;
-	    duration: number;
-	    startFrame: number;
-	    endFrame: number;
-	    prevTime: number;
-	    release(): void;
-	    load(): void;
-	    destroy(): void;
-	}
-	/**
-	 * 基于帧的时间轴控制类
-	 *
-	 * @example let timeline = new vf.gui.Timeline();
-	 *
-	 *
-	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
-	 */
-	export class Timeline extends vf.utils.EventEmitter implements Lifecycle {
-	    constructor();
-	    id: number;
-	    private _object;
-	    private _frames;
-	    private _frameCount;
-	    private _elapsedMS;
-	    private _prevTime;
-	    private _isStop;
-	    private _lastNode;
-	    private _isSetDefault;
-	    loop: boolean;
-	    setDefault(object: any, _duration: number, fps: number): this;
-	    addProperty(property: string, value: number | string | boolean, endFrame: number, easing?: any): this;
-	    stop(): void;
-	    play(): void;
-	    gotoAndPlay(frame: number): void;
-	    gotoAndStop(frame: number): void;
-	    private seekLastNode;
-	    private goto;
-	    update(a: number, b?: number, elapsedMS?: number): true | undefined;
-	    updateobject(key: string, node: Node): boolean;
-	    load(): void;
-	    release(): void;
-	}
-	export {};
-
-}
-declare module 'src/tween/private/index' {
-	import { add, get, getAll, isRunning, FrameThrottle, ToggleLagSmoothing, Plugins, remove, removeAll, removeDisplay, update } from 'src/tween/private/core';
-	import { Interpolation } from 'src/tween/private/Interpolation';
-	import * as utils from 'src/tween/private/constants';
-	import { TweenEvent } from 'src/event/TweenEvent';
-	import { Timeline } from 'src/tween/Timeline';
-	export { Plugins, get, getAll, removeAll, remove, removeDisplay, add, update, isRunning, FrameThrottle, ToggleLagSmoothing, Interpolation, TweenEvent, Timeline, utils };
-
-}
-declare module 'src/core/Stage' {
-	///   types="@vf.js/vf" />
-	import { DisplayLayoutAbstract } from 'src/core/DisplayLayoutAbstract';
-	/**
-	 * UI的舞台对象，展示所有UI组件
-	 *
-	 * @class
-	 * @param width {Number} 舞台宽度
-	 * @param height {Number} 舞台高度
-	 */
-	export class Stage extends DisplayLayoutAbstract {
-	    constructor(width: number, height: number, app: vf.Application);
-	    app: vf.Application | any;
-	    /**
-	     * 是否组织原始数据继续传递
-	     */
-	    originalEventPreventDefault: boolean;
-	    readonly stageWidth: number;
-	    readonly stageHeight: number;
-	    scaleX: number;
-	    scaleY: number;
-	    Scale: vf.Point;
-	    release(): void;
-	    releaseAll(): void;
-	    resize(): void;
-	    /**
-	     * 虚接口，子类可以扩充
-	     */
-	    inputLog(msg: any): void;
-	}
-
-}
-declare module 'src/core/DisplayObjectAbstract' {
-	///   types="@vf.js/vf" />
-	import { ContainerBase } from 'src/core/ContainerBase';
-	import { Stage } from 'src/core/Stage';
-	import { DisplayObject } from 'src/core/DisplayObject';
-	export class DisplayObjectAbstract extends vf.utils.EventEmitter implements LifecycleHook, Lifecycle {
-	    constructor();
-	    /**
-	     * 全局唯一ID
-	     */
-	    readonly uuid: number;
-	    id: string;
-	    /**
-	     * 自定义组价名
-	     */
-	    name: string;
-	    /**
-	     * @private
-	     * 这个对象在显示列表中的嵌套深度，舞台为1，它的子项为2，子项的子项为3，以此类推。当对象不在显示列表中时此属性值为0.
-	     */
-	    $nestLevel: number;
-	    /**
-	     * 是否初始化
-	     * @default
-	     */
-	    initialized: boolean;
-	    /**
-	     * 舞台引用
-	     */
-	    $stage?: Stage;
-	    /**
-	     * 父容器
-	     */
-	    parent: DisplayObject | Stage | undefined;
-	    /**
-	     * 节点列表
-	     */
-	    uiChildren: DisplayObjectAbstract[];
-	    /** 没有功能实现，内部编辑器 */
-	    container: ContainerBase;
-	    /** 添加显示对象，需集成Core */
-	    addChild<T extends DisplayObjectAbstract>(item: T): T;
-	    addChildAt<T extends DisplayObjectAbstract>(item: T, index: number): T;
-	    getChildAt(index: number): DisplayObjectAbstract;
-	    getChildByUUID(uuid: number): DisplayObjectAbstract | undefined;
-	    _getChildById(id: string): DisplayObjectAbstract | undefined;
-	    getChildByPath(ids: string[]): DisplayObjectAbstract | undefined;
-	    /**
-	     * 移除已添加的UI组件
-	     * @param UIObject 要移除的UI组件
-	     */
-	    removeChild<T extends DisplayObjectAbstract>(item: T): T;
-	    removeChildAt<T>(index: number): T;
-	    removeChildren(beginIndex?: number | undefined, endIndex?: number | undefined): void;
-	    /**
-	     * 是否绘制显示对象，如果false不进行绘制，不过仍然会进行相关的更新计算。
-	     * 只影响父级的递归调用。
-	     */
-	    renderable: boolean;
-	    /**
-	     * 缓存当前的显示对象，如果移除缓存，设置false即可
-	     * 在设置这个值时，请确保你的纹理位图已经加载
-	     */
-	    cacheAsBitmap: boolean;
-	    private _interactive;
-	    private _interactiveChildren;
-	    /**
-	     * 对象是否可以接收事件
-	     */
-	    interactive: boolean;
-	    /**
-	     * 子对象是否可以接收事件，设置false后，会绕过HitTest方法的递归
-	     */
-	    interactiveChildren: boolean;
-	    private _enabled;
-	    enabled: boolean;
-	    /**
-	     * 是否可见
-	     */
-	    private _visible;
-	    visible: boolean;
-	    /** 清除全部事件 */
-	    offAll(event?: string | symbol): this;
-	    readonly stage: Stage | undefined;
-	    protected checkInvalidateFlag(): void;
-	    load(): void;
-	    release(): void;
-	    $onInit(): void;
-	    $onLoad(): void;
-	    $onRelease(): void;
-	    $onAddStage(): void;
-	    $onRemoveStage(): void;
-	}
-
-}
-declare module 'src/core/DisplayLayoutAbstract' {
-	///   types="@vf.js/vf" />
-	import { DisplayObjectAbstract } from 'src/core/DisplayObjectAbstract';
-	export const $tempLocalBounds: vf.Rectangle;
-	/**
-	 * UI 布局的基础属性类
-	 */
-	export class DisplayLayoutAbstract extends DisplayObjectAbstract {
-	    constructor();
-	    isContainer: boolean;
-	    /**
-	     * @private
-	     */
-	    $values: any;
-	    includeInLayout: boolean;
-	    /**
-	     * @private
-	     * 定义的所有变量请不要添加任何初始值，必须统一在此处初始化。
-	     */
-	    protected initializeUIValues(): void;
-	    /**
-	     * @private
-	     * 检查属性失效标记并应用
-	     */
-	    protected checkInvalidateFlag(): void;
-	    /**
-	     * @private
-	     * 验证组件的属性
-	     */
-	    validateProperties(): void;
-	    /**
-	     * @private
-	     * 验证组件的尺寸
-	     */
-	    validateSize(recursive?: boolean): void;
-	    /**
-	     * @private
-	     * 验证子项的位置和大小，并绘制其他可视内容
-	     */
-	    validateDisplayList(): void;
-	    /**
-	     * @private
-	     * 提交属性，子类在调用完invalidateProperties()方法后，应覆盖此方法以应用属性
-	     */
-	    protected commitProperties(): void;
-	    /**
-	     * @private
-	     * 测量组件尺寸
-	     */
-	    protected measure(): void;
-	    /**
-	     * @private
-	     * 测量组件尺寸，返回尺寸是否发生变化
-	     */
-	    private measureSizes;
-	    /**
-	     * @private
-	     * 设置测量结果。
-	     * @param width 测量宽度
-	     * @param height 测量高度
-	     */
-	    setMeasuredSize(width: number, height: number): void;
-	    /**
-	     * @private
-	     *
-	     * @returns
-	     */
-	    protected getPreferredUWidth(): number;
-	    /**
-	     * @private
-	     */
-	    protected getPreferredUHeight(): number;
-	    /**
-	     * @private
-	     * 获取组件的首选尺寸,常用于父级的measure()方法中
-	     * 按照：外部显式设置尺寸>测量尺寸 的优先级顺序返回尺寸，
-	     */
-	    getPreferredBounds(bounds: vf.Rectangle): vf.Rectangle;
-	    /**
-	    * @private
-	    * 标记提交过需要延迟应用的属性，以便在稍后屏幕更新期间调用该组件的 commitProperties() 方法。
-	    *
-	    * 例如，要更改文本颜色和大小，如果在更改颜色后立即进行更新，然后在设置大小后再更新大小，就有些浪费。
-	    * 同时更改两个属性后再使用新的大小和颜色一次性呈示文本，效率会更高。<p/>
-	    *
-	    * 通常，子类应覆盖 commitProperties() 方法，而不是覆盖此方法。
-	     */
-	    invalidateProperties(): void;
-	    /**
-	    * @private
-	    * 标记提交过需要验证组件尺寸，以便在稍后屏幕更新期间调用该组件的 measure(),updatesize() 方法。
-	    */
-	    invalidateSize(): void;
-	    /**
-	    * @private
-	    * 标记需要验证显示列表，以便在稍后屏幕更新期间调用该组件的 updateDisplayList() 方法。
-	    */
-	    invalidateDisplayList(): void;
-	    /**
-	     * @private
-	     * 标记父级容器的尺寸和显示列表为失效
-	     */
-	    protected invalidateParentLayout(): void;
-	    /**
-	     * @private
-	     * 设置组件的布局位置
-	     */
-	    setPosition(x: number, y: number): void;
-	    /**
-	     * @private
-	     * 设置组件的宽高。此方法不同于直接设置width,height属性，
-	     * 不会影响显式标记尺寸属性
-	     */
-	    setActualSize(w: number, h: number): void;
-	    /**
-	     * @private
-	     * 更新最终的组件宽高
-	     */
-	    private updateSize;
-	    updateTransform(): void;
-	    /**
-	     * 更新显示列表,子类重写，实现布局
-	     */
-	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
-	    /**
-	     * @private
-	     * 立即应用组件及其子项的所有属性
-	     */
-	    validateNow(): void;
-	    /**
-	     * @private
-	    * 验证并更新此对象的属性和布局，如果需要的话重绘对象。
-	    *
-	    * 通常只有当脚本执行完毕后，才会处理要求进行大量计算的处理属性。<p/>
-	    *
-	    * 例如，对 width 属性的设置可能会延迟，因为此设置需要重新计算这些对象的子项或父项的宽度。
-	    * 如果脚本多次设置了 width 属性，则延迟处理可防止进行多次处理。此方法允许您手动覆盖此行为。
-	     */
-	    validateSizeNow(): void;
-	    /**
-	     * @private
-	     * 距父级容器离左边距离
-	     */
-	    left: any;
-	    /**
-	     * @private
-	     * 距父级容器右边距离
-	     */
-	    right: any;
-	    /**
-	     * @private
-	     * 距父级容器顶部距离
-	     */
-	    top: any;
-	    /**
-	     * @private
-	     * 距父级容器底部距离
-	     */
-	    bottom: any;
-	    /**
-	     * @private
-	     * 在父级容器中距水平中心位置的距离
-	     */
-	    horizontalCenter: any;
-	    /**
-	     * @private
-	     * 在父级容器中距竖直中心位置的距离
-	     */
-	    verticalCenter: any;
-	    /**
-	     * @private
-	     * 相对父级容器宽度的百分比
-	     */
-	    percentWidth: number;
-	    /**
-	     * @private
-	     * 相对父级容器高度的百分比
-	     */
-	    percentHeight: number;
-	    /**
-	     * @private
-	     * 外部显式指定的宽度
-	     */
-	    readonly explicitWidth: number;
-	    /**
-	     * @private
-	     * 外部显式指定的高度
-	     */
-	    readonly explicitHeight: number;
-	    readonly _width: number;
-	    readonly _height: number;
-	    /**
-	     * @private
-	     * 组件宽度设置为undefined将使用组件的measure()方法自动计算尺寸
-	     */
-	    /**
-	    * @private
-	    *
-	    * @param value
-	    */
-	    width: number;
-	    allInvalidate(): void;
-	    /**
-	     * @private
-	     * 组件高度,默认值为NaN,设置为NaN将使用组件的measure()方法自动计算尺寸
-	     */
-	    /**
-	    * @private
-	    *
-	    * @param value
-	    */
-	    height: number;
-	    /**
-	     * @private
-	     * 组件的最小宽度,此属性设置为大于maxWidth的值时无效。同时影响测量和自动布局的尺寸。
-	     */
-	    minWidth: number;
-	    /**
-	     * @private
-	     * 组件的最大高度。同时影响测量和自动布局的尺寸。
-	     */
-	    maxWidth: number;
-	    /**
-	     * @private
-	     * 组件的最小高度,此属性设置为大于maxHeight的值时无效。同时影响测量和自动布局的尺寸。
-	     */
-	    minHeight: number;
-	    /**
-	     * @private
-	     * 组件的最大高度,同时影响测量和自动布局的尺寸。
-	     */
-	    maxHeight: number;
-	    scaleX: number;
-	    scaleY: number;
-	    x: number;
-	    y: number;
-	    skewX: any;
-	    skewY: any;
-	    pivotX: any;
-	    pivotY: any;
-	    rotation: any;
-	    /**
-	     *  =不可用= 设置索引层级，每次父级变化时，会排序 （未实现）
-	     */
-	    zIndex: any;
-	}
-
-}
 declare module 'src/layout/CSSSSystem' {
 	///   types="@vf.js/vf" />
 	import { DisplayObject } from 'src/core/DisplayObject';
@@ -2071,7 +2184,7 @@ declare module 'src/layout/CSSStyle' {
 	     * no-repeat不重复，
 	     */
 	    private _backgroundRepeat;
-	    backgroundRepeat: "no-repeat" | "repeat";
+	    backgroundRepeat: "repeat" | "no-repeat";
 	    /**
 	     * 遮罩图
 	     */
@@ -2142,7 +2255,7 @@ declare module 'src/layout/CSSStyle' {
 	    fontVariant: "normal" | "small-caps";
 	    /** 字体粗细 */
 	    private _fontWeight;
-	    fontWeight: "normal" | "bold" | "bolder" | "lighter" | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
+	    fontWeight: 500 | 100 | "normal" | "bold" | "bolder" | "lighter" | 200 | 300 | 400 | 600 | 700 | 800 | 900;
 	    /** 内部填充,只支持文字 */
 	    private _padding?;
 	    padding: number | undefined;
@@ -3582,7 +3695,7 @@ declare module 'src/display/ConnectLine' {
 	     *  属性 play = 1 触发画线，线条从source->target.
 	     *  属性 play = 2 触发画线，线条从target->source.
 	     */
-	    play: 1 | 2;
+	    play: 2 | 1;
 	    private _autoPlay;
 	    /**
 	     *  默认 autoPlay = true
@@ -3844,6 +3957,7 @@ declare module 'src/display/Audio' {
 	 */
 	export class Audio extends DisplayObject {
 	    private audio?;
+	    private _id;
 	    private _src;
 	    private _autoplay;
 	    private _loop;
@@ -4017,29 +4131,21 @@ declare module 'src/core/Scheduler' {
 	 */
 	export class Scheduler extends vf.utils.EventEmitter {
 	    readonly id: number;
-	    static clock: () => number;
-	    static setInterval(time: number, listener: () => void): Scheduler;
-	    static setTimeout(time: number, listener: () => void): Scheduler;
-	    interval: number;
-	    timeout: number;
-	    protected start: number;
-	    protected lastTick: number;
-	    protected endHandler: () => void;
-	    protected elapsedTimeAtPause: number;
-	    protected lastVisited: number;
-	    protected tickHandler: () => void;
-	    private _running;
-	    private _lastExecuted;
+	    static setEnterFrame(listener: (data?: any) => void): Scheduler;
+	    static setInterval(time: number, listener: (data?: any) => void): Scheduler;
+	    static setTimeout(time: number, listener: (data?: any) => void): Scheduler;
+	    _interval: number;
+	    _timeout: number;
 	    private _id;
-	    private TIMEOUT;
-	    constructor(_timeout?: number, _interval?: number);
+	    private _running;
+	    private _pausing;
+	    private _totalDuration;
+	    private _intervalDuration;
+	    constructor(timeout?: number, interval?: number);
 	    restart(): void;
 	    stop(): void;
 	    pause(): void;
 	    resume(): void;
-	    seek(time: number): void;
-	    isTickable(num: number): boolean;
-	    protected noop(evt?: any): void;
 	    private run;
 	}
 
@@ -4264,9 +4370,10 @@ declare module 'src/UI' {
 	 */
 	import * as Enum from 'src/enum/Index';
 	import { Scheduler } from 'src/core/Scheduler';
+	import { SyncManager } from 'src/interaction/SyncManager';
 	export type Application = vf.Application;
 	/** 请不要在编写UI组件内部使用本类 */
-	export { Audio, Filter, Utils, Stage, Container, ScrollingContainer, Slider, Label, TextInput, Button, CheckBox, Rect, Circle, Graphics, FollowLine, Tracing, ConnectLine, ScrollBar, Interaction, DisplayObject, TickerShared, Tween, Timeline, Easing, Image, SpriteAnimated, Event, Enum, Scheduler };
+	export { Audio, Filter, Utils, Stage, Container, ScrollingContainer, Slider, Label, TextInput, Button, CheckBox, Rect, Circle, Graphics, FollowLine, Tracing, ConnectLine, ScrollBar, Interaction, DisplayObject, TickerShared, Tween, Timeline, Easing, Image, SpriteAnimated, Event, Enum, Scheduler, SyncManager };
 
 }
 declare module 'src/vf-gui' {
@@ -4587,6 +4694,7 @@ declare module 'test/TestDrag' {
 	///   path="../gui.d.ts" />
 	///   types="@vf.js/vf" />
 	export default class TestDrag {
+	    private id;
 	    constructor(app: vf.Application, uiStage: vf.gui.Stage);
 	    private onLoad;
 	    private getNewContainer;
@@ -4734,6 +4842,16 @@ declare module 'test/TestSpriteAnimated' {
 	}
 
 	 */ 
+
+}
+declare module 'test/TestSyncInteraction' {
+	///   path="../gui.d.ts" />
+	///   types="@vf.js/vf" />
+	export default class TestSyncInteraction {
+	    private id;
+	    constructor(app: vf.Application, uiStage: vf.gui.Stage);
+	    private onLoad;
+	}
 
 }
 declare module 'test/TestTextInput' {

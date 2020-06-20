@@ -27,7 +27,11 @@ export class SoundTask extends BaseTask {
                 catch (e) {
                     vf.utils.deprecation('5.2.1-v14', 'Please use the new sound API');
                 }
+                if (data === undefined) {
+                    console.log('Please use the new sound API');
 
+                    return;
+                }
                 if (data.assetId === undefined) {
                     console.log('execute sound failed, missing assetId');
 

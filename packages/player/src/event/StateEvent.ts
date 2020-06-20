@@ -1,11 +1,9 @@
-import {EventEmitter} from 'eventemitter3';
 import IEvent from './IEvent';
 import IEventObserver from './IEventObserver';
 import { EventLevel } from './EventLevel';
 import { EventType } from './EventType';
-import { VFStateCode } from '../core/model/IVFData';
 
-export default class StateEvent extends EventEmitter {
+export default class StateEvent extends vf.utils.EventEmitter {
 
     private _observers: IEventObserver[];
 
