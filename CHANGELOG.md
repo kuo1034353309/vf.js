@@ -25,6 +25,8 @@
 
 ![image](https://vipkid-edu.github.io/vf-docs/assets/img/001.cc420010.png)
 
+[图片无法显示点我](https://vipkid-edu.github.io/vf-docs/assets/img/001.cc420010.png)
+
 
 
 
