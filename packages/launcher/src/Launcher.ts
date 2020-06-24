@@ -412,7 +412,7 @@ export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) 
     const version = LAUNCHERVERION;
 
     for (let i = 0; i < scripts.length; i++) {
-        if (scripts[0].title !== version) {
+        if (scripts[i].title !== version) {
             deleteVF();
             break;
         }
