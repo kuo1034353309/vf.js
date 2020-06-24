@@ -477,8 +477,8 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
             _a[UIKeys.measuredHeight] = 0,
             _a[UIKeys.oldPreferWidth] = NaN,
             _a[UIKeys.oldPreferHeight] = NaN,
-            _a[UIKeys.scaleX] = 1,
-            _a[UIKeys.scaleY] = 1,
+            // [UIKeys.scaleX]: 1,
+            // [UIKeys.scaleY]: 1,
             _a[UIKeys.backgroundColor] = undefined,
             _a[UIKeys.oldBackgroundColor] = undefined,
             _a);
@@ -1194,7 +1194,7 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
     });
     Object.defineProperty(DisplayLayoutAbstract.prototype, "scaleX", {
         get: function () {
-            return this.$values[UIKeys.scaleX];
+            return this.container.scale.x;
         },
         set: function (value) {
             // this.invalidateSize();
@@ -1206,7 +1206,7 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
     });
     Object.defineProperty(DisplayLayoutAbstract.prototype, "scaleY", {
         get: function () {
-            return this.$values[UIKeys.scaleY];
+            return this.container.scale.y;
         },
         set: function (value) {
             // this.invalidateSize();
@@ -1353,8 +1353,8 @@ exports.minHeight = getSymbol("minHeight");
 exports.maxHeight = getSymbol("maxHeight");
 exports.percentWidth = getSymbol("percentWidth");
 exports.percentHeight = getSymbol("percentHeight");
-exports.scaleX = getSymbol("scaleX");
-exports.scaleY = getSymbol("scaleY");
+// export const scaleX = getSymbol("scaleX");
+// export const scaleY = getSymbol("scaleY");
 exports.measuredWidth = getSymbol("measuredWidth");
 exports.measuredHeight = getSymbol("measuredHeight");
 exports.oldPreferWidth = getSymbol("oldPreferWidth");
@@ -2486,6 +2486,7 @@ var DisplayObjectAbstract = /** @class */ (function (_super) {
      * 标记全部失效，子类实现
      */
     DisplayObjectAbstract.prototype.allInvalidate = function () {
+        //
     };
     Object.defineProperty(DisplayObjectAbstract.prototype, "enabled", {
         get: function () {
@@ -13855,13 +13856,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.6.3.1.6.3.1.6.3) ==1.6.3.1.6.3.1.6.3;
+//     return this.lastIndexOf(word, pos1.6.4.1.6.4.1.6.4) ==1.6.4.1.6.4.1.6.4;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.6.3";
+window.vf.gui.version = "1.6.4";
 
 
 /***/ })

@@ -17,8 +17,6 @@ declare module 'src/core/DisplayLayoutKeys' {
 	export const maxHeight: symbol;
 	export const percentWidth: symbol;
 	export const percentHeight: symbol;
-	export const scaleX: symbol;
-	export const scaleY: symbol;
 	export const measuredWidth: symbol;
 	export const measuredHeight: symbol;
 	export const oldPreferWidth: symbol;
