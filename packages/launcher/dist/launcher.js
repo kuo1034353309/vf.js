@@ -113,13 +113,13 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************!*\
   !*** ./packages/launcher/src/Launcher.ts ***!
   \*******************************************/
-/*! exports provided: createVF, deleteVF */
+/*! exports provided: deleteVF, createVF */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createVF", function() { return createVF; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteVF", function() { return deleteVF; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createVF", function() { return createVF; });
 /* harmony import */ var _assets_loading2_svg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../assets/loading2.svg */ "./assets/loading2.svg");
 
 /**
@@ -134,9 +134,9 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
-        this.version = "0.5.52-debug";
+        this.version = "0.5.53-debug";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "6/24/2020, 10:24:02 AM";
+        this.buildInfo = "6/24/2020, 11:09:51 AM";
         this._extendsLibsUrl = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
@@ -338,7 +338,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             script.setAttribute('name', 'vf-script');
             script.type = 'text/javascript';
             script.id = item.version;
-            script.title = "0.5.52-debug";
+            script.title = "0.5.53-debug";
             script.async = false;
             script.src = item.url;
             script.addEventListener('load', this.onJsComplete.bind(this), false);
@@ -419,23 +419,6 @@ var VIPKIDLauncher = /** @class */ (function () {
     };
     return VIPKIDLauncher;
 }());
-function createVF(options, completeCall, errorCall) {
-    var scripts = document.getElementsByName('vf-script');
-    var version = "0.5.52-debug";
-    if (scripts.length > 0 && scripts[0].title !== version) {
-        scripts.forEach(function (value) {
-            if (value.parentNode) {
-                value.parentNode.removeChild(value);
-            }
-        });
-        delete window.vf;
-    }
-    // eslint-disable-next-line no-new
-    var launcher = new VIPKIDLauncher(options, completeCall, errorCall);
-    launcher.debugVFPath = options.debugVFPath;
-    launcher.debugGuiPath = options.debugGuiPath;
-    launcher.debugPlayerPath = options.debugPlayerPath;
-}
 function deleteVF() {
     var list = document.getElementsByName('vf-script');
     while (list.length) {
@@ -443,10 +426,31 @@ function deleteVF() {
     }
     var w = window;
     if (w) {
-        delete w.vf;
-        delete w.gui;
-        delete w.VFConversion;
+        if (w.vf) {
+            delete w.vf;
+        }
+        if (w.gui) {
+            delete w.gui;
+        }
+        if (w.VFConversion) {
+            delete w.VFConversion;
+        }
     }
+}
+function createVF(options, completeCall, errorCall) {
+    var scripts = document.getElementsByName('vf-script');
+    var version = "0.5.53-debug";
+    for (var i = 0; i < scripts.length; i++) {
+        if (scripts[0].title !== version) {
+            deleteVF();
+            break;
+        }
+    }
+    // eslint-disable-next-line no-new
+    var launcher = new VIPKIDLauncher(options, completeCall, errorCall);
+    launcher.debugVFPath = options.debugVFPath;
+    launcher.debugGuiPath = options.debugGuiPath;
+    launcher.debugPlayerPath = options.debugPlayerPath;
 }
 
 
@@ -456,15 +460,15 @@ function deleteVF() {
 /*!****************************************!*\
   !*** ./packages/launcher/src/index.ts ***!
   \****************************************/
-/*! exports provided: createVF, deleteVF */
+/*! exports provided: deleteVF, createVF */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Launcher__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Launcher */ "./packages/launcher/src/Launcher.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createVF", function() { return _Launcher__WEBPACK_IMPORTED_MODULE_0__["createVF"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "deleteVF", function() { return _Launcher__WEBPACK_IMPORTED_MODULE_0__["deleteVF"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createVF", function() { return _Launcher__WEBPACK_IMPORTED_MODULE_0__["createVF"]; });
 
 
 

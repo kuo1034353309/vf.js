@@ -1,6 +1,6 @@
 {
   "name": "@vf.js/launcher",
-  "version": "0.5.52-debug",
+  "version": "0.5.53-debug",
   "status": "debug",
   "description": "",
   "main": "dist/launcher.min.js",
