@@ -809,7 +809,7 @@ var Config = /** @class */ (function (_super) {
         }
         _this._language = options.language || vf.utils.getSystemInfo().language;
         _this._i18n = new _I18N__WEBPACK_IMPORTED_MODULE_1__["default"](_this._language);
-        _this.realFPS = options.realFPS === false ? false : true;
+        _this.realFPS = options.realFPS === true ? true : false;
         return _this;
     }
     Object.defineProperty(Config.prototype, "container", {
@@ -6159,6 +6159,10 @@ var Animation = /** @class */ (function () {
         this.animationConfig = {};
         this.status = 0 /* STOP */;
         this.curAnimationClips = [];
+        /**
+         * realFPS 为 true时，真实的fps和设置的fps不一致时，动画的刷新率取最低的那个。
+         * 默认是false， 真实的fps和设置的fps不一致时，动画的刷新率取真实的fps
+         */
         this.realFPS = false;
         this.curTime = 0;
         this.lastTime = 0;

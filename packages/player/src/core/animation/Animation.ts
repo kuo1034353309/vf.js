@@ -19,6 +19,10 @@ export class Animation {
         private status: number = AnimationStatus.STOP;
         private curAnimationClips: AnimationClip[] = [];
 
+        /**
+         * realFPS 为 true时，真实的fps和设置的fps不一致时，动画的刷新率取最低的那个。
+         * 默认是false， 真实的fps和设置的fps不一致时，动画的刷新率取真实的fps
+         */
         private realFPS: boolean = false;
         private curTime: number = 0;
         private lastTime: number = 0;
