@@ -9,6 +9,7 @@ import { ColorFrame } from './ColorFrame';
 import { Frame } from './Frame';
 import { EventTimeline } from './EventTimeline';
 import { EventFrame } from './EventFrame';
+import { PathTimeline } from './PathTimeline';
 
 export class Animation {
 
@@ -296,8 +297,8 @@ export class Animation {
             }
         }
 
-        private parseTimeline(data: ITimeline, duration: number = -1): Timeline<any> {
-            let timeline: Timeline<any>;
+        private parseTimeline(data: ITimeline, duration: number = -1): Timeline<any> | undefined {
+            let timeline: Timeline<any> | undefined;
 
             switch (data.type) {
                 case TimelineType.X:
@@ -332,6 +333,12 @@ export class Animation {
                 case TimelineType.EVENT:
                     timeline = new EventTimeline();
                     this.parseFrames(timeline, data.frames, EventFrame);
+                    break;
+                case TimelineType.PATH:
+                    if(data.path) {
+                        timeline = new PathTimeline(data.path);
+                        this.parseFrames(timeline, data.frames, NumberFrame);
+                    }
                     break;
                 default:
                     timeline = new Timeline<number>();

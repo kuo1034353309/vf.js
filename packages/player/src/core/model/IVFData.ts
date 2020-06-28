@@ -132,6 +132,7 @@ export interface ITimeline {
     type: TimelineType;
     loop?: boolean;
     frames: IFrame[];
+    path?: string;
 }
 export interface IEventData {
     type: string;
@@ -155,6 +156,7 @@ export const enum TimelineType {
     ENABLED = 'enabled',
     FITERBLUR = 'filterBlur',
     EVENT = 'event',
+    PATH = 'path',
 }
 export const enum CurveType {
     None,
