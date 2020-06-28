@@ -385,27 +385,6 @@ class VIPKIDLauncher {
     }
 }
 
-export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) => {}, errorCall?: (e: IEvent) => {}) {
-    const scripts = document.getElementsByName('vf-script');
-    const version = LAUNCHERVERION;
-
-    if (scripts.length > 0 && scripts[0].title !== version) {
-        scripts.forEach((value) => {
-            if (value.parentNode) {
-                value.parentNode.removeChild(value);
-            }
-        });
-        delete window.vf;
-    }
-
-    // eslint-disable-next-line no-new
-    const launcher = new VIPKIDLauncher(options, completeCall, errorCall);
-
-    launcher.debugVFPath = (options as any).debugVFPath;
-    launcher.debugGuiPath = (options as any).debugGuiPath;
-    launcher.debugPlayerPath = (options as any).debugPlayerPath;
-}
-
 export function deleteVF() {
     const list = document.getElementsByName('vf-script');
 
@@ -416,8 +395,33 @@ export function deleteVF() {
     const w = window as any;
 
     if (w) {
-        delete w.vf;
-        delete w.gui;
-        delete w.VFConversion;
+        if (w.vf) {
+            delete w.vf;
+        }
+        if (w.gui) {
+            delete w.gui;
+        }
+        if (w.VFConversion) {
+            delete w.VFConversion;
+        }
     }
+}
+
+export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) => {}, errorCall?: (e: IEvent) => {}) {
+    const scripts = document.getElementsByName('vf-script');
+    const version = LAUNCHERVERION;
+
+    for (let i = 0; i < scripts.length; i++) {
+        if (scripts[i].title !== version) {
+            deleteVF();
+            break;
+        }
+    }
+
+    // eslint-disable-next-line no-new
+    const launcher = new VIPKIDLauncher(options, completeCall, errorCall);
+
+    launcher.debugVFPath = (options as any).debugVFPath;
+    launcher.debugGuiPath = (options as any).debugGuiPath;
+    launcher.debugPlayerPath = (options as any).debugPlayerPath;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@vf/player",
-  "version": "0.5.5",
+  "version": "0.5.10-debug",
   "description": "",
   "main": "dist/index.js",
   "files": [

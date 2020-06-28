@@ -1,3 +1,36 @@
+declare module 'src/core/DisplayLayoutKeys' {
+	/** 标记属性失效 */
+	export const invalidatePropertiesFlag: symbol;
+	/** 标记大小失效 */
+	export const invalidateSizeFlag: symbol;
+	/** 标记显示失效 */
+	export const invalidateDisplayListFlag: symbol;
+	/** 是否参与布局 */
+	export const includeInLayout: symbol;
+	export const width: symbol;
+	export const height: symbol;
+	export const explicitWidth: symbol;
+	export const explicitHeight: symbol;
+	export const minWidth: symbol;
+	export const maxWidth: symbol;
+	export const minHeight: symbol;
+	export const maxHeight: symbol;
+	export const percentWidth: symbol;
+	export const percentHeight: symbol;
+	export const measuredWidth: symbol;
+	export const measuredHeight: symbol;
+	export const oldPreferWidth: symbol;
+	export const oldPreferHeight: symbol;
+	export const backgroundColor: symbol;
+	export const oldBackgroundColor: symbol;
+	export const left: symbol;
+	export const right: symbol;
+	export const top: symbol;
+	export const bottom: symbol;
+	export const horizontalCenter: symbol;
+	export const verticalCenter: symbol;
+
+}
 declare module 'src/interaction/TouchMouseEventEnum' {
 	/**
 	 * 鼠标点击与触摸事件枚举,内部DisplayObject使用
@@ -685,49 +718,6 @@ declare module 'src/tween/private/index' {
 	export { Plugins, get, getAll, removeAll, remove, removeDisplay, add, update, isRunning, FrameThrottle, ToggleLagSmoothing, Interpolation, TweenEvent, Timeline, utils };
 
 }
-declare module 'src/core/DisplayLayoutKeys' {
-	/** 标记属性失效 */
-	export const invalidatePropertiesFlag: symbol;
-	/** 标记大小失效 */
-	export const invalidateSizeFlag: symbol;
-	/** 标记显示失效 */
-	export const invalidateDisplayListFlag: symbol;
-	export const explicitWidth: symbol;
-	export const explicitHeight: symbol;
-	export const width: symbol;
-	export const height: symbol;
-	export const minWidth: symbol;
-	export const maxWidth: symbol;
-	export const minHeight: symbol;
-	export const maxHeight: symbol;
-	export const percentWidth: symbol;
-	export const percentHeight: symbol;
-	export const scaleX: symbol;
-	export const scaleY: symbol;
-	export const x: symbol;
-	export const y: symbol;
-	export const skewX: symbol;
-	export const skewY: symbol;
-	export const pivotX: symbol;
-	export const pivotY: symbol;
-	export const rotation: symbol;
-	export const zIndex: symbol;
-	export const measuredWidth: symbol;
-	export const measuredHeight: symbol;
-	export const oldPreferWidth: symbol;
-	export const oldPreferHeight: symbol;
-	export const oldX: symbol;
-	export const oldY: symbol;
-	export const oldWidth: symbol;
-	export const oldHeight: symbol;
-	export const left: symbol;
-	export const right: symbol;
-	export const top: symbol;
-	export const bottom: symbol;
-	export const horizontalCenter: symbol;
-	export const verticalCenter: symbol;
-
-}
 declare module 'src/core/DisplayLayoutValidator' {
 	///   types="@vf.js/vf" />
 	import { DisplayLayoutAbstract } from 'src/core/DisplayLayoutAbstract'; class UIValidator extends vf.utils.EventEmitter {
@@ -832,6 +822,70 @@ declare module 'src/core/DisplayLayoutValidator' {
 	export default validatorShared;
 
 }
+declare module 'src/layout/CSSBasicLayout' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	export const $tempRectangle: vf.Rectangle;
+	/**
+	 * 布局尺寸>外部显式设置尺寸>测量尺寸 的优先级顺序返回尺寸
+	 */
+	export function formatRelative(value: number | string | undefined, total: number): number;
+	/**
+	 * @private
+	 * 一个工具方法，使用BasicLayout规则布局目标对象。
+	 */
+	export function updateBasicDisplayList(target: DisplayObject | undefined, unscaledWidth: number, unscaledHeight: number): void;
+
+}
+declare module 'src/layout/CSSGridLayout' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	/**
+	 *  更新网格布局
+	 *
+	 * 单位目前只支持数值或百分比：100 ，”100%“
+	 *
+	 *  网格布局中，子容器的位置与宽高可能失效
+	 *
+	 * 关于grid布局的词汇表
+	 *
+	 * 格网 https://developer.mozilla.org/zh-CN/docs/Glossary/Grid
+	 *
+	 * 网格行 gridTemplateRows https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-template-columns
+	 *
+	 * 网格列 gridTemplateColumns https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-template-rows
+	 *
+	 * 网格行间距 gridRowGap   https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-row-gap
+	 *
+	 * 网格列间距 gridColumnGap  https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-column-gap
+	 *
+	 * 网格轴 （未实现） 支持居中方式为：justifyContent，alignContent
+	 *
+	 * 网格线（未实现） https://developer.mozilla.org/en-US/docs/Glossary/Grid_Lines
+	 *
+	 * 网格面积（未实现）https://developer.mozilla.org/zh-CN/docs/Glossary/Grid_Areas
+	 */
+	export function updateGridLayout(target: DisplayObject): vf.Rectangle;
+
+}
+declare module 'src/layout/CSSLayout' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	import { DisplayLayoutAbstract } from 'src/core/DisplayLayoutAbstract';
+	export const $TempyAlignRectangle: vf.Rectangle;
+	export const $TempLayoutRectangle: vf.Rectangle;
+	export const $TempMeasureRectangle: vf.Rectangle;
+	/**
+	 * @private
+	 * 一个工具方法，使用BasicLayout规则测量目标对象。
+	 */
+	export function measure(target: DisplayLayoutAbstract): void;
+	/**
+	 * 调整目标的元素的大小并定位这些元素。
+	 */
+	export function updateDisplayLayout(target: DisplayObject, unscaledWidth: number, unscaledHeight: number): void;
+
+}
 declare module 'src/core/DisplayLayoutAbstract' {
 	///   types="@vf.js/vf" />
 	import { DisplayObjectAbstract } from 'src/core/DisplayObjectAbstract';
@@ -846,7 +900,10 @@ declare module 'src/core/DisplayLayoutAbstract' {
 	     * @private
 	     */
 	    $values: any;
-	    includeInLayout: boolean;
+	    /**
+	     * 背景(内部使用)
+	     */
+	    $background?: vf.Graphics;
 	    /**
 	     * @private
 	     * 定义的所有变量请不要添加任何初始值，必须统一在此处初始化。
@@ -878,22 +935,15 @@ declare module 'src/core/DisplayLayoutAbstract' {
 	     */
 	    protected commitProperties(): void;
 	    /**
-	     * @private
-	     * 测量组件尺寸
+	     * 测量显示对象宽高，如果子类没有重写，默认是this.container.width..
 	     */
 	    protected measure(): void;
 	    /**
 	     * @private
 	     * 测量组件尺寸，返回尺寸是否发生变化
 	     */
-	    private measureSizes;
-	    /**
-	     * @private
-	     * 设置测量结果。
-	     * @param width 测量宽度
-	     * @param height 测量高度
-	     */
-	    setMeasuredSize(width: number, height: number): void;
+	    protected measureSizes(): boolean;
+	    private checkMeasureSizes;
 	    /**
 	     * @private
 	     *
@@ -934,12 +984,19 @@ declare module 'src/core/DisplayLayoutAbstract' {
 	     * @private
 	     * 标记父级容器的尺寸和显示列表为失效
 	     */
-	    protected invalidateParentLayout(): void;
+	    invalidateParentLayout(): void;
 	    /**
 	     * @private
 	     * 设置组件的布局位置
 	     */
-	    setPosition(x: number, y: number): void;
+	    setPosition(x?: number | undefined, y?: number | undefined): void;
+	    /**
+	     * @private
+	     * 设置测量结果。
+	     * @param width 测量宽度
+	     * @param height 测量高度
+	     */
+	    setMeasuredSize(width: number, height: number): void;
 	    /**
 	     * @private
 	     * 设置组件的宽高。此方法不同于直接设置width,height属性，
@@ -971,6 +1028,11 @@ declare module 'src/core/DisplayLayoutAbstract' {
 	    * 如果脚本多次设置了 width 属性，则延迟处理可防止进行多次处理。此方法允许您手动覆盖此行为。
 	     */
 	    validateSizeNow(): void;
+	    /**
+	     * 指定此组件是否包含在父容器的布局中。若为false，则父级容器在测量和布局阶段都忽略此组件。默认值为true。
+	     * 注意，visible属性与此属性不同，设置visible为false，父级容器仍会对其布局。
+	     */
+	    includeInLayout: boolean;
 	    /**
 	     * @private
 	     * 距父级容器离左边距离
@@ -1021,29 +1083,6 @@ declare module 'src/core/DisplayLayoutAbstract' {
 	     * 外部显式指定的高度
 	     */
 	    readonly explicitHeight: number;
-	    readonly _width: number;
-	    readonly _height: number;
-	    /**
-	     * @private
-	     * 组件宽度设置为undefined将使用组件的measure()方法自动计算尺寸
-	     */
-	    /**
-	    * @private
-	    *
-	    * @param value
-	    */
-	    width: number;
-	    allInvalidate(): void;
-	    /**
-	     * @private
-	     * 组件高度,默认值为NaN,设置为NaN将使用组件的measure()方法自动计算尺寸
-	     */
-	    /**
-	    * @private
-	    *
-	    * @param value
-	    */
-	    height: number;
 	    /**
 	     * @private
 	     * 组件的最小宽度,此属性设置为大于maxWidth的值时无效。同时影响测量和自动布局的尺寸。
@@ -1064,19 +1103,41 @@ declare module 'src/core/DisplayLayoutAbstract' {
 	     * 组件的最大高度,同时影响测量和自动布局的尺寸。
 	     */
 	    maxHeight: number;
+	    allInvalidate(): void;
+	    backgroundColor: any;
+	    /**
+	     * @private
+	     * 组件宽度设置为undefined将使用组件的measure()方法自动计算尺寸
+	     */
+	    /**
+	    * @private
+	    *
+	    * @param value
+	    */
+	    width: number;
+	    /**
+	     * @private
+	     * 组件高度,默认值为NaN,设置为NaN将使用组件的measure()方法自动计算尺寸
+	     */
+	    /**
+	    * @private
+	    *
+	    * @param value
+	    */
+	    height: number;
 	    scaleX: number;
 	    scaleY: number;
 	    x: number;
 	    y: number;
-	    skewX: any;
-	    skewY: any;
-	    pivotX: any;
-	    pivotY: any;
-	    rotation: any;
+	    skewX: number;
+	    skewY: number;
+	    pivotX: number;
+	    pivotY: number;
+	    rotation: number;
 	    /**
 	     *  =不可用= 设置索引层级，每次父级变化时，会排序 （未实现）
 	     */
-	    zIndex: any;
+	    zIndex: number;
 	}
 
 }
@@ -1093,35 +1154,31 @@ declare module 'src/core/Stage' {
 	 */
 	export class Stage extends DisplayLayoutAbstract {
 	    constructor(width: number, height: number, app: vf.Application);
-	    app: vf.Application | any;
+	    app: vf.Application;
 	    syncManager: SyncManager | undefined;
 	    /**
 	     * 是否组织原始数据继续传递
 	     */
 	    originalEventPreventDefault: boolean;
-	    /**
-	     * 是否同步交互事件
-	     */
-	    private _syncInteractiveFlag;
-	    syncInteractiveFlag: boolean;
 	    readonly stageWidth: number;
 	    readonly stageHeight: number;
 	    scaleX: number;
 	    scaleY: number;
 	    Scale: vf.Point;
+	    /**
+	 * 是否同步交互事件
+	 */
+	    private _syncInteractiveFlag;
+	    syncInteractiveFlag: boolean;
+	    getSystemEvent(): vf.utils.EventEmitter;
+	    sendToPlayer(e: any): void;
 	    release(): void;
 	    releaseAll(): void;
 	    resize(): void;
 	    /**
-	     * 接收来自player的消息
-	     * @param msg
+	     * 虚接口，子类可以扩充
 	     */
-	    receiveFromPlayer(msg: any): void;
-	    /**
-	     * 虚接口，子类可以扩充,往player发消息
-	     */
-	    sendToPlayer(msg: any): void;
-	    getSystemEvent(): vf.utils.EventEmitter;
+	    inputLog(msg: any): void;
 	}
 
 }
@@ -1184,11 +1241,6 @@ declare module 'src/core/DisplayObjectAbstract' {
 	     * 只影响父级的递归调用。
 	     */
 	    renderable: boolean;
-	    /**
-	     * 缓存当前的显示对象，如果移除缓存，设置false即可
-	     * 在设置这个值时，请确保你的纹理位图已经加载
-	     */
-	    cacheAsBitmap: boolean;
 	    private _interactive;
 	    private _interactiveChildren;
 	    /**
@@ -1200,9 +1252,9 @@ declare module 'src/core/DisplayObjectAbstract' {
 	     */
 	    interactiveChildren: boolean;
 	    /**
-	     * 标记全部失效，子类实现
+	     * 子类实现
 	     */
-	    allInvalidate(): void;
+	    validateNow(): void;
 	    private _enabled;
 	    enabled: boolean;
 	    /**
@@ -1569,12 +1621,8 @@ declare module 'src/display/Image' {
 	    private _anchorY?;
 	    anchorY: number | undefined;
 	    release(): void;
-	    /**
-	     * @private
-	     * 测量组件尺寸
-	     */
-	    protected measure(): void;
 	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    protected measure(): void;
 	    protected srcSystem(): void;
 	    protected scale9GridSystem(): void;
 	    protected anchorSystem(): void;
@@ -1973,11 +2021,9 @@ declare module 'src/interaction/Index' {
 
 }
 declare module 'src/layout/CSSSSystem' {
-	///   types="@vf.js/vf" />
 	import { DisplayObject } from 'src/core/DisplayObject';
 	/** ===================== background  ===================== */
-	export function drawBackgroundColor(background: vf.Graphics, color: number, w: number, h: number): void;
-	export function backgroundColor(target: DisplayObject): void;
+	export function drawBackgroundColor(target: DisplayObject): void;
 	export function backgroundPositionSize(target: DisplayObject): void;
 	export function backgroundRepeat(target: DisplayObject): void;
 	export function backgroundImage(target: DisplayObject): void;
@@ -2034,12 +2080,12 @@ declare module 'src/layout/CSSStyle' {
 	     * 在容器里面的水平位置（左中右）
 	     */
 	    private _justifyContent?;
-	    justifyContent: "center" | "flex-start" | "flex-end" | undefined;
+	    justifyContent: "flex-start" | "flex-end" | "center" | undefined;
 	    /**
 	     * 在容器里面的垂直位置（上中下）
 	     */
 	    private _alignContent?;
-	    alignContent: "center" | "flex-start" | "flex-end" | undefined;
+	    alignContent: "flex-start" | "flex-end" | "center" | undefined;
 	    /**
 	     * 基于 网格列的维度，去定义网格线的名称和网格轨道的尺寸大小。
 	     *
@@ -2119,15 +2165,15 @@ declare module 'src/layout/CSSStyle' {
 	    /**
 	     * 设置元素水平拉伸扭曲（角度）。
 	     * */
-	    skewX: any;
+	    skewX: number;
 	    /**
 	     * 设置元素垂直拉伸扭曲（角度）。
 	     * */
-	    skewY: any;
+	    skewY: number;
 	    /**
 	     * 设置元素旋转 （角度）
 	    */
-	    rotate: any;
+	    rotate: number;
 	    /**
 	     * 设置元素旋转 （角度）
 	    */
@@ -2135,11 +2181,11 @@ declare module 'src/layout/CSSStyle' {
 	    /**
 	     * 轴点 像素值
 	     */
-	    pivotX: any;
+	    pivotX: number;
 	    /**
 	     * 轴点 像素值
 	     */
-	    pivotY: any;
+	    pivotY: number;
 	    /**
 	      * 调整元素的色调，取消设置0xFFFFFF
 	      */
@@ -2156,8 +2202,7 @@ declare module 'src/layout/CSSStyle' {
 	    /**
 	     * 设置元件的背景颜色。（16进制数字0xffffff
 	     * */
-	    private _backgroundColor?;
-	    backgroundColor: number | undefined;
+	    backgroundColor: any;
 	    /**
 	     * 设置元素的背景图像。backgroundImage = "./xxx.png"
 	     * */
@@ -2288,63 +2333,6 @@ declare module 'src/layout/CSSStyle' {
 	    breakWords: boolean;
 	    private onResize;
 	}
-
-}
-declare module 'src/layout/CSSBasicLayout' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	export const $tempRectangle: vf.Rectangle;
-	/**
-	 * 布局尺寸>外部显式设置尺寸>测量尺寸 的优先级顺序返回尺寸
-	 */
-	export function formatRelative(value: number | string | undefined, total: number): number;
-	/**
-	 * @private
-	 * 一个工具方法，使用BasicLayout规则布局目标对象。
-	 */
-	export function updateBasicDisplayList(target: DisplayObject | undefined, unscaledWidth: number, unscaledHeight: number): void;
-
-}
-declare module 'src/layout/CSSGridLayout' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	/**
-	 *  更新网格布局
-	 *
-	 * 单位目前只支持数值或百分比：100 ，”100%“
-	 *
-	 *  网格布局中，子容器的位置与宽高可能失效
-	 *
-	 * 关于grid布局的词汇表
-	 *
-	 * 格网 https://developer.mozilla.org/zh-CN/docs/Glossary/Grid
-	 *
-	 * 网格行 gridTemplateRows https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-template-columns
-	 *
-	 * 网格列 gridTemplateColumns https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-template-rows
-	 *
-	 * 网格行间距 gridRowGap   https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-row-gap
-	 *
-	 * 网格列间距 gridColumnGap  https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-column-gap
-	 *
-	 * 网格轴 （未实现） 支持居中方式为：justifyContent，alignContent
-	 *
-	 * 网格线（未实现） https://developer.mozilla.org/en-US/docs/Glossary/Grid_Lines
-	 *
-	 * 网格面积（未实现）https://developer.mozilla.org/zh-CN/docs/Glossary/Grid_Areas
-	 */
-	export function updateGridLayout(target: DisplayObject): vf.Rectangle;
-
-}
-declare module 'src/layout/CSSLayout' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	export const $TempyAlignRectangle: vf.Rectangle;
-	export const $TempLayoutRectangle: vf.Rectangle;
-	/**
-	 * 调整目标的元素的大小并定位这些元素。
-	 */
-	export function updateDisplayLayout(target: DisplayObject, unscaledWidth: number, unscaledHeight: number): void;
 
 }
 declare module 'src/core/plugs/UIBaseDrag' {
@@ -2505,10 +2493,6 @@ declare module 'src/core/DisplayObject' {
 	     * 构造函数
 	     */
 	    constructor();
-	    /**
-	     * 背景(内部使用)
-	     */
-	    $background?: vf.Graphics;
 	    /**
 	     * 遮罩，设置遮罩后，组件内部的索引位置可能产生变化
 	     */
@@ -2892,17 +2876,17 @@ declare module 'src/display/Slider' {
 	     * 背景
 	     */
 	    protected _track?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    track: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
+	    track: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
 	    /**
 	     * 手柄
 	     */
 	    protected _thumb?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    thumb: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
+	    thumb: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
 	    /**
 	     * 进度
 	     */
 	    protected _tracklight?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    tracklight: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
+	    tracklight: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
 	    protected isExcValueSystem: boolean;
 	    setActualSize(w: number, h: number): void;
 	    release(): void;
@@ -3411,10 +3395,64 @@ declare module 'src/display/TextInput' {
 	}
 
 }
-declare module 'src/display/Rect' {
+declare module 'src/display/private/GraphBase' {
 	///   types="@vf.js/vf" />
 	import { DisplayObject } from 'src/core/DisplayObject';
 	import { MaskSprite } from 'src/core/MaskSprite';
+	/**
+	 * 绘制图形基类
+	 */
+	export class GraphBase extends DisplayObject implements MaskSprite {
+	    constructor();
+	    readonly graphics: vf.Graphics;
+	    /** 可以支持遮罩的组件 */
+	    maskSprite(): vf.Graphics;
+	    /**
+	     * 半径
+	     */
+	    protected _radius: number;
+	    radius: number;
+	    /**
+	     * 线条颜色
+	     */
+	    protected _lineColor: number;
+	    lineColor: number;
+	    /**
+	     * 线条粗细
+	     */
+	    protected _lineWidth: number;
+	    lineWidth: number;
+	    /**
+	     * 线条透明度
+	     */
+	    protected _lineAlpha: number;
+	    lineAlpha: number;
+	    /**
+	     * 颜色
+	     */
+	    protected _color?: number;
+	    color: number | undefined;
+	    /**
+	     * 锚点，调整位图的坐标中点 0-1
+	     */
+	    protected _anchorX?: number;
+	    anchorX: number | undefined;
+	    /**
+	     * 锚点，调整位图的坐标中点 0-1
+	     */
+	    protected _anchorY?: number;
+	    anchorY: number | undefined;
+	    /**
+	     * 子类重写
+	     */
+	    drawGraph(): void;
+	    release(): void;
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	}
+
+}
+declare module 'src/display/Rect' {
+	import { GraphBase } from 'src/display/private/GraphBase';
 	/**
 	 * 绘制矩形或圆角矩形
 	 *
@@ -3425,51 +3463,14 @@ declare module 'src/display/Rect' {
 	 *
 	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestRect
 	 */
-	export class Rect extends DisplayObject implements MaskSprite {
+	export class Rect extends GraphBase {
 	    constructor();
-	    readonly graphics: vf.Graphics;
-	    /** 可以支持遮罩的组件 */
-	    maskSprite(): vf.Graphics;
-	    /**
-	     * 圆角
-	     */
-	    private _radius;
-	    radius: number;
-	    /**
-	     * 线条颜色
-	     */
-	    private _lineColor;
-	    lineColor: number;
-	    /**
-	     * 线条粗细
-	     */
-	    private _lineWidth;
-	    lineWidth: number;
-	    /**
-	     * 颜色
-	     */
-	    private _color?;
-	    color: number | undefined;
-	    /**
-	     * 锚点，调整位图的坐标中点 0-1
-	     */
-	    private _anchorX?;
-	    anchorX: number | undefined;
-	    /**
-	     * 锚点，调整位图的坐标中点 0-1
-	     */
-	    private _anchorY?;
-	    anchorY: number | undefined;
-	    drawRoundedRect(): void;
-	    release(): void;
-	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    drawGraph(): void;
 	}
 
 }
 declare module 'src/display/Circle' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	import { MaskSprite } from 'src/core/MaskSprite';
+	import { GraphBase } from 'src/display/private/GraphBase';
 	/**
 	 * 绘制圆形
 	 *
@@ -3481,44 +3482,24 @@ declare module 'src/display/Circle' {
 	 *
 	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCircle
 	 */
-	export class Circle extends DisplayObject implements MaskSprite {
+	export class Circle extends GraphBase {
 	    constructor();
-	    readonly graphics: vf.Graphics;
-	    /** 可以支持遮罩的组件 */
-	    maskSprite(): vf.Graphics;
 	    /**
-	     * 半径
+	     * 开始绘制角度
 	     */
-	    private _radius;
-	    radius: number;
+	    protected _startAngle: number;
+	    startAngle: number;
 	    /**
-	     * 线条颜色
+	     * 结束角度
 	     */
-	    private _lineColor;
-	    lineColor: number;
+	    protected _endAngle: number;
+	    endAngle: number;
 	    /**
-	     * 线条粗细
+	     * 逆时针绘制
 	     */
-	    private _lineWidth;
-	    lineWidth: number;
-	    /**
-	     * 颜色
-	     */
-	    private _color?;
-	    color: number | undefined;
-	    /**
-	     * 锚点，调整位图的坐标中点 0-1
-	     */
-	    private _anchorX?;
-	    anchorX: number | undefined;
-	    /**
-	     * 锚点，调整位图的坐标中点 0-1
-	     */
-	    private _anchorY?;
-	    anchorY: number | undefined;
-	    drawCircle(): void;
-	    release(): void;
-	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    protected _anticlockwise: boolean;
+	    anticlockwise: boolean;
+	    drawGraph(): void;
 	}
 
 }
@@ -3795,12 +3776,12 @@ declare module 'src/display/Tracing' {
 	     * 文字轨迹图
 	     */
 	    private _traceSprite;
-	    traceSprite: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
+	    traceSprite: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
 	    /**
 	     * 背景图，mask模式用于画线后漏出来
 	     */
 	    private _renderBgSprite;
-	    renderBgSprite: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
+	    renderBgSprite: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
 	    /**
 	     * 轨迹点,二维数组
 	     */

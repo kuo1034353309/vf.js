@@ -35,6 +35,11 @@ export class VFStage extends vf.gui.Stage {
     public readonly soundManager: SoundManager;
     public readonly plugs = new Map<string, IPlug>(); // 插件列表
 
+    /**
+     * 延迟一帧显示，避免坐标0，0
+     */
+    private _delayedDisplayId: any = -1;
+
     private curScene?: VFScene;
     private curSceneId?: string;
     private curSceneTransition?: ITransitionData;
@@ -214,8 +219,17 @@ export class VFStage extends vf.gui.Stage {
                 this.emit(SceneEvent.TransitionStart);
                 this.emit(SceneEvent.TransitionEnd);
             }
-            //对齐syncManager时间  
-            this.syncManager && this.syncManager.init();
+
+            if (this.syncManager) {
+                this.syncManager.init();
+            }
+
+            this.visible = false;
+            clearTimeout(this._delayedDisplayId);
+            this._delayedDisplayId = setTimeout(() => {
+                this.visible = true;
+            }, 60);
+
             this.status = STAGE_STATUS.PLAYING;
         }
     }
