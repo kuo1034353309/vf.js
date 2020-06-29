@@ -1,4 +1,4 @@
-# v0.5.60 
+# v0.5.61
 
 > 本次更新可能会出现兼容问题
 
@@ -7,6 +7,8 @@
 1. 圆形增加属性 `startAngle`,`endAngle` 用于绘制圆弧，[参考示例](https://vipkid-edu.github.io/vf-docs/gui/circle.html#%E7%A4%BA%E4%BE%8B)。
 1. 修复多引擎版本加载异常。
 1. 修复音频在 `useNativeAudio` 中的取值异常。
+1. 修复音频暂停时，触发`ended`事件。
+1. 修改音频'timeupdate'事件，增加负数倒计时。
 1. 修复 ConnectLine 组件，延迟设置线条颜色失效。
 1. 修改 stage.stageHeight 、stage.stageWidth 属性为获取 `Canvas` 宽高。
 1. 删除 `transform`的脏刷新。
@@ -29,9 +31,3 @@
 ![image](https://vipkid-edu.github.io/vf-docs/assets/img/001.395e4dd8.png)
 
 [图片无法显示点我](https://vipkid-edu.github.io/vf-docs/assets/img/001.395e4dd8.png)
-
-
-
-
-
-
