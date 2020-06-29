@@ -50,22 +50,56 @@
             <option value ="id">ID</option>
             <option value ="index">索引</option>
           </select>
+          <select id="select2" style="height: 23px;">
+
+          </select>
           <button id="playSelect">跳转</button>
     </div>
     <script src='./packages/launcher/dist/launcher.js'></script>
     <script>
-
-        if (location.href.indexOf("#") === -1) {
-            location.hash = "path/test/" + 'ppt/index.json';
-            //location.reload();
+        var demos = [
+            '选择示例',
+            'test/vf_ppt/index.json',
+            './vf_demo/image.json',
+            './vf_demo/label.json',
+            './vf_demo/rect.json',
+            './vf_demo/button.json',
+            './vf_demo/checkbox.json',
+            './vf_demo/circle.json',
+            './vf_demo/slider.json',
+            './vf_demo/textinput.json',
+            './vf_demo/soundTest.json',
+            './vf_demo/spriteanimated.json',
+            './vf_demo/connectline.json',
+            './vf_demo/dragExample.json',
+            './vf_demo/scrollbar.json',
+            './vf_demo/textChoiceExample.json',
+            './vf_demo/textFillBlanksExample.json',
+            './vf_demo/tracingExample.json',
+            'https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN01/index.json',
+            './vf_demo/ic037.json',
+        ];
+        for(var i =0;i<demos.length;i++){
+            var option = new Option(demos[i],demos[i]);
+            document.getElementById('select2').options.add(option);
         }
+        document.getElementById('select2').addEventListener("change",function(){
+            
+            var value = document.getElementById('select2').value;
+            if(value === '选择示例'){
+                return;
+            }
+            selectUrl.value =  value;
+        });
+
         var $player = null;
         createVF({ 
             container: document.getElementById("vf-container") , 
             debug: true,
             showFPS: false,
+            //frameRate:1,
             resolution:window.devicePixelRatio || 1,
-            //debugGuiPath: 'http://172.24.76.19:5501/dist/gui.js',
+            //debugGuiPath: 'http://127.0.0.1:5502/dist/gui.js',
             //debugVFPath: 'http://172.24.76.19:5500/libs/vf-v5.2.4-v25/vf.js',
             //debugGuiPath: 'http://172.24.76.19:5500/libs/gui-v1.4.4/gui.js',
             //debugPlayerPath: 'http://172.24.76.19:5500/packages/player/dist/player.js',
@@ -92,13 +126,12 @@
                 console.log("onDispose");
             }
 
-            // if (location.hash.indexOf('http')!==-1) {
-            //     player.play(location.hash.substr(1));
-            // }else{
-            //     player.play(location.hash.substr(5));
-            // }
             vf.AudioEngine.Ins().useCustomUnlockedButton = true;
 
+            if(location.hash.indexOf('path')!==-1){
+                console.log();
+                player.play(location.hash.substr(5));
+            }
             // ========  测试代码 ==============
             test(player);
             
@@ -172,12 +205,12 @@
                         return;
                     }
                     if(param){
-                        //console.log(`执行方法:${name}(${param})`); // ios8 error
+                        //console.log('执行方法:${name}(${param})'); // ios8 error
                         player[name](param);
                         player.switchToSceneIndex(2);
                         
                     }else{
-                        //console.log(`执行方法:${name}()`); // ios8 error
+                        //console.log('执行方法:${name}()'); // ios8 error
                         player[name]();
                     }
 

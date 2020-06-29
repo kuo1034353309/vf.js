@@ -187,6 +187,11 @@ export class RES extends vf.utils.EventEmitter {
             return undefined;
         }
 
+        // eslint-disable-next-line max-len
+        if ((assetData.type === AssetType.AUDIO || assetData.type === AssetType.SOUND) && this.stage.config.vfvars.useNativeAudio) {
+            return this.data.assets[index];
+        }
+
         return this.vfResources[assetData.id.toString()];
     }
 
@@ -226,7 +231,11 @@ export class RES extends vf.utils.EventEmitter {
 
                 return;
             }
+            if (assetsItem.type === AssetType.SOUND && stage.config.vfvars.useNativeAudio) {
+                stage.systemEvent.emitError('S0004', [assetsItem.id], EventLevel.WARNING);
 
+                return;
+            }
             this._resources.push(assetsItem);
         });
 
@@ -270,7 +279,7 @@ export class RES extends vf.utils.EventEmitter {
                         component.interactabled = componentData.interactabled; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
                     }
                     if (componentData.style !== undefined) {
-                        component.style = componentData.style; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
+                        component.style = componentData.style;
                     }
                     break;
                 default:
@@ -453,7 +462,7 @@ export class RES extends vf.utils.EventEmitter {
                 urls[res.url].push(res.id);
                 continue;
             }
-            if (res.type === 'audio' || res.type === 'sound') {
+            if (res.type === AssetType.AUDIO || res.type === AssetType.SOUND) {
                 // 微信wechat不能直接加载audio类型
                 // eslint-disable-next-line max-len
                 loader.add(res.id, getUrl(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuffer' });

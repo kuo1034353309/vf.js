@@ -1559,6 +1559,10 @@ var RES = /** @class */ (function (_super) {
             this.stage.systemEvent.emitError('E0003', [index], "warning" /* WARNING */);
             return undefined;
         }
+        // eslint-disable-next-line max-len
+        if ((assetData.type === "audio" /* AUDIO */ || assetData.type === "sound" /* SOUND */) && this.stage.config.vfvars.useNativeAudio) {
+            return this.data.assets[index];
+        }
         return this.vfResources[assetData.id.toString()];
     };
     RES.prototype.loadAllScript = function (stage, asstes) {
@@ -1611,6 +1615,10 @@ var RES = /** @class */ (function (_super) {
                         stage.systemEvent.emitError('S0004', [assetsItem.id], "warning" /* WARNING */);
                         return;
                     }
+                    if (assetsItem.type === "sound" /* SOUND */ && stage.config.vfvars.useNativeAudio) {
+                        stage.systemEvent.emitError('S0004', [assetsItem.id], "warning" /* WARNING */);
+                        return;
+                    }
                     _this._resources.push(assetsItem);
                 });
                 this.loadResources();
@@ -1648,7 +1656,7 @@ var RES = /** @class */ (function (_super) {
                         component.interactabled = componentData.interactabled; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
                     }
                     if (componentData.style !== undefined) {
-                        component.style = componentData.style; // 性能优化，有部分业务，并不需要自定义组件有事件功能，可提前禁用
+                        component.style = componentData.style;
                     }
                     break;
                 default:
@@ -1807,7 +1815,7 @@ var RES = /** @class */ (function (_super) {
                 urls[res.url].push(res.id);
                 continue;
             }
-            if (res.type === 'audio' || res.type === 'sound') {
+            if (res.type === "audio" /* AUDIO */ || res.type === "sound" /* SOUND */) {
                 // 微信wechat不能直接加载audio类型
                 // eslint-disable-next-line max-len
                 loader.add(res.id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuffer' });
@@ -5508,6 +5516,10 @@ var SoundTask = /** @class */ (function (_super) {
             catch (e) {
                 vf.utils.deprecation('5.2.1-v14', 'Please use the new sound API');
             }
+            if (data === undefined) {
+                console.log('Please use the new sound API');
+                return;
+            }
             if (data.assetId === undefined) {
                 console.log('execute sound failed, missing assetId');
                 return;
@@ -8405,6 +8417,10 @@ var VFStage = /** @class */ (function (_super) {
     function VFStage(data, config, player) {
         var _this = _super.call(this, config.width, config.height, player.app) || this;
         _this.plugs = new Map(); // 插件列表
+        /**
+         * 延迟一帧显示，避免坐标0，0
+         */
+        _this._delayedDisplayId = -1;
         _this.status = STAGE_STATUS.NONE;
         _this.data = Object(_SceneDataUtils__WEBPACK_IMPORTED_MODULE_5__["assetsRepair"])(data);
         _this.config = config;
@@ -8529,6 +8545,7 @@ var VFStage = /** @class */ (function (_super) {
         }
     };
     VFStage.prototype.switchToScene = function (scene, transition) {
+        var _this = this;
         if (scene && this.app) {
             var transitionData = transition;
             var prevTexture = void 0;
@@ -8553,6 +8570,11 @@ var VFStage = /** @class */ (function (_super) {
                 this.emit("TransitionStart" /* TransitionStart */);
                 this.emit("TransitionEnd" /* TransitionEnd */);
             }
+            this.visible = false;
+            clearTimeout(this._delayedDisplayId);
+            this._delayedDisplayId = setTimeout(function () {
+                _this.visible = true;
+            }, 60);
             this.status = STAGE_STATUS.PLAYING;
         }
     };
@@ -9686,13 +9708,13 @@ function trace() {
 /*!*********************************************!*\
   !*** ./packages/player/src/utils/VFUtil.ts ***!
   \*********************************************/
-/*! exports provided: getTargetComponent, getComponentOrChild, getCurveProgress, applyTransition, renderTexture, getCanvasColor, webglDebug, isObject, isNumber, isString, isBoolean, isArray, stringFormat */
+/*! exports provided: getComponentOrChild, getTargetComponent, getCurveProgress, applyTransition, renderTexture, getCanvasColor, webglDebug, isObject, isNumber, isString, isBoolean, isArray, stringFormat */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTargetComponent", function() { return getTargetComponent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getComponentOrChild", function() { return getComponentOrChild; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTargetComponent", function() { return getTargetComponent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurveProgress", function() { return getCurveProgress; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "applyTransition", function() { return applyTransition; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderTexture", function() { return renderTexture; });
@@ -9707,8 +9729,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/model/IVFData */ "./packages/player/src/core/model/IVFData.ts");
 /* harmony import */ var _display_VFComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../display/VFComponent */ "./packages/player/src/display/VFComponent.ts");
 /* harmony import */ var _core_transition_Tranistion__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/transition/Tranistion */ "./packages/player/src/core/transition/Tranistion.ts");
+/* eslint-disable no-mixed-operators */
 
 
+// import { ITransition } from '../core/transition/ITransition';
+// import { CrossFadeFilter } from '../core/transition/filters/CrossFadeFilter';
+// import { CircleFadeFilter } from '../core/transition/filters/CircleFadeFilter';
+// import { CrossZoomFilter } from '../core/transition/filters/CrossZoomFilter';
+// import { DoomScreenFilter } from '../core/transition/filters/DoomScreenFilter';
+// import { HeartWipeFilter } from '../core/transition/filters/HeartWipeFilter';
+// import { LinearBlurFilter } from '../core/transition/filters/LinearBlurFilter';
+// import { PageCurlFilter } from '../core/transition/filters/PageCurlFilter';
+// import { WindFilter } from '../core/transition/filters/WindFilter';
+// import { ToTearFilter } from '../core/transition/filters/ToTearFilter';
+// import { PageFlipLeftFilter } from '../core/transition/filters/PageFlipLeftFilter';
+// import { PageFlipRightFilter } from '../core/transition/filters/PageFlipRightFilter';
 
 /**
  * 获取从父级开始的对象
@@ -9734,13 +9769,13 @@ function getParentByTargetComponent(component, targets) {
 function getRootByTargetComponent(component, targets) {
     targets.shift(); // type
     if (!component.vfStage) {
-        return;
+        return undefined;
     }
     var curScene = component.vfStage.getCurScene();
     var curCom;
     var rootComID = targets.shift();
     if (!curScene) {
-        return;
+        return undefined;
     }
     for (var i = 0, len = curScene.uiChildren.length; i < len; i++) {
         curCom = curScene.uiChildren[i];
@@ -9753,15 +9788,31 @@ function getRootByTargetComponent(component, targets) {
     }
     return getParentByTargetComponent(curCom, targets);
 }
+// eslint-disable-next-line max-len
+function getComponentOrChild(component, targetData) {
+    if (!targetData) {
+        return component;
+    }
+    else if (targetData.length <= 0) {
+        return component;
+    }
+    var targets = targetData.concat();
+    if (targets[0] === '-1') {
+        // 从顶级开始
+        return getRootByTargetComponent(component, targets);
+    }
+    // 从父级开始
+    return getParentByTargetComponent(component, targets);
+}
 function getTargetComponent(component, targetData) {
     // 支持从变量，属性，数组，参数中获取 组件
     if (component && Array.isArray(targetData) && targetData.length > 1) {
-        if (targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].VARIABLE ||
-            targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PROPERTY ||
-            targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_VALUE ||
-            targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARAM_VALUE ||
-            targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].OBJECT_VALUE ||
-            targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].COMPONENT) {
+        if (targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].VARIABLE
+            || targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PROPERTY
+            || targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_VALUE
+            || targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARAM_VALUE
+            || targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].OBJECT_VALUE
+            || targetData[0] === _core_model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].COMPONENT) {
             var vfStage = component.vfStage;
             if (vfStage && vfStage.variableManager) {
                 var variableManager = vfStage.variableManager;
@@ -9773,23 +9824,6 @@ function getTargetComponent(component, targetData) {
         }
     }
     return getComponentOrChild(component, targetData);
-}
-function getComponentOrChild(component, targetData) {
-    if (!targetData) {
-        return component;
-    }
-    else if (targetData.length <= 0) {
-        return component;
-    }
-    else {
-        var targets = targetData.concat();
-        if (targets[0] === '-1') { // 从顶级开始
-            return getRootByTargetComponent(component, targets);
-        }
-        else { // 从父级开始
-            return getParentByTargetComponent(component, targets);
-        }
-    }
 }
 function getCurveProgress(type, pos) {
     var s = 0;
@@ -9803,7 +9837,6 @@ function getCurveProgress(type, pos) {
         case 3 /* EaseInQuad */:
             return Math.pow(pos, 2);
         case 4 /* EaseInOutQuad */:
-            // tslint:disable-next-line: no-conditional-assignment
             if ((pos /= 0.5) < 1) {
                 return 0.5 * Math.pow(pos, 2);
             }
@@ -9813,7 +9846,6 @@ function getCurveProgress(type, pos) {
         case 6 /* EaseOutCubic */:
             return (Math.pow((pos - 1), 3) + 1);
         case 7 /* EaseInOutCubic */:
-            // tslint:disable-next-line: no-conditional-assignment
             if ((pos /= 0.5) < 1) {
                 return 0.5 * Math.pow(pos, 3);
             }
@@ -9823,7 +9855,6 @@ function getCurveProgress(type, pos) {
         case 9 /* EaseOutQuart */:
             return -(Math.pow((pos - 1), 4) - 1);
         case 10 /* EaseInOutQuart */:
-            // tslint:disable-next-line: no-conditional-assignment
             if ((pos /= 0.5) < 1) {
                 return 0.5 * Math.pow(pos, 4);
             }
@@ -9833,7 +9864,6 @@ function getCurveProgress(type, pos) {
         case 12 /* EaseOutQuint */:
             return (Math.pow((pos - 1), 5) + 1);
         case 13 /* EaseInOutQuint */:
-            // tslint:disable-next-line: no-conditional-assignment
             if ((pos /= 0.5) < 1) {
                 return 0.5 * Math.pow(pos, 5);
             }
@@ -9843,7 +9873,7 @@ function getCurveProgress(type, pos) {
         case 15 /* EaseOutSine */:
             return Math.sin(pos * (Math.PI / 2));
         case 16 /* EaseInOutSine */:
-            return (-.5 * (Math.cos(Math.PI * pos) - 1));
+            return (-0.5 * (Math.cos(Math.PI * pos) - 1));
         case 17 /* EaseInExpo */:
             return (pos === 0) ? 0 : Math.pow(2, 10 * (pos - 1));
         case 18 /* EaseOutExpo */:
@@ -9855,7 +9885,6 @@ function getCurveProgress(type, pos) {
             if (pos === 1) {
                 return 1;
             }
-            // tslint:disable-next-line: no-conditional-assignment
             if ((pos /= 0.5) < 1) {
                 return 0.5 * Math.pow(2, 10 * (pos - 1));
             }
@@ -9865,7 +9894,6 @@ function getCurveProgress(type, pos) {
         case 21 /* EaseOutCirc */:
             return Math.sqrt(1 - Math.pow((pos - 1), 2));
         case 22 /* EaseInOutCirc */:
-            // tslint:disable-next-line: no-conditional-assignment
             if ((pos /= 0.5) < 1) {
                 return -0.5 * (Math.sqrt(1 - pos * pos) - 1);
             }
@@ -9875,14 +9903,12 @@ function getCurveProgress(type, pos) {
                 return (7.5625 * pos * pos);
             }
             else if (pos < (2 / 2.75)) {
-                return (7.5625 * (pos -= (1.5 / 2.75)) * pos + .75);
+                return (7.5625 * (pos -= (1.5 / 2.75)) * pos + 0.75);
             }
             else if (pos < (2.5 / 2.75)) {
-                return (7.5625 * (pos -= (2.25 / 2.75)) * pos + .9375);
+                return (7.5625 * (pos -= (2.25 / 2.75)) * pos + 0.9375);
             }
-            else {
-                return (7.5625 * (pos -= (2.625 / 2.75)) * pos + .984375);
-            }
+            return (7.5625 * (pos -= (2.625 / 2.75)) * pos + 0.984375);
         case 24 /* EaseInBack */:
             s = 1.70158;
             return (pos) * pos * ((s + 1) * pos - s);
@@ -9891,7 +9917,6 @@ function getCurveProgress(type, pos) {
             return (pos = pos - 1) * pos * ((s + 1) * pos + s) + 1;
         case 26 /* EaseInOutBack */:
             s = 1.70158;
-            // tslint:disable-next-line: no-conditional-assignment
             if ((pos /= 0.5) < 1) {
                 return 0.5 * (pos * pos * (((s *= (1.525)) + 1) * pos - s));
             }
@@ -9903,9 +9928,8 @@ function getCurveProgress(type, pos) {
             return -1 * Math.pow(6, -6 * pos) * Math.sin((pos * 6 - 1) * (2 * Math.PI) / 2) + 1;
         case 30 /* SwingFromTo */:
             s = 1.70158;
-            // tslint:disable-next-line: no-conditional-assignment
-            return ((pos /= 0.5) < 1) ? 0.5 * (pos * pos * (((s *= (1.525)) + 1) * pos - s)) :
-                0.5 * ((pos -= 2) * pos * (((s *= (1.525)) + 1) * pos + s) + 2);
+            return ((pos /= 0.5) < 1) ? 0.5 * (pos * pos * (((s *= (1.525)) + 1) * pos - s))
+                : 0.5 * ((pos -= 2) * pos * (((s *= (1.525)) + 1) * pos + s) + 2);
         case 31 /* SwingFrom */:
             s = 1.70158;
             return pos * pos * ((s + 1) * pos - s);
@@ -9917,29 +9941,24 @@ function getCurveProgress(type, pos) {
                 return (7.5625 * pos * pos);
             }
             else if (pos < (2 / 2.75)) {
-                return (7.5625 * (pos -= (1.5 / 2.75)) * pos + .75);
+                return (7.5625 * (pos -= (1.5 / 2.75)) * pos + 0.75);
             }
             else if (pos < (2.5 / 2.75)) {
-                return (7.5625 * (pos -= (2.25 / 2.75)) * pos + .9375);
+                return (7.5625 * (pos -= (2.25 / 2.75)) * pos + 0.9375);
             }
-            else {
-                return (7.5625 * (pos -= (2.625 / 2.75)) * pos + .984375);
-            }
+            return (7.5625 * (pos -= (2.625 / 2.75)) * pos + 0.984375);
         case 34 /* BouncePast */:
             if (pos < (1 / 2.75)) {
                 return (7.5625 * pos * pos);
             }
             else if (pos < (2 / 2.75)) {
-                return 2 - (7.5625 * (pos -= (1.5 / 2.75)) * pos + .75);
+                return 2 - (7.5625 * (pos -= (1.5 / 2.75)) * pos + 0.75);
             }
             else if (pos < (2.5 / 2.75)) {
-                return 2 - (7.5625 * (pos -= (2.25 / 2.75)) * pos + .9375);
+                return 2 - (7.5625 * (pos -= (2.25 / 2.75)) * pos + 0.9375);
             }
-            else {
-                return 2 - (7.5625 * (pos -= (2.625 / 2.75)) * pos + .984375);
-            }
+            return 2 - (7.5625 * (pos -= (2.625 / 2.75)) * pos + 0.984375);
         case 35 /* EaseFromTo */:
-            // tslint:disable-next-line: no-conditional-assignment
             if ((pos /= 0.5) < 1) {
                 return 0.5 * Math.pow(pos, 4);
             }
@@ -9993,7 +10012,7 @@ function getCanvasColor(app, container, x, y) {
 }
 function webglDebug(app, container) {
     var c = getCanvasColor(app, container, 0, 0);
-    // tslint:disable-next-line: no-console
+    // eslint-disable-next-line no-console
     console.log(' canvas 0,0, color:', 'r:', c[0] / 255, 'g:', c[1], 'b:', c[2], c);
 }
 function isObject(obj) {
@@ -10023,13 +10042,13 @@ function stringFormat(str) {
     for (var _i = 1; _i < arguments.length; _i++) {
         rest[_i - 1] = arguments[_i];
     }
-    if (str == null)
+    if (str === null || str === undefined)
         return '';
     if (rest === undefined)
         return str;
     var len = rest.length;
     var args;
-    if (len == 1 && Array.isArray(rest[0])) {
+    if (len === 1 && Array.isArray(rest[0])) {
         args = rest[0];
         len = args.length;
     }
@@ -10037,7 +10056,7 @@ function stringFormat(str) {
         args = rest;
     }
     for (var i = 0; i < len; i++) {
-        str = str.replace(new RegExp("\\${" + i + "\\}", "g"), args[i]);
+        str = str.replace(new RegExp("\\${" + i + "\\}", 'g'), args[i]);
     }
     return str;
 }
