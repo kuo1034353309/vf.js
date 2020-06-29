@@ -1,6 +1,6 @@
 /*!
- * @vf.js/vf - v5.2.4-v25
- * Compiled Thu, 28 May 2020 07:39:57 UTC
+ * @vf.js/vf - v5.2.4-v26
+ * Compiled Mon, 29 Jun 2020 08:43:28 UTC
  *
  * @vf.js/vf is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -103,7 +103,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/polyfill - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/polyfill is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -383,7 +383,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/settings - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/settings is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -3393,7 +3393,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/constants - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/constants is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -3772,7 +3772,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/utils - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/utils is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -4732,10 +4732,10 @@ var PIXI = (function (exports) {
 	 *
 	 * @memberof PIXI.utils
 	 * @function readFileSync
-	 * @param {string} url - 文件网络路径
-	 * @param {object} options - the defaultValue if no filename prefix is set.
-	 * @param {array} listener - resolution / device pixel ratio of an asset
-	 * @return {object|undefined}
+	 * @param {string} url - 文件路径
+	 * @param {object} options - 文件配置
+	 * @param {any[]} [listener=null] - 监听回调
+	 * @return {Promise<object>}
 	 */
 	function readFileSync(url, options, listener) {
 	    if (options === void 0) { options = {}; }
@@ -4844,7 +4844,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/math - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/math is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -6749,7 +6749,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/display - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/display is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -8650,7 +8650,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/accessibility - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/accessibility is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -9365,7 +9365,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/ticker - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/ticker is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -10207,7 +10207,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/interaction - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/interaction is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -12804,7 +12804,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/runner - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/runner is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -13000,7 +13000,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/core - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/core is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -26122,7 +26122,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/app - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/app is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -26347,7 +26347,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/extract - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/extract is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -29176,7 +29176,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/loaders - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/loaders is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -29477,7 +29477,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/particles - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/particles is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -30454,7 +30454,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/graphics - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/graphics is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -34276,7 +34276,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/sprite is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -34951,7 +34951,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/text - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/text is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -37302,7 +37302,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/prepare - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/prepare is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38028,7 +38028,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/spritesheet - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/spritesheet is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38449,7 +38449,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite-tiling - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/sprite-tiling is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38954,7 +38954,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/text-bitmap - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/text-bitmap is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39780,7 +39780,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-alpha - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/filter-alpha is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39844,7 +39844,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-blur - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/filter-blur is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -40269,7 +40269,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-color-matrix - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/filter-color-matrix is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -40867,7 +40867,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-displacement - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/filter-displacement is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -40984,7 +40984,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-fxaa - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/filter-fxaa is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41021,7 +41021,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/filter-noise - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/filter-noise is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41100,7 +41100,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-cache-as-bitmap - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/mixin-cache-as-bitmap is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41525,7 +41525,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-get-child-by-name - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/mixin-get-child-by-name is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41562,7 +41562,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mixin-get-global-position - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/mixin-get-global-position is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41599,7 +41599,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mesh - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/mesh is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -42379,7 +42379,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/mesh-extras - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/mesh-extras is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -43186,7 +43186,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/sprite-animated - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/sprite-animated is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -43691,7 +43691,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * pixi.js - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * pixi.js is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -45135,7 +45135,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-renderer - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/canvas-renderer is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -46229,7 +46229,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-mesh - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/canvas-mesh is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -46720,7 +46720,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-graphics - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/canvas-graphics is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -47183,7 +47183,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-sprite - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/canvas-sprite is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -47388,7 +47388,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-extract - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/canvas-extract is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -47562,7 +47562,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-prepare - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/canvas-prepare is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -47659,7 +47659,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-sprite-tiling - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/canvas-sprite-tiling is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -47748,7 +47748,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-particles - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/canvas-particles is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -47855,7 +47855,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-display - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/canvas-display is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -47917,7 +47917,7 @@ var PIXI = (function (exports) {
 
 	/*!
 	 * @pixi/canvas-text - v5.2.4
-	 * Compiled Thu, 28 May 2020 07:39:57 UTC
+	 * Compiled Mon, 29 Jun 2020 08:24:36 UTC
 	 *
 	 * @pixi/canvas-text is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -49923,10 +49923,10 @@ var PIXI = (function (exports) {
 	 *
 	 * @memberof PIXI.utils
 	 * @function readFileSync
-	 * @param {string} url - 文件网络路径
-	 * @param {object} options - the defaultValue if no filename prefix is set.
-	 * @param {array} listener - resolution / device pixel ratio of an asset
-	 * @return {object|undefined}
+	 * @param {string} url - 文件路径
+	 * @param {object} options - 文件配置
+	 * @param {any[]} [listener=null] - 监听回调
+	 * @return {Promise<object>}
 	 */
 	function readFileSync$1(url, options, listener) {
 	    if (options === void 0) { options = {}; }
@@ -50005,6 +50005,17 @@ var PIXI = (function (exports) {
 	 */
 
 	/**
+	 * 播放1，暂停2，停止3，卸载4
+	 */
+	var ReadyState;
+	(function (ReadyState) {
+	    ReadyState[ReadyState["none"] = 0] = "none";
+	    ReadyState[ReadyState["playing"] = 1] = "playing";
+	    ReadyState[ReadyState["pause"] = 2] = "pause";
+	    ReadyState[ReadyState["stop"] = 3] = "stop";
+	    ReadyState[ReadyState["dispose"] = 4] = "dispose";
+	})(ReadyState || (ReadyState = {}));
+	/**
 	 * WebAudio
 	 *
 	 * @class
@@ -50026,7 +50037,7 @@ var PIXI = (function (exports) {
 	        /**
 	         * 播放1，暂停2，停止3，卸载4
 	         */
-	        _this._readyState = 0;
+	        _this._readyState = ReadyState.none;
 	        _this._isPause = false;
 	        _this._playbackRate = 1;
 	        _this._startTime = 0;
@@ -50107,7 +50118,10 @@ var PIXI = (function (exports) {
 	        var audioContext = this._ae.audioContext;
 	        if (this._isReadyToPlay && this._isPlaying && audioContext) {
 	            // eslint-disable-next-line max-len
-	            this.emit('timeupdate', this, this._startOffset + (audioContext.currentTime - this._startTime));
+	            this.emit('timeupdate', this, this.getCurrentTime());
+	        }
+	        if (!this._isPlaying && (this._readyState === ReadyState.stop || this._readyState === ReadyState.playing)) {
+	            Ticker$1.shared.remove(this.onTimeupdate, this);
 	        }
 	    };
 	    WebAudio.prototype.init = function (urlOrArrayBuffer) {
@@ -50199,6 +50213,14 @@ var PIXI = (function (exports) {
 	        this.emit('error', this, error);
 	    };
 	    /**
+	     * 获得当前播放进度
+	     * @returns {number}
+	     */
+	    WebAudio.prototype.getCurrentTime = function () {
+	        var audioContext = this._ae.audioContext;
+	        return this._startOffset + (audioContext.currentTime - this._startTime);
+	    };
+	    /**
 	     * 声音播放接口
 	     *
 	     *  await sound.play()
@@ -50209,11 +50231,11 @@ var PIXI = (function (exports) {
 	     */
 	    WebAudio.prototype.play = function (when, offset, length) {
 	        var _this = this;
-	        if (this._readyState === 4) {
+	        if (this._readyState === ReadyState.dispose) {
 	            return;
 	        }
 	        var audioContext = this._ae.audioContext;
-	        this._readyState = 1;
+	        this._readyState = ReadyState.playing;
 	        this._isPlaying = true;
 	        if (this._isReadyToPlay && audioContext) {
 	            if (!this._isPause) {
@@ -50226,6 +50248,7 @@ var PIXI = (function (exports) {
 	                    var soundSource = _this._soundSource;
 	                    if (soundSource) {
 	                        try {
+	                            soundSource.onended = undefined;
 	                            soundSource.stop(0);
 	                            soundSource.disconnect();
 	                        }
@@ -50243,14 +50266,13 @@ var PIXI = (function (exports) {
 	                        soundSource.loop = _this.loop;
 	                        soundSource.playbackRate.value = _this._playbackRate;
 	                        soundSource.onended = function () { _this.onended(); };
-	                        soundSource.start(when || 0, time || 0, playLength || soundSource.buffer.duration);
+	                        soundSource.start(audioContext.currentTime + _this._when, time || 0, playLength || soundSource.buffer.duration);
 	                        _this._soundSource = soundSource;
-	                        _this._startTime = audioContext.currentTime;
+	                        _this._startTime = audioContext.currentTime + _this._when;
+	                        _this._isPlaying = true; // 状态覆盖，防止end修改
 	                        _this.emit('play', _this);
-	                        if (_this.listeners('timeupdate').length > 0) {
-	                            Ticker$1.shared.remove(_this.onTimeupdate, _this);
-	                            Ticker$1.shared.add(_this.onTimeupdate, _this);
-	                        }
+	                        Ticker$1.shared.remove(_this.onTimeupdate, _this);
+	                        Ticker$1.shared.add(_this.onTimeupdate, _this);
 	                    }
 	                };
 	                var state1 = '';
@@ -50279,7 +50301,7 @@ var PIXI = (function (exports) {
 	                            }
 	                            else {
 	                                _this._ae.audioContext.resume().then(function () {
-	                                    if (_this._readyState === 1)
+	                                    if (_this._readyState === ReadyState.playing)
 	                                        { tryToPlay_1(); }
 	                                });
 	                            }
@@ -50302,15 +50324,16 @@ var PIXI = (function (exports) {
 	    };
 	    WebAudio.prototype.onended = function () {
 	        this._isPlaying = false;
-	        this.emit('ended', this);
+	        if (this._readyState !== ReadyState.pause) {
+	            this.emit('ended', this);
+	        }
 	    };
 	    /**
 	    * 停止声音
 	    * @param time (optional) X秒后停止声音。默认情况下立即停止
 	    */
 	    WebAudio.prototype.stop = function (time) {
-	        this._readyState = 3;
-	        Ticker$1.shared.remove(this.onTimeupdate, this);
+	        this._readyState = ReadyState.stop;
 	        if (this._isPlaying) {
 	            var audioEngine = this._ae;
 	            this._startOffset = 0;
@@ -50335,7 +50358,7 @@ var PIXI = (function (exports) {
 	     * 暂停声音
 	     */
 	    WebAudio.prototype.pause = function () {
-	        this._readyState = 2;
+	        this._readyState = ReadyState.pause;
 	        Ticker$1.shared.remove(this.onTimeupdate, this);
 	        if (this._isPlaying) {
 	            var audioContext = this._ae.audioContext;
@@ -50344,6 +50367,7 @@ var PIXI = (function (exports) {
 	                var startOffset = this._startOffset;
 	                this.stop(0);
 	                this._startOffset = startOffset + audioContext.currentTime - this._startTime;
+	                this._readyState = ReadyState.pause; // 这里进行状态覆盖，防止stop中状态设置。
 	            }
 	            this.emit('pause', this, this.paused);
 	        }
@@ -50371,7 +50395,7 @@ var PIXI = (function (exports) {
 	     * 释放
 	     */
 	    WebAudio.prototype.dispose = function () {
-	        this._readyState = 4;
+	        this._readyState = ReadyState.dispose;
 	        this.removeAllListeners();
 	        Ticker$1.shared.remove(this.onTimeupdate, this);
 	        if (this._ae.canUseWebAudio) {
@@ -50960,6 +50984,13 @@ var PIXI = (function (exports) {
 	                this.removeUpdateEvent();
 	            }
 	        }
+	    };
+	    /**
+	     * 获得当前播放进度
+	     * @returns {number}
+	     */
+	    HtmlAudio.prototype.getCurrentTime = function () {
+	        return this._audio.currentTime;
 	    };
 	    /**
 	     * 声音播放接口

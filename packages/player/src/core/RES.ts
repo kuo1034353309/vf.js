@@ -242,7 +242,7 @@ export class RES extends vf.utils.EventEmitter {
         this.loadResources();
     }
 
-    private initGlobalVariable(): void {
+    public initGlobalVariable(): void {
         if (this.data.global) {
             this.stage.variableManager.addVariableConfig(VariableManager.GLOBAL_ID, this.data.global);
             this.stage.variableManager.addVariableToGlobal(this.data.global);
