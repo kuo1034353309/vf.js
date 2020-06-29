@@ -1559,6 +1559,10 @@ var RES = /** @class */ (function (_super) {
             this.stage.systemEvent.emitError('E0003', [index], "warning" /* WARNING */);
             return undefined;
         }
+        // eslint-disable-next-line max-len
+        if ((assetData.type === "audio" /* AUDIO */ || assetData.type === "sound" /* SOUND */) && this.stage.config.vfvars.useNativeAudio) {
+            return this.data.assets[index];
+        }
         return this.vfResources[assetData.id.toString()];
     };
     RES.prototype.loadAllScript = function (stage, asstes) {
@@ -1608,6 +1612,10 @@ var RES = /** @class */ (function (_super) {
                         return;
                     }
                     if (assetsItem.type === "audio" /* AUDIO */ && stage.config.vfvars.useNativeAudio) {
+                        stage.systemEvent.emitError('S0004', [assetsItem.id], "warning" /* WARNING */);
+                        return;
+                    }
+                    if (assetsItem.type === "sound" /* SOUND */ && stage.config.vfvars.useNativeAudio) {
                         stage.systemEvent.emitError('S0004', [assetsItem.id], "warning" /* WARNING */);
                         return;
                     }
@@ -1807,7 +1815,7 @@ var RES = /** @class */ (function (_super) {
                 urls[res.url].push(res.id);
                 continue;
             }
-            if (res.type === 'audio' || res.type === 'sound') {
+            if (res.type === "audio" /* AUDIO */ || res.type === "sound" /* SOUND */) {
                 // 微信wechat不能直接加载audio类型
                 // eslint-disable-next-line max-len
                 loader.add(res.id, Object(_utils_getUrl__WEBPACK_IMPORTED_MODULE_7__["getUrl"])(res.url, this.data.baseUrl), { loadType: vf.LoaderResource.LOAD_TYPE.XHR, xhrType: 'arraybuffer' });
