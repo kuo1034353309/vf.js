@@ -394,16 +394,21 @@ export function deleteVF() {
 
     const w = window as any;
 
-    if (w) {
-        if (w.vf) {
-            delete w.vf;
+    try {
+        if (w) {
+            if (w.vf) {
+                delete w.vf;
+            }
+            if (w.gui) {
+                delete w.gui;
+            }
+            if (w.VFConversion) {
+                delete w.VFConversion;
+            }
         }
-        if (w.gui) {
-            delete w.gui;
-        }
-        if (w.VFConversion) {
-            delete w.VFConversion;
-        }
+    }
+    catch (e) {
+        //
     }
 }
 

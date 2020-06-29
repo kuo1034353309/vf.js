@@ -8498,6 +8498,7 @@ var VFStage = /** @class */ (function (_super) {
             this.curScene = undefined;
         }
         this.variableManager.clear();
+        this.res.initGlobalVariable();
         this.soundManager.clear();
         this.start();
     };
