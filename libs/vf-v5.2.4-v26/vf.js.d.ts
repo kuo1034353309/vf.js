@@ -1258,6 +1258,11 @@ declare namespace vf {
          */
         readonly currentTime: number;
         /**
+         * 获得当前播放进度
+         * @returns {number}
+         */
+        getCurrentTime(): number;
+        /**
          * 声音播放接口
          *
          *  await sound.play()
@@ -1325,6 +1330,11 @@ declare namespace vf {
          * @member {number}
          */
         playbackRate: number;
+        /**
+         * 获得当前播放进度
+         * @returns {number}
+         */
+        getCurrentTime(): number;
         /**
          * 声音播放接口
          *
@@ -25543,6 +25553,10 @@ export interface IAudio extends vf.utils.EventEmitter{
      * 获取包含数据的当前基础音频缓冲区
      */
     getAudioBuffer(): AudioBuffer | undefined;
+    /**
+     * 获取当前进度
+     */
+    getCurrentTime(): number;
 }
 
 /**

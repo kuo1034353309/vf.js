@@ -132,6 +132,7 @@ export class VFStage extends vf.gui.Stage {
             this.curScene = undefined;
         }
         this.variableManager.clear();
+        this.res.initGlobalVariable();
         this.soundManager.clear();
         this.start();
         //对齐syncManager时间
