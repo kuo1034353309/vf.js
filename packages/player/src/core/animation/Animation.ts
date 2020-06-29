@@ -40,8 +40,10 @@ export class Animation {
         private curAnimationTimes: number = 0;
         private curAnimationTotalTime: number = 0;
         private _curPlayTimes: number = 0;
+        private _animationTemplate: {[id: string]: ISubAnimation};
 
-        constructor(component: VFComponent, data: IAnimation[], fps: number = 30, realFPS: boolean = true) {
+        constructor(component: VFComponent, data: IAnimation[], fps: number = 30, realFPS: boolean = true, 
+                    animationTemplate: {[id: string]: ISubAnimation} = {}) {
             this.component = component;
             this.data = data;
             this.realFPS = realFPS;
@@ -50,6 +52,7 @@ export class Animation {
             }
             this.minDeltaT = Math.ceil(1000 / this.fps);
             this.deltaT = 0;
+            this._animationTemplate = animationTemplate;
             this.parseData();
         }
 
@@ -251,10 +254,19 @@ export class Animation {
             this.animationConfig[name] = config;
             let duration: number = 0;
             for (const key in anim.children) {
-                if (anim.children[key]) {
-                    const ac = this.parseAnimationClip( key, name, anim.children[key]);
-                    if (ac && ac.totalTime > duration) {
-                        duration = ac.totalTime;
+                const subAnim = anim.children[key];
+                if (subAnim) {
+                    let subAnimation: ISubAnimation;
+                    if(typeof subAnim === 'string') {
+                        subAnimation = this._animationTemplate[subAnim]
+                    } else {
+                        subAnimation = subAnim;
+                    }
+                    if(subAnimation) {
+                        const ac = this.parseAnimationClip( key, name, subAnimation);
+                        if (ac && ac.totalTime > duration) {
+                            duration = ac.totalTime;
+                        }
                     }
                 }
             }
