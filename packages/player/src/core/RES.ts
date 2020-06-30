@@ -387,7 +387,7 @@ export class RES extends vf.utils.EventEmitter {
         }
         if (customData.animations) {
             const realFPS = this.stage.config.realFPS;
-            const animation = new Animation(vfComponent, customData.animations, this.data.fps, realFPS);
+            const animation = new Animation(vfComponent, customData.animations, this.data.fps, realFPS, this.data.animationTemplate);
 
             vfComponent.animation = animation;
         }

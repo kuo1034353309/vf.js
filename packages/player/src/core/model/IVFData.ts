@@ -13,6 +13,7 @@ export interface IVFDataV1 {
     assets: { [id: string]: IAsset };
     components: { [id: string]: AllComponent };
     scenes: IScene[];
+    animationTemplate?: {[id: string]: ISubAnimation};
 }
 
 export const enum ScaleMode {
@@ -121,7 +122,7 @@ export interface IAnimation {
     duration?: number;
     autoPlay?: boolean;
     loop?: boolean;
-    children: { [id: string]: ISubAnimation };
+    children: { [id: string]: (ISubAnimation | string) };
 }
 export interface ISubAnimation {
     duration?: number;
