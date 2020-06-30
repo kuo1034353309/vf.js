@@ -301,7 +301,7 @@ var Player = /** @class */ (function () {
             this._readyState = value;
             this.config.systemEvent.emit("status" /* STATUS */, { code: value, level: "status" /* STATUS */, data: value });
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Player.prototype.createApp = function () {
@@ -693,7 +693,7 @@ var BaseInfo = /** @class */ (function () {
         get: function () {
             return {};
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     BaseInfo.prototype.output = function (ttl, obj) {
@@ -823,7 +823,7 @@ var Config = /** @class */ (function (_super) {
             this._container = value;
             this.propertyChange('container');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "id", {
@@ -837,7 +837,7 @@ var Config = /** @class */ (function (_super) {
             this._id = value;
             this.propertyChange('id');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "src", {
@@ -851,7 +851,7 @@ var Config = /** @class */ (function (_super) {
             this._src = value;
             this.propertyChange('src');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "play", {
@@ -865,7 +865,7 @@ var Config = /** @class */ (function (_super) {
             this._play = value;
             this.propertyChange('play');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "loop", {
@@ -879,7 +879,7 @@ var Config = /** @class */ (function (_super) {
             this._loop = value;
             this.propertyChange('loop');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "menu", {
@@ -893,7 +893,7 @@ var Config = /** @class */ (function (_super) {
             this._menu = value;
             this.propertyChange('menu');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "scaleMode", {
@@ -907,7 +907,7 @@ var Config = /** @class */ (function (_super) {
             this._scaleMode = value;
             this.propertyChange('scaleMode');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "align", {
@@ -921,7 +921,7 @@ var Config = /** @class */ (function (_super) {
             this._align = value;
             this.propertyChange('align');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "wmode", {
@@ -935,7 +935,7 @@ var Config = /** @class */ (function (_super) {
             this._wmode = value;
             this.propertyChange('wmode');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "bgcolor", {
@@ -949,7 +949,7 @@ var Config = /** @class */ (function (_super) {
             this._bgcolor = value;
             this.propertyChange('bgcolor');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "vfvars", {
@@ -969,7 +969,7 @@ var Config = /** @class */ (function (_super) {
             this._vfvars = value;
             this.propertyChange('vfvars');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "plugs", {
@@ -979,7 +979,7 @@ var Config = /** @class */ (function (_super) {
         set: function (value) {
             this._plugs = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "frameRate", {
@@ -993,7 +993,7 @@ var Config = /** @class */ (function (_super) {
             this._frameRate = value;
             this.propertyChange('frameRate');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "width", {
@@ -1007,7 +1007,7 @@ var Config = /** @class */ (function (_super) {
             this._width = value;
             this.propertyChange('width');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "height", {
@@ -1021,7 +1021,7 @@ var Config = /** @class */ (function (_super) {
             this._height = value;
             this.propertyChange('height');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "orientation", {
@@ -1035,7 +1035,7 @@ var Config = /** @class */ (function (_super) {
             this._orientation = value;
             this.propertyChange('orientation');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "maxTouches", {
@@ -1049,7 +1049,7 @@ var Config = /** @class */ (function (_super) {
             this._maxTouches = value;
             this.propertyChange('maxTouches');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "showFPS", {
@@ -1063,7 +1063,7 @@ var Config = /** @class */ (function (_super) {
             this._showFPS = value;
             this.propertyChange('showFPS');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "showLog", {
@@ -1077,7 +1077,7 @@ var Config = /** @class */ (function (_super) {
             this._showLog = value;
             this.propertyChange('showLog');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "conversionData", {
@@ -1091,7 +1091,7 @@ var Config = /** @class */ (function (_super) {
             this._conversionData = value;
             this.propertyChange('conversionData');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "debug", {
@@ -1105,7 +1105,7 @@ var Config = /** @class */ (function (_super) {
             this._debug = value;
             this.propertyChange('debug');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "logAdvancedTrace", {
@@ -1119,7 +1119,7 @@ var Config = /** @class */ (function (_super) {
             this._logAdvancedTrace = value;
             this.propertyChange('logAdvancedTrace');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "language", {
@@ -1133,14 +1133,14 @@ var Config = /** @class */ (function (_super) {
             this._language = value;
             this.propertyChange('language');
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "i18n", {
         get: function () {
             return this._i18n;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "info", {
@@ -1172,7 +1172,7 @@ var Config = /** @class */ (function (_super) {
                 i18n: this.i18n.info,
             };
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return Config;
@@ -1276,14 +1276,14 @@ var I18N = /** @class */ (function (_super) {
         set: function (value) {
             this._readyState = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(I18N.prototype, "info", {
         get: function () {
             return ['zh-CN', 'en-US'];
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     I18N.prototype.t = function (key, param) {
@@ -1429,7 +1429,7 @@ var RES = /** @class */ (function (_super) {
         get: function () {
             return this.stage.data;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     RES.prototype.destroy = function () {
@@ -2618,13 +2618,12 @@ var VariableManager = /** @class */ (function () {
     };
     VariableManager.prototype.emitError = function (component, code, params, level) {
         if (level === void 0) { level = "error" /* ERROR */; }
-        var _a;
         if (component && component.vfStage) {
             var vfStage = component.vfStage;
             vfStage.systemEvent.emitError(code, params, level);
         }
         else {
-            throw new Error(code + ': ' + ((_a = params) === null || _a === void 0 ? void 0 : _a.join(' ')));
+            throw new Error(code + ': ' + (params === null || params === void 0 ? void 0 : params.join(' ')));
         }
     };
     VariableManager.GLOBAL_ID = 'global';
@@ -4032,7 +4031,7 @@ var CallProtoFunctionTask = /** @class */ (function (_super) {
         get: function () {
             return Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(this.component, this.data.target);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     CallProtoFunctionTask.prototype.run = function () {
@@ -5212,7 +5211,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(SetIntervalTask.prototype, "times", {
@@ -5237,7 +5236,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
             }
             return times;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     SetIntervalTask.prototype.run = function () {
@@ -5445,7 +5444,7 @@ var SetTimeoutTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     SetTimeoutTask.prototype.run = function () {
@@ -5619,7 +5618,7 @@ var WaitTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     WaitTask.prototype.run = function () {
@@ -5855,35 +5854,35 @@ var BaseTask = /** @class */ (function (_super) {
         get: function () {
             return this._asynchronous;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isRunning", {
         get: function () {
             return this._isRunning;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isCompleted", {
         get: function () {
             return this._isCompleted;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isFailed", {
         get: function () {
             return this._isFailed;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isPaused", {
         get: function () {
             return this._isPaused;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     return BaseTask;
@@ -6010,7 +6009,7 @@ var QueueTask = /** @class */ (function (_super) {
         get: function () {
             return this._tasks;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     QueueTask.prototype.run = function () {
@@ -6150,6 +6149,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ColorFrame__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ColorFrame */ "./packages/player/src/core/animation/ColorFrame.ts");
 /* harmony import */ var _EventTimeline__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EventTimeline */ "./packages/player/src/core/animation/EventTimeline.ts");
 /* harmony import */ var _EventFrame__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EventFrame */ "./packages/player/src/core/animation/EventFrame.ts");
+/* harmony import */ var _PathTimeline__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./PathTimeline */ "./packages/player/src/core/animation/PathTimeline.ts");
+
 
 
 
@@ -6307,7 +6308,7 @@ var Animation = /** @class */ (function () {
                 }
             }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Animation.prototype.tick = function () {
@@ -6466,6 +6467,12 @@ var Animation = /** @class */ (function () {
                 timeline = new _EventTimeline__WEBPACK_IMPORTED_MODULE_6__["EventTimeline"]();
                 this.parseFrames(timeline, data.frames, _EventFrame__WEBPACK_IMPORTED_MODULE_7__["EventFrame"]);
                 break;
+            case "path" /* PATH */:
+                if (data.path) {
+                    timeline = new _PathTimeline__WEBPACK_IMPORTED_MODULE_8__["PathTimeline"](data.path);
+                    this.parseFrames(timeline, data.frames, _NumberFrame__WEBPACK_IMPORTED_MODULE_2__["NumberFrame"]);
+                }
+                break;
             default:
                 timeline = new _Timeline__WEBPACK_IMPORTED_MODULE_1__["Timeline"]();
                 this.parseFrames(timeline, data.frames, _NumberFrame__WEBPACK_IMPORTED_MODULE_2__["NumberFrame"]);
@@ -6526,7 +6533,7 @@ var AnimationClip = /** @class */ (function () {
         get: function () {
             return this.target;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(AnimationClip.prototype, "curTime", {
@@ -6541,7 +6548,7 @@ var AnimationClip = /** @class */ (function () {
             }
             this.applyTimeline();
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     AnimationClip.prototype.skipNextEvent = function () {
@@ -6599,6 +6606,11 @@ var AnimationClip = /** @class */ (function () {
                             targetDisplay.emit(event_1.type, event_1.data);
                         }
                     }
+                    break;
+                case "path" /* PATH */:
+                    var pos = timeline.curPos;
+                    targetDisplay.x = pos[0];
+                    targetDisplay.y = pos[1];
                     break;
                 default:
                     if (timeline.type.indexOf('filter') === 0) {
@@ -6938,6 +6950,68 @@ var NumberFrame = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ "./packages/player/src/core/animation/PathTimeline.ts":
+/*!************************************************************!*\
+  !*** ./packages/player/src/core/animation/PathTimeline.ts ***!
+  \************************************************************/
+/*! exports provided: PathTimeline */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PathTimeline", function() { return PathTimeline; });
+/* harmony import */ var _Timeline__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Timeline */ "./packages/player/src/core/animation/Timeline.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var PathTimeline = /** @class */ (function (_super) {
+    __extends(PathTimeline, _super);
+    function PathTimeline(path) {
+        var _this = _super.call(this) || this;
+        _this.length = 0;
+        _this.path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        _this.path.setAttribute("d", path);
+        _this.length = _this.path.getTotalLength();
+        return _this;
+    }
+    Object.defineProperty(PathTimeline.prototype, "curPos", {
+        get: function () {
+            if (this.path) {
+                var p = this.path.getPointAtLength(this._curValue * this.length);
+                return [p.x, p.y];
+            }
+            return [0, 0];
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(PathTimeline.prototype, "angle", {
+        get: function () {
+            var p0 = this.path.getPointAtLength(this._curValue * this.length - 1);
+            var p1 = this.path.getPointAtLength(this._curValue * this.length + 1);
+            return Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return PathTimeline;
+}(_Timeline__WEBPACK_IMPORTED_MODULE_0__["Timeline"]));
+
+
+
+/***/ }),
+
 /***/ "./packages/player/src/core/animation/StringFrame.ts":
 /*!***********************************************************!*\
   !*** ./packages/player/src/core/animation/StringFrame.ts ***!
@@ -7013,14 +7087,14 @@ var Timeline = /** @class */ (function () {
             this._defaultValue = value;
             this._curValue = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Timeline.prototype, "curValue", {
         get: function () {
             return this._curValue;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Timeline.prototype, "globalTime", {
@@ -7029,7 +7103,7 @@ var Timeline = /** @class */ (function () {
             this.tick();
             this._lastGlobalTime = v;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Timeline.prototype.getProgress = function (cur, min, max, curve) {
@@ -7288,7 +7362,7 @@ var AbstractFilter = /** @class */ (function (_super) {
             value = Math.max(0, value);
             this.uniforms.progress = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     AbstractFilter.prototype.applyTranisition = function (target) {
@@ -7505,7 +7579,7 @@ var DoomScreenFilter = /** @class */ (function (_super) {
             value = Math.max(0, value);
             this.uniforms.progress = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     DoomScreenFilter.prototype.applyTranisition = function (target) {
@@ -7864,7 +7938,7 @@ var FadeoutTran = /** @class */ (function () {
                 this.prevSprite.alpha = (1 - this._progress);
             }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     FadeoutTran.prototype.setPreviousTexture = function (value) {
@@ -7919,13 +7993,12 @@ __webpack_require__.r(__webpack_exports__);
  * @param id 不传id,获取第一个场景数据
  */
 function getSceneData(data, id) {
-    var _a;
     var scenes = data.scenes;
     if (scenes) {
         if ((id === undefined || id === '') && scenes[0]) {
             return scenes[0];
         }
-        id = (_a = id) === null || _a === void 0 ? void 0 : _a.toString();
+        id = id === null || id === void 0 ? void 0 : id.toString();
         for (var i = 0, len = scenes.length; i < len; i++) {
             if (scenes[i].id.toString() === id) {
                 return scenes[i];
@@ -8090,7 +8163,7 @@ var VFComponent = /** @class */ (function (_super) {
                 }
             }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     VFComponent.prototype.pause = function () {
@@ -8440,7 +8513,7 @@ var VFStage = /** @class */ (function (_super) {
         get: function () {
             return this.config.systemEvent;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /** 获取当前的场景 */
