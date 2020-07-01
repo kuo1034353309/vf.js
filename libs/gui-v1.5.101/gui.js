@@ -2882,11 +2882,14 @@ var Stage = /** @class */ (function (_super) {
         //this.updateChildren();
     };
     /**
-     * 虚接口，子类可以扩充
+     * 接收来自player的消息
+     * @param msg
      */
-    Stage.prototype.inputLog = function (msg) {
-        //
-        //console.log(msg);
+    Stage.prototype.receiveFromPlayer = function (msg) {
+        if (msg.code == 'syncEvent') {
+            var data = msg.data; //{data: eventData, type: 'live/history'}
+            this.syncManager && this.syncManager.receiveEvent(data.data, data.type);
+        }
     };
     return Stage;
 }(DisplayLayoutAbstract_1.DisplayLayoutAbstract));
@@ -3580,8 +3583,8 @@ var Audio = /** @class */ (function (_super) {
         this.audio.on("error", function (e) {
             _this.emit("error", e);
         }), this;
-        this.audio.on("timeupdate", function (e) {
-            _this.emit("timeupdate", e);
+        this.audio.on("timeupdate", function (e, f) {
+            _this.emit("timeupdate", e, f);
         });
         this.audio.on("ended", function (e) {
             _this.emit("ended", e);
@@ -14275,13 +14278,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.5.100.1.5.100.1.5.100) ==1.5.100.1.5.100.1.5.100;
+//     return this.lastIndexOf(word, pos1.5.101.1.5.101.1.5.101) ==1.5.101.1.5.101.1.5.101;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.5.100";
+window.vf.gui.version = "1.5.101";
 
 
 /***/ })
