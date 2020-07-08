@@ -1304,6 +1304,7 @@ declare module 'src/interaction/SyncManager' {
 	    private _throttleTimer;
 	    private _evtDataList;
 	    private _lastMoveEvent;
+	    private _readystate;
 	    /**
 	     * 开始同步
 	     */

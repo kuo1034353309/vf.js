@@ -8634,8 +8634,6 @@ var VFStage = /** @class */ (function (_super) {
         this.res.initGlobalVariable();
         this.soundManager.clear();
         this.start();
-        //对齐syncManager时间
-        this.syncManager && this.syncManager.init();
     };
     VFStage.prototype.dispose = function () {
         this.curSceneId = undefined;
@@ -8681,7 +8679,6 @@ var VFStage = /** @class */ (function (_super) {
         }
     };
     VFStage.prototype.switchToScene = function (scene, transition) {
-        var _this = this;
         if (scene && this.app) {
             var transitionData = transition;
             var prevTexture = void 0;
@@ -8706,18 +8703,11 @@ var VFStage = /** @class */ (function (_super) {
                 this.emit("TransitionStart" /* TransitionStart */);
                 this.emit("TransitionEnd" /* TransitionEnd */);
             }
-            if (this.syncManager) {
-                this.syncManager.init();
-            }
-            this.visible = false;
-            clearTimeout(this._delayedDisplayId);
-            this._delayedDisplayId = setTimeout(function () {
-                _this.visible = true;
-            }, 60);
             this.status = STAGE_STATUS.PLAYING;
         }
     };
     VFStage.prototype.loadAssetCompleted = function () {
+        var _this = this;
         this.systemEvent.emit("status" /* STATUS */, {
             code: "LoadComplete" /* LoadComplete */, level: "status" /* STATUS */, data: [this.curSceneId],
         });
@@ -8728,10 +8718,18 @@ var VFStage = /** @class */ (function (_super) {
             if (scene) {
                 this.switchToScene(scene, this.curSceneTransition);
             }
-            this.createPlugs();
-            this.systemEvent.emit("status" /* STATUS */, {
-                code: "ScenComplete" /* ScenComplete */, level: "status" /* STATUS */, data: null,
-            });
+            this.visible = false;
+            clearTimeout(this._delayedDisplayId);
+            this._delayedDisplayId = setTimeout(function () {
+                _this.visible = true;
+                if (_this.syncManager) {
+                    _this.syncManager.init();
+                }
+                _this.createPlugs();
+                _this.systemEvent.emit("status" /* STATUS */, {
+                    code: "ScenComplete" /* ScenComplete */, level: "status" /* STATUS */, data: null,
+                });
+            }, 60);
         }
     };
     VFStage.prototype.loadProgress = function (e) {

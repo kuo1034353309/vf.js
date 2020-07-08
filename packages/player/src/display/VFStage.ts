@@ -135,8 +135,6 @@ export class VFStage extends vf.gui.Stage {
         this.res.initGlobalVariable();
         this.soundManager.clear();
         this.start();
-        //对齐syncManager时间
-        this.syncManager && this.syncManager.init();
     }
     public dispose(): void {
         this.curSceneId = undefined;
@@ -221,16 +219,6 @@ export class VFStage extends vf.gui.Stage {
                 this.emit(SceneEvent.TransitionEnd);
             }
 
-            if (this.syncManager) {
-                this.syncManager.init();
-            }
-
-            this.visible = false;
-            clearTimeout(this._delayedDisplayId);
-            this._delayedDisplayId = setTimeout(() => {
-                this.visible = true;
-            }, 60);
-
             this.status = STAGE_STATUS.PLAYING;
         }
     }
@@ -249,10 +237,18 @@ export class VFStage extends vf.gui.Stage {
                 this.switchToScene(scene, this.curSceneTransition);
             }
 
-            this.createPlugs();
-            this.systemEvent.emit(EventType.STATUS, {
-                code: SceneEvent.ScenComplete, level: EventLevel.STATUS, data: null,
-            });
+            this.visible = false;
+            clearTimeout(this._delayedDisplayId);
+            this._delayedDisplayId = setTimeout(() => {
+                this.visible = true;
+                if (this.syncManager) {
+                    this.syncManager.init();
+                }
+                this.createPlugs();
+                this.systemEvent.emit(EventType.STATUS, {
+                    code: SceneEvent.ScenComplete, level: EventLevel.STATUS, data: null,
+                });
+            }, 60);
         }
     }
 
