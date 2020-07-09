@@ -9123,6 +9123,7 @@ var ClickEvent = /** @class */ (function () {
         this.eventnameMouseup = "mouseup" /* mouseup */;
         this.eventnameMouseupoutside = "mouseupoutside" /* mouseupoutside */;
         this.isStop = true;
+        this.lastMouseDownTime = 0;
         this.obj = obj;
         if (isOpenEmitEvent !== undefined) {
             this.isOpenEmitEvent = isOpenEmitEvent;
@@ -9182,6 +9183,10 @@ var ClickEvent = /** @class */ (function () {
         this.isStop = true;
     };
     ClickEvent.prototype._onMouseDown = function (e) {
+        if (this.lastMouseDownTime > performance.now() && !e.signalling) {
+            return;
+        }
+        this.lastMouseDownTime = performance.now() + 600;
         if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
             (this.onClick ||
                 this.onPress ||
@@ -14288,13 +14293,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.5.105.1.5.105.1.5.105) ==1.5.105.1.5.105.1.5.105;
+//     return this.lastIndexOf(word, pos1.5.108.1.5.108.1.5.108) ==1.5.108.1.5.108.1.5.108;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.5.105";
+window.vf.gui.version = "1.5.108";
 
 
 /***/ })
