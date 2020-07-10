@@ -6389,6 +6389,7 @@ var Animation = /** @class */ (function () {
         this.passedTime = this.curTime - this.startTime;
         if (this.curAnimationTimes > 0 &&
             this.passedTime > this.curAnimationTotalTime) {
+            this.setCurTime(this.curAnimationTotalTime);
             this.stop();
         }
         this.curPlayTimes = Math.floor(this.passedTime / this.curAnimatinDurationTime);

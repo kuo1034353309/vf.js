@@ -208,6 +208,7 @@ export class Animation {
 
             if (this.curAnimationTimes > 0 && 
                 this.passedTime > this.curAnimationTotalTime) {
+                this.setCurTime(this.curAnimationTotalTime);
                 this.stop();
             }
             this.curPlayTimes = Math.floor(this.passedTime / this.curAnimatinDurationTime);
