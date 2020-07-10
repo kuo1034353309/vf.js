@@ -442,6 +442,7 @@ export interface IActionIFPart extends IAction {
 }
 export interface IActionFunction extends IAction {
     name: string;
+    formalParams?: ExpressType[];
 }
 export interface IActionAddEventListener extends IAction {
     event: string;

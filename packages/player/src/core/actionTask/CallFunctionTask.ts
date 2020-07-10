@@ -1,6 +1,6 @@
 import { BaseTask, TaskEvent } from './core/BaseTask';
 import { VFComponent } from '../../display/VFComponent';
-import { IAction, IActionCallFunction, VariableType } from '../model/IVFData';
+import { IAction, IActionCallFunction, VariableType, ExpressItemType } from '../model/IVFData';
 import { FunctionTask } from './FunctionTask';
 import { VariableManager } from '../VariableManager';
 import { getTargetComponent } from '../../utils/VFUtil';
@@ -29,34 +29,55 @@ export class CallFunctionTask extends BaseTask {
                 let funId = this.funName;
                 this.runId = variableManager.getFunctionId();
                 funId = this._component.hashCode + this.funName;
-                // 注入参数
-                this.paramIds.length = 0;
-                if (this.data.params) {
-                    const paramValues: any[] = [];
-                    for ( let i: number = 0, len: number = this.data.params.length; i < len; i++) {
-                        const param = this.data.params[i];
-                        let paramValue = param;
-                        if (Array.isArray(param)) {
-                            const paramVar = variableManager.getExpressItemValue(this.component, param);
-                            paramValue = paramVar;
-                        }
-                        paramValues.push(paramValue);
-                    }
-                    for (let i: number = 0, len: number = paramValues.length; i < len; i++) {
-                        const paramId = funId + this.runId + 'param_' + i;
-                        this.paramIds.push(paramId);
-                        if (!variableManager.variableMap[VariableManager.GLOBAL_ID]) {
-                            variableManager.variableMap[VariableManager.GLOBAL_ID] = {};
-                        }
-                        variableManager.variableMap[VariableManager.GLOBAL_ID][paramId] = {
-                            id: paramId,
-                            type: VariableType.OBJECT,
-                            value: paramValues[i],
-                        };
-                    }
-                }
+                
                 this.fun = variableManager.getFunctionTask(funId);
                 if (this.fun) {
+                    // 注入参数
+                    this.paramIds.length = 0;
+                    if(this.fun.formalParams) {
+                        console.log('vvv')
+                        const formalParamLength = this.fun.formalParams ? this.fun.formalParams.length : 0;
+                        const realParamLength = this.data.params ? this.data.params.length : 0;
+                        if(formalParamLength != realParamLength) {
+                            if(realParamLength > formalParamLength) {
+                                if(this.data.params) {
+                                    this.data.params.length = formalParamLength;
+                                }
+                            } else {
+                                if(!this.data.params) {
+                                    this.data.params = [];
+                                }
+                                for(let i = realParamLength; i < formalParamLength; i++) {
+                                    this.data.params.push([ExpressItemType.CONST, undefined]);
+                                }
+                            }
+                        }
+                    }
+
+                    if (this.data.params) {
+                        const paramValues: any[] = [];
+                        for ( let i: number = 0, len: number = this.data.params.length; i < len; i++) {
+                            const param = this.data.params[i];
+                            let paramValue = param;
+                            if (Array.isArray(param)) {
+                                const paramVar = variableManager.getExpressItemValue(this.component, param);
+                                paramValue = paramVar;
+                            }
+                            paramValues.push(paramValue);
+                        }
+                        for (let i: number = 0, len: number = paramValues.length; i < len; i++) {
+                            const paramId = funId + this.runId + 'param_' + i;
+                            this.paramIds.push(paramId);
+                            if (!variableManager.variableMap[VariableManager.GLOBAL_ID]) {
+                                variableManager.variableMap[VariableManager.GLOBAL_ID] = {};
+                            }
+                            variableManager.variableMap[VariableManager.GLOBAL_ID][paramId] = {
+                                id: paramId,
+                                type: VariableType.OBJECT,
+                                value: paramValues[i],
+                            };
+                        }
+                    }
                     // 替换表达式中的参数
                     if (this.paramIds.length) {
                         this.fun.injectParams(this.paramIds);

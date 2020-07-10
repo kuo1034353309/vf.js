@@ -1750,7 +1750,7 @@ var RES = /** @class */ (function (_super) {
         }
         if (customData.animations) {
             var realFPS = this.stage.config.realFPS;
-            var animation = new _animation_Animation__WEBPACK_IMPORTED_MODULE_5__["Animation"](vfComponent, customData.animations, this.data.fps, realFPS);
+            var animation = new _animation_Animation__WEBPACK_IMPORTED_MODULE_5__["Animation"](vfComponent, customData.animations, this.data.fps, realFPS, this.data.animationTemplate);
             vfComponent.animation = animation;
         }
         return vfComponent;
@@ -3849,8 +3849,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CallFunctionTask", function() { return CallFunctionTask; });
 /* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
 /* harmony import */ var _display_VFComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../display/VFComponent */ "./packages/player/src/display/VFComponent.ts");
-/* harmony import */ var _VariableManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../VariableManager */ "./packages/player/src/core/VariableManager.ts");
-/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+/* harmony import */ var _model_IVFData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../model/IVFData */ "./packages/player/src/core/model/IVFData.ts");
+/* harmony import */ var _VariableManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../VariableManager */ "./packages/player/src/core/VariableManager.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -3868,6 +3869,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var CallFunctionTask = /** @class */ (function (_super) {
     __extends(CallFunctionTask, _super);
     function CallFunctionTask(compontent, funName, data) {
@@ -3881,40 +3883,60 @@ var CallFunctionTask = /** @class */ (function (_super) {
     }
     CallFunctionTask.prototype.run = function () {
         _super.prototype.run.call(this);
-        this._component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__["getTargetComponent"])(this.component, this.data.target);
+        this._component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_4__["getTargetComponent"])(this.component, this.data.target);
         if (this._component instanceof _display_VFComponent__WEBPACK_IMPORTED_MODULE_1__["VFComponent"] && this._component && this._component.vfStage) {
             var variableManager = this._component.vfStage.variableManager;
             var funId = this.funName;
             this.runId = variableManager.getFunctionId();
             funId = this._component.hashCode + this.funName;
-            // 注入参数
-            this.paramIds.length = 0;
-            if (this.data.params) {
-                var paramValues = [];
-                for (var i = 0, len = this.data.params.length; i < len; i++) {
-                    var param = this.data.params[i];
-                    var paramValue = param;
-                    if (Array.isArray(param)) {
-                        var paramVar = variableManager.getExpressItemValue(this.component, param);
-                        paramValue = paramVar;
-                    }
-                    paramValues.push(paramValue);
-                }
-                for (var i = 0, len = paramValues.length; i < len; i++) {
-                    var paramId = funId + this.runId + 'param_' + i;
-                    this.paramIds.push(paramId);
-                    if (!variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID]) {
-                        variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID] = {};
-                    }
-                    variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID][paramId] = {
-                        id: paramId,
-                        type: "object" /* OBJECT */,
-                        value: paramValues[i],
-                    };
-                }
-            }
             this.fun = variableManager.getFunctionTask(funId);
             if (this.fun) {
+                // 注入参数
+                this.paramIds.length = 0;
+                if (this.fun.formalParams) {
+                    console.log('vvv');
+                    var formalParamLength = this.fun.formalParams ? this.fun.formalParams.length : 0;
+                    var realParamLength = this.data.params ? this.data.params.length : 0;
+                    if (formalParamLength != realParamLength) {
+                        if (realParamLength > formalParamLength) {
+                            if (this.data.params) {
+                                this.data.params.length = formalParamLength;
+                            }
+                        }
+                        else {
+                            if (!this.data.params) {
+                                this.data.params = [];
+                            }
+                            for (var i = realParamLength; i < formalParamLength; i++) {
+                                this.data.params.push([_model_IVFData__WEBPACK_IMPORTED_MODULE_2__["ExpressItemType"].CONST, undefined]);
+                            }
+                        }
+                    }
+                }
+                if (this.data.params) {
+                    var paramValues = [];
+                    for (var i = 0, len = this.data.params.length; i < len; i++) {
+                        var param = this.data.params[i];
+                        var paramValue = param;
+                        if (Array.isArray(param)) {
+                            var paramVar = variableManager.getExpressItemValue(this.component, param);
+                            paramValue = paramVar;
+                        }
+                        paramValues.push(paramValue);
+                    }
+                    for (var i = 0, len = paramValues.length; i < len; i++) {
+                        var paramId = funId + this.runId + 'param_' + i;
+                        this.paramIds.push(paramId);
+                        if (!variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_3__["VariableManager"].GLOBAL_ID]) {
+                            variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_3__["VariableManager"].GLOBAL_ID] = {};
+                        }
+                        variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_3__["VariableManager"].GLOBAL_ID][paramId] = {
+                            id: paramId,
+                            type: "object" /* OBJECT */,
+                            value: paramValues[i],
+                        };
+                    }
+                }
                 // 替换表达式中的参数
                 if (this.paramIds.length) {
                     this.fun.injectParams(this.paramIds);
@@ -3974,7 +3996,7 @@ var CallFunctionTask = /** @class */ (function (_super) {
                 var variableManager = this.component.vfStage.variableManager;
                 for (var i = 0, len = this.paramIds.length; i < len; i++) {
                     var paramId = this.paramIds[i];
-                    delete variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID][paramId];
+                    delete variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_3__["VariableManager"].GLOBAL_ID][paramId];
                 }
             }
         }
@@ -4099,6 +4121,7 @@ var DefineFunctionTask = /** @class */ (function (_super) {
         _this.component = compontent;
         _this.funName = funName;
         _this.fun = fun;
+        _this.fun.formalParams = data.formalParams;
         _this.data = data;
         return _this;
     }
@@ -5774,6 +5797,23 @@ function modiyExpressItemParamValue(expressItem, paramIds) {
             modiyExpressItemParamValue(expressItem[3], paramIds);
         }
     }
+    else if (expressItem[0] === _model_IVFData__WEBPACK_IMPORTED_MODULE_7__["ExpressItemType"].ARRAY_FUNCTION) {
+        if (expressItem[3] == 'push' ||
+            expressItem[3] == 'unshift' ||
+            expressItem[3] == 'concat') {
+            if (Array.isArray(expressItem[4])) {
+                modiyExpressItemParamValue(expressItem[4], paramIds);
+            }
+        }
+        else if (expressItem[3] == 'splice') {
+            if (Array.isArray(expressItem[4])) {
+                modiyExpressItemParamValue(expressItem[4], paramIds);
+            }
+            if (Array.isArray(expressItem[5])) {
+                modiyExpressItemParamValue(expressItem[5], paramIds);
+            }
+        }
+    }
 }
 
 
@@ -6160,9 +6200,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var Animation = /** @class */ (function () {
-    function Animation(component, data, fps, realFPS) {
+    function Animation(component, data, fps, realFPS, animationTemplate) {
         if (fps === void 0) { fps = 30; }
         if (realFPS === void 0) { realFPS = true; }
+        if (animationTemplate === void 0) { animationTemplate = {}; }
         this.animationMap = {};
         this.animationConfig = {};
         this.status = 0 /* STOP */;
@@ -6194,6 +6235,7 @@ var Animation = /** @class */ (function () {
         }
         this.minDeltaT = Math.ceil(1000 / this.fps);
         this.deltaT = 0;
+        this._animationTemplate = animationTemplate;
         this.parseData();
     }
     Animation.prototype.addAnimationClip = function (clip) {
@@ -6388,10 +6430,20 @@ var Animation = /** @class */ (function () {
         this.animationConfig[name] = config;
         var duration = 0;
         for (var key in anim.children) {
-            if (anim.children[key]) {
-                var ac = this.parseAnimationClip(key, name, anim.children[key]);
-                if (ac && ac.totalTime > duration) {
-                    duration = ac.totalTime;
+            var subAnim = anim.children[key];
+            if (subAnim) {
+                var subAnimation = void 0;
+                if (typeof subAnim === 'string') {
+                    subAnimation = this._animationTemplate[subAnim];
+                }
+                else {
+                    subAnimation = subAnim;
+                }
+                if (subAnimation) {
+                    var ac = this.parseAnimationClip(key, name, subAnimation);
+                    if (ac && ac.totalTime > duration) {
+                        duration = ac.totalTime;
+                    }
                 }
             }
         }
