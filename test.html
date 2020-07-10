@@ -51,24 +51,25 @@
     <script>
         var demoIndex = 0;
         var demos = [
-            `./vf_demo/image.json?v=1`,
-            `./vf_demo/label.json?v=1`,
-            `./vf_demo/rect.json`,
-            `./vf_demo/button.json`,
-            `./vf_demo/checkbox.json`,
-            `./vf_demo/circle.json`,
-            `./vf_demo/slider.json`,
-            `./vf_demo/textinput.json`,
-            `./vf_demo/soundTest.json`,
-            `./vf_demo/spriteanimated.json`,
-            `./vf_demo/connectline.json?v=1`,
-            `./vf_demo/dragExample.json`,
-            `./vf_demo/scrollbar.json`,
-            `./vf_demo/textChoiceExample.json`,
-            `./vf_demo/textFillBlanksExample.json`,
-            `./vf_demo/tracingExample.json`,
-            `https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN01/index.json`,
-            `./vf_demo/ic037.json`,
+            './vf_demo/image.json?v=1',
+            './vf_demo/label.json?v=1',
+            './vf_demo/rect.json',
+            './vf_demo/button.json',
+            './vf_demo/checkbox.json',
+            './vf_demo/circle.json',
+            './vf_demo/slider.json',
+            './vf_demo/textinput.json',
+            './vf_demo/soundTest.json',
+            './vf_demo/spriteanimated.json',
+            './vf_demo/pathAnimation.json',
+            './vf_demo/connectline.json?v=1',
+            './vf_demo/dragExample.json',
+            './vf_demo/scrollbar.json',
+            './vf_demo/textChoiceExample.json',
+            './vf_demo/textFillBlanksExample.json',
+            './vf_demo/tracingExample.json',
+            'https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN01/index.json',
+            './vf_demo/ic037.json',
         ];
         var $player = null;
         var version = '';
@@ -164,7 +165,7 @@
 
         function onLoad() {
 
-            const s = document.createElement('script');
+            var s = document.createElement('script');
             s.async = false;
             s.setAttribute('name', 'vf-script');
             s.type = 'text/javascript';
@@ -190,12 +191,12 @@
                     var param = paramType === "string" ? button.getAttribute('param') : JSON.parse(button.getAttribute('param'));
                     console.clear();
                     if (param) {
-                        //console.log(`执行方法:${name}(${param})`); // ios8 error
+                        //console.log('执行方法:${name}(${param})'); // ios8 error
                         player[name](param);
                         player.switchToSceneIndex(2);
 
                     } else {
-                        //console.log(`执行方法:${name}()`); // ios8 error
+                        //console.log('执行方法:${name}()'); // ios8 error
                         player[name]();
                     }
 

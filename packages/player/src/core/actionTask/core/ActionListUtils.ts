@@ -102,5 +102,20 @@ function modiyExpressItemParamValue(expressItem: ExpressItem, paramIds: any[]): 
         if (Array.isArray(expressItem[3])) {
             modiyExpressItemParamValue(expressItem[3], paramIds);
         }
-    }
+    } else if (expressItem[0] === ExpressItemType.ARRAY_FUNCTION) {
+        if(expressItem[3] == 'push' || 
+           expressItem[3] == 'unshift' ||
+           expressItem[3] == 'concat' ) {
+            if (Array.isArray(expressItem[4])) {
+                modiyExpressItemParamValue(expressItem[4], paramIds);
+            }
+        } else if(expressItem[3] == 'splice') {
+            if (Array.isArray(expressItem[4])) {
+                modiyExpressItemParamValue(expressItem[4], paramIds);
+            }
+            if (Array.isArray(expressItem[5])) {
+                modiyExpressItemParamValue(expressItem[5], paramIds);
+            }
+        }
+    } 
 }
