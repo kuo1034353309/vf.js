@@ -1176,9 +1176,10 @@ declare module 'src/core/Stage' {
 	    releaseAll(): void;
 	    resize(): void;
 	    /**
-	     * 虚接口，子类可以扩充
+	     * 接收来自player的消息
+	     * @param msg
 	     */
-	    inputLog(msg: any): void;
+	    receiveFromPlayer(msg: any): void;
 	}
 
 }
@@ -1303,6 +1304,7 @@ declare module 'src/interaction/SyncManager' {
 	    private _throttleTimer;
 	    private _evtDataList;
 	    private _lastMoveEvent;
+	    private _readystate;
 	    /**
 	     * 开始同步
 	     */
@@ -1424,6 +1426,7 @@ declare module 'src/interaction/ClickEvent' {
 	    startEvent(): void;
 	    /** 清除拖动 */
 	    stopEvent(): void;
+	    private lastMouseDownTime;
 	    private _onMouseDown;
 	    private emitTouchEvent;
 	    private _mouseUpAll;
@@ -2300,7 +2303,7 @@ declare module 'src/layout/CSSStyle' {
 	    fontVariant: "normal" | "small-caps";
 	    /** 字体粗细 */
 	    private _fontWeight;
-	    fontWeight: 500 | 100 | "normal" | "bold" | "bolder" | "lighter" | 200 | 300 | 400 | 600 | 700 | 800 | 900;
+	    fontWeight: 500 | 100 | 600 | "normal" | "bold" | "bolder" | "lighter" | 200 | 300 | 400 | 700 | 800 | 900;
 	    /** 内部填充,只支持文字 */
 	    private _padding?;
 	    padding: number | undefined;
