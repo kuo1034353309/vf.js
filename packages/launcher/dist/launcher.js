@@ -120,7 +120,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteVF", function() { return deleteVF; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createVF", function() { return createVF; });
-/* harmony import */ var _assets_loading2_svg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../assets/loading2.svg */ "./assets/loading2.svg");
+/* harmony import */ var _Loading__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Loading */ "./packages/launcher/src/Loading.ts");
 
 /**
  * vf集成方案加载器
@@ -134,9 +134,9 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._cdnsIndex = 0;
         this._errorLoadCount = 0;
         this._errorLoadMaxCount = 10;
-        this.version = "0.5.66-debug";
+        this.version = "0.5.71-debug";
         // eslint-disable-next-line no-undef
-        this.buildInfo = "7/8/2020, 6:43:20 PM";
+        this.buildInfo = "7/11/2020, 2:25:12 PM";
         this._extendsLibsUrl = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;
@@ -144,6 +144,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             // eslint-disable-next-line no-throw-literal
             throw 'completeCall === undefined';
         }
+        this._loading = new _Loading__WEBPACK_IMPORTED_MODULE_0__["Loading"](options.container);
         if (window['vf'] === undefined) {
             window['vf'] = {};
         }
@@ -155,6 +156,14 @@ var VIPKIDLauncher = /** @class */ (function () {
         }
         if (options.libs) {
             this._extendsLibsUrl = options.libs.concat();
+        }
+        if (options.loading) {
+            if (options.loading.position) {
+                this._loading.position = options.loading.position;
+            }
+            if (options.loading.image) {
+                this._loading.image = options.loading.image;
+            }
         }
         this._config = options;
         this.completeCall = completeCall;
@@ -242,10 +251,10 @@ var VIPKIDLauncher = /** @class */ (function () {
             libs.push(_this.getLibUrl(value));
         });
         if (this._exclude.indexOf('gui') === -1) {
-            libs.push(this.getLibUrl("gui-v1.5.108", cdn, 'gui'));
+            libs.push(this.getLibUrl("gui-v1.7.1", cdn, 'gui'));
         }
         if (this._exclude.indexOf('player') === -1) {
-            libs.push(this.getLibUrl("player-v" + "0.5.59", cdn, 'player'));
+            libs.push(this.getLibUrl("player-v" + "0.5.71", cdn, 'player'));
         }
         libs.forEach(function (value) {
             // eslint-disable-next-line eqeqeq
@@ -254,71 +263,6 @@ var VIPKIDLauncher = /** @class */ (function () {
             }
         });
         return canLibs;
-    };
-    /**
-     * 关于Loading界面布局的可以提出去
-     */
-    VIPKIDLauncher.prototype.showLoading = function () {
-        var _container = this._config.container;
-        if (this._loading) {
-            return;
-        }
-        if (_container) {
-            var img_1 = this._loading = new Image();
-            img_1.name = 'vf-loading';
-            img_1.id = Date.now().toString();
-            img_1.style.position = 'absolute';
-            img_1.src = _assets_loading2_svg__WEBPACK_IMPORTED_MODULE_0__["default"];
-            var bound_1 = this.getInnerBound(_container);
-            var loadingPostion_1 = this._config.loadingPostion || '';
-            img_1.onload = function () {
-                // 临时 默认右下
-                var left = (bound_1.w - img_1.width);
-                var top = (bound_1.h - img_1.height);
-                switch (loadingPostion_1) {
-                    case 'center':
-                        left = (bound_1.w - img_1.width) >> 1;
-                        top = (bound_1.h - img_1.height) >> 1;
-                        break;
-                }
-                if (Array.isArray(loadingPostion_1)) {
-                    left = loadingPostion_1[0];
-                    top = loadingPostion_1[1];
-                }
-                img_1.style.left = left + "px";
-                img_1.style.top = top + "px";
-                _container.appendChild(img_1);
-                img_1.onload = null;
-            };
-        }
-    };
-    /**
-     * 关于Loading界面布局的可以提出去
-     */
-    VIPKIDLauncher.prototype.hideLoading = function () {
-        var loading = this._loading;
-        if (loading && loading.parentNode) {
-            loading.onload = null;
-            loading.parentNode.removeChild(loading);
-            loading.remove();
-            // this._loading = undefined;
-        }
-    };
-    VIPKIDLauncher.prototype.getInnerBound = function (ele) {
-        var parentElement = ele;
-        var w = ele.clientWidth;
-        var h = ele.clientHeight;
-        for (var i = 0; i < 5; i++) {
-            if (parentElement.clientWidth === 0 && parentElement.parentElement) {
-                parentElement = parentElement.parentElement;
-            }
-            else {
-                w = parentElement.clientWidth;
-                h = parentElement.clientHeight;
-                break;
-            }
-        }
-        return { w: w, h: h };
     };
     VIPKIDLauncher.prototype.loadJs = function () {
         if (this._loadcount >= this._loadMaxCount) {
@@ -330,7 +274,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             this.createEngine();
             return;
         }
-        this.showLoading();
+        this._loading.show();
         this._loadcount++;
         var item = libs.shift();
         if (item) {
@@ -338,7 +282,7 @@ var VIPKIDLauncher = /** @class */ (function () {
             script.setAttribute('name', 'vf-script');
             script.type = 'text/javascript';
             script.id = item.version;
-            script.title = "0.5.66-debug";
+            script.title = "0.5.71-debug";
             script.async = false;
             script.src = item.url;
             script.addEventListener('load', this.onJsComplete.bind(this), false);
@@ -415,7 +359,8 @@ var VIPKIDLauncher = /** @class */ (function () {
             this.completeCall = undefined;
             this.errorCall = undefined;
         }
-        this.hideLoading();
+        this._loading.hide();
+        this._loading.dispose();
     };
     return VIPKIDLauncher;
 }());
@@ -444,7 +389,7 @@ function deleteVF() {
 }
 function createVF(options, completeCall, errorCall) {
     var scripts = document.getElementsByName('vf-script');
-    var version = "0.5.66-debug";
+    var version = "0.5.71-debug";
     for (var i = 0; i < scripts.length; i++) {
         if (scripts[i].title !== version) {
             deleteVF();
@@ -457,6 +402,136 @@ function createVF(options, completeCall, errorCall) {
     launcher.debugGuiPath = options.debugGuiPath;
     launcher.debugPlayerPath = options.debugPlayerPath;
 }
+
+
+/***/ }),
+
+/***/ "./packages/launcher/src/Loading.ts":
+/*!******************************************!*\
+  !*** ./packages/launcher/src/Loading.ts ***!
+  \******************************************/
+/*! exports provided: Loading */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Loading", function() { return Loading; });
+/* harmony import */ var _assets_loading2_svg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../assets/loading2.svg */ "./assets/loading2.svg");
+
+var Loading = /** @class */ (function () {
+    function Loading(div) {
+        this._isShow = false;
+        /**
+         * 设置位置，默认右下
+         */
+        this.position = 'rightBottom';
+        this._parent = div;
+        this._image = _assets_loading2_svg__WEBPACK_IMPORTED_MODULE_0__["default"];
+    }
+    Object.defineProperty(Loading.prototype, "image", {
+        get: function () {
+            return this._image;
+        },
+        /** 设置显示位图 */
+        set: function (value) {
+            if (this._loadingImg) {
+                this._loadingImg.src = value;
+            }
+            this._image = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * 关于Loading界面布局的可以提出去
+     */
+    Loading.prototype.show = function () {
+        var _container = this._parent;
+        if (this._isShow) {
+            return;
+        }
+        if (!this._image) {
+            return;
+        }
+        this._isShow = true;
+        var img = this._loadingImg = new Image();
+        img.name = 'vf-loading';
+        img.id = Date.now().toString();
+        img.style.position = 'absolute';
+        img.src = this._image;
+        var bound = this.getInnerBound(_container);
+        var loadingPostion = this.position;
+        img.onload = function () {
+            // 临时 默认右下
+            var left = (bound.w - img.width);
+            var top = (bound.h - img.height);
+            switch (loadingPostion) {
+                case 'leftTop':
+                    left = 0;
+                    top = 0;
+                    break;
+                case 'rightTop':
+                    left = (bound.w - img.width);
+                    top = 0;
+                    break;
+                case 'leftBottom':
+                    left = 0;
+                    top = (bound.h - img.height);
+                    break;
+                case 'rightBottom':
+                    left = (bound.w - img.width);
+                    top = (bound.h - img.height);
+                    break;
+                default: // center
+                    left = (bound.w - img.width) >> 1;
+                    top = (bound.h - img.height) >> 1;
+            }
+            if (Array.isArray(loadingPostion)) {
+                left = loadingPostion[0];
+                top = loadingPostion[1];
+            }
+            img.style.left = left + "px";
+            img.style.top = top + "px";
+            _container.appendChild(img);
+        };
+    };
+    /**
+     * 关于Loading界面布局的可以提出去
+     */
+    Loading.prototype.hide = function () {
+        var loading = this._loadingImg;
+        if (loading && loading.parentNode) {
+            loading.onload = null;
+            loading.parentNode.removeChild(loading);
+            loading.remove();
+            // this._loading = undefined;
+        }
+        this._isShow = false;
+    };
+    Loading.prototype.dispose = function () {
+        this._loadingImg = undefined;
+        this._parent = undefined;
+        this._image = undefined;
+    };
+    Loading.prototype.getInnerBound = function (ele) {
+        var parentElement = ele;
+        var w = ele.clientWidth;
+        var h = ele.clientHeight;
+        for (var i = 0; i < 5; i++) {
+            if (parentElement.clientWidth === 0 && parentElement.parentElement) {
+                parentElement = parentElement.parentElement;
+            }
+            else {
+                w = parentElement.clientWidth;
+                h = parentElement.clientHeight;
+                break;
+            }
+        }
+        return { w: w, h: h };
+    };
+    return Loading;
+}());
+
 
 
 /***/ }),

@@ -1002,7 +1002,7 @@ declare module 'src/core/DisplayLayoutAbstract' {
 	     * 设置组件的宽高。此方法不同于直接设置width,height属性，
 	     * 不会影响显式标记尺寸属性
 	     */
-	    setActualSize(w: number, h: number): void;
+	    setActualSize(w: number, h: number, isInvalidate?: boolean): void;
 	    /**
 	     * @private
 	     * 更新最终的组件宽高
@@ -1422,6 +1422,7 @@ declare module 'src/interaction/ClickEvent' {
 	    private eventnameMouseup;
 	    private eventnameMouseupoutside;
 	    private isStop;
+	    private deviceType;
 	    getTarget(): DisplayObject;
 	    startEvent(): void;
 	    /** 清除拖动 */
@@ -1625,6 +1626,7 @@ declare module 'src/display/Image' {
 	    anchorY: number | undefined;
 	    release(): void;
 	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    setSpeiteSize(unscaledWidth?: number, unscaledHeight?: number): void;
 	    protected measure(): void;
 	    protected srcSystem(): void;
 	    protected scale9GridSystem(): void;
@@ -2303,7 +2305,7 @@ declare module 'src/layout/CSSStyle' {
 	    fontVariant: "normal" | "small-caps";
 	    /** 字体粗细 */
 	    private _fontWeight;
-	    fontWeight: 500 | 100 | 600 | "normal" | "bold" | "bolder" | "lighter" | 200 | 300 | 400 | 700 | 800 | 900;
+	    fontWeight: 500 | 100 | 300 | "normal" | "bold" | "bolder" | "lighter" | 200 | 400 | 600 | 700 | 800 | 900;
 	    /** 内部填充,只支持文字 */
 	    private _padding?;
 	    padding: number | undefined;
@@ -2609,6 +2611,7 @@ declare module 'src/utils/Utils' {
 	 */
 	export let $getUIDisplayObjectPath: Function;
 	export function setDisplayObjectPath(params: (cls?: any, target?: DisplayObject) => {}): void;
+	export function getSource(src: any): any;
 	export function getTexture(src: any): any;
 	export function getSheet(src: any): any;
 	export function getSound(src: any): any;
@@ -2841,9 +2844,9 @@ declare module 'src/display/Slider' {
 	    protected _decimals: number;
 	    protected _startValue: number;
 	    protected _maxPosition: number;
-	    protected _localMousePosition: vf.Point;
 	    protected _lastChange: number;
 	    protected _lastChanging: number;
+	    protected _localMousePosition: vf.Point;
 	    /** 状态展示 */
 	    readonly trackImg: VfuiImage;
 	    readonly thumbImg: VfuiImage;
@@ -2851,15 +2854,10 @@ declare module 'src/display/Slider' {
 	    protected _thumbDrag: DragEvent;
 	    protected _trackDrag: DragEvent;
 	    /**
-	     * 设置拖拽图，9切方式
-	     */
-	    trackScale9Grid: number[];
-	    protected _value: number;
-	    /**
 	     * 当前值
 	     */
 	    value: number;
-	    protected valueSystem(): void;
+	    protected valueSystem(value?: number): void;
 	    /**
 	     * 最小值
 	     */
@@ -2890,11 +2888,7 @@ declare module 'src/display/Slider' {
 	     */
 	    protected _tracklight?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
 	    tracklight: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
-	    protected isExcValueSystem: boolean;
-	    setActualSize(w: number, h: number): void;
-	    release(): void;
 	    protected onImgload(): void;
-	    protected updateLayout(): void;
 	    protected updatePosition(soft?: boolean): void;
 	    protected onPress(event: InteractionEvent, isPressed: boolean, dragEvent?: DragEvent): void;
 	    protected onDragStart(event: InteractionEvent): void;
@@ -2903,6 +2897,10 @@ declare module 'src/display/Slider' {
 	    protected updatePositionToMouse(mousePosition: vf.Point, soft: boolean): void;
 	    protected triggerValueChange(): void;
 	    protected triggerValueChanging(): void;
+	    updateLayout(): void;
+	    protected commitProperties(): void;
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    release(): void;
 	}
 
 }
@@ -3655,6 +3653,71 @@ declare module 'src/display/FollowLine' {
 	}
 
 }
+declare module 'src/display/Video' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	/**
+	 * 播放器组件
+	 *
+	 */
+	export class Video extends DisplayObject {
+	    private _video;
+	    private _src;
+	    private _poster;
+	    protected _canvasBounds: {
+	        top: number;
+	        left: number;
+	        width: number;
+	        height: number;
+	    } | undefined;
+	    protected _lastRenderer: vf.Renderer | undefined;
+	    protected _resolution: number;
+	    private _canplayFun;
+	    private _canplaythroughFun;
+	    private _completeFun;
+	    private _endedFun;
+	    private _loadeddataFun;
+	    private _durationchangeFun;
+	    constructor();
+	    private canplayFun;
+	    private canplaythroughFun;
+	    private completeFun;
+	    private endedFun;
+	    private loadeddataFun;
+	    private durationchangeFun;
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    private updatePostion;
+	    private updateSystem;
+	    private _getCanvasBounds;
+	    private _vfMatrixToCSS;
+	    private _getDOMRelativeWorldTransform;
+	    /**
+	     * 支持的参数们~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	     */
+	    src: number | string;
+	    controls: boolean;
+	    width: number;
+	    height: number;
+	    loop: boolean;
+	    muted: boolean;
+	    volume: number;
+	    poster: number | string;
+	    currentTime: number;
+	    /**
+	     * 只读的属性们~~~~~~~~~~~~~~~~
+	     * */
+	    readonly duration: number;
+	    /**
+	    * 支持的方法们~~~··~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	    **/
+	    play(): void;
+	    pause(): void;
+	    requestFullScreen(): void;
+	    exitFullscreen(): void;
+	    release(): void;
+	}
+
+}
 declare module 'src/display/ConnectLine' {
 	import { DisplayObject } from 'src/core/DisplayObject'; type LinePostion = 'leftTop' | 'centerTop' | 'rightTop' | 'leftCenter' | 'center' | 'rightCenter' | 'leftBottom' | 'centerBottom' | 'rightBottom' | number[];
 	export const play: unique symbol;
@@ -3842,6 +3905,7 @@ declare module 'src/display/Tracing' {
 	     * 自动绘制
 	     */
 	    private auto;
+	    private _posLength;
 	    private drawWithAnimation;
 	    private autoNextPoint;
 	    /**
@@ -3985,6 +4049,7 @@ declare module 'src/display/Audio' {
 	    * 释放
 	    */
 	    dispose(): void;
+	    release(): void;
 	    /**
 	    * 各种可取参数.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	    */
@@ -4273,6 +4338,7 @@ declare module 'src/UI' {
 	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
 	 */
 	import { FollowLine } from 'src/display/FollowLine';
+	import { Video } from 'src/display/Video';
 	/**
 	 * 连线组件
 	 *
@@ -4357,7 +4423,7 @@ declare module 'src/UI' {
 	import { SyncManager } from 'src/interaction/SyncManager';
 	export type Application = vf.Application;
 	/** 请不要在编写UI组件内部使用本类 */
-	export { Audio, Filter, Utils, Stage, Container, ScrollingContainer, Slider, Label, TextInput, Button, CheckBox, Rect, Circle, Graphics, FollowLine, Tracing, ConnectLine, ScrollBar, Interaction, DisplayObject, TickerShared, Tween, Timeline, Easing, Image, SpriteAnimated, Event, Enum, Scheduler, SyncManager };
+	export { Audio, Filter, Utils, Stage, Container, ScrollingContainer, Slider, Label, TextInput, Button, Video, CheckBox, Rect, Circle, Graphics, FollowLine, Tracing, ConnectLine, ScrollBar, Interaction, DisplayObject, TickerShared, Tween, Timeline, Easing, Image, SpriteAnimated, Event, Enum, Scheduler, SyncManager };
 
 }
 declare module 'src/vf-gui' {
@@ -4903,6 +4969,16 @@ declare module 'test/TestTween2' {
 	export default class TestTween2 {
 	    constructor(app: vf.Application, uiStage: vf.gui.Stage);
 	    private onLoad;
+	}
+
+}
+declare module 'test/TestVideo' {
+	///   path="../gui.d.ts" />
+	///   types="@vf.js/vf" />
+	export default class TestVideo {
+	    constructor(app: vf.Application, uiStage: vf.gui.Stage);
+	    private onLoad;
+	    private createBtn;
 	}
 
 }

@@ -261,6 +261,8 @@ exports.Graphics = Graphics_1.Graphics;
  */
 var FollowLine_1 = __webpack_require__(/*! ./display/FollowLine */ "./src/display/FollowLine.ts");
 exports.FollowLine = FollowLine_1.FollowLine;
+var Video_1 = __webpack_require__(/*! ./display/Video */ "./src/display/Video.ts");
+exports.Video = Video_1.Video;
 /**
  * 连线组件
  *
@@ -754,7 +756,8 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
      * 设置组件的宽高。此方法不同于直接设置width,height属性，
      * 不会影响显式标记尺寸属性
      */
-    DisplayLayoutAbstract.prototype.setActualSize = function (w, h) {
+    DisplayLayoutAbstract.prototype.setActualSize = function (w, h, isInvalidate) {
+        if (isInvalidate === void 0) { isInvalidate = true; }
         var change = false;
         var values = this.$values;
         if (values[UIKeys.width] !== w) {
@@ -765,7 +768,7 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
             values[UIKeys.height] = h;
             change = true;
         }
-        if (change) {
+        if (change && isInvalidate) {
             this.invalidateDisplayList();
             this.emit(Index_1.ComponentEvent.RESIZE, this);
         }
@@ -778,7 +781,7 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
         this.setActualSize(this.getPreferredUWidth(), this.getPreferredUHeight());
     };
     DisplayLayoutAbstract.prototype.updateTransform = function () {
-        this.container.setTransform(this.x + this.pivotX, this.y + this.pivotY, this.scaleX, this.scaleY, this.rotation * (Math.PI / 180), this.skewX, this.skewY, this.pivotX, this.pivotY);
+        this.container.setTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation * (Math.PI / 180), this.skewX, this.skewY, this.pivotX, this.pivotY);
     };
     /**
      * 更新显示列表,子类重写，实现布局
@@ -3747,6 +3750,10 @@ var Audio = /** @class */ (function (_super) {
             this.audio = undefined;
         }
     };
+    Audio.prototype.release = function () {
+        _super.prototype.release.call(this);
+        this.dispose();
+    };
     Object.defineProperty(Audio.prototype, "isPlaying", {
         /**
         * 各种可取参数.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5178,6 +5185,16 @@ var Image = /** @class */ (function (_super) {
             this.anchorSystem();
         }
     };
+    Image.prototype.setSpeiteSize = function (unscaledWidth, unscaledHeight) {
+        var sprite = this._sprite;
+        if (sprite) {
+            if (unscaledWidth)
+                sprite.width = unscaledWidth;
+            if (unscaledHeight)
+                sprite.height = unscaledHeight;
+            this.setActualSize(sprite.width, sprite.height, false);
+        }
+    };
     Image.prototype.measure = function () {
         if (this._sprite) {
             var texture = this._sprite.texture;
@@ -5699,6 +5716,7 @@ var ScrollBar = /** @class */ (function (_super) {
             if (val > maxheight) {
                 val = maxheight;
             }
+            thumbImg.x = this.width / 2;
             thumbImg.y = val;
         }
         else {
@@ -5711,6 +5729,7 @@ var ScrollBar = /** @class */ (function (_super) {
             if (val > maxwidth) {
                 val = maxwidth;
             }
+            thumbImg.y = this.height / 2;
             thumbImg.x = val;
         }
     };
@@ -6152,16 +6171,15 @@ var Slider = /** @class */ (function (_super) {
         _this._decimals = 0;
         _this._startValue = 0;
         _this._maxPosition = 0;
-        _this._localMousePosition = new vf.Point();
         _this._lastChange = 0;
         _this._lastChanging = 0;
+        _this._localMousePosition = new vf.Point();
         /** 状态展示 */
         _this.trackImg = new Image_1.Image();
         _this.thumbImg = new Image_1.Image();
         _this.tracklightImg = new Image_1.Image();
         _this._thumbDrag = new Index_1.DragEvent(_this.thumbImg);
         _this._trackDrag = new Index_1.DragEvent(_this.trackImg);
-        _this._value = 0;
         /**
          * 最小值
          */
@@ -6174,15 +6192,6 @@ var Slider = /** @class */ (function (_super) {
          * 是否垂直,滑块方向
          */
         _this._vertical = false;
-        _this.isExcValueSystem = false;
-        _this._thumbDrag.onDragPress = _this.onPress.bind(_this);
-        _this._thumbDrag.onDragStart = _this.onDragStart.bind(_this);
-        _this._thumbDrag.onDragMove = _this.onDragMove.bind(_this);
-        _this._thumbDrag.onDragEnd = _this.onDragEnd.bind(_this);
-        _this._trackDrag.onDragPress = _this.onPress.bind(_this);
-        // this._trackDrag.onDragStart = this.onDragStart;
-        // this._trackDrag.onDragMove = this.onDragMove;
-        // this._trackDrag.onDragEnd = this.onDragEnd;
         _this.thumbImg.container.name = "thumbImg";
         _this.thumbImg.fillMode = "scale";
         _this.thumbImg.scale9Grid = [0, 0, 0, 0];
@@ -6198,21 +6207,17 @@ var Slider = /** @class */ (function (_super) {
         _this.tracklightImg.container.name = "tracklightImg";
         _this.tracklightImg.fillMode = "scale";
         _this.tracklightImg.scale9Grid = [2, 2, 2, 2];
+        //this.tracklightImg.on(ComponentEvent.COMPLETE,this.onImgload, this);
         _this.addChild(_this.trackImg);
         _this.addChild(_this.tracklightImg);
         _this.addChild(_this.thumbImg);
+        _this._thumbDrag.onDragPress = _this.onPress.bind(_this);
+        _this._thumbDrag.onDragStart = _this.onDragStart.bind(_this);
+        _this._thumbDrag.onDragMove = _this.onDragMove.bind(_this);
+        _this._thumbDrag.onDragEnd = _this.onDragEnd.bind(_this);
+        _this._trackDrag.onDragPress = _this.onPress.bind(_this);
         return _this;
     }
-    Object.defineProperty(Slider.prototype, "trackScale9Grid", {
-        /**
-         * 设置拖拽图，9切方式
-         */
-        set: function (value) {
-            this.thumbImg.scale9Grid = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(Slider.prototype, "value", {
         /**
          * 当前值
@@ -6221,24 +6226,26 @@ var Slider = /** @class */ (function (_super) {
             return Utils.Round(Utils.Lerp(this.minValue, this.maxValue, this._amt), this._decimals);
         },
         set: function (value) {
-            this._value = value;
-            this.valueSystem();
+            this.valueSystem(value);
         },
         enumerable: true,
         configurable: true
     });
-    Slider.prototype.valueSystem = function () {
-        this._amt = (Math.max(this.minValue, Math.min(this.maxValue, this._value)) - this.minValue) / (this.maxValue - this.minValue);
-        this.updatePosition();
-        this.triggerValueChange();
-        this.triggerValueChanging();
+    Slider.prototype.valueSystem = function (value) {
+        if (value === void 0) { value = 0; }
+        this._amt = (Math.max(this.minValue, Math.min(this.maxValue, value)) - this.minValue) / (this.maxValue - this.minValue);
+        this.invalidateDisplayList();
     };
     Object.defineProperty(Slider.prototype, "minValue", {
         get: function () {
             return this._minValue;
         },
         set: function (value) {
+            if (this._minValue === value) {
+                return;
+            }
             this._minValue = value;
+            this.invalidateDisplayList();
         },
         enumerable: true,
         configurable: true
@@ -6248,7 +6255,11 @@ var Slider = /** @class */ (function (_super) {
             return this._maxValue;
         },
         set: function (value) {
+            if (this._maxValue === value) {
+                return;
+            }
             this._maxValue = value;
+            this.invalidateDisplayList();
         },
         enumerable: true,
         configurable: true
@@ -6258,8 +6269,10 @@ var Slider = /** @class */ (function (_super) {
             return this._vertical;
         },
         set: function (value) {
+            if (this._vertical === value) {
+                return;
+            }
             this._vertical = value;
-            this.updateLayout();
             this.invalidateProperties();
         },
         enumerable: true,
@@ -6304,46 +6317,10 @@ var Slider = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Slider.prototype.setActualSize = function (w, h) {
-        _super.prototype.setActualSize.call(this, w, h);
-        if (this.trackImg.width !== w) {
-            this.trackImg.width = w;
-        }
-        if (this.trackImg.height !== w) {
-            this.trackImg.height = h;
-        }
-        if (!this.isExcValueSystem) {
-            this.valueSystem();
-            this.isExcValueSystem = true;
-        }
-    };
-    Slider.prototype.release = function () {
-        _super.prototype.release.call(this);
-        this.trackImg.release();
-        this.thumbImg.release();
-        this.tracklightImg.release();
-    };
     Slider.prototype.onImgload = function () {
-        this.updateLayout();
-    };
-    Slider.prototype.updateLayout = function () {
-        var thumbImg = this.thumbImg;
-        var tracklightImg = this.tracklightImg;
-        if (this.vertical) {
-            //thumbImg.style.top =this._amt; 
-            thumbImg.x = this.explicitWidth >> 1;
-            tracklightImg.width = this.explicitWidth;
-            //tracklightImg.style.height = this._amt * this.height;
-        }
-        else {
-            thumbImg.y = this.explicitHeight >> 1;
-            //thumbImg.style.left = this._amt; 
-            tracklightImg.height = this.explicitHeight;
-            //tracklightImg.style.width =  this._amt * this.width;
-        }
+        this.invalidateProperties();
     };
     Slider.prototype.updatePosition = function (soft) {
-        this.updateLayout();
         var val = 0;
         var thumbImg = this.thumbImg;
         var tracklightImg = this.tracklightImg;
@@ -6353,7 +6330,8 @@ var Slider = /** @class */ (function (_super) {
                 Tween_1.Tween.to({ y: thumbImg.y, height: tracklightImg.height }, { y: val, height: val }, 300).easing(Easing_1.Easing.Linear.None)
                     .on(Tween_1.Tween.Event.update, function (obj) {
                     thumbImg.y = obj.y;
-                    tracklightImg.height = obj.height;
+                    //tracklightImg.height = obj.height;
+                    tracklightImg.setSpeiteSize(undefined, obj.height);
                 }).start();
             }
             else {
@@ -6367,7 +6345,8 @@ var Slider = /** @class */ (function (_super) {
                 Tween_1.Tween.to({ x: thumbImg.x, width: tracklightImg.width }, { x: val, width: val }, 300).easing(Easing_1.Easing.Linear.None)
                     .on(Tween_1.Tween.Event.update, function (obj) {
                     thumbImg.x = obj.x;
-                    tracklightImg.width = obj.width;
+                    //tracklightImg.width = obj.width;
+                    tracklightImg.setSpeiteSize(obj.width);
                 }).start();
             }
             else {
@@ -6430,6 +6409,36 @@ var Slider = /** @class */ (function (_super) {
         if (this._lastChanging != value) {
             this._lastChanging = value;
         }
+    };
+    Slider.prototype.updateLayout = function () {
+        this.invalidateProperties();
+    };
+    Slider.prototype.commitProperties = function () {
+        var thumbImg = this.thumbImg;
+        var tracklightImg = this.tracklightImg;
+        if (this.vertical) {
+            thumbImg.y = this._amt;
+            thumbImg.x = this.explicitWidth >> 1;
+            tracklightImg.width = this.width;
+            tracklightImg.height = this._amt * this.height;
+        }
+        else {
+            thumbImg.x = this._amt;
+            thumbImg.y = this.explicitHeight >> 1;
+            tracklightImg.height = this.height;
+            tracklightImg.width = this._amt * this.width;
+        }
+    };
+    Slider.prototype.updateDisplayList = function (unscaledWidth, unscaledHeight) {
+        this.commitProperties();
+        this.updatePosition();
+        _super.prototype.updateDisplayList.call(this, unscaledWidth, unscaledHeight);
+    };
+    Slider.prototype.release = function () {
+        _super.prototype.release.call(this);
+        this.trackImg.release();
+        this.thumbImg.release();
+        this.tracklightImg.release();
     };
     return Slider;
 }(DisplayObject_1.DisplayObject));
@@ -7317,6 +7326,7 @@ var Tracing = /** @class */ (function (_super) {
          * 检测精度
          */
         _this._precision = 20;
+        _this._posLength = 2;
         _this._lines = new Map();
         _this.clickEvent = new Index_1.ClickEvent(_this, true);
         _this.clickEvent.isOpenLocalPoint = true;
@@ -7634,6 +7644,10 @@ var Tracing = /** @class */ (function (_super) {
             .once(Tween_1.Tween.Event.complete, function (obj) {
             _this._tween.removeAllListeners();
             _this._tween.release();
+            var length = _this._posCache.length;
+            if (length > _this._posLength) {
+                _this._posCache = _this._posCache.slice(length - _this._posLength, length - 1); //容错处理   没有全部清掉 因为最后节点可能没有画完
+            }
             _this.auto();
         })
             .start();
@@ -8124,6 +8138,378 @@ var Tracing = /** @class */ (function (_super) {
     return Tracing;
 }(DisplayObject_1.DisplayObject));
 exports.Tracing = Tracing;
+
+
+/***/ }),
+
+/***/ "./src/display/Video.ts":
+/*!******************************!*\
+  !*** ./src/display/Video.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/core/DisplayObject.ts");
+var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
+/**
+ * 播放器组件
+ *
+ */
+var Video = /** @class */ (function (_super) {
+    __extends(Video, _super);
+    function Video() {
+        var _this = _super.call(this) || this;
+        _this._resolution = 1;
+        var video = _this._video = document.createElement('video');
+        _this._video.id = _this.uuid.toString();
+        document.body.appendChild(_this._video);
+        // this.container.isEmitRender = true;
+        // this.container.on("renderChange",this.updateSystem,this);
+        _this._video.style.position = "absolute";
+        _this._video.controls = true;
+        /**
+        * 需要上报的事件
+        */
+        _this._canplayFun = _this.canplayFun.bind(_this);
+        _this._canplaythroughFun = _this.canplaythroughFun.bind(_this);
+        _this._completeFun = _this.completeFun.bind(_this);
+        _this._endedFun = _this.endedFun.bind(_this);
+        _this._loadeddataFun = _this.loadeddataFun.bind(_this);
+        _this._durationchangeFun = _this.durationchangeFun.bind(_this);
+        //浏览器可以播放媒体文件了，但估计没有足够的数据来支撑播放到结束，不需要停止缓存更多的内容
+        video.addEventListener('canplay', _this._canplayFun);
+        //浏览器估算可以播放到结束，不需要停止缓存更多的内容。
+        video.addEventListener('canplaythrough', _this._canplaythroughFun);
+        //渲染完成
+        video.addEventListener('complete', _this._completeFun);
+        //视频已经到达结束点
+        video.addEventListener('ended', _this._endedFun);
+        //首帧已经加载
+        video.addEventListener('loadeddata', _this._loadeddataFun);
+        //duration 属性的值改变时触发
+        video.addEventListener('durationchange', _this._durationchangeFun);
+        return _this;
+    }
+    Video.prototype.canplayFun = function (e) {
+        this.emit('canplay', e);
+    };
+    Video.prototype.canplaythroughFun = function (e) {
+        this.emit('canplaythrough', e);
+    };
+    Video.prototype.completeFun = function (e) {
+        this.emit('complete', e);
+    };
+    Video.prototype.endedFun = function (e) {
+        this.emit('ended', e);
+    };
+    Video.prototype.loadeddataFun = function (e) {
+        this.emit('loadeddata', e);
+    };
+    Video.prototype.durationchangeFun = function (e) {
+        this.emit('durationchange', e);
+    };
+    Video.prototype.updateDisplayList = function (unscaledWidth, unscaledHeight) {
+        _super.prototype.updateDisplayList.call(this, unscaledWidth, unscaledHeight);
+        this.updateSystem();
+        this._canvasBounds = this._getCanvasBounds();
+        var cb = this._canvasBounds;
+        var transform = this._vfMatrixToCSS(this._getDOMRelativeWorldTransform());
+        if (cb) {
+            this.updatePostion(cb.top, cb.left, transform, this.container.worldAlpha);
+        }
+        //container 的全局左边的 x , y赋值给 this._video
+        // let stageContainer = this.container;
+        // if(this.stage){
+        //     stageContainer = this.stage.container;
+        // }
+        // let pos = stageContainer.toGlobal(new vf.Point(0,0));
+        // let videoStyle = this._video.style;
+        // videoStyle.left = pos.x + "px";
+        // videoStyle.top = pos.y + "px";
+    };
+    Video.prototype.updatePostion = function (top, left, transform, opacity) {
+        this._video.style.top = top + 'px';
+        this._video.style.left = left + 'px';
+        this._video.style.transform = transform;
+        if (opacity)
+            this._video.style.opacity = opacity.toString();
+    };
+    Video.prototype.updateSystem = function () {
+        if (this.stage) {
+            var renderer = this.stage.app.renderer;
+            this._resolution = renderer.resolution;
+            this._lastRenderer = renderer;
+        }
+    };
+    Video.prototype._getCanvasBounds = function () {
+        if (this._lastRenderer) {
+            var rect = this._lastRenderer.view.getBoundingClientRect();
+            var bounds = { top: rect.top, left: rect.left, width: rect.width, height: rect.height };
+            bounds.left += window.scrollX;
+            bounds.top += window.scrollY;
+            return bounds;
+        }
+        return undefined;
+    };
+    Video.prototype._vfMatrixToCSS = function (m) {
+        return 'matrix(' + [m.a, m.b, m.c, m.d, m.tx, m.ty].join(',') + ')';
+    };
+    Video.prototype._getDOMRelativeWorldTransform = function () {
+        if (this._lastRenderer) {
+            var canvasBounds = this._lastRenderer.view.getBoundingClientRect();
+            var matrix = this.container.worldTransform.clone();
+            matrix.scale(this._resolution, this._resolution);
+            matrix.scale(canvasBounds.width / this._lastRenderer.width, canvasBounds.height / this._lastRenderer.height);
+            return matrix;
+        }
+    };
+    Object.defineProperty(Video.prototype, "src", {
+        /**
+         * 支持的参数们~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         */
+        //设置src
+        get: function () {
+            return this._src;
+        },
+        set: function (value) {
+            if (!this._video) {
+                return;
+            }
+            if (typeof (value) === "number") {
+                var source = Utils_1.getSource(value);
+                this._src = source.url;
+            }
+            else {
+                this._src = value;
+            }
+            this._video && (this._video.src = this._src);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "controls", {
+        get: function () {
+            if (this._video) {
+                return this._video.controls;
+            }
+            throw new Error("Video is undefined!");
+        },
+        set: function (boo) {
+            this._video && (this._video.controls = boo);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "width", {
+        get: function () {
+            if (this._video) {
+                return this._video.width;
+            }
+            return 0;
+        },
+        set: function (value) {
+            this._video && (this._video.width = value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "height", {
+        get: function () {
+            if (this._video) {
+                return this._video.height;
+            }
+            return 0;
+        },
+        set: function (value) {
+            this._video && (this._video.height = value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "loop", {
+        get: function () {
+            if (this._video) {
+                return this._video.loop;
+            }
+            return false;
+        },
+        set: function (value) {
+            this._video && (this._video.loop = value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "muted", {
+        //静音
+        get: function () {
+            if (this._video) {
+                return this._video.muted;
+            }
+            throw new Error("Video is undefined!");
+        },
+        set: function (boo) {
+            this._video && (this._video.muted = boo);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "volume", {
+        get: function () {
+            if (this._video) {
+                return this._video.volume;
+            }
+            return 0;
+        },
+        set: function (value) {
+            value = value > 1 ? 1 : value;
+            value = value < 0 ? 0 : value;
+            this._video && (this._video.volume = value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "poster", {
+        get: function () {
+            return this._poster;
+            throw new Error("Video is undefined!");
+        },
+        set: function (value) {
+            if (!this._video) {
+                return;
+            }
+            if (typeof (value) === "number") {
+                var source = Utils_1.getSource(value);
+                this.poster = source ? source.textureCacheIds[1] : "";
+            }
+            else {
+                this._poster = value;
+            }
+            this._video && (this._video.poster = this._poster);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "currentTime", {
+        //播放位置
+        get: function () {
+            if (this._video) {
+                return this._video.currentTime;
+            }
+            return 0;
+        },
+        set: function (value) {
+            this._video && (this._video.currentTime = value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "duration", {
+        /**
+         * 只读的属性们~~~~~~~~~~~~~~~~
+         * */
+        get: function () {
+            if (this._video) {
+                return this._video.duration;
+            }
+            return 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+    * 支持的方法们~~~··~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    **/
+    Video.prototype.play = function () {
+        if (this._video) {
+            this._video.play();
+            return;
+        }
+        throw new Error("Video is undefined!");
+    };
+    Video.prototype.pause = function () {
+        this._video && this._video.pause();
+    };
+    //进入全屏
+    Video.prototype.requestFullScreen = function () {
+        var de = this._video;
+        if (de.requestFullscreen) {
+            de.requestFullscreen();
+        }
+        else if (de.mozRequestFullScreen) {
+            de.mozRequestFullScreen();
+        }
+        else if (de.webkitRequestFullScreen) {
+            de.webkitRequestFullScreen();
+        }
+        else if (de.webkitEnterFullScreen) {
+            de.webkitEnterFullScreen();
+        }
+    };
+    //退出全屏
+    Video.prototype.exitFullscreen = function () {
+        var de = this._video;
+        if (de.exitFullscreen) {
+            de.exitFullscreen();
+        }
+        else if (de.mozCancelFullScreen) {
+            de.mozCancelFullScreen();
+        }
+        else if (de.webkitCancelFullScreen) {
+            de.webkitCancelFullScreen();
+        }
+        else if (de.webkitExitFullScreen) {
+            de.webkitExitFullScreen();
+        }
+    };
+    Video.prototype.release = function () {
+        _super.prototype.release.call(this);
+        this._src = null;
+        this._poster = null;
+        this._canvasBounds = undefined;
+        this._lastRenderer = undefined;
+        this._resolution = 1;
+        if (!this._video) {
+            return;
+        }
+        var video = this._video;
+        video.removeEventListener('canplay', this._canplayFun);
+        //浏览器估算可以播放到结束，不需要停止缓存更多的内容。
+        video.removeEventListener('canplaythrough', this._canplaythroughFun);
+        //渲染完成
+        video.removeEventListener('complete', this._completeFun);
+        //视频已经到达结束点
+        video.removeEventListener('ended', this._endedFun);
+        //首帧已经加载
+        video.removeEventListener('loadeddata', this._loadeddataFun);
+        //duration 属性的值改变时触发
+        video.removeEventListener('durationchange', this._durationchangeFun);
+        this._canplayFun = null;
+        this._canplaythroughFun = null;
+        this._completeFun = null;
+        this._endedFun = null;
+        this._loadeddataFun = null;
+        this._durationchangeFun = null;
+        document.body.removeChild(this._video);
+    };
+    return Video;
+}(DisplayObject_1.DisplayObject));
+exports.Video = Video;
 
 
 /***/ }),
@@ -9123,6 +9509,7 @@ var ClickEvent = /** @class */ (function () {
         this.eventnameMouseup = "mouseup" /* mouseup */;
         this.eventnameMouseupoutside = "mouseupoutside" /* mouseupoutside */;
         this.isStop = true;
+        this.deviceType = vf.utils.getSystemInfo().device.type;
         this.lastMouseDownTime = 0;
         this.obj = obj;
         if (isOpenEmitEvent !== undefined) {
@@ -9150,35 +9537,44 @@ var ClickEvent = /** @class */ (function () {
     };
     ClickEvent.prototype.startEvent = function () {
         if (this.isStop) {
-            this.obj.container.on(this.eventnameMousedown, this._onMouseDown, this);
-            if (!this.right)
-                this.obj.container.on("touchstart" /* touchstart */, this._onMouseDown, this);
-            if (this.hover) {
-                this.obj.container.on("mouseover" /* mouseover */, this._onMouseOver, this);
-                this.obj.container.on("mouseout" /* mouseout */, this._onMouseOut, this);
+            var container = this.obj.container;
+            container.on(this.eventnameMousedown, this._onMouseDown, this);
+            if (!this.right) {
+                container.on("touchstart" /* touchstart */, this._onMouseDown, this);
+                if (this.hover) {
+                    container.on("mouseover" /* mouseover */, this._onMouseOver, this);
+                    container.on("mouseout" /* mouseout */, this._onMouseOut, this);
+                    if (this.deviceType !== 'pc') { // 用于解决移动端滑动触发问题，后期可以单独处理移动相关的
+                        container.on("touchstart" /* touchstart */, this._onMouseOver, this);
+                        container.on("touchendoutside" /* touchendoutside */, this._onMouseOut, this);
+                    }
+                }
             }
             this.isStop = false;
         }
     };
     /** 清除拖动 */
     ClickEvent.prototype.stopEvent = function () {
+        var container = this.obj.container;
         if (this.bound) {
-            this.obj.container.off(this.eventnameMouseup, this._onMouseUp, this);
-            this.obj.container.off(this.eventnameMouseupoutside, this._onMouseUpOutside, this);
+            container.off(this.eventnameMouseup, this._onMouseUp, this);
+            container.off(this.eventnameMouseupoutside, this._onMouseUpOutside, this);
             if (!this.right) {
-                this.obj.container.off("touchend" /* touchend */, this._onMouseUp, this);
-                this.obj.container.off("touchendoutside" /* touchendoutside */, this._onMouseUpOutside, this);
+                container.off("touchend" /* touchend */, this._onMouseUp, this);
+                container.off("touchendoutside" /* touchendoutside */, this._onMouseUpOutside, this);
             }
             this.bound = false;
         }
-        this.obj.container.off(this.eventnameMousedown, this._onMouseDown, this);
+        container.off(this.eventnameMousedown, this._onMouseDown, this);
         if (!this.right)
-            this.obj.container.off("touchstart" /* touchstart */, this._onMouseDown, this);
+            container.off("touchstart" /* touchstart */, this._onMouseDown, this);
         if (this.hover) {
-            this.obj.container.off("mouseover" /* mouseover */, this._onMouseOver, this);
-            this.obj.container.off("mouseout" /* mouseout */, this._onMouseOut, this);
-            this.obj.container.off("mousemove" /* mousemove */, this._onMouseMove, this);
-            this.obj.container.off("touchmove" /* touchmove */, this._onMouseMove, this);
+            container.off("mouseover" /* mouseover */, this._onMouseOver, this);
+            container.off("mouseout" /* mouseout */, this._onMouseOut, this);
+            container.off("mousemove" /* mousemove */, this._onMouseMove, this);
+            container.off("touchmove" /* touchmove */, this._onMouseMove, this);
+            container.off("touchstart" /* touchstart */, this._onMouseOver, this);
+            container.off("touchendoutside" /* touchendoutside */, this._onMouseOut, this);
         }
         this.isStop = true;
     };
@@ -9186,7 +9582,7 @@ var ClickEvent = /** @class */ (function () {
         if (this.lastMouseDownTime > performance.now() && !e.signalling) {
             return;
         }
-        this.lastMouseDownTime = performance.now() + 600;
+        this.lastMouseDownTime = performance.now() + 300;
         if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
             (this.onClick ||
                 this.onPress ||
@@ -9200,13 +9596,16 @@ var ClickEvent = /** @class */ (function () {
         this.id = e.data.identifier;
         this.onPress && this.onPress.call(this.obj, e, this.obj, true), this.obj;
         this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onPress, e, true);
-        this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onDown, e, true);
+        if (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onDown) > 0) {
+            this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onDown, e, true);
+        }
+        var container = this.obj.container;
         if (!this.bound) {
-            this.obj.container.on(this.eventnameMouseup, this._onMouseUp, this);
-            this.obj.container.on(this.eventnameMouseupoutside, this._onMouseUpOutside, this);
+            container.on(this.eventnameMouseup, this._onMouseUp, this);
+            container.on(this.eventnameMouseupoutside, this._onMouseUpOutside, this);
             if (!this.right) {
-                this.obj.container.on("touchend" /* touchend */, this._onMouseUp, this);
-                this.obj.container.on("touchendoutside" /* touchendoutside */, this._onMouseUpOutside, this);
+                container.on("touchend" /* touchend */, this._onMouseUp, this);
+                container.on("touchendoutside" /* touchendoutside */, this._onMouseUpOutside, this);
             }
             this.bound = true;
         }
@@ -13922,6 +14321,13 @@ function setDisplayObjectPath(params) {
     exports.$getUIDisplayObjectPath = params;
 }
 exports.setDisplayObjectPath = setDisplayObjectPath;
+function getSource(src) {
+    if (exports.$getSourcePath) {
+        src = exports.$getSourcePath(src);
+    }
+    return src;
+}
+exports.getSource = getSource;
 function getTexture(src) {
     if (exports.$getSourcePath) {
         src = exports.$getSourcePath(src);
@@ -14293,13 +14699,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.5.108.1.5.108.1.5.108) ==1.5.108.1.5.108.1.5.108;
+//     return this.lastIndexOf(word, pos1.7.1.1.7.1.1.7.1) ==1.7.1.1.7.1.1.7.1;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.5.108";
+window.vf.gui.version = "1.7.1";
 
 
 /***/ })

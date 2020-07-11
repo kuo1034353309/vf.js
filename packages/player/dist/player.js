@@ -301,7 +301,7 @@ var Player = /** @class */ (function () {
             this._readyState = value;
             this.config.systemEvent.emit("status" /* STATUS */, { code: value, level: "status" /* STATUS */, data: value });
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Player.prototype.createApp = function () {
@@ -703,7 +703,7 @@ var BaseInfo = /** @class */ (function () {
         get: function () {
             return {};
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     BaseInfo.prototype.output = function (ttl, obj) {
@@ -833,7 +833,7 @@ var Config = /** @class */ (function (_super) {
             this._container = value;
             this.propertyChange('container');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "id", {
@@ -847,7 +847,7 @@ var Config = /** @class */ (function (_super) {
             this._id = value;
             this.propertyChange('id');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "src", {
@@ -861,7 +861,7 @@ var Config = /** @class */ (function (_super) {
             this._src = value;
             this.propertyChange('src');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "play", {
@@ -875,7 +875,7 @@ var Config = /** @class */ (function (_super) {
             this._play = value;
             this.propertyChange('play');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "loop", {
@@ -889,7 +889,7 @@ var Config = /** @class */ (function (_super) {
             this._loop = value;
             this.propertyChange('loop');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "menu", {
@@ -903,7 +903,7 @@ var Config = /** @class */ (function (_super) {
             this._menu = value;
             this.propertyChange('menu');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "scaleMode", {
@@ -917,7 +917,7 @@ var Config = /** @class */ (function (_super) {
             this._scaleMode = value;
             this.propertyChange('scaleMode');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "align", {
@@ -931,7 +931,7 @@ var Config = /** @class */ (function (_super) {
             this._align = value;
             this.propertyChange('align');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "wmode", {
@@ -945,7 +945,7 @@ var Config = /** @class */ (function (_super) {
             this._wmode = value;
             this.propertyChange('wmode');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "bgcolor", {
@@ -959,7 +959,7 @@ var Config = /** @class */ (function (_super) {
             this._bgcolor = value;
             this.propertyChange('bgcolor');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "vfvars", {
@@ -979,7 +979,7 @@ var Config = /** @class */ (function (_super) {
             this._vfvars = value;
             this.propertyChange('vfvars');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "plugs", {
@@ -989,7 +989,7 @@ var Config = /** @class */ (function (_super) {
         set: function (value) {
             this._plugs = value;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "frameRate", {
@@ -1003,7 +1003,7 @@ var Config = /** @class */ (function (_super) {
             this._frameRate = value;
             this.propertyChange('frameRate');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "width", {
@@ -1017,7 +1017,7 @@ var Config = /** @class */ (function (_super) {
             this._width = value;
             this.propertyChange('width');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "height", {
@@ -1031,7 +1031,7 @@ var Config = /** @class */ (function (_super) {
             this._height = value;
             this.propertyChange('height');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "orientation", {
@@ -1045,7 +1045,7 @@ var Config = /** @class */ (function (_super) {
             this._orientation = value;
             this.propertyChange('orientation');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "maxTouches", {
@@ -1059,7 +1059,7 @@ var Config = /** @class */ (function (_super) {
             this._maxTouches = value;
             this.propertyChange('maxTouches');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "showFPS", {
@@ -1073,7 +1073,7 @@ var Config = /** @class */ (function (_super) {
             this._showFPS = value;
             this.propertyChange('showFPS');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "showLog", {
@@ -1087,7 +1087,7 @@ var Config = /** @class */ (function (_super) {
             this._showLog = value;
             this.propertyChange('showLog');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "conversionData", {
@@ -1101,7 +1101,7 @@ var Config = /** @class */ (function (_super) {
             this._conversionData = value;
             this.propertyChange('conversionData');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "debug", {
@@ -1115,7 +1115,7 @@ var Config = /** @class */ (function (_super) {
             this._debug = value;
             this.propertyChange('debug');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "logAdvancedTrace", {
@@ -1129,7 +1129,7 @@ var Config = /** @class */ (function (_super) {
             this._logAdvancedTrace = value;
             this.propertyChange('logAdvancedTrace');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "language", {
@@ -1143,14 +1143,14 @@ var Config = /** @class */ (function (_super) {
             this._language = value;
             this.propertyChange('language');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "i18n", {
         get: function () {
             return this._i18n;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "info", {
@@ -1182,7 +1182,7 @@ var Config = /** @class */ (function (_super) {
                 i18n: this.i18n.info,
             };
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     return Config;
@@ -1286,14 +1286,14 @@ var I18N = /** @class */ (function (_super) {
         set: function (value) {
             this._readyState = value;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(I18N.prototype, "info", {
         get: function () {
             return ['zh-CN', 'en-US'];
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     I18N.prototype.t = function (key, param) {
@@ -1439,7 +1439,7 @@ var RES = /** @class */ (function (_super) {
         get: function () {
             return this.stage.data;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     RES.prototype.destroy = function () {
@@ -1760,7 +1760,7 @@ var RES = /** @class */ (function (_super) {
         }
         if (customData.animations) {
             var realFPS = this.stage.config.realFPS;
-            var animation = new _animation_Animation__WEBPACK_IMPORTED_MODULE_5__["Animation"](vfComponent, customData.animations, this.data.fps, realFPS);
+            var animation = new _animation_Animation__WEBPACK_IMPORTED_MODULE_5__["Animation"](vfComponent, customData.animations, this.data.fps, realFPS, this.data.animationTemplate);
             vfComponent.animation = animation;
         }
         return vfComponent;
@@ -2628,12 +2628,13 @@ var VariableManager = /** @class */ (function () {
     };
     VariableManager.prototype.emitError = function (component, code, params, level) {
         if (level === void 0) { level = "error" /* ERROR */; }
+        var _a;
         if (component && component.vfStage) {
             var vfStage = component.vfStage;
             vfStage.systemEvent.emitError(code, params, level);
         }
         else {
-            throw new Error(code + ': ' + (params === null || params === void 0 ? void 0 : params.join(' ')));
+            throw new Error(code + ': ' + ((_a = params) === null || _a === void 0 ? void 0 : _a.join(' ')));
         }
     };
     VariableManager.GLOBAL_ID = 'global';
@@ -4050,7 +4051,7 @@ var CallProtoFunctionTask = /** @class */ (function (_super) {
         get: function () {
             return Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(this.component, this.data.target);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     CallProtoFunctionTask.prototype.run = function () {
@@ -5347,7 +5348,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(SetIntervalTask.prototype, "times", {
@@ -5372,7 +5373,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
             }
             return times;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     SetIntervalTask.prototype.run = function () {
@@ -5580,7 +5581,7 @@ var SetTimeoutTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     SetTimeoutTask.prototype.run = function () {
@@ -5754,7 +5755,7 @@ var WaitTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     WaitTask.prototype.run = function () {
@@ -5910,6 +5911,23 @@ function modiyExpressItemParamValue(expressItem, paramIds) {
             modiyExpressItemParamValue(expressItem[3], paramIds);
         }
     }
+    else if (expressItem[0] === _model_IVFData__WEBPACK_IMPORTED_MODULE_7__["ExpressItemType"].ARRAY_FUNCTION) {
+        if (expressItem[3] == 'push' ||
+            expressItem[3] == 'unshift' ||
+            expressItem[3] == 'concat') {
+            if (Array.isArray(expressItem[4])) {
+                modiyExpressItemParamValue(expressItem[4], paramIds);
+            }
+        }
+        else if (expressItem[3] == 'splice') {
+            if (Array.isArray(expressItem[4])) {
+                modiyExpressItemParamValue(expressItem[4], paramIds);
+            }
+            if (Array.isArray(expressItem[5])) {
+                modiyExpressItemParamValue(expressItem[5], paramIds);
+            }
+        }
+    }
 }
 
 
@@ -5990,35 +6008,35 @@ var BaseTask = /** @class */ (function (_super) {
         get: function () {
             return this._asynchronous;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isRunning", {
         get: function () {
             return this._isRunning;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isCompleted", {
         get: function () {
             return this._isCompleted;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isFailed", {
         get: function () {
             return this._isFailed;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isPaused", {
         get: function () {
             return this._isPaused;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     return BaseTask;
@@ -6145,7 +6163,7 @@ var QueueTask = /** @class */ (function (_super) {
         get: function () {
             return this._tasks;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     QueueTask.prototype.run = function () {
@@ -6296,9 +6314,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var Animation = /** @class */ (function () {
-    function Animation(component, data, fps, realFPS) {
+    function Animation(component, data, fps, realFPS, animationTemplate) {
         if (fps === void 0) { fps = 30; }
         if (realFPS === void 0) { realFPS = true; }
+        if (animationTemplate === void 0) { animationTemplate = {}; }
         this.animationMap = {};
         this.animationConfig = {};
         this.status = 0 /* STOP */;
@@ -6329,6 +6348,7 @@ var Animation = /** @class */ (function () {
         }
         this.minDeltaT = Math.ceil(1000 / this.fps);
         this.deltaT = 0;
+        this._animationTemplate = animationTemplate;
         this.parseData();
     }
     Animation.prototype.addAnimationClip = function (clip) {
@@ -6445,7 +6465,7 @@ var Animation = /** @class */ (function () {
                 }
             }
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Animation.prototype.tick = function () {
@@ -6518,10 +6538,20 @@ var Animation = /** @class */ (function () {
         this.animationConfig[name] = config;
         var duration = 0;
         for (var key in anim.children) {
-            if (anim.children[key]) {
-                var ac = this.parseAnimationClip(key, name, anim.children[key]);
-                if (ac && ac.totalTime > duration) {
-                    duration = ac.totalTime;
+            var subAnim = anim.children[key];
+            if (subAnim) {
+                var subAnimation = void 0;
+                if (typeof subAnim === 'string') {
+                    subAnimation = this._animationTemplate[subAnim];
+                }
+                else {
+                    subAnimation = subAnim;
+                }
+                if (subAnimation) {
+                    var ac = this.parseAnimationClip(key, name, subAnimation);
+                    if (ac && ac.totalTime > duration) {
+                        duration = ac.totalTime;
+                    }
                 }
             }
         }
@@ -6667,7 +6697,7 @@ var AnimationClip = /** @class */ (function () {
         get: function () {
             return this.target;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AnimationClip.prototype, "curTime", {
@@ -6682,7 +6712,7 @@ var AnimationClip = /** @class */ (function () {
             }
             this.applyTimeline();
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     AnimationClip.prototype.skipNextEvent = function () {
@@ -7127,7 +7157,7 @@ var PathTimeline = /** @class */ (function (_super) {
             }
             return [0, 0];
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(PathTimeline.prototype, "angle", {
@@ -7136,7 +7166,7 @@ var PathTimeline = /** @class */ (function (_super) {
             var p1 = this.path.getPointAtLength(this._curValue * this.length + 1);
             return Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     return PathTimeline;
@@ -7221,14 +7251,14 @@ var Timeline = /** @class */ (function () {
             this._defaultValue = value;
             this._curValue = value;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Timeline.prototype, "curValue", {
         get: function () {
             return this._curValue;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Timeline.prototype, "globalTime", {
@@ -7237,7 +7267,7 @@ var Timeline = /** @class */ (function () {
             this.tick();
             this._lastGlobalTime = v;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Timeline.prototype.getProgress = function (cur, min, max, curve) {
@@ -7496,7 +7526,7 @@ var AbstractFilter = /** @class */ (function (_super) {
             value = Math.max(0, value);
             this.uniforms.progress = value;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     AbstractFilter.prototype.applyTranisition = function (target) {
@@ -7713,7 +7743,7 @@ var DoomScreenFilter = /** @class */ (function (_super) {
             value = Math.max(0, value);
             this.uniforms.progress = value;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     DoomScreenFilter.prototype.applyTranisition = function (target) {
@@ -8072,7 +8102,7 @@ var FadeoutTran = /** @class */ (function () {
                 this.prevSprite.alpha = (1 - this._progress);
             }
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     FadeoutTran.prototype.setPreviousTexture = function (value) {
@@ -8127,12 +8157,13 @@ __webpack_require__.r(__webpack_exports__);
  * @param id 不传id,获取第一个场景数据
  */
 function getSceneData(data, id) {
+    var _a;
     var scenes = data.scenes;
     if (scenes) {
         if ((id === undefined || id === '') && scenes[0]) {
             return scenes[0];
         }
-        id = id === null || id === void 0 ? void 0 : id.toString();
+        id = (_a = id) === null || _a === void 0 ? void 0 : _a.toString();
         for (var i = 0, len = scenes.length; i < len; i++) {
             if (scenes[i].id.toString() === id) {
                 return scenes[i];
@@ -8297,7 +8328,7 @@ var VFComponent = /** @class */ (function (_super) {
                 }
             }
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     VFComponent.prototype.pause = function () {
@@ -8650,7 +8681,7 @@ var VFStage = /** @class */ (function (_super) {
         get: function () {
             return this.config.systemEvent;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     /** 获取当前的场景 */
