@@ -13,6 +13,7 @@ export class SliderEditorPlug extends Plug {
     constructor(className: string, parent: VFStage) {
         super(className, parent);
         parent.originalEventPreventDefault = true;
+        parent.syncInteractiveFlag = true;  //开启同步
         let element = document.getElementById('drawCanvas');
 
         // eslint-disable-next-line no-eq-null

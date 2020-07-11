@@ -60,6 +60,10 @@ export class VFStage extends vf.gui.Stage {
         res.on(SceneEvent.LoadProgress, this.loadProgress, this);
     }
 
+    public getSystemEvent(): StateEvent{
+        return this.config.systemEvent;
+    }
+
     /**
      * 获取系统总线
      */
@@ -76,7 +80,7 @@ export class VFStage extends vf.gui.Stage {
      * 即使没有引用也不要删除这个接口，GUI在调用
      * @param msg
      */
-    public inputLog(msg: IEvent): void {
+    public sendToPlayer(msg: IEvent): void {
         if (msg.message === undefined) {
             msg.message = '';
         }
@@ -215,12 +219,6 @@ export class VFStage extends vf.gui.Stage {
                 this.emit(SceneEvent.TransitionEnd);
             }
 
-            this.visible = false;
-            clearTimeout(this._delayedDisplayId);
-            this._delayedDisplayId = setTimeout(() => {
-                this.visible = true;
-            }, 60);
-
             this.status = STAGE_STATUS.PLAYING;
         }
     }
@@ -239,10 +237,18 @@ export class VFStage extends vf.gui.Stage {
                 this.switchToScene(scene, this.curSceneTransition);
             }
 
-            this.createPlugs();
-            this.systemEvent.emit(EventType.STATUS, {
-                code: SceneEvent.ScenComplete, level: EventLevel.STATUS, data: null,
-            });
+            this.visible = false;
+            clearTimeout(this._delayedDisplayId);
+            this._delayedDisplayId = setTimeout(() => {
+                this.visible = true;
+                if (this.syncManager) {
+                    this.syncManager.init();
+                }
+                this.createPlugs();
+                this.systemEvent.emit(EventType.STATUS, {
+                    code: SceneEvent.ScenComplete, level: EventLevel.STATUS, data: null,
+                });
+            }, 60);
         }
     }
 

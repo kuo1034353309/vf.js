@@ -366,6 +366,16 @@ var Player = /** @class */ (function () {
             this.onMessage(msg);
         }
     };
+    /**
+     * 发消息到stage（实际上是uiStage）
+     * @param msg
+     */
+    Player.prototype.sendToStage = function (msg) {
+        var stage = this.stage;
+        if (stage && stage.receiveFromPlayer) {
+            stage.receiveFromPlayer(msg);
+        }
+    };
     Player.prototype.switchToNextScene = function (transition) {
         if (this.stage) {
             this.stage.switchToNextScene(transition);
@@ -2696,6 +2706,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SetTimeoutTask__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./SetTimeoutTask */ "./packages/player/src/core/actionTask/SetTimeoutTask.ts");
 /* harmony import */ var _SetIntervalTask__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./SetIntervalTask */ "./packages/player/src/core/actionTask/SetIntervalTask.ts");
 /* harmony import */ var _EnterFrameTask__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./EnterFrameTask */ "./packages/player/src/core/actionTask/EnterFrameTask.ts");
+/* harmony import */ var _EnterFrameCallTask__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./EnterFrameCallTask */ "./packages/player/src/core/actionTask/EnterFrameCallTask.ts");
+
 
 
 
@@ -2948,6 +2960,9 @@ var ActionList = /** @class */ (function () {
             case 43 /* EnterFrame */:
                 task = this.parseEnterFrame(data);
                 break;
+            case 44 /* EnterFrameCall */:
+                task = this.parseEnterFrameCall(data);
+                break;
             default:
                 break;
         }
@@ -3097,6 +3112,10 @@ var ActionList = /** @class */ (function () {
     ActionList.prototype.parseEnterFrame = function (data) {
         var task = new _EnterFrameTask__WEBPACK_IMPORTED_MODULE_32__["EnterFrameTask"](this.component, data);
         this.parseSubTask(task, data);
+        return task;
+    };
+    ActionList.prototype.parseEnterFrameCall = function (data) {
+        var task = new _EnterFrameCallTask__WEBPACK_IMPORTED_MODULE_33__["EnterFrameCallTask"](this.component, data);
         return task;
     };
     return ActionList;
@@ -4285,6 +4304,127 @@ var EmitEventTask = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ "./packages/player/src/core/actionTask/EnterFrameCallTask.ts":
+/*!*******************************************************************!*\
+  !*** ./packages/player/src/core/actionTask/EnterFrameCallTask.ts ***!
+  \*******************************************************************/
+/*! exports provided: EnterFrameCallTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EnterFrameCallTask", function() { return EnterFrameCallTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _core_ContainerTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+/* harmony import */ var _CallFunctionTask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CallFunctionTask */ "./packages/player/src/core/actionTask/CallFunctionTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var EnterFrameCallTask = /** @class */ (function (_super) {
+    __extends(EnterFrameCallTask, _super);
+    function EnterFrameCallTask(component, data) {
+        var _this = _super.call(this) || this;
+        _this.loopTaskComplete = true;
+        _this.component = component;
+        _this.data = data;
+        _this.funName = data.funName;
+        if (_this.funName) {
+            _this.callfunData = {
+                type: 12 /* CallFunction */,
+                name: _this.funName,
+                params: [],
+            };
+            var callfunctionTask = new _CallFunctionTask__WEBPACK_IMPORTED_MODULE_2__["CallFunctionTask"](_this.component, _this.funName, _this.callfunData);
+            _this.callfun = callfunctionTask;
+            _this.loopTask.addTask(callfunctionTask);
+        }
+        return _this;
+    }
+    EnterFrameCallTask.prototype.run = function () {
+        _super.prototype.run.call(this);
+        if (this.component) {
+            var vfStage = this.component.vfStage;
+            if (vfStage && vfStage.app) {
+                if (this.loopTask) {
+                    this.loopTask.addListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
+                }
+                if (!this.tickHandler) {
+                    this.tickHandler = vf.gui.Scheduler.setEnterFrame(this.tick.bind(this));
+                }
+                else {
+                    this.tickHandler.restart();
+                }
+            }
+            else {
+                this.complete();
+            }
+        }
+        else {
+            this.complete();
+        }
+    };
+    EnterFrameCallTask.prototype.complete = function () {
+        _super.prototype.complete.call(this);
+        if (this.loopTask) {
+            this.loopTask.removeListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
+        }
+        if (this.tickHandler) {
+            this.tickHandler.stop();
+        }
+    };
+    EnterFrameCallTask.prototype.stop = function () {
+        _super.prototype.stop.call(this);
+        this.complete();
+    };
+    EnterFrameCallTask.prototype.pause = function () {
+        _super.prototype.pause.call(this);
+        if (this.tickHandler) {
+            this.tickHandler.pause();
+        }
+    };
+    EnterFrameCallTask.prototype.resume = function () {
+        if (this._isPaused) {
+            if (this.tickHandler) {
+                this.tickHandler.resume();
+            }
+        }
+        _super.prototype.resume.call(this);
+    };
+    EnterFrameCallTask.prototype.onLoopComplete = function () {
+        this.loopTaskComplete = true;
+    };
+    EnterFrameCallTask.prototype.tick = function (e) {
+        if (this.loopTaskComplete) {
+            if (this.loopTask) {
+                var dt = e;
+                if (this.callfunData) {
+                    this.callfunData.params = [dt];
+                }
+                this.loopTaskComplete = false;
+                this.loopTask.run();
+            }
+        }
+    };
+    return EnterFrameCallTask;
+}(_core_ContainerTask__WEBPACK_IMPORTED_MODULE_1__["ContainerTask"]));
+
+
+
+/***/ }),
+
 /***/ "./packages/player/src/core/actionTask/EnterFrameTask.ts":
 /*!***************************************************************!*\
   !*** ./packages/player/src/core/actionTask/EnterFrameTask.ts ***!
@@ -4329,7 +4469,12 @@ var EnterFrameTask = /** @class */ (function (_super) {
                 if (this.loopTask) {
                     this.loopTask.addListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
                 }
-                vfStage.app.ticker.add(this.tick, this);
+                if (!this.tickHandler) {
+                    this.tickHandler = vf.gui.Scheduler.setEnterFrame(this.tick.bind(this));
+                }
+                else {
+                    this.tickHandler.restart();
+                }
             }
             else {
                 this.complete();
@@ -4344,11 +4489,8 @@ var EnterFrameTask = /** @class */ (function (_super) {
         if (this.loopTask) {
             this.loopTask.removeListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
         }
-        if (this.component) {
-            var vfStage = this.component.vfStage;
-            if (vfStage && vfStage.app) {
-                vfStage.app.ticker.remove(this.tick, this);
-            }
+        if (this.tickHandler) {
+            this.tickHandler.stop();
         }
     };
     EnterFrameTask.prototype.stop = function () {
@@ -4357,20 +4499,14 @@ var EnterFrameTask = /** @class */ (function (_super) {
     };
     EnterFrameTask.prototype.pause = function () {
         _super.prototype.pause.call(this);
-        if (this.component) {
-            var vfStage = this.component.vfStage;
-            if (vfStage && vfStage.app) {
-                vfStage.app.ticker.remove(this.tick, this);
-            }
+        if (this.tickHandler) {
+            this.tickHandler.pause();
         }
     };
     EnterFrameTask.prototype.resume = function () {
         if (this._isPaused) {
-            if (this.component) {
-                var vfStage = this.component.vfStage;
-                if (vfStage && vfStage.app) {
-                    vfStage.app.ticker.add(this.tick, this);
-                }
+            if (this.tickHandler) {
+                this.tickHandler.resume();
             }
         }
         _super.prototype.resume.call(this);
@@ -6173,7 +6309,6 @@ var Animation = /** @class */ (function () {
          */
         this.realFPS = false;
         this.curTime = 0;
-        this.lastTime = 0;
         this.curPlayTime = 0;
         this.startTime = 0;
         this.passedTime = 0;
@@ -6182,9 +6317,9 @@ var Animation = /** @class */ (function () {
         this.fps = 30;
         this.curAnimatinName = '';
         this.curAnimatinDuration = 0;
-        this.curAnimatinDurationTime = 0;
+        this.curAnimatinDurationTime = 0; //每一个loop的持续时间
         this.curAnimationTimes = 0;
-        this.curAnimationTotalTime = 0;
+        this.curAnimationTotalTime = 0; //当前动画总持续时间（每个loop帧 * 帧间隔 * loop次数）
         this._curPlayTimes = 0;
         this.component = component;
         this.data = data;
@@ -6255,9 +6390,8 @@ var Animation = /** @class */ (function () {
         this.deltaT = 0;
         this.setCurTime(this.curPlayTime);
         this.status = 1 /* PLAYING */;
-        this.startTime = new Date().getTime();
+        this.startTime = 0;
         this.curTime = this.startTime;
-        this.lastTime = this.startTime;
         this.startTime -= this.curPlayTime;
         this._curPlayTimes = 0;
         vf.gui.TickerShared.add(this.tick, this);
@@ -6284,9 +6418,8 @@ var Animation = /** @class */ (function () {
         this.deltaT = 0;
         this.setCurTime(this.curPlayTime);
         this.status = 0 /* STOP */;
-        this.startTime = new Date().getTime();
+        this.startTime = 0;
         this.curTime = this.startTime;
-        this.lastTime = this.startTime;
         this.startTime -= this.curPlayTime;
         this._curPlayTimes = 0;
         this.tick();
@@ -6316,14 +6449,12 @@ var Animation = /** @class */ (function () {
         configurable: true
     });
     Animation.prototype.tick = function () {
-        var curTime = new Date().getTime();
-        this.curTime = curTime;
-        var dt = this.curTime - this.lastTime;
+        var dt = vf.gui.TickerShared.deltaMS; //by ziye 使用gui的ticker获取帧间隔
+        this.curTime += dt;
         this.curPlayTime += dt;
         if (this.realFPS) {
             this.deltaT += dt;
             if (this.deltaT < this.minDeltaT) {
-                this.lastTime = this.curTime;
                 this.passedTime = this.curTime - this.startTime;
                 if (this.curAnimationTimes > 0 &&
                     this.passedTime > this.curAnimationTotalTime) {
@@ -6343,7 +6474,6 @@ var Animation = /** @class */ (function () {
             }
         }
         this.setCurTime(this.curPlayTime);
-        this.lastTime = this.curTime;
         this.passedTime = this.curTime - this.startTime;
         if (this.curAnimationTimes > 0 &&
             this.passedTime > this.curAnimationTotalTime) {
@@ -8510,6 +8640,9 @@ var VFStage = /** @class */ (function (_super) {
         res.on("LoadProgress" /* LoadProgress */, _this.loadProgress, _this);
         return _this;
     }
+    VFStage.prototype.getSystemEvent = function () {
+        return this.config.systemEvent;
+    };
     Object.defineProperty(VFStage.prototype, "systemEvent", {
         /**
          * 获取系统总线
@@ -8528,7 +8661,7 @@ var VFStage = /** @class */ (function (_super) {
      * 即使没有引用也不要删除这个接口，GUI在调用
      * @param msg
      */
-    VFStage.prototype.inputLog = function (msg) {
+    VFStage.prototype.sendToPlayer = function (msg) {
         if (msg.message === undefined) {
             msg.message = '';
         }
@@ -8623,7 +8756,6 @@ var VFStage = /** @class */ (function (_super) {
         }
     };
     VFStage.prototype.switchToScene = function (scene, transition) {
-        var _this = this;
         if (scene && this.app) {
             var transitionData = transition;
             var prevTexture = void 0;
@@ -8648,15 +8780,11 @@ var VFStage = /** @class */ (function (_super) {
                 this.emit("TransitionStart" /* TransitionStart */);
                 this.emit("TransitionEnd" /* TransitionEnd */);
             }
-            this.visible = false;
-            clearTimeout(this._delayedDisplayId);
-            this._delayedDisplayId = setTimeout(function () {
-                _this.visible = true;
-            }, 60);
             this.status = STAGE_STATUS.PLAYING;
         }
     };
     VFStage.prototype.loadAssetCompleted = function () {
+        var _this = this;
         this.systemEvent.emit("status" /* STATUS */, {
             code: "LoadComplete" /* LoadComplete */, level: "status" /* STATUS */, data: [this.curSceneId],
         });
@@ -8667,10 +8795,18 @@ var VFStage = /** @class */ (function (_super) {
             if (scene) {
                 this.switchToScene(scene, this.curSceneTransition);
             }
-            this.createPlugs();
-            this.systemEvent.emit("status" /* STATUS */, {
-                code: "ScenComplete" /* ScenComplete */, level: "status" /* STATUS */, data: null,
-            });
+            this.visible = false;
+            clearTimeout(this._delayedDisplayId);
+            this._delayedDisplayId = setTimeout(function () {
+                _this.visible = true;
+                if (_this.syncManager) {
+                    _this.syncManager.init();
+                }
+                _this.createPlugs();
+                _this.systemEvent.emit("status" /* STATUS */, {
+                    code: "ScenComplete" /* ScenComplete */, level: "status" /* STATUS */, data: null,
+                });
+            }, 60);
         }
     };
     VFStage.prototype.loadProgress = function (e) {
@@ -8960,6 +9096,7 @@ var SliderEditorPlug = /** @class */ (function (_super) {
     function SliderEditorPlug(className, parent) {
         var _this = _super.call(this, className, parent) || this;
         parent.originalEventPreventDefault = true;
+        parent.syncInteractiveFlag = true; //开启同步
         var element = document.getElementById('drawCanvas');
         // eslint-disable-next-line no-eq-null
         if (element == null) {
@@ -9205,6 +9342,7 @@ __webpack_require__.r(__webpack_exports__);
 var SoundManager = /** @class */ (function () {
     function SoundManager(vfStage) {
         this.trackIdMap = [];
+        this.assetIdMap = new Map();
         this.stage = vfStage;
         // vfStage.config.vfvars.useNativeAudio // 如果使用了native播放，不要加载和设置PIXI.sound， 在互动课件中会有问题，教室中使用audioContext会出错。
     }
@@ -9248,7 +9386,16 @@ var SoundManager = /** @class */ (function () {
     };
     SoundManager.prototype.pauseSound = function (data) {
         if (data === void 0) { data = {}; }
-        if (this.nativeEmit(data.assetId, 'pauseAudio', data)) {
+        var asset = this.stage.res.data.assets[data.assetId.toString()];
+        if (asset === undefined || asset.url === undefined || asset.url === "") {
+            console.warn("playback failed,missing assetId!", data);
+            return;
+        }
+        //如果处于恢复状态，不播放声音
+        if (this.stage.syncManager && this.stage.syncManager.resumeStatusFlag) {
+            return;
+        }
+        if (this.nativeEmit(asset.url, "pauseAudio", data)) {
             return;
         }
         if (this.weixinEmit()) {
@@ -9260,7 +9407,16 @@ var SoundManager = /** @class */ (function () {
         }
     };
     SoundManager.prototype.resumeSound = function (data) {
-        if (this.nativeEmit(data.assetId, 'resumeAudio', data)) {
+        var asset = this.stage.res.data.assets[data.assetId.toString()];
+        if (asset === undefined || asset.url === undefined || asset.url === "") {
+            console.warn("playback failed,missing assetId!", data);
+            return;
+        }
+        //如果处于恢复状态，不播放声音
+        if (this.stage.syncManager && this.stage.syncManager.resumeStatusFlag) {
+            return;
+        }
+        if (this.nativeEmit(asset.url, "resumeAudio", data)) {
             return;
         }
         if (this.weixinEmit()) {
@@ -9274,30 +9430,43 @@ var SoundManager = /** @class */ (function () {
     // tslint:disable-next-line: max-line-length
     SoundManager.prototype.playSound = function (data) {
         var asset = this.stage.res.data.assets[data.assetId.toString()];
-        if (asset === undefined || asset.url === undefined || asset.url === '') {
-            console.warn('playback failed,missing assetId!', data);
+        if (asset === undefined || asset.url === undefined || asset.url === "") {
+            console.warn("playback failed,missing assetId!", data);
             return;
         }
-        if (this.nativeEmit(data.assetId, 'playAudio', data)) {
+        //如果处于恢复状态，不播放声音
+        if (this.stage.syncManager && this.stage.syncManager.resumeStatusFlag) {
+            return;
+        }
+        if (this.nativeEmit(asset.url, "playAudio", data)) {
             return;
         }
         if (this.weixinEmit()) {
             return;
         }
         var audio = this.getAudio(data.trackId);
+        //by ziye+ 允许同一个trackId播放不同的声音
         if (audio) {
-            audio.play(0, 0);
+            if (this.assetIdMap.get(data.trackId) === asset.url) {
+                audio.play(0, 0);
+                return;
+            }
+            else {
+                audio.dispose();
+                vf.AudioEngine.Ins().map.delete(this.stage.config.uuid.toString() + data.trackId);
+            }
         }
-        else {
-            // eslint-disable-next-line max-len
-            audio = vf.AudioEngine.Ins().createAudio(this.stage.config.uuid.toString() + data.trackId, asset.url, { autoplay: false });
-            audio.play(data.time, data.offset, data.length);
-            this.trackIdMap.push(data.trackId);
-        }
+        // eslint-disable-next-line max-len
+        audio = vf.AudioEngine.Ins().createAudio(this.stage.config.uuid.toString() + data.trackId, asset.url, {
+            autoplay: false,
+        });
+        audio.play(data.time, data.offset, data.length);
+        this.trackIdMap.push(data.trackId);
+        this.assetIdMap.set(data.trackId, asset.url);
     };
     SoundManager.prototype.isWeixin = function () {
         var ua = window.navigator.userAgent.toLowerCase();
-        return (/micromessenger/).test(ua);
+        return /micromessenger/.test(ua);
     };
     SoundManager.prototype.weixinEmit = function () {
         return false;
@@ -9311,11 +9480,11 @@ var SoundManager = /** @class */ (function () {
             // }
         }
     };
-    SoundManager.prototype.nativeEmit = function (assetId, typeTag, data) {
+    SoundManager.prototype.nativeEmit = function (url, typeTag, data) {
         if (data === void 0) { data = {}; }
         var useNative = this.stage.config.vfvars.useNativeAudio;
-        if (useNative) { // 先放这里，后期soundManager完成后，合并
-            var asset = this.stage.res.getAsset(assetId);
+        if (useNative) {
+            // 先放这里，后期soundManager完成后，合并
             this.stage.systemEvent.emit("message" /* MESSAGE */, {
                 code: "native" /* NATIVE */,
                 type: "native" /* NATIVE */,
@@ -9323,8 +9492,9 @@ var SoundManager = /** @class */ (function () {
                 data: {
                     type: typeTag,
                     id: data.trackId || 0,
-                    src: asset.url,
-                    mode: data.mode || 'sound',
+                    src: url,
+                    mode: data.mode || "sound",
+                    signalling: data.signalling || false,
                 },
             });
             return true;
