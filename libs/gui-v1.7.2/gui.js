@@ -4113,7 +4113,12 @@ var Circle = /** @class */ (function (_super) {
         if (this._color !== undefined)
             graphics.beginFill(this._color);
         var diam = this._radius * 2;
-        graphics.arc(this._anchorX ? this._anchorX * diam : 0, this._anchorY ? diam * this._anchorY : 0, this._radius, this._startAngle * Math.PI / 180, this._endAngle * Math.PI / 180, this._anticlockwise);
+        if ((this._startAngle === 0 && this._endAngle === 360) || (this._startAngle === 360 && this._endAngle === 0)) {
+            graphics.drawCircle(this._anchorX ? this._anchorX * diam : 0, this._anchorY ? diam * this._anchorY : 0, this._radius);
+        }
+        else {
+            graphics.arc(this._anchorX ? this._anchorX * diam : 0, this._anchorY ? diam * this._anchorY : 0, this._radius, this._startAngle * Math.PI / 180, this._endAngle * Math.PI / 180, this._anticlockwise);
+        }
         graphics.endFill();
     };
     return Circle;
@@ -14699,13 +14704,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.7.1.1.7.1.1.7.1) ==1.7.1.1.7.1.1.7.1;
+//     return this.lastIndexOf(word, pos1.7.2.1.7.2.1.7.2) ==1.7.2.1.7.2.1.7.2;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.7.1";
+window.vf.gui.version = "1.7.2";
 
 
 /***/ })
