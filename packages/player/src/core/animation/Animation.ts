@@ -93,6 +93,74 @@ export class Animation {
             }
         }
 
+        public gotoPlayMulit(names: string[], frameIndex: number = 0, times: number = 1): void {
+            if (this.status === AnimationStatus.PLAYING) {
+                this.stop();
+            }
+            this.curAnimatinDuration = -1;
+            for(let i = 0, len = names.length; i < len; i++) {
+                const name = names[i];
+                const config = this.animationConfig[name];
+                if (config) {
+                    if(this.curAnimatinDuration < config.totalTime) {
+                        this.curAnimatinDuration = config.totalTime;
+                    }
+                } else {
+                    // tslint:disable-next-line: no-console
+                    console.warn('can not find animation:', name);
+                }
+            }
+            if(this.curAnimatinDuration < 0) {
+                return;
+            }
+            
+            this.curAnimatinName = names.join(',');
+            this.curAnimationClips = [];
+            for(let i = 0, len = names.length; i < len; i++) {
+                const name = names[i];
+                this.curAnimationClips = this.curAnimationClips.concat(this.animationMap[name]);
+            }
+            
+            this.curAnimationTimes = times;
+            this.curAnimationTotalTime = Math.round(this.curAnimatinDuration * 
+                                                    this.curAnimationTimes * (1000 / this.fps));
+            this.curAnimatinDurationTime = Math.round(this.curAnimatinDuration * 1000 / this.fps);
+            this.curPlayTime = frameIndex * (1000 / this.fps);
+            this.deltaT = 0;
+            this.setCurTime(this.curPlayTime);
+            this.status = AnimationStatus.PLAYING;
+            this.startTime = new Date().getTime();
+            this.curTime = this.startTime;
+            this.lastTime = this.startTime;
+            this.startTime -= this.curPlayTime;
+            this._curPlayTimes = 0;
+            vf.gui.TickerShared.add(this.tick, this);
+        }
+
+        public gotoStopMulit(names: string[], frameIndex: number): void {
+            if (this.status === AnimationStatus.PLAYING) {
+                this.stop();
+            }
+            
+            this.curAnimatinName = names.join(',');
+            this.curAnimationClips = [];
+            for(let i = 0, len = names.length; i < len; i++) {
+                const name = names[i];
+                this.curAnimationClips = this.curAnimationClips.concat(this.animationMap[name]);
+            }
+
+            this.curPlayTime = frameIndex * (1000 / this.fps);
+            this.deltaT = 0;
+            this.setCurTime(this.curPlayTime);
+            this.status = AnimationStatus.STOP;
+            this.startTime = new Date().getTime();
+            this.curTime = this.startTime;
+            this.lastTime = this.startTime;
+            this.startTime -= this.curPlayTime;
+            this._curPlayTimes = 0;
+            this.tick();
+        }
+
         public gotoPlay(name: string, frameIndex: number, times: number = 1): void  {
             if (this.status === AnimationStatus.PLAYING) {
                 this.stop();
