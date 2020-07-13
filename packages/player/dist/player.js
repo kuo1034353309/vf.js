@@ -2696,6 +2696,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SetTimeoutTask__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./SetTimeoutTask */ "./packages/player/src/core/actionTask/SetTimeoutTask.ts");
 /* harmony import */ var _SetIntervalTask__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./SetIntervalTask */ "./packages/player/src/core/actionTask/SetIntervalTask.ts");
 /* harmony import */ var _EnterFrameTask__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./EnterFrameTask */ "./packages/player/src/core/actionTask/EnterFrameTask.ts");
+/* harmony import */ var _EnterFrameCallTask__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./EnterFrameCallTask */ "./packages/player/src/core/actionTask/EnterFrameCallTask.ts");
+
 
 
 
@@ -2948,6 +2950,9 @@ var ActionList = /** @class */ (function () {
             case 43 /* EnterFrame */:
                 task = this.parseEnterFrame(data);
                 break;
+            case 44 /* EnterFrameCall */:
+                task = this.parseEnterFrameCall(data);
+                break;
             default:
                 break;
         }
@@ -3097,6 +3102,10 @@ var ActionList = /** @class */ (function () {
     ActionList.prototype.parseEnterFrame = function (data) {
         var task = new _EnterFrameTask__WEBPACK_IMPORTED_MODULE_32__["EnterFrameTask"](this.component, data);
         this.parseSubTask(task, data);
+        return task;
+    };
+    ActionList.prototype.parseEnterFrameCall = function (data) {
+        var task = new _EnterFrameCallTask__WEBPACK_IMPORTED_MODULE_33__["EnterFrameCallTask"](this.component, data);
         return task;
     };
     return ActionList;
@@ -4308,6 +4317,137 @@ var EmitEventTask = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ "./packages/player/src/core/actionTask/EnterFrameCallTask.ts":
+/*!*******************************************************************!*\
+  !*** ./packages/player/src/core/actionTask/EnterFrameCallTask.ts ***!
+  \*******************************************************************/
+/*! exports provided: EnterFrameCallTask */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EnterFrameCallTask", function() { return EnterFrameCallTask; });
+/* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
+/* harmony import */ var _core_ContainerTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core/ContainerTask */ "./packages/player/src/core/actionTask/core/ContainerTask.ts");
+/* harmony import */ var _CallFunctionTask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CallFunctionTask */ "./packages/player/src/core/actionTask/CallFunctionTask.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var EnterFrameCallTask = /** @class */ (function (_super) {
+    __extends(EnterFrameCallTask, _super);
+    function EnterFrameCallTask(component, data) {
+        var _this = _super.call(this) || this;
+        _this.loopTaskComplete = true;
+        _this.curTime = 0;
+        _this.lastTime = 0;
+        _this.component = component;
+        _this.data = data;
+        _this.funName = data.funName;
+        if (_this.funName) {
+            _this.callfunData = {
+                type: 12 /* CallFunction */,
+                name: _this.funName,
+                params: [],
+            };
+            var callfunctionTask = new _CallFunctionTask__WEBPACK_IMPORTED_MODULE_2__["CallFunctionTask"](_this.component, _this.funName, _this.callfunData);
+            _this.callfun = callfunctionTask;
+            _this.loopTask.addTask(callfunctionTask);
+        }
+        return _this;
+    }
+    EnterFrameCallTask.prototype.run = function () {
+        _super.prototype.run.call(this);
+        if (this.component) {
+            var vfStage = this.component.vfStage;
+            if (vfStage && vfStage.app) {
+                if (this.loopTask) {
+                    this.loopTask.addListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
+                }
+                this.curTime = new Date().getTime();
+                this.lastTime = this.curTime;
+                vfStage.app.ticker.add(this.tick, this);
+            }
+            else {
+                this.complete();
+            }
+        }
+        else {
+            this.complete();
+        }
+    };
+    EnterFrameCallTask.prototype.complete = function () {
+        _super.prototype.complete.call(this);
+        if (this.loopTask) {
+            this.loopTask.removeListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
+        }
+        if (this.component) {
+            var vfStage = this.component.vfStage;
+            if (vfStage && vfStage.app) {
+                vfStage.app.ticker.remove(this.tick, this);
+            }
+        }
+    };
+    EnterFrameCallTask.prototype.stop = function () {
+        _super.prototype.stop.call(this);
+        this.complete();
+    };
+    EnterFrameCallTask.prototype.pause = function () {
+        _super.prototype.pause.call(this);
+        if (this.component) {
+            var vfStage = this.component.vfStage;
+            if (vfStage && vfStage.app) {
+                vfStage.app.ticker.remove(this.tick, this);
+            }
+        }
+    };
+    EnterFrameCallTask.prototype.resume = function () {
+        if (this._isPaused) {
+            if (this.component) {
+                var vfStage = this.component.vfStage;
+                if (vfStage && vfStage.app) {
+                    vfStage.app.ticker.add(this.tick, this);
+                }
+            }
+        }
+        _super.prototype.resume.call(this);
+    };
+    EnterFrameCallTask.prototype.onLoopComplete = function () {
+        this.loopTaskComplete = true;
+    };
+    EnterFrameCallTask.prototype.tick = function () {
+        if (this.loopTaskComplete) {
+            if (this.loopTask) {
+                this.curTime = new Date().getTime();
+                var dt = this.curTime - this.lastTime;
+                if (this.callfunData) {
+                    this.callfunData.params = [dt];
+                }
+                this.loopTaskComplete = false;
+                this.loopTask.run();
+                this.lastTime = this.curTime;
+            }
+        }
+    };
+    return EnterFrameCallTask;
+}(_core_ContainerTask__WEBPACK_IMPORTED_MODULE_1__["ContainerTask"]));
+
+
+
+/***/ }),
+
 /***/ "./packages/player/src/core/actionTask/EnterFrameTask.ts":
 /*!***************************************************************!*\
   !*** ./packages/player/src/core/actionTask/EnterFrameTask.ts ***!
@@ -5018,7 +5158,12 @@ var PlayAnimationTask = /** @class */ (function (_super) {
         var name = this.getValue();
         var times = this.getTimes();
         if (this._component && this._component.vfStage) {
-            this._component.play(name, times);
+            if (Array.isArray(name)) {
+                this._component.playMulit(name, times);
+            }
+            else {
+                this._component.play(name, times);
+            }
         }
         this.complete();
     };
@@ -6273,6 +6418,71 @@ var Animation = /** @class */ (function () {
             }
         }
     };
+    Animation.prototype.gotoPlayMulit = function (names, frameIndex, times) {
+        if (frameIndex === void 0) { frameIndex = 0; }
+        if (times === void 0) { times = 1; }
+        if (this.status === 1 /* PLAYING */) {
+            this.stop();
+        }
+        this.curAnimatinDuration = -1;
+        for (var i = 0, len = names.length; i < len; i++) {
+            var name_2 = names[i];
+            var config = this.animationConfig[name_2];
+            if (config) {
+                if (this.curAnimatinDuration < config.totalTime) {
+                    this.curAnimatinDuration = config.totalTime;
+                }
+            }
+            else {
+                // tslint:disable-next-line: no-console
+                console.warn('can not find animation:', name_2);
+            }
+        }
+        if (this.curAnimatinDuration < 0) {
+            return;
+        }
+        this.curAnimatinName = names.join(',');
+        this.curAnimationClips = [];
+        for (var i = 0, len = names.length; i < len; i++) {
+            var name_3 = names[i];
+            this.curAnimationClips = this.curAnimationClips.concat(this.animationMap[name_3]);
+        }
+        this.curAnimationTimes = times;
+        this.curAnimationTotalTime = Math.round(this.curAnimatinDuration *
+            this.curAnimationTimes * (1000 / this.fps));
+        this.curAnimatinDurationTime = Math.round(this.curAnimatinDuration * 1000 / this.fps);
+        this.curPlayTime = frameIndex * (1000 / this.fps);
+        this.deltaT = 0;
+        this.setCurTime(this.curPlayTime);
+        this.status = 1 /* PLAYING */;
+        this.startTime = new Date().getTime();
+        this.curTime = this.startTime;
+        this.lastTime = this.startTime;
+        this.startTime -= this.curPlayTime;
+        this._curPlayTimes = 0;
+        vf.gui.TickerShared.add(this.tick, this);
+    };
+    Animation.prototype.gotoStopMulit = function (names, frameIndex) {
+        if (this.status === 1 /* PLAYING */) {
+            this.stop();
+        }
+        this.curAnimatinName = names.join(',');
+        this.curAnimationClips = [];
+        for (var i = 0, len = names.length; i < len; i++) {
+            var name_4 = names[i];
+            this.curAnimationClips = this.curAnimationClips.concat(this.animationMap[name_4]);
+        }
+        this.curPlayTime = frameIndex * (1000 / this.fps);
+        this.deltaT = 0;
+        this.setCurTime(this.curPlayTime);
+        this.status = 0 /* STOP */;
+        this.startTime = new Date().getTime();
+        this.curTime = this.startTime;
+        this.lastTime = this.startTime;
+        this.startTime -= this.curPlayTime;
+        this._curPlayTimes = 0;
+        this.tick();
+    };
     Animation.prototype.gotoPlay = function (name, frameIndex, times) {
         if (times === void 0) { times = 1; }
         if (this.status === 1 /* PLAYING */) {
@@ -6336,6 +6546,10 @@ var Animation = /** @class */ (function () {
     Animation.prototype.play = function (name, times) {
         if (times === void 0) { times = 1; }
         this.gotoPlay(name, 0, times);
+    };
+    Animation.prototype.playMulit = function (names, times) {
+        if (times === void 0) { times = 1; }
+        this.gotoPlayMulit(names, 0, times);
     };
     Animation.prototype.stop = function () {
         vf.gui.TickerShared.remove(this.tick, this);
@@ -8279,6 +8493,12 @@ var VFComponent = /** @class */ (function (_super) {
         if (times === void 0) { times = 1; }
         if (this.animation) {
             this.animation.play(name, times);
+        }
+    };
+    VFComponent.prototype.playMulit = function (names, times) {
+        if (times === void 0) { times = 1; }
+        if (this.animation) {
+            this.animation.playMulit(names, times);
         }
     };
     VFComponent.prototype.stop = function () {

@@ -224,6 +224,10 @@ export class Animation {
             this.gotoPlay(name, 0, times);
         }
 
+        public playMulit(names: string[], times = 1): void {
+            this.gotoPlayMulit(names, 0, times);
+        }
+        
         public stop(): void {
             vf.gui.TickerShared.remove(this.tick, this);
             this.status = AnimationStatus.STOP;

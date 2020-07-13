@@ -2,7 +2,7 @@ import { VFComponent } from '../../display/VFComponent';
 import { IAction, ActionType, ComponentEvent, IActionSetProperty, IActionExpress,
     IActionIFPart, IActionFunction, IActionAddEventListener, IActionPlayAnimation,
     IActionJump, IActionArraySplice, IActionArrayConcat, IActionEmitEvent,
-    IActionSound, IActionDefineVariable, IVariableData, IActionGoto, IActionCallFunction, IActionFor } from '../model/IVFData';
+    IActionSound, IActionDefineVariable, IVariableData, IActionGoto, IActionCallFunction, IActionFor, IActionEnterFrame } from '../model/IVFData';
 import { BaseTask } from './core/BaseTask';
 import { AddListenerTask } from './AddListenerTask';
 import { SetPropertyTask } from './SetPropertyTask';
@@ -38,6 +38,7 @@ import { SetTimeoutTask } from './SetTimeoutTask';
 import { ContainerTask } from './core/ContainerTask';
 import { SetIntervalTask } from './SetIntervalTask';
 import { EnterFrameTask } from './EnterFrameTask';
+import { EnterFrameCallTask } from './EnterFrameCallTask';
 
 export class ActionList {
         public component: VFComponent;
@@ -277,6 +278,9 @@ export class ActionList {
                 case ActionType.EnterFrame:
                     task = this.parseEnterFrame(data);
                     break;
+                case ActionType.EnterFrameCall:
+                    task = this.parseEnterFrameCall(data);
+                    break;
                 default:
                     break;
             }
@@ -478,6 +482,10 @@ export class ActionList {
 
             this.parseSubTask(task, data);
 
+            return task;
+        }
+        private parseEnterFrameCall(data: IActionEnterFrame): EnterFrameCallTask {
+            const task: EnterFrameCallTask = new EnterFrameCallTask(this.component, data);
             return task;
         }
 }
