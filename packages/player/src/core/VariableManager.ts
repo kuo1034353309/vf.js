@@ -284,6 +284,18 @@ export class VariableManager {
                         case SystemValueType.DATE:
                             systemValue = curDate.getDate();
                             break;
+                        case SystemValueType.HOUR:
+                            systemValue = curDate.getHours();
+                            break;
+                        case SystemValueType.MINUTE:
+                            systemValue = curDate.getMinutes();
+                            break;
+                        case SystemValueType.SECOND:
+                            systemValue = curDate.getSeconds();
+                            break;
+                        case SystemValueType.MILLISECOND:
+                            systemValue = curDate.getMilliseconds();
+                            break;
                         default:
                             break;
                     }

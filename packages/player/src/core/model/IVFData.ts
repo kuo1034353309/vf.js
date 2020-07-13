@@ -267,6 +267,10 @@ export enum SystemValueType {
     MONTH,
     DAY,
     DATE,
+    HOUR,
+    MINUTE,
+    SECOND,
+    MILLISECOND,
 }
 export type ExpressItem = any[];   // 表达式的项
 export type ExpressType = ExpressItem[]; // 表达式
