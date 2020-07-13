@@ -1,52 +1,11 @@
-## v0.5.3
+# v0.5.71
 
-> 版本号最后一位是奇数代表测试版本，非稳定版本
-
-> 本次更新可能会出现兼容问题
-
-1. 增加场景按需加载，通过配置json中的`loadMode:single`,开启场景按需下载。 后续通过设置场景的`assets`字段设置当前场景所用到的所有资源项
-
-        ```
-           //场景资源预加载模式 “single|all”
-        "loadMode":"single",
-        "scenes":[
-            {
-                "id":80,//场景的id
-                "libId":36,//自定义组件的id
-                "assets": [0, 3, 8, 11], // 资源ID
-            }
-        ]
-        ```
-
-1. 增加接口 `onSceneLoad(): void;` 场景加载前触发，通过监听onSceneLoad、加载完成监听onSceneCreate， 可动态设置loading显隐操作
-
-1. 增加接口 `switchToSceneIndex(index: number, transition?: ITransitionData): void;` ，当配置场景按需加载后，可通过switchToSceneId，switchToSceneIndex切换场景，switchToSceneIndex索引从0开始
-
-    ```
-    createVF(option,player=>{
-        player.play(src);
-        player.switchToSceneIndex(2); //跳转到第3个场景
-    })
-
-    ```
-
-1. 兼容 iOS 8 设备
-
-1. 性能优化，减少内存占用，减少发热，性能提升1倍
-
-> 下述更新会影响兼容性，根据下述说明调整程序
-
-1. 默认自定义组件 `custom` 取消触摸鼠标事件，需手动开启，可通过设置 `interactabled:true` 开启
-
-1. 更新布局方式，当元素为 visible = false 时，布局失效，位置与大小不会被带入计算。 默认的值为显示设定的值
-
-
-1. 帧率设置 `frameRate`
-
-    ```
-    createVF({frameRate:24},player=>{
-
-    })
-
-    ```
-1. 圆形（Circle） `anchorX` , `anchorY` 取值设置范围修改为0-1。
+1. 增加HtmlVideo组件，[使用说明](https://vipkid-edu.github.io/vf-docs/gui/image.html#%E5%B1%9E%E6%80%A7)
+1. 增加自动同步功能，[使用说明](https://vipkid-edu.github.io/vf-docs/gui/image.html#%E5%B1%9E%E6%80%A7)
+1. 增加路径动画,[使用说明](https://vipkid-edu.github.io/vf-docs/handbook/animation.html#%E8%B7%AF%E5%BE%84%E5%8A%A8%E7%94%BB)
+1. 增加动画模版,[使用说明](https://vipkid-edu.github.io/vf-docs/handbook/animation.html#%E5%8A%A8%E7%94%BB%E6%A8%A1%E6%9D%BF)
+1. 增加调整loading位置与样式，
+1. 调整示例的显示比例，移动为先。
+1. 修改初始化参数 realFPS 默认值为 `false`。
+1. 修改系统音频播放，支持不同音频使用同一音轨播放。
+1. 修复移动端无法画线。

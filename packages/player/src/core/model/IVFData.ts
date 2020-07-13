@@ -13,6 +13,7 @@ export interface IVFDataV1 {
     assets: { [id: string]: IAsset };
     components: { [id: string]: AllComponent };
     scenes: IScene[];
+    animationTemplate?: {[id: string]: ISubAnimation};
 }
 
 export const enum ScaleMode {
@@ -121,7 +122,7 @@ export interface IAnimation {
     duration?: number;
     autoPlay?: boolean;
     loop?: boolean;
-    children: { [id: string]: ISubAnimation };
+    children: { [id: string]: (ISubAnimation | string) };
 }
 export interface ISubAnimation {
     duration?: number;
@@ -132,6 +133,7 @@ export interface ITimeline {
     type: TimelineType;
     loop?: boolean;
     frames: IFrame[];
+    path?: string;
 }
 export interface IEventData {
     type: string;
@@ -155,6 +157,7 @@ export const enum TimelineType {
     ENABLED = 'enabled',
     FITERBLUR = 'filterBlur',
     EVENT = 'event',
+    PATH = 'path',
 }
 export const enum CurveType {
     None,
@@ -322,6 +325,7 @@ export const enum ActionType {
         SetTimeout,
         SetInterval,
         EnterFrame,
+        EnterFrameCall,
     }
 export const enum ComponentEvent {
     Add = 'Add',
@@ -396,6 +400,7 @@ export interface IActionCallFunction extends IAction {
 export interface IActionSound extends IAction {
         assetId: number | string | any[];
         trackId: string;
+        signalling?: boolean;  //信令触发的播放声音
         time?: number;
         offset?: number;
         length?: number;
@@ -478,4 +483,6 @@ export interface IActionDefineVariable extends IAction {
 export interface IActionInterval extends IAction {
     times?: number | ExpressItem;
 }
-
+export interface IActionEnterFrame extends IAction {
+    funName?: string;
+}

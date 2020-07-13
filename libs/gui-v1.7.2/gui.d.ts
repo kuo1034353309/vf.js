@@ -1,3 +1,36 @@
+declare module 'src/core/DisplayLayoutKeys' {
+	/** 标记属性失效 */
+	export const invalidatePropertiesFlag: symbol;
+	/** 标记大小失效 */
+	export const invalidateSizeFlag: symbol;
+	/** 标记显示失效 */
+	export const invalidateDisplayListFlag: symbol;
+	/** 是否参与布局 */
+	export const includeInLayout: symbol;
+	export const width: symbol;
+	export const height: symbol;
+	export const explicitWidth: symbol;
+	export const explicitHeight: symbol;
+	export const minWidth: symbol;
+	export const maxWidth: symbol;
+	export const minHeight: symbol;
+	export const maxHeight: symbol;
+	export const percentWidth: symbol;
+	export const percentHeight: symbol;
+	export const measuredWidth: symbol;
+	export const measuredHeight: symbol;
+	export const oldPreferWidth: symbol;
+	export const oldPreferHeight: symbol;
+	export const backgroundColor: symbol;
+	export const oldBackgroundColor: symbol;
+	export const left: symbol;
+	export const right: symbol;
+	export const top: symbol;
+	export const bottom: symbol;
+	export const horizontalCenter: symbol;
+	export const verticalCenter: symbol;
+
+}
 declare module 'src/interaction/TouchMouseEventEnum' {
 	/**
 	 * 鼠标点击与触摸事件枚举,内部DisplayObject使用
@@ -79,818 +112,6 @@ declare module 'src/event/TouchMouseEvent' {
 	     */
 	    onMove: string;
 	};
-
-}
-declare module 'src/interaction/ClickEvent' {
-	import { DisplayObject } from 'src/core/DisplayObject';
-	import { InteractionEvent } from 'src/event/InteractionEvent';
-	/**
-	 * 点击触摸相关的事件处理订阅类,UI组件内部可以创建此类实现点击相关操作
-	 *
-	 *  可侦听事件:
-	 * ```
-	 *  {InteractionEvent}.TouchEvent.onHover
-	 *  {InteractionEvent}.TouchEvent.onPress
-	 *  {InteractionEvent}.TouchEvent.onClick
-	 *  {InteractionEvent}.TouchEvent.onMove
-	 * ```
-	 *  可赋值方法:
-	 * ```
-	 *  onHover: ((e: InteractionEvent,thisOBj:DisplayObject,over: boolean) => void) | undefined
-	 *  onPress: ((e: InteractionEvent,thisOBj:DisplayObject, isPressed: boolean) => void) | undefined;
-	 *  onClick: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
-	 *  onMove: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
-	 * ```
-	 *
-	 * @example 可查看 `TestSliceSprite` 示例
-	 *
-	 * @since 1.0.0
-	 */
-	export class ClickEvent {
-	    /**
-	     * ClickEvent 构造函数
-	     * @param obj 调用的显示对象
-	     * @param isOpenEmitEvent 是否开启事件派发，默认false，开启后，父类可以监听InteractionEvent下的TouchEvent
-	     * @param includeHover 是否监听鼠标移上与移出，默认true
-	     * @param rightMouseButton 是否开启鼠标右键点击，默认false
-	     * @param doubleClick 是否开启鼠标双击,默认false
-	     */
-	    constructor(obj: DisplayObject, isOpenEmitEvent?: boolean, includeHover?: boolean, rightMouseButton?: boolean, doubleClick?: boolean);
-	    private obj;
-	    id: number;
-	    /** 是否基于事件派发，开启后，可以侦听相关的事件 InteractionEvent.TouchEvent | vf.gui.Interaction.TouchEvent */
-	    isOpenEmitEvent: boolean;
-	    /** 是否开启本地坐标转换，开启后，事件InteractionEvent中的localX localY为本地坐标，false情况下为0 */
-	    isOpenLocalPoint: boolean;
-	    private localOffset;
-	    private offset;
-	    private movementX;
-	    private movementY;
-	    private ishover;
-	    private mouse;
-	    private bound;
-	    private right;
-	    private hover;
-	    private double;
-	    private time;
-	    private eventnameMousedown;
-	    private eventnameMouseup;
-	    private eventnameMouseupoutside;
-	    private isStop;
-	    getTarget(): DisplayObject;
-	    startEvent(): void;
-	    /** 清除拖动 */
-	    stopEvent(): void;
-	    private _onMouseDown;
-	    private emitTouchEvent;
-	    private _mouseUpAll;
-	    private _onMouseUp;
-	    private _onMouseUpOutside;
-	    private _onMouseOver;
-	    private _onMouseOut;
-	    private _onMouseMove;
-	    private setLocalPoint;
-	    remove(): void;
-	    onHover: ((e: InteractionEvent, thisOBj: DisplayObject, over: boolean) => void) | undefined;
-	    onPress: ((e: InteractionEvent, thisOBj: DisplayObject, isPressed: boolean) => void) | undefined;
-	    onClick: ((e: InteractionEvent, thisOBj: DisplayObject) => void) | undefined;
-	    onMove: ((e: InteractionEvent, thisOBj: DisplayObject) => void) | undefined;
-	}
-
-}
-declare module 'src/interaction/DragDropController' {
-	import { DisplayObject } from 'src/core/DisplayObject';
-	import { InteractionEvent } from 'src/event/InteractionEvent';
-	/**
-	 * 记录当前正在拖动的UI组件列表
-	 * @private
-	 */
-	export const _items: DisplayObject[];
-	/**
-	 * 添加拖动组件到控制器
-	 * @param item 要添加的UI组件
-	 * @param e 传送的事件
-	 * @returns true|false
-	 * @since 1.0.0
-	 */
-	export function add(item: DisplayObject, e: InteractionEvent): boolean;
-	/**
-	 * 获取正在拖动组件
-	 * @param item 要获取的UI组件
-	 * @returns flase | item
-	 */
-	export function getItem(item: DisplayObject): false | DisplayObject;
-	/**
-	 * 根据事件对象与分组名获取拖动项
-	 * @param e 事件对象
-	 * @param group 分组名
-	 */
-	export function getEventItem(e: InteractionEvent, group: string | undefined): false | DisplayObject | null;
-
-}
-declare module 'src/interaction/DragEvent' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	import { InteractionEvent } from 'src/event/InteractionEvent';
-	/**
-	 * 多拽相关的事件处理类
-	 *
-	 *  可侦听事件:
-	 * ```
-	 *  {InteractionEvent}.DraggableEvent.onDragPress
-	 *  {InteractionEvent}.DraggableEvent.onDragStart
-	 *  {InteractionEvent}.DraggableEvent.onDragMove
-	 *  {InteractionEvent}.DraggableEvent.onDragEnd
-	 * ```
-	 *  可赋值方法:
-	 * ```
-	 * onPress: ((e: InteractionEvent, isPressed: boolean,dragObj?: DragEvent) => void) | undefined;
-	 * onDragEnd: ((e: InteractionEvent,dragObj?: DragEvent) => void) | undefined
-	 * onDragMove: ((e: InteractionEvent, offset: vf.Point,dragObj?: DragEvent) => void) | undefined
-	 * onDragStart: ((e: InteractionEvent,dragObj?: DragEvent) => void) | undefined
-	 * ```
-	 *
-	 * @example 可查看 `Slider` 源码
-	 *
-	 * @since 1.0.0
-	 */
-	export class DragEvent {
-	    constructor(obj: DisplayObject);
-	    private obj;
-	    id: number;
-	    private offset;
-	    private movementX;
-	    private movementY;
-	    private bound;
-	    private start;
-	    private mouse;
-	    private cancel;
-	    private dragging;
-	    private isStop;
-	    /**
-	     * 限制拖动抽,XY,X抽或Y抽
-	     */
-	    dragRestrictAxis?: "x" | "y";
-	    startEvent(): void;
-	    executeAction(e: InteractionEvent): void;
-	    private _onDragStart;
-	    private _onDragMove;
-	    private _onDragEnd;
-	    /** 清除拖动 */
-	    stopEvent(): void;
-	    remove(): void;
-	    onDragPress: ((e: InteractionEvent, isPressed: boolean, dragObj?: DragEvent) => void) | undefined;
-	    onDragEnd: ((e: InteractionEvent, dragObj?: DragEvent) => void) | undefined;
-	    onDragMove: ((e: InteractionEvent, offset: vf.Point, dragObj?: DragEvent) => void) | undefined;
-	    onDragStart: ((e: InteractionEvent, dragObj?: DragEvent) => void) | undefined;
-	}
-
-}
-declare module 'src/core/DisplayLayoutKeys' {
-	/** 标记属性失效 */
-	export const invalidatePropertiesFlag: symbol;
-	/** 标记大小失效 */
-	export const invalidateSizeFlag: symbol;
-	/** 标记显示失效 */
-	export const invalidateDisplayListFlag: symbol;
-	export const explicitWidth: symbol;
-	export const explicitHeight: symbol;
-	export const width: symbol;
-	export const height: symbol;
-	export const minWidth: symbol;
-	export const maxWidth: symbol;
-	export const minHeight: symbol;
-	export const maxHeight: symbol;
-	export const percentWidth: symbol;
-	export const percentHeight: symbol;
-	export const scaleX: symbol;
-	export const scaleY: symbol;
-	export const x: symbol;
-	export const y: symbol;
-	export const skewX: symbol;
-	export const skewY: symbol;
-	export const pivotX: symbol;
-	export const pivotY: symbol;
-	export const rotation: symbol;
-	export const zIndex: symbol;
-	export const measuredWidth: symbol;
-	export const measuredHeight: symbol;
-	export const oldPreferWidth: symbol;
-	export const oldPreferHeight: symbol;
-	export const oldX: symbol;
-	export const oldY: symbol;
-	export const oldWidth: symbol;
-	export const oldHeight: symbol;
-	export const left: symbol;
-	export const right: symbol;
-	export const top: symbol;
-	export const bottom: symbol;
-	export const horizontalCenter: symbol;
-	export const verticalCenter: symbol;
-
-}
-declare module 'src/display/Label' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	/**
-	 * 文本
-	 *
-	 * 中文换行特殊处理 xxxx.style.breakWords = true;
-	 *
-	 * 当文本容器设置宽高后，文字默认会根据文本容器宽高居中.
-	 *
-	 * 当文本容器设置宽高后，可通过 style.textAlign 进行文字位置调整
-	 *
-	 * @example let label = new vf.gui.Label();
-	 *
-	 *
-	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestLabel
-	 */
-	export class Label extends DisplayObject {
-	    constructor(text?: string);
-	    readonly sprite: vf.Text;
-	    /**
-	     * 设置分辨力比例
-	     */
-	    resolution: number;
-	    /**
-	     * 文本内容
-	     */
-	    text: string;
-	    fontCssStyle: any;
-	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
-	    release(): void;
-	}
-
-}
-declare module 'src/core/MaskSprite' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	export interface MaskSprite extends DisplayObject {
-	    maskSprite(): vf.Sprite | vf.Graphics;
-	}
-
-}
-declare module 'src/display/Image' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	import { MaskSprite } from 'src/core/MaskSprite';
-	/**
-	 * 图片
-	 *
-	 * @example let image = new vf.gui.Image();
-	 *
-	 *
-	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestImage
-	 */
-	export class Image extends DisplayObject implements MaskSprite {
-	    constructor();
-	    /** 可以支持遮罩的组件 */
-	    maskSprite(): vf.Sprite;
-	    protected _sprite: vf.Sprite | vf.TilingSprite | vf.NineSlicePlane | undefined;
-	    protected _texture: vf.Texture | undefined;
-	    protected _source: number | string | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
-	    /**
-	     * 图像路径或位图对象
-	     */
-	    private _src;
-	    src: number | string | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
-	    /**
-	     * 矩形区域，它定义素材对象的九个缩放区域。
-	     *
-	     * fillMode = scale 时，[leftWidth,rightWidth,topHeight,bottomHeight]
-	     *
-	     * fillMode = repeat 是，[scalex,scaley,x,y]
-	     */
-	    private _scale9Grid?;
-	    scale9Grid: number[] | undefined;
-	    /**
-	     * 填充模式
-	     * 设置scale后，可设置scale9Grid进行调整缩放区域
-	     */
-	    private _fillMode?;
-	    fillMode: "no-repeat" | "repeat" | "scale" | undefined;
-	    /**
-	     * 锚点，调整位图的坐标中点 0-1
-	     */
-	    private _anchorX?;
-	    anchorX: number | undefined;
-	    /**
-	     * 锚点，调整位图的坐标中点 0-1
-	     */
-	    private _anchorY?;
-	    anchorY: number | undefined;
-	    release(): void;
-	    /**
-	     * @private
-	     * 测量组件尺寸
-	     */
-	    protected measure(): void;
-	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
-	    protected srcSystem(): void;
-	    protected scale9GridSystem(): void;
-	    protected anchorSystem(): void;
-	}
-
-}
-declare module 'src/display/private/InputBase' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	import { ClickEvent, InteractionEvent } from 'src/interaction/Index';
-	/**
-	 * 输入对象的基础类
-	 */
-	export class InputBase extends DisplayObject {
-	    constructor();
-	    protected clickEvent: ClickEvent;
-	    private _currentState;
-	    protected currentState: "up" | "move" | "down" | "disabled";
-	    protected _tabIndex: undefined | number;
-	    protected _tabGroup: undefined | string;
-	    protected _focused: boolean;
-	    protected _useTab: boolean;
-	    protected _usePrev: boolean;
-	    protected _useNext: boolean;
-	    protected _down: boolean;
-	    private _clickSound?;
-	    clickSound: string | undefined;
-	    /**
-	     * 状态皮肤，
-	     */
-	    up?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    /**
-	     * 状态皮肤，
-	     */
-	    down?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    /**
-	     * 状态皮肤，
-	     */
-	    move?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    /**
-	     * 状态皮肤，
-	     */
-	    disabled?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    /**
-	     * 选中状态皮肤，
-	     */
-	    upAndSelected?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    /**
-	     * 选中状态皮肤，
-	     */
-	    downAndSelected?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    /**
-	     * 选中状态皮肤，
-	     */
-	    moveAndSelected?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    /**
-	     * 选中状态皮肤，
-	     */
-	    disabledAndSelected?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    protected onMove(): void;
-	    protected onHover(): void;
-	    protected onPress(e: InteractionEvent, thisObj: DisplayObject, isPress: boolean): void;
-	    protected onClick(): void;
-	    protected keyDownEvent(event: WheelEvent | Event): void;
-	    protected documentMouseDown(): void;
-	    private keyDownEventBind;
-	    protected _bindEvents(): void;
-	    protected _clearEvents(): void;
-	    focus(): void;
-	    blur(): void;
-	    release(): void;
-	    setTabIndex(index: number | undefined, group: string | undefined): void;
-	}
-
-}
-declare module 'src/display/Button' {
-	import { Label } from 'src/display/Label';
-	import { Image } from 'src/display/Image';
-	import { InputBase } from 'src/display/private/InputBase';
-	/**
-	 * 按钮
-	 *
-	 * @example let button = new vf.gui.Button();
-	 *
-	 *
-	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestButton
-	 */
-	export class Button extends InputBase {
-	    constructor();
-	    protected _selectedStr: "AndSelected" | "";
-	    protected _oldState: string;
-	    /** 状态展示 */
-	    readonly img: Image;
-	    /** 文字展示 */
-	    readonly label: Label;
-	    private _text;
-	    /**
-	     * 设置按钮的文本内容
-	     */
-	    text: string;
-	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
-	    release(): void;
-	    protected onStateChange(label: Button, state: string): void;
-	}
-
-}
-declare module 'src/display/CheckBox' {
-	import { Label } from 'src/display/Label';
-	import { Button } from 'src/display/Button';
-	/**
-	 * 单选\复选框
-	 *
-	 * 设置checkGroup后，进行分组。 分组后，可理解为复选框。
-	 *
-	 * @example let checkBox = new vf.gui.CheckBox();
-	 *
-	 *
-	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCheckBox
-	 */
-	export class CheckBox extends Button {
-	    constructor();
-	    /**
-	     * 设置值
-	     */
-	    private _value;
-	    /**
-	     * 设置是否选中
-	     * */
-	    private _checked;
-	    /**
-	     * 获取或设置当前选中的值
-	     */
-	    readonly selectedValue: string | undefined;
-	    /**
-	     * 设置分组名
-	     */
-	    checkGroup: string | undefined;
-	    /**
-	     * 获取设置默认值
-	     */
-	    value: string;
-	    /**
-	     * 设置是否选中
-	     * @default false
-	     */
-	    checked: boolean;
-	    protected onClick(): void;
-	    protected onLabelChange(label: Label): void;
-	}
-
-}
-declare module 'src/interaction/InputController' {
-	import { DisplayObject } from 'src/core/DisplayObject';
-	import { CheckBox } from 'src/display/CheckBox';
-	interface CheckGroupObject {
-	    groups: {
-	        [key: string]: {
-	            [value: string]: CheckBox;
-	        };
-	    };
-	    values: {
-	        [key: string]: string | undefined;
-	    };
-	}
-	/**
-	 *
-	 * @private
-	 */
-	export const tabGroups: {
-	    [key: string]: DisplayObject[];
-	};
-	/**
-	 *
-	 * @private
-	 */
-	export const _checkGroupObject: CheckGroupObject;
-	/**
-	 * 注册组件
-	 * @param item
-	 * @param tabIndex 切换位置
-	 * @param tabGroup 分组名
-	 * @returns 依据tabIndex返回是否需要排序 0，-1，1
-	 */
-	export function registrer(item: DisplayObject, tabIndex: number, tabGroup?: string): void;
-	/** 失去焦点时 */
-	export function blur(): void;
-	/** 设置当前输入组件 */
-	export function set(item: DisplayObject): void;
-	/** 清楚当前设置的组件 */
-	export function clear(): void;
-	/** 一般再按下键盘tab健执行 焦点获取与设置 */
-	export function fireTab(): void;
-	/** 一般再按下键盘向下箭头执行 焦点获取与设置 */
-	export function fireNext(): void;
-	/** 一般再按下键盘向上箭头执行 焦点获取与设置 */
-	export function firePrev(): void;
-	/**
-	 * 注册分组，一般用于checkBox组件的分组操作
-	 *
-	 *  ==== 目前没有实现卸载，如果无限制创建checkbox并设置分组可能引发泄露 ====
-	 *
-	 * checkGroups = [key]:{["value"]:cb}
-	 */
-	export function registrerCheckGroup(cb: CheckBox): void;
-	/**
-	 * 注销指定分组或指定分组的子项
-	 * @param cb CheckBox
-	 */
-	export function unRegistrerCheckGroup(cb: CheckBox): void;
-	/** 更新分组中选中的checkbox组件  */
-	export function updateCheckGroupSelected(cb: CheckBox): void;
-	/** 获取分组中选中的checkbox值 */
-	export function getCheckGroupSelectedValue(name: string): string | undefined;
-	/** 设置选中 */
-	export function setCheckGroupSelectedValue(name: string, uuid: string): void;
-	export {};
-
-}
-declare module 'src/interaction/MouseScrollEvent' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	/**
-	 * 鼠标滑轮事件
-	 *
-	 *  可侦听事件(未实现):
-	 * ```
-	 *  {InteractionEvent}.MouseScroll.xxxxxx.
-	 * ```
-	 *  可赋值方法:
-	 * ```
-	 * oonMouseScroll: ((e: WheelEvent,delta: vf.Point) => void) | undefined
-	 * ```
-	 *
-	 * @example 可查看 `Slider` 源码
-	 *
-	 * @since 1.0.0
-	 */
-	export class MouseScrollEvent {
-	    /**
-	     *
-	     * @param obj 需要绑定的对象
-	     * @param preventDefault 是否组织系统默认的事件触发
-	     */
-	    constructor(obj: DisplayObject, preventDefault: boolean);
-	    id: number;
-	    private obj;
-	    private preventDefault;
-	    private delta;
-	    private mouseScrllBind;
-	    private isStop;
-	    startEvent(): void;
-	    private _onMouseScroll;
-	    private _onHover;
-	    private _onMouseOut;
-	    stopEvent(): void;
-	    remove(): void;
-	    onMouseScroll: ((e: WheelEvent, delta: vf.Point) => void) | undefined;
-	}
-
-}
-declare module 'src/event/ComponentEvent' {
-	/**
-	 * 特定属性改变时,通常为了去系统事件区分，UI组件的事件名为大写
-	 * 1. CheckBox 的 checked 改变时
-	 * 2. Label 的 text 改变时
-	 * 3. SpriteAnimated 的 animationName 改变时
-	 * 4. Button 文字改变
-	 * 5. ScrollingContainer 拖动改变时
-	 * 6. Slider 滑动改变后
-	 * 7. SpriteAnimated 动画改变后
-	 * 8. ConnectLine 连线完成时
-	 */
-	export const CHANGE = "CHANGE";
-	/**
-	 * 状态改变中
-	 *
-	 * slider 滑动时
-	 */
-	export const CHANGEING = "CHANGEING";
-	/**
-	 * 状态切换完成时
-	 *
-	 * 1. SpriteAnimated 每次播放完时，触发(loop = false时)
-	 * 2. Image 图片加载完成时
-	 * 3. Slider 滑动完成
-	 * 4. Timeline  每次播放完时，触发(loop = false时)
-	 * 5. FollowLine 完成一次划线
-	 */
-	export const COMPLETE = "COMPLETE";
-	/**
-	 * 状态发生改变时
-	 */
-	export const STATE_CHANGE = "STATE_CHANGE";
-	/**
-	 * 状态切换完成时
-	 *
-	 * SpriteAnimated 每次播放完时，，触发(loop = true时)
-	 */
-	export const LOOP = "LOOP";
-	/**
-	 * 组件被添加前
-	 */
-	export const ADD = "add";
-	/**
-	 * 组件被添加时
-	 */
-	export const ADDED = "added";
-	/**
-	 * 组件被移除时
-	 */
-	export const REMOVEED = "removed";
-	/**
-	 * 组件大小改变后
-	 */
-	export const RESIZE = "RESIZE";
-	/**
-	 * 组件位置移动
-	 */
-	export const MOVE = "MOVE";
-	/**
-	 * 组件创建完成后
-	 */
-	export const CREATION_COMPLETE = "CREATION_COMPLETE";
-	/**
-	 * 组件拖动开始之前
-	 */
-	export const DRAG_START_BEFORE = "DRAG_START_BEFORE";
-	/**
-	 * 组件拖动开始时
-	 */
-	export const DRAG_START = "DRAG_START";
-	/**
-	 * 组件拖动结束之前
-	 */
-	export const DRAG_END_BEFORE = "DRAG_END_BEFORE";
-	/**
-	 * 组件拖动结束时 （如果绑定接收容器并拖动到接收容器中，不会触发此事件）
-	 */
-	export const DRAG_END = "DRAG_END";
-	/**
-	 * 组件拖动中
-	 */
-	export const DRAG_MOVE = "DRAG_MOVE";
-	/**
-	 * 组件拖动到接收目标中之前
-	 */
-	export const DRAG_TARGET_BEFORE = "DRAG_TARGET_BEFORE";
-	/**
-	 * 组件拖动到接收目标中
-	 */
-	export const DRAG_TARGET = "DRAG_TARGET";
-	/**
-	 * 有拖拽物掉落到此容器时触发
-	 */
-	export const DROP_TARGET = "DROP_TARGET";
-	/**
-	 * 播放音效 {name,mode}
-	 */
-	export const PLAY_AUDIO = "PLAY_AUDIO";
-
-}
-declare module 'src/interaction/GroupController' {
-	import { DisplayObject } from 'src/core/DisplayObject';
-	/**
-	 *
-	 * @private
-	 */
-	export const _GroupObject: Map<string, {
-	    [key: string]: DisplayObject;
-	}>;
-	/**
-	 * 注册分组，
-	 */
-	export function registrerGroup(ui: DisplayObject): void;
-	/**
-	 * 注销指定分组或指定分组的子项
-	 */
-	export function unRegistrerGroup(ui: DisplayObject): void;
-	/** 设置选中 */
-	export function getGroup(name?: string): {
-	    [key: string]: DisplayObject;
-	} | undefined;
-
-}
-declare module 'src/interaction/Index' {
-	import { ClickEvent } from 'src/interaction/ClickEvent';
-	import * as DragDropController from 'src/interaction/DragDropController';
-	import { DragEvent } from 'src/interaction/DragEvent';
-	import * as InputController from 'src/interaction/InputController';
-	import { MouseScrollEvent } from 'src/interaction/MouseScrollEvent';
-	import { InteractionEvent } from 'src/event/InteractionEvent';
-	import { TouchMouseEvent } from 'src/event/TouchMouseEvent';
-	import * as ComponentEvent from 'src/event/ComponentEvent';
-	import * as GroupController from 'src/interaction/GroupController';
-	export { ClickEvent, DragDropController, DragEvent, InputController, MouseScrollEvent, InteractionEvent, TouchMouseEvent, ComponentEvent, GroupController };
-
-}
-declare module 'src/core/Ticker' {
-	///   types="@vf.js/vf" />
-	export const TickerShared: vf.Ticker;
-
-}
-declare module 'src/core/DisplayLayoutValidator' {
-	///   types="@vf.js/vf" />
-	import { DisplayLayoutAbstract } from 'src/core/DisplayLayoutAbstract'; class UIValidator extends vf.utils.EventEmitter {
-	    /**
-	     * @private
-	     * 创建一个Validator对象
-	     */
-	    constructor();
-	    /**
-	     * @private
-	     */
-	    private targetLevel;
-	    /**
-	     * @private
-	     */
-	    private invalidatePropertiesFlag;
-	    /**
-	     * @private
-	     */
-	    private invalidateClientPropertiesFlag;
-	    /**
-	     * @private
-	     */
-	    private invalidatePropertiesQueue;
-	    /**
-	     * @private
-	     * 标记组件属性失效
-	     */
-	    invalidateProperties(target: DisplayLayoutAbstract): void;
-	    /**
-	     * @private
-	     * 验证失效的属性
-	     */
-	    private validateProperties;
-	    /**
-	     * @private
-	     */
-	    private invalidateSizeFlag;
-	    /**
-	     * @private
-	     */
-	    private invalidateClientSizeFlag;
-	    /**
-	     * @private
-	     */
-	    private invalidateSizeQueue;
-	    /**
-	     * @private
-	     * 标记需要重新测量尺寸
-	     */
-	    invalidateSize(target: DisplayLayoutAbstract): void;
-	    /**
-	     * @private
-	     * 测量尺寸
-	     */
-	    private validateSize;
-	    /**
-	     * @private
-	     */
-	    private invalidateDisplayListFlag;
-	    /**
-	     * @private
-	     */
-	    private invalidateDisplayListQueue;
-	    /**
-	     * @private
-	     * 标记需要重新布局
-	     */
-	    invalidateDisplayList(client: DisplayLayoutAbstract): void;
-	    /**
-	     * @private
-	     * 重新布局
-	     */
-	    private validateDisplayList;
-	    /**
-	     * @private
-	     * 是否已经添加了事件监听
-	     */
-	    private listenersAttached;
-	    /**
-	     * @private
-	     * 添加事件监听
-	     */
-	    private attachListeners;
-	    /**
-	     * @private
-	     * 执行属性应用
-	     */
-	    private doPhasedInstantiationCallBack;
-	    /**
-	     * @private
-	     */
-	    private doPhasedInstantiation;
-	    /**
-	     * @private
-	     * 使大于等于指定组件层级的元素立即应用属性
-	     * @param target 要立即应用属性的组件
-	     */
-	    validateClient(target: DisplayLayoutAbstract): void;
-	    removeDepthQueueAll(): void;
-	} const validatorShared: UIValidator;
-	export default validatorShared;
 
 }
 declare module 'src/core/ContainerBase' {
@@ -1304,6 +525,19 @@ declare module 'src/tween/Tween' {
 	}
 
 }
+declare module 'src/core/Ticker' {
+	 class Ticker extends vf.Ticker {
+	    constructor();
+	    /**
+	     * 时间穿越， 单位ms
+	     * @param duration
+	     */
+	    crossingTime(duration: number): void;
+	}
+	export const TickerShared: Ticker;
+	export {};
+
+}
 declare module 'src/tween/private/core' {
 	import { Tween } from 'src/tween/Tween';
 	/**
@@ -1484,9 +718,433 @@ declare module 'src/tween/private/index' {
 	export { Plugins, get, getAll, removeAll, remove, removeDisplay, add, update, isRunning, FrameThrottle, ToggleLagSmoothing, Interpolation, TweenEvent, Timeline, utils };
 
 }
+declare module 'src/core/DisplayLayoutValidator' {
+	///   types="@vf.js/vf" />
+	import { DisplayLayoutAbstract } from 'src/core/DisplayLayoutAbstract'; class UIValidator extends vf.utils.EventEmitter {
+	    /**
+	     * @private
+	     * 创建一个Validator对象
+	     */
+	    constructor();
+	    /**
+	     * @private
+	     */
+	    private targetLevel;
+	    /**
+	     * @private
+	     */
+	    private invalidatePropertiesFlag;
+	    /**
+	     * @private
+	     */
+	    private invalidateClientPropertiesFlag;
+	    /**
+	     * @private
+	     */
+	    private invalidatePropertiesQueue;
+	    /**
+	     * @private
+	     * 标记组件属性失效
+	     */
+	    invalidateProperties(target: DisplayLayoutAbstract): void;
+	    /**
+	     * @private
+	     * 验证失效的属性
+	     */
+	    private validateProperties;
+	    /**
+	     * @private
+	     */
+	    private invalidateSizeFlag;
+	    /**
+	     * @private
+	     */
+	    private invalidateClientSizeFlag;
+	    /**
+	     * @private
+	     */
+	    private invalidateSizeQueue;
+	    /**
+	     * @private
+	     * 标记需要重新测量尺寸
+	     */
+	    invalidateSize(target: DisplayLayoutAbstract): void;
+	    /**
+	     * @private
+	     * 测量尺寸
+	     */
+	    private validateSize;
+	    /**
+	     * @private
+	     */
+	    private invalidateDisplayListFlag;
+	    /**
+	     * @private
+	     */
+	    private invalidateDisplayListQueue;
+	    /**
+	     * @private
+	     * 标记需要重新布局
+	     */
+	    invalidateDisplayList(client: DisplayLayoutAbstract): void;
+	    /**
+	     * @private
+	     * 重新布局
+	     */
+	    private validateDisplayList;
+	    /**
+	     * @private
+	     * 是否已经添加了事件监听
+	     */
+	    private listenersAttached;
+	    /**
+	     * @private
+	     * 添加事件监听
+	     */
+	    private attachListeners;
+	    /**
+	     * @private
+	     * 执行属性应用
+	     */
+	    private doPhasedInstantiationCallBack;
+	    /**
+	     * @private
+	     */
+	    private doPhasedInstantiation;
+	    /**
+	     * @private
+	     * 使大于等于指定组件层级的元素立即应用属性
+	     * @param target 要立即应用属性的组件
+	     */
+	    validateClient(target: DisplayLayoutAbstract): void;
+	    removeDepthQueueAll(): void;
+	} const validatorShared: UIValidator;
+	export default validatorShared;
+
+}
+declare module 'src/layout/CSSBasicLayout' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	export const $tempRectangle: vf.Rectangle;
+	/**
+	 * 布局尺寸>外部显式设置尺寸>测量尺寸 的优先级顺序返回尺寸
+	 */
+	export function formatRelative(value: number | string | undefined, total: number): number;
+	/**
+	 * @private
+	 * 一个工具方法，使用BasicLayout规则布局目标对象。
+	 */
+	export function updateBasicDisplayList(target: DisplayObject | undefined, unscaledWidth: number, unscaledHeight: number): void;
+
+}
+declare module 'src/layout/CSSGridLayout' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	/**
+	 *  更新网格布局
+	 *
+	 * 单位目前只支持数值或百分比：100 ，”100%“
+	 *
+	 *  网格布局中，子容器的位置与宽高可能失效
+	 *
+	 * 关于grid布局的词汇表
+	 *
+	 * 格网 https://developer.mozilla.org/zh-CN/docs/Glossary/Grid
+	 *
+	 * 网格行 gridTemplateRows https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-template-columns
+	 *
+	 * 网格列 gridTemplateColumns https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-template-rows
+	 *
+	 * 网格行间距 gridRowGap   https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-row-gap
+	 *
+	 * 网格列间距 gridColumnGap  https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-column-gap
+	 *
+	 * 网格轴 （未实现） 支持居中方式为：justifyContent，alignContent
+	 *
+	 * 网格线（未实现） https://developer.mozilla.org/en-US/docs/Glossary/Grid_Lines
+	 *
+	 * 网格面积（未实现）https://developer.mozilla.org/zh-CN/docs/Glossary/Grid_Areas
+	 */
+	export function updateGridLayout(target: DisplayObject): vf.Rectangle;
+
+}
+declare module 'src/layout/CSSLayout' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	import { DisplayLayoutAbstract } from 'src/core/DisplayLayoutAbstract';
+	export const $TempyAlignRectangle: vf.Rectangle;
+	export const $TempLayoutRectangle: vf.Rectangle;
+	export const $TempMeasureRectangle: vf.Rectangle;
+	/**
+	 * @private
+	 * 一个工具方法，使用BasicLayout规则测量目标对象。
+	 */
+	export function measure(target: DisplayLayoutAbstract): void;
+	/**
+	 * 调整目标的元素的大小并定位这些元素。
+	 */
+	export function updateDisplayLayout(target: DisplayObject, unscaledWidth: number, unscaledHeight: number): void;
+
+}
+declare module 'src/core/DisplayLayoutAbstract' {
+	///   types="@vf.js/vf" />
+	import { DisplayObjectAbstract } from 'src/core/DisplayObjectAbstract';
+	export const $tempLocalBounds: vf.Rectangle;
+	/**
+	 * UI 布局的基础属性类
+	 */
+	export class DisplayLayoutAbstract extends DisplayObjectAbstract {
+	    constructor();
+	    isContainer: boolean;
+	    /**
+	     * @private
+	     */
+	    $values: any;
+	    /**
+	     * 背景(内部使用)
+	     */
+	    $background?: vf.Graphics;
+	    /**
+	     * @private
+	     * 定义的所有变量请不要添加任何初始值，必须统一在此处初始化。
+	     */
+	    protected initializeUIValues(): void;
+	    /**
+	     * @private
+	     * 检查属性失效标记并应用
+	     */
+	    protected checkInvalidateFlag(): void;
+	    /**
+	     * @private
+	     * 验证组件的属性
+	     */
+	    validateProperties(): void;
+	    /**
+	     * @private
+	     * 验证组件的尺寸
+	     */
+	    validateSize(recursive?: boolean): void;
+	    /**
+	     * @private
+	     * 验证子项的位置和大小，并绘制其他可视内容
+	     */
+	    validateDisplayList(): void;
+	    /**
+	     * @private
+	     * 提交属性，子类在调用完invalidateProperties()方法后，应覆盖此方法以应用属性
+	     */
+	    protected commitProperties(): void;
+	    /**
+	     * 测量显示对象宽高，如果子类没有重写，默认是this.container.width..
+	     */
+	    protected measure(): void;
+	    /**
+	     * @private
+	     * 测量组件尺寸，返回尺寸是否发生变化
+	     */
+	    protected measureSizes(): boolean;
+	    private checkMeasureSizes;
+	    /**
+	     * @private
+	     *
+	     * @returns
+	     */
+	    protected getPreferredUWidth(): number;
+	    /**
+	     * @private
+	     */
+	    protected getPreferredUHeight(): number;
+	    /**
+	     * @private
+	     * 获取组件的首选尺寸,常用于父级的measure()方法中
+	     * 按照：外部显式设置尺寸>测量尺寸 的优先级顺序返回尺寸，
+	     */
+	    getPreferredBounds(bounds: vf.Rectangle): vf.Rectangle;
+	    /**
+	    * @private
+	    * 标记提交过需要延迟应用的属性，以便在稍后屏幕更新期间调用该组件的 commitProperties() 方法。
+	    *
+	    * 例如，要更改文本颜色和大小，如果在更改颜色后立即进行更新，然后在设置大小后再更新大小，就有些浪费。
+	    * 同时更改两个属性后再使用新的大小和颜色一次性呈示文本，效率会更高。<p/>
+	    *
+	    * 通常，子类应覆盖 commitProperties() 方法，而不是覆盖此方法。
+	     */
+	    invalidateProperties(): void;
+	    /**
+	    * @private
+	    * 标记提交过需要验证组件尺寸，以便在稍后屏幕更新期间调用该组件的 measure(),updatesize() 方法。
+	    */
+	    invalidateSize(): void;
+	    /**
+	    * @private
+	    * 标记需要验证显示列表，以便在稍后屏幕更新期间调用该组件的 updateDisplayList() 方法。
+	    */
+	    invalidateDisplayList(): void;
+	    /**
+	     * @private
+	     * 标记父级容器的尺寸和显示列表为失效
+	     */
+	    invalidateParentLayout(): void;
+	    /**
+	     * @private
+	     * 设置组件的布局位置
+	     */
+	    setPosition(x?: number | undefined, y?: number | undefined): void;
+	    /**
+	     * @private
+	     * 设置测量结果。
+	     * @param width 测量宽度
+	     * @param height 测量高度
+	     */
+	    setMeasuredSize(width: number, height: number): void;
+	    /**
+	     * @private
+	     * 设置组件的宽高。此方法不同于直接设置width,height属性，
+	     * 不会影响显式标记尺寸属性
+	     */
+	    setActualSize(w: number, h: number, isInvalidate?: boolean): void;
+	    /**
+	     * @private
+	     * 更新最终的组件宽高
+	     */
+	    private updateSize;
+	    updateTransform(): void;
+	    /**
+	     * 更新显示列表,子类重写，实现布局
+	     */
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    /**
+	     * @private
+	     * 立即应用组件及其子项的所有属性
+	     */
+	    validateNow(): void;
+	    /**
+	     * @private
+	    * 验证并更新此对象的属性和布局，如果需要的话重绘对象。
+	    *
+	    * 通常只有当脚本执行完毕后，才会处理要求进行大量计算的处理属性。<p/>
+	    *
+	    * 例如，对 width 属性的设置可能会延迟，因为此设置需要重新计算这些对象的子项或父项的宽度。
+	    * 如果脚本多次设置了 width 属性，则延迟处理可防止进行多次处理。此方法允许您手动覆盖此行为。
+	     */
+	    validateSizeNow(): void;
+	    /**
+	     * 指定此组件是否包含在父容器的布局中。若为false，则父级容器在测量和布局阶段都忽略此组件。默认值为true。
+	     * 注意，visible属性与此属性不同，设置visible为false，父级容器仍会对其布局。
+	     */
+	    includeInLayout: boolean;
+	    /**
+	     * @private
+	     * 距父级容器离左边距离
+	     */
+	    left: any;
+	    /**
+	     * @private
+	     * 距父级容器右边距离
+	     */
+	    right: any;
+	    /**
+	     * @private
+	     * 距父级容器顶部距离
+	     */
+	    top: any;
+	    /**
+	     * @private
+	     * 距父级容器底部距离
+	     */
+	    bottom: any;
+	    /**
+	     * @private
+	     * 在父级容器中距水平中心位置的距离
+	     */
+	    horizontalCenter: any;
+	    /**
+	     * @private
+	     * 在父级容器中距竖直中心位置的距离
+	     */
+	    verticalCenter: any;
+	    /**
+	     * @private
+	     * 相对父级容器宽度的百分比
+	     */
+	    percentWidth: number;
+	    /**
+	     * @private
+	     * 相对父级容器高度的百分比
+	     */
+	    percentHeight: number;
+	    /**
+	     * @private
+	     * 外部显式指定的宽度
+	     */
+	    readonly explicitWidth: number;
+	    /**
+	     * @private
+	     * 外部显式指定的高度
+	     */
+	    readonly explicitHeight: number;
+	    /**
+	     * @private
+	     * 组件的最小宽度,此属性设置为大于maxWidth的值时无效。同时影响测量和自动布局的尺寸。
+	     */
+	    minWidth: number;
+	    /**
+	     * @private
+	     * 组件的最大高度。同时影响测量和自动布局的尺寸。
+	     */
+	    maxWidth: number;
+	    /**
+	     * @private
+	     * 组件的最小高度,此属性设置为大于maxHeight的值时无效。同时影响测量和自动布局的尺寸。
+	     */
+	    minHeight: number;
+	    /**
+	     * @private
+	     * 组件的最大高度,同时影响测量和自动布局的尺寸。
+	     */
+	    maxHeight: number;
+	    allInvalidate(): void;
+	    backgroundColor: any;
+	    /**
+	     * @private
+	     * 组件宽度设置为undefined将使用组件的measure()方法自动计算尺寸
+	     */
+	    /**
+	    * @private
+	    *
+	    * @param value
+	    */
+	    width: number;
+	    /**
+	     * @private
+	     * 组件高度,默认值为NaN,设置为NaN将使用组件的measure()方法自动计算尺寸
+	     */
+	    /**
+	    * @private
+	    *
+	    * @param value
+	    */
+	    height: number;
+	    scaleX: number;
+	    scaleY: number;
+	    x: number;
+	    y: number;
+	    skewX: number;
+	    skewY: number;
+	    pivotX: number;
+	    pivotY: number;
+	    rotation: number;
+	    /**
+	     *  =不可用= 设置索引层级，每次父级变化时，会排序 （未实现）
+	     */
+	    zIndex: number;
+	}
+
+}
 declare module 'src/core/Stage' {
 	///   types="@vf.js/vf" />
 	import { DisplayLayoutAbstract } from 'src/core/DisplayLayoutAbstract';
+	import { SyncManager } from 'src/interaction/SyncManager';
 	/**
 	 * UI的舞台对象，展示所有UI组件
 	 *
@@ -1496,7 +1154,8 @@ declare module 'src/core/Stage' {
 	 */
 	export class Stage extends DisplayLayoutAbstract {
 	    constructor(width: number, height: number, app: vf.Application);
-	    app: vf.Application | any;
+	    app: vf.Application;
+	    syncManager: SyncManager | undefined;
 	    /**
 	     * 是否组织原始数据继续传递
 	     */
@@ -1506,13 +1165,21 @@ declare module 'src/core/Stage' {
 	    scaleX: number;
 	    scaleY: number;
 	    Scale: vf.Point;
+	    /**
+	 * 是否同步交互事件
+	 */
+	    private _syncInteractiveFlag;
+	    syncInteractiveFlag: boolean;
+	    getSystemEvent(): vf.utils.EventEmitter;
+	    sendToPlayer(e: any): void;
 	    release(): void;
 	    releaseAll(): void;
 	    resize(): void;
 	    /**
-	     * 虚接口，子类可以扩充
+	     * 接收来自player的消息
+	     * @param msg
 	     */
-	    inputLog(msg: any): void;
+	    receiveFromPlayer(msg: any): void;
 	}
 
 }
@@ -1575,11 +1242,6 @@ declare module 'src/core/DisplayObjectAbstract' {
 	     * 只影响父级的递归调用。
 	     */
 	    renderable: boolean;
-	    /**
-	     * 缓存当前的显示对象，如果移除缓存，设置false即可
-	     * 在设置这个值时，请确保你的纹理位图已经加载
-	     */
-	    cacheAsBitmap: boolean;
 	    private _interactive;
 	    private _interactiveChildren;
 	    /**
@@ -1591,9 +1253,9 @@ declare module 'src/core/DisplayObjectAbstract' {
 	     */
 	    interactiveChildren: boolean;
 	    /**
-	     * 标记全部失效，子类实现
+	     * 子类实现
 	     */
-	    allInvalidate(): void;
+	    validateNow(): void;
 	    private _enabled;
 	    enabled: boolean;
 	    /**
@@ -1615,260 +1277,758 @@ declare module 'src/core/DisplayObjectAbstract' {
 	}
 
 }
-declare module 'src/core/DisplayLayoutAbstract' {
-	///   types="@vf.js/vf" />
-	import { DisplayObjectAbstract } from 'src/core/DisplayObjectAbstract';
-	export const $tempLocalBounds: vf.Rectangle;
+declare module 'src/interaction/SyncManager' {
 	/**
-	 * UI 布局的基础属性类
+	 * 用于同步输入事件
+	 * by ziye
 	 */
-	export class DisplayLayoutAbstract extends DisplayObjectAbstract {
-	    constructor();
-	    isContainer: boolean;
+	import { InteractionEvent } from 'src/event/InteractionEvent';
+	import { Stage } from 'src/UI';
+	import { DisplayObjectAbstract } from 'src/core/DisplayObjectAbstract';
+	export class SyncManager {
+	    constructor(stage: Stage);
 	    /**
-	     * @private
+	     * 对应一个stage有一个syncManager的实例
 	     */
-	    $values: any;
-	    includeInLayout: boolean;
+	    static getInstance(stage: Stage | undefined): SyncManager | undefined;
+	    resumeStatusFlag: boolean;
+	    offsetTime: number;
+	    private _resetTimeFlag;
+	    private _crossTime;
+	    private _initTime;
+	    private _interactionEvent;
+	    private _obj;
+	    private _stage;
+	    private _lostEvent;
+	    private _throttleFlag;
+	    private _throttleTimer;
+	    private _evtDataList;
+	    private _lastMoveEvent;
+	    private _readystate;
 	    /**
-	     * @private
-	     * 定义的所有变量请不要添加任何初始值，必须统一在此处初始化。
+	     * 开始同步
 	     */
-	    protected initializeUIValues(): void;
+	    init(): void;
+	    release(): void;
 	    /**
-	     * @private
-	     * 检查属性失效标记并应用
+	     * 收集交互事件
 	     */
-	    protected checkInvalidateFlag(): void;
+	    collectEvent(e: InteractionEvent, obj: DisplayObjectAbstract): void;
 	    /**
-	     * @private
-	     * 验证组件的属性
+	     * 收集自定义事件
+	     * data
 	     */
-	    validateProperties(): void;
+	    sendCustomEvent(customData: any): void;
 	    /**
-	     * @private
-	     * 验证组件的尺寸
+	     * 接收操作
+	     * @signalType 信令类型  live-实时信令   history-历史信令
 	     */
-	    validateSize(recursive?: boolean): void;
+	    receiveEvent(eventData: any, signalType?: string): void;
 	    /**
-	     * @private
-	     * 验证子项的位置和大小，并绘制其他可视内容
+	     * 获取当前时间
 	     */
-	    validateDisplayList(): void;
+	    private currentTime;
 	    /**
-	     * @private
-	     * 提交属性，子类在调用完invalidateProperties()方法后，应覆盖此方法以应用属性
+	     * 构造一个新的e，用于同步，数据要尽量精简
 	     */
-	    protected commitProperties(): void;
+	    private createEventData;
 	    /**
-	     * @private
-	     * 测量组件尺寸
+	     * 发送操作
 	     */
-	    protected measure(): void;
+	    private sendEvent;
 	    /**
-	     * @private
-	     * 测量组件尺寸，返回尺寸是否发生变化
+	     * 更新节流状态
 	     */
-	    private measureSizes;
+	    private throttleUpdate;
 	    /**
-	     * @private
-	     * 设置测量结果。
-	     * @param width 测量宽度
-	     * @param height 测量高度
+	     * 节流，每100ms发送一次
+	     * @param eventData
 	     */
-	    setMeasuredSize(width: number, height: number): void;
+	    private throttle;
+	    private resetStage;
 	    /**
-	     * @private
-	     *
-	     * @returns
+	     * 解析收到的event
 	     */
-	    protected getPreferredUWidth(): number;
+	    private parseEventData;
 	    /**
-	     * @private
+	     * 时间未到，需要穿越到未来
 	     */
-	    protected getPreferredUHeight(): number;
+	    private crossTime;
 	    /**
-	     * @private
-	     * 获取组件的首选尺寸,常用于父级的measure()方法中
-	     * 按照：外部显式设置尺寸>测量尺寸 的优先级顺序返回尺寸，
+	     * 处理历史信令，将历史输入事件按时间顺序放置到一个数组
+	     * @param eventData
 	     */
-	    getPreferredBounds(bounds: vf.Rectangle): vf.Rectangle;
+	    private dealHistoryEvent;
 	    /**
-	    * @private
-	    * 标记提交过需要延迟应用的属性，以便在稍后屏幕更新期间调用该组件的 commitProperties() 方法。
-	    *
-	    * 例如，要更改文本颜色和大小，如果在更改颜色后立即进行更新，然后在设置大小后再更新大小，就有些浪费。
-	    * 同时更改两个属性后再使用新的大小和颜色一次性呈示文本，效率会更高。<p/>
-	    *
-	    * 通常，子类应覆盖 commitProperties() 方法，而不是覆盖此方法。
+	     * 恢复状态
 	     */
-	    invalidateProperties(): void;
-	    /**
-	    * @private
-	    * 标记提交过需要验证组件尺寸，以便在稍后屏幕更新期间调用该组件的 measure(),updatesize() 方法。
-	    */
-	    invalidateSize(): void;
-	    /**
-	    * @private
-	    * 标记需要验证显示列表，以便在稍后屏幕更新期间调用该组件的 updateDisplayList() 方法。
-	    */
-	    invalidateDisplayList(): void;
-	    /**
-	     * @private
-	     * 标记父级容器的尺寸和显示列表为失效
-	     */
-	    protected invalidateParentLayout(): void;
-	    /**
-	     * @private
-	     * 设置组件的布局位置
-	     */
-	    setPosition(x: number, y: number): void;
-	    /**
-	     * @private
-	     * 设置组件的宽高。此方法不同于直接设置width,height属性，
-	     * 不会影响显式标记尺寸属性
-	     */
-	    setActualSize(w: number, h: number): void;
-	    /**
-	     * @private
-	     * 更新最终的组件宽高
-	     */
-	    private updateSize;
-	    updateTransform(): void;
-	    /**
-	     * 更新显示列表,子类重写，实现布局
-	     */
-	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
-	    /**
-	     * @private
-	     * 立即应用组件及其子项的所有属性
-	     */
-	    validateNow(): void;
-	    /**
-	     * @private
-	    * 验证并更新此对象的属性和布局，如果需要的话重绘对象。
-	    *
-	    * 通常只有当脚本执行完毕后，才会处理要求进行大量计算的处理属性。<p/>
-	    *
-	    * 例如，对 width 属性的设置可能会延迟，因为此设置需要重新计算这些对象的子项或父项的宽度。
-	    * 如果脚本多次设置了 width 属性，则延迟处理可防止进行多次处理。此方法允许您手动覆盖此行为。
-	     */
-	    validateSizeNow(): void;
-	    /**
-	     * @private
-	     * 距父级容器离左边距离
-	     */
-	    left: any;
-	    /**
-	     * @private
-	     * 距父级容器右边距离
-	     */
-	    right: any;
-	    /**
-	     * @private
-	     * 距父级容器顶部距离
-	     */
-	    top: any;
-	    /**
-	     * @private
-	     * 距父级容器底部距离
-	     */
-	    bottom: any;
-	    /**
-	     * @private
-	     * 在父级容器中距水平中心位置的距离
-	     */
-	    horizontalCenter: any;
-	    /**
-	     * @private
-	     * 在父级容器中距竖直中心位置的距离
-	     */
-	    verticalCenter: any;
-	    /**
-	     * @private
-	     * 相对父级容器宽度的百分比
-	     */
-	    percentWidth: number;
-	    /**
-	     * @private
-	     * 相对父级容器高度的百分比
-	     */
-	    percentHeight: number;
-	    /**
-	     * @private
-	     * 外部显式指定的宽度
-	     */
-	    readonly explicitWidth: number;
-	    /**
-	     * @private
-	     * 外部显式指定的高度
-	     */
-	    readonly explicitHeight: number;
-	    readonly _width: number;
-	    readonly _height: number;
-	    /**
-	     * @private
-	     * 组件宽度设置为undefined将使用组件的measure()方法自动计算尺寸
-	     */
-	    /**
-	    * @private
-	    *
-	    * @param value
-	    */
-	    width: number;
-	    allInvalidate(): void;
-	    /**
-	     * @private
-	     * 组件高度,默认值为NaN,设置为NaN将使用组件的measure()方法自动计算尺寸
-	     */
-	    /**
-	    * @private
-	    *
-	    * @param value
-	    */
-	    height: number;
-	    /**
-	     * @private
-	     * 组件的最小宽度,此属性设置为大于maxWidth的值时无效。同时影响测量和自动布局的尺寸。
-	     */
-	    minWidth: number;
-	    /**
-	     * @private
-	     * 组件的最大高度。同时影响测量和自动布局的尺寸。
-	     */
-	    maxWidth: number;
-	    /**
-	     * @private
-	     * 组件的最小高度,此属性设置为大于maxHeight的值时无效。同时影响测量和自动布局的尺寸。
-	     */
-	    minHeight: number;
-	    /**
-	     * @private
-	     * 组件的最大高度,同时影响测量和自动布局的尺寸。
-	     */
-	    maxHeight: number;
-	    scaleX: number;
-	    scaleY: number;
-	    x: number;
-	    y: number;
-	    skewX: any;
-	    skewY: any;
-	    pivotX: any;
-	    pivotY: any;
-	    rotation: any;
-	    /**
-	     *  =不可用= 设置索引层级，每次父级变化时，会排序 （未实现）
-	     */
-	    zIndex: any;
+	    private resumeStatus;
 	}
 
 }
-declare module 'src/layout/CSSSSystem' {
+declare module 'src/interaction/ClickEvent' {
+	import { DisplayObject } from 'src/core/DisplayObject';
+	import { InteractionEvent } from 'src/event/InteractionEvent';
+	/**
+	 * 点击触摸相关的事件处理订阅类,UI组件内部可以创建此类实现点击相关操作
+	 *
+	 *  可侦听事件:
+	 * ```
+	 *  {InteractionEvent}.TouchEvent.onHover
+	 *  {InteractionEvent}.TouchEvent.onPress
+	 *  {InteractionEvent}.TouchEvent.onClick
+	 *  {InteractionEvent}.TouchEvent.onMove
+	 * ```
+	 *  可赋值方法:
+	 * ```
+	 *  onHover: ((e: InteractionEvent,thisOBj:DisplayObject,over: boolean) => void) | undefined
+	 *  onPress: ((e: InteractionEvent,thisOBj:DisplayObject, isPressed: boolean) => void) | undefined;
+	 *  onClick: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
+	 *  onMove: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
+	 * ```
+	 *
+	 * @example 可查看 `TestSliceSprite` 示例
+	 *
+	 * @since 1.0.0
+	 */
+	export class ClickEvent {
+	    /**
+	     * ClickEvent 构造函数
+	     * @param obj 调用的显示对象
+	     * @param isOpenEmitEvent 是否开启事件派发，默认false，开启后，父类可以监听InteractionEvent下的TouchEvent
+	     * @param includeHover 是否监听鼠标移上与移出，默认true
+	     * @param rightMouseButton 是否开启鼠标右键点击，默认false
+	     * @param doubleClick 是否开启鼠标双击,默认false
+	     */
+	    constructor(obj: DisplayObject, isOpenEmitEvent?: boolean, includeHover?: boolean, rightMouseButton?: boolean, doubleClick?: boolean);
+	    private obj;
+	    id: number;
+	    /** 是否基于事件派发，开启后，可以侦听相关的事件 InteractionEvent.TouchEvent | vf.gui.Interaction.TouchEvent */
+	    isOpenEmitEvent: boolean;
+	    /** 是否开启本地坐标转换，开启后，事件InteractionEvent中的localX localY为本地坐标，false情况下为0 */
+	    isOpenLocalPoint: boolean;
+	    private localOffset;
+	    private offset;
+	    private movementX;
+	    private movementY;
+	    private ishover;
+	    private mouse;
+	    private bound;
+	    private right;
+	    private hover;
+	    private double;
+	    private time;
+	    private eventnameMousedown;
+	    private eventnameMouseup;
+	    private eventnameMouseupoutside;
+	    private isStop;
+	    private deviceType;
+	    getTarget(): DisplayObject;
+	    startEvent(): void;
+	    /** 清除拖动 */
+	    stopEvent(): void;
+	    private lastMouseDownTime;
+	    private _onMouseDown;
+	    private emitTouchEvent;
+	    private _mouseUpAll;
+	    private _onMouseUp;
+	    private _onMouseUpOutside;
+	    private _onMouseOver;
+	    private _onMouseOut;
+	    private _onMouseMove;
+	    private setLocalPoint;
+	    remove(): void;
+	    onHover: ((e: InteractionEvent, thisOBj: DisplayObject, over: boolean) => void) | undefined;
+	    onPress: ((e: InteractionEvent, thisOBj: DisplayObject, isPressed: boolean) => void) | undefined;
+	    onClick: ((e: InteractionEvent, thisOBj: DisplayObject) => void) | undefined;
+	    onMove: ((e: InteractionEvent, thisOBj: DisplayObject) => void) | undefined;
+	}
+
+}
+declare module 'src/interaction/DragDropController' {
+	import { DisplayObject } from 'src/core/DisplayObject';
+	import { InteractionEvent } from 'src/event/InteractionEvent';
+	/**
+	 * 记录当前正在拖动的UI组件列表
+	 * @private
+	 */
+	export const _items: DisplayObject[];
+	/**
+	 * 添加拖动组件到控制器
+	 * @param item 要添加的UI组件
+	 * @param e 传送的事件
+	 * @returns true|false
+	 * @since 1.0.0
+	 */
+	export function add(item: DisplayObject, e: InteractionEvent): boolean;
+	/**
+	 * 获取正在拖动组件
+	 * @param item 要获取的UI组件
+	 * @returns flase | item
+	 */
+	export function getItem(item: DisplayObject): false | DisplayObject;
+	/**
+	 * 根据事件对象与分组名获取拖动项
+	 * @param e 事件对象
+	 * @param group 分组名
+	 */
+	export function getEventItem(e: InteractionEvent, group: string | undefined): false | DisplayObject | null;
+
+}
+declare module 'src/interaction/DragEvent' {
 	///   types="@vf.js/vf" />
 	import { DisplayObject } from 'src/core/DisplayObject';
+	import { InteractionEvent } from 'src/event/InteractionEvent';
+	/**
+	 * 多拽相关的事件处理类
+	 *
+	 *  可侦听事件:
+	 * ```
+	 *  {InteractionEvent}.DraggableEvent.onDragPress
+	 *  {InteractionEvent}.DraggableEvent.onDragStart
+	 *  {InteractionEvent}.DraggableEvent.onDragMove
+	 *  {InteractionEvent}.DraggableEvent.onDragEnd
+	 * ```
+	 *  可赋值方法:
+	 * ```
+	 * onPress: ((e: InteractionEvent, isPressed: boolean,dragObj?: DragEvent) => void) | undefined;
+	 * onDragEnd: ((e: InteractionEvent,dragObj?: DragEvent) => void) | undefined
+	 * onDragMove: ((e: InteractionEvent, offset: vf.Point,dragObj?: DragEvent) => void) | undefined
+	 * onDragStart: ((e: InteractionEvent,dragObj?: DragEvent) => void) | undefined
+	 * ```
+	 *
+	 * @example 可查看 `Slider` 源码
+	 *
+	 * @since 1.0.0
+	 */
+	export class DragEvent {
+	    constructor(obj: DisplayObject);
+	    private obj;
+	    id: number;
+	    private offset;
+	    private movementX;
+	    private movementY;
+	    private bound;
+	    private start;
+	    private mouse;
+	    private cancel;
+	    private dragging;
+	    private isStop;
+	    /**
+	     * 限制拖动抽,XY,X抽或Y抽
+	     */
+	    dragRestrictAxis?: "x" | "y";
+	    startEvent(): void;
+	    executeAction(e: InteractionEvent): void;
+	    private _onDragStart;
+	    private _onDragMove;
+	    private _onDragEnd;
+	    /** 清除拖动 */
+	    stopEvent(): void;
+	    remove(): void;
+	    onDragPress: ((e: InteractionEvent, isPressed: boolean, dragObj?: DragEvent) => void) | undefined;
+	    onDragEnd: ((e: InteractionEvent, dragObj?: DragEvent) => void) | undefined;
+	    onDragMove: ((e: InteractionEvent, offset: vf.Point, dragObj?: DragEvent) => void) | undefined;
+	    onDragStart: ((e: InteractionEvent, dragObj?: DragEvent) => void) | undefined;
+	}
+
+}
+declare module 'src/display/Label' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	/**
+	 * 文本
+	 *
+	 * 中文换行特殊处理 xxxx.style.breakWords = true;
+	 *
+	 * 当文本容器设置宽高后，文字默认会根据文本容器宽高居中.
+	 *
+	 * 当文本容器设置宽高后，可通过 style.textAlign 进行文字位置调整
+	 *
+	 * @example let label = new vf.gui.Label();
+	 *
+	 *
+	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestLabel
+	 */
+	export class Label extends DisplayObject {
+	    constructor(text?: string);
+	    readonly sprite: vf.Text;
+	    /**
+	     * 设置分辨力比例
+	     */
+	    resolution: number;
+	    /**
+	     * 文本内容
+	     */
+	    text: string;
+	    fontCssStyle: any;
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    release(): void;
+	}
+
+}
+declare module 'src/core/MaskSprite' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	export interface MaskSprite extends DisplayObject {
+	    maskSprite(): vf.Sprite | vf.Graphics;
+	}
+
+}
+declare module 'src/display/Image' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	import { MaskSprite } from 'src/core/MaskSprite';
+	/**
+	 * 图片
+	 *
+	 * @example let image = new vf.gui.Image();
+	 *
+	 *
+	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestImage
+	 */
+	export class Image extends DisplayObject implements MaskSprite {
+	    constructor();
+	    /** 可以支持遮罩的组件 */
+	    maskSprite(): vf.Sprite;
+	    protected _sprite: vf.Sprite | vf.TilingSprite | vf.NineSlicePlane | undefined;
+	    protected _texture: vf.Texture | undefined;
+	    protected _source: number | string | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
+	    /**
+	     * 图像路径或位图对象
+	     */
+	    private _src;
+	    src: number | string | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
+	    /**
+	     * 矩形区域，它定义素材对象的九个缩放区域。
+	     *
+	     * fillMode = scale 时，[leftWidth,rightWidth,topHeight,bottomHeight]
+	     *
+	     * fillMode = repeat 是，[scalex,scaley,x,y]
+	     */
+	    private _scale9Grid?;
+	    scale9Grid: number[] | undefined;
+	    /**
+	     * 填充模式
+	     * 设置scale后，可设置scale9Grid进行调整缩放区域
+	     */
+	    private _fillMode?;
+	    fillMode: "repeat" | "no-repeat" | "scale" | undefined;
+	    /**
+	     * 锚点，调整位图的坐标中点 0-1
+	     */
+	    private _anchorX?;
+	    anchorX: number | undefined;
+	    /**
+	     * 锚点，调整位图的坐标中点 0-1
+	     */
+	    private _anchorY?;
+	    anchorY: number | undefined;
+	    release(): void;
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    setSpeiteSize(unscaledWidth?: number, unscaledHeight?: number): void;
+	    protected measure(): void;
+	    protected srcSystem(): void;
+	    protected scale9GridSystem(): void;
+	    protected anchorSystem(): void;
+	}
+
+}
+declare module 'src/display/private/InputBase' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	import { ClickEvent, InteractionEvent } from 'src/interaction/Index';
+	/**
+	 * 输入对象的基础类
+	 */
+	export class InputBase extends DisplayObject {
+	    constructor();
+	    protected clickEvent: ClickEvent;
+	    private _currentState;
+	    protected currentState: "up" | "move" | "down" | "disabled";
+	    protected _tabIndex: undefined | number;
+	    protected _tabGroup: undefined | string;
+	    protected _focused: boolean;
+	    protected _useTab: boolean;
+	    protected _usePrev: boolean;
+	    protected _useNext: boolean;
+	    protected _down: boolean;
+	    private _clickSound?;
+	    clickSound: string | undefined;
+	    /**
+	     * 状态皮肤，
+	     */
+	    up?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+	    /**
+	     * 状态皮肤，
+	     */
+	    down?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+	    /**
+	     * 状态皮肤，
+	     */
+	    move?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+	    /**
+	     * 状态皮肤，
+	     */
+	    disabled?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+	    /**
+	     * 选中状态皮肤，
+	     */
+	    upAndSelected?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+	    /**
+	     * 选中状态皮肤，
+	     */
+	    downAndSelected?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+	    /**
+	     * 选中状态皮肤，
+	     */
+	    moveAndSelected?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+	    /**
+	     * 选中状态皮肤，
+	     */
+	    disabledAndSelected?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+	    protected onMove(): void;
+	    protected onHover(): void;
+	    protected onPress(e: InteractionEvent, thisObj: DisplayObject, isPress: boolean): void;
+	    protected onClick(): void;
+	    protected keyDownEvent(event: WheelEvent | Event): void;
+	    protected documentMouseDown(): void;
+	    private keyDownEventBind;
+	    protected _bindEvents(): void;
+	    protected _clearEvents(): void;
+	    focus(): void;
+	    blur(): void;
+	    release(): void;
+	    setTabIndex(index: number | undefined, group: string | undefined): void;
+	}
+
+}
+declare module 'src/display/Button' {
+	import { Label } from 'src/display/Label';
+	import { Image } from 'src/display/Image';
+	import { InputBase } from 'src/display/private/InputBase';
+	/**
+	 * 按钮
+	 *
+	 * @example let button = new vf.gui.Button();
+	 *
+	 *
+	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestButton
+	 */
+	export class Button extends InputBase {
+	    constructor();
+	    protected _selectedStr: "AndSelected" | "";
+	    protected _oldState: string;
+	    /** 状态展示 */
+	    readonly img: Image;
+	    /** 文字展示 */
+	    readonly label: Label;
+	    private _text;
+	    /**
+	     * 设置按钮的文本内容
+	     */
+	    text: string;
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    release(): void;
+	    protected onStateChange(label: Button, state: string): void;
+	}
+
+}
+declare module 'src/display/CheckBox' {
+	import { Label } from 'src/display/Label';
+	import { Button } from 'src/display/Button';
+	/**
+	 * 单选\复选框
+	 *
+	 * 设置checkGroup后，进行分组。 分组后，可理解为复选框。
+	 *
+	 * @example let checkBox = new vf.gui.CheckBox();
+	 *
+	 *
+	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCheckBox
+	 */
+	export class CheckBox extends Button {
+	    constructor();
+	    /**
+	     * 设置值
+	     */
+	    private _value;
+	    /**
+	     * 设置是否选中
+	     * */
+	    private _checked;
+	    /**
+	     * 获取或设置当前选中的值
+	     */
+	    readonly selectedValue: string | undefined;
+	    /**
+	     * 设置分组名
+	     */
+	    checkGroup: string | undefined;
+	    /**
+	     * 获取设置默认值
+	     */
+	    value: string;
+	    /**
+	     * 设置是否选中
+	     * @default false
+	     */
+	    checked: boolean;
+	    protected onClick(): void;
+	    protected onLabelChange(label: Label): void;
+	}
+
+}
+declare module 'src/interaction/InputController' {
+	import { DisplayObject } from 'src/core/DisplayObject';
+	import { CheckBox } from 'src/display/CheckBox';
+	interface CheckGroupObject {
+	    groups: {
+	        [key: string]: {
+	            [value: string]: CheckBox;
+	        };
+	    };
+	    values: {
+	        [key: string]: string | undefined;
+	    };
+	}
+	/**
+	 *
+	 * @private
+	 */
+	export const tabGroups: {
+	    [key: string]: DisplayObject[];
+	};
+	/**
+	 *
+	 * @private
+	 */
+	export const _checkGroupObject: CheckGroupObject;
+	/**
+	 * 注册组件
+	 * @param item
+	 * @param tabIndex 切换位置
+	 * @param tabGroup 分组名
+	 * @returns 依据tabIndex返回是否需要排序 0，-1，1
+	 */
+	export function registrer(item: DisplayObject, tabIndex: number, tabGroup?: string): void;
+	/** 失去焦点时 */
+	export function blur(): void;
+	/** 设置当前输入组件 */
+	export function set(item: DisplayObject): void;
+	/** 清楚当前设置的组件 */
+	export function clear(): void;
+	/** 一般再按下键盘tab健执行 焦点获取与设置 */
+	export function fireTab(): void;
+	/** 一般再按下键盘向下箭头执行 焦点获取与设置 */
+	export function fireNext(): void;
+	/** 一般再按下键盘向上箭头执行 焦点获取与设置 */
+	export function firePrev(): void;
+	/**
+	 * 注册分组，一般用于checkBox组件的分组操作
+	 *
+	 *  ==== 目前没有实现卸载，如果无限制创建checkbox并设置分组可能引发泄露 ====
+	 *
+	 * checkGroups = [key]:{["value"]:cb}
+	 */
+	export function registrerCheckGroup(cb: CheckBox): void;
+	/**
+	 * 注销指定分组或指定分组的子项
+	 * @param cb CheckBox
+	 */
+	export function unRegistrerCheckGroup(cb: CheckBox): void;
+	/** 更新分组中选中的checkbox组件  */
+	export function updateCheckGroupSelected(cb: CheckBox): void;
+	/** 获取分组中选中的checkbox值 */
+	export function getCheckGroupSelectedValue(name: string): string | undefined;
+	/** 设置选中 */
+	export function setCheckGroupSelectedValue(name: string, uuid: string): void;
+	export {};
+
+}
+declare module 'src/interaction/MouseScrollEvent' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	/**
+	 * 鼠标滑轮事件
+	 *
+	 *  可侦听事件(未实现):
+	 * ```
+	 *  {InteractionEvent}.MouseScroll.xxxxxx.
+	 * ```
+	 *  可赋值方法:
+	 * ```
+	 * oonMouseScroll: ((e: WheelEvent,delta: vf.Point) => void) | undefined
+	 * ```
+	 *
+	 * @example 可查看 `Slider` 源码
+	 *
+	 * @since 1.0.0
+	 */
+	export class MouseScrollEvent {
+	    /**
+	     *
+	     * @param obj 需要绑定的对象
+	     * @param preventDefault 是否组织系统默认的事件触发
+	     */
+	    constructor(obj: DisplayObject, preventDefault: boolean);
+	    id: number;
+	    private obj;
+	    private preventDefault;
+	    private delta;
+	    private mouseScrllBind;
+	    private isStop;
+	    startEvent(): void;
+	    private _onMouseScroll;
+	    private _onHover;
+	    private _onMouseOut;
+	    stopEvent(): void;
+	    remove(): void;
+	    onMouseScroll: ((e: WheelEvent, delta: vf.Point) => void) | undefined;
+	}
+
+}
+declare module 'src/event/ComponentEvent' {
+	/**
+	 * 特定属性改变时,通常为了去系统事件区分，UI组件的事件名为大写
+	 * 1. CheckBox 的 checked 改变时
+	 * 2. Label 的 text 改变时
+	 * 3. SpriteAnimated 的 animationName 改变时
+	 * 4. Button 文字改变
+	 * 5. ScrollingContainer 拖动改变时
+	 * 6. Slider 滑动改变后
+	 * 7. SpriteAnimated 动画改变后
+	 * 8. ConnectLine 连线完成时
+	 */
+	export const CHANGE = "CHANGE";
+	/**
+	 * 状态改变中
+	 *
+	 * slider 滑动时
+	 */
+	export const CHANGEING = "CHANGEING";
+	/**
+	 * 状态切换完成时
+	 *
+	 * 1. SpriteAnimated 每次播放完时，触发(loop = false时)
+	 * 2. Image 图片加载完成时
+	 * 3. Slider 滑动完成
+	 * 4. Timeline  每次播放完时，触发(loop = false时)
+	 * 5. FollowLine 完成一次划线
+	 */
+	export const COMPLETE = "COMPLETE";
+	/**
+	 * 状态发生改变时
+	 */
+	export const STATE_CHANGE = "STATE_CHANGE";
+	/**
+	 * 状态切换完成时
+	 *
+	 * SpriteAnimated 每次播放完时，，触发(loop = true时)
+	 */
+	export const LOOP = "LOOP";
+	/**
+	 * 组件被添加前
+	 */
+	export const ADD = "add";
+	/**
+	 * 组件被添加时
+	 */
+	export const ADDED = "added";
+	/**
+	 * 组件被移除时
+	 */
+	export const REMOVEED = "removed";
+	/**
+	 * 组件大小改变后
+	 */
+	export const RESIZE = "RESIZE";
+	/**
+	 * 组件位置移动
+	 */
+	export const MOVE = "MOVE";
+	/**
+	 * 组件创建完成后
+	 */
+	export const CREATION_COMPLETE = "CREATION_COMPLETE";
+	/**
+	 * 组件拖动开始之前
+	 */
+	export const DRAG_START_BEFORE = "DRAG_START_BEFORE";
+	/**
+	 * 组件拖动开始时
+	 */
+	export const DRAG_START = "DRAG_START";
+	/**
+	 * 组件拖动结束之前
+	 */
+	export const DRAG_END_BEFORE = "DRAG_END_BEFORE";
+	/**
+	 * 组件拖动结束时 （如果绑定接收容器并拖动到接收容器中，不会触发此事件）
+	 */
+	export const DRAG_END = "DRAG_END";
+	/**
+	 * 组件拖动中
+	 */
+	export const DRAG_MOVE = "DRAG_MOVE";
+	/**
+	 * 组件拖动到接收目标中之前
+	 */
+	export const DRAG_TARGET_BEFORE = "DRAG_TARGET_BEFORE";
+	/**
+	 * 组件拖动到接收目标中
+	 */
+	export const DRAG_TARGET = "DRAG_TARGET";
+	/**
+	 * 有拖拽物掉落到此容器时触发
+	 */
+	export const DROP_TARGET = "DROP_TARGET";
+	/**
+	 * 播放音效 {name,mode}
+	 */
+	export const PLAY_AUDIO = "PLAY_AUDIO";
+
+}
+declare module 'src/interaction/GroupController' {
+	import { DisplayObject } from 'src/core/DisplayObject';
+	/**
+	 *
+	 * @private
+	 */
+	export const _GroupObject: Map<string, {
+	    [key: string]: DisplayObject;
+	}>;
+	/**
+	 * 注册分组，
+	 */
+	export function registrerGroup(ui: DisplayObject): void;
+	/**
+	 * 注销指定分组或指定分组的子项
+	 */
+	export function unRegistrerGroup(ui: DisplayObject): void;
+	/** 设置选中 */
+	export function getGroup(name?: string): {
+	    [key: string]: DisplayObject;
+	} | undefined;
+
+}
+declare module 'src/interaction/Index' {
+	import { ClickEvent } from 'src/interaction/ClickEvent';
+	import * as DragDropController from 'src/interaction/DragDropController';
+	import { DragEvent } from 'src/interaction/DragEvent';
+	import * as InputController from 'src/interaction/InputController';
+	import { MouseScrollEvent } from 'src/interaction/MouseScrollEvent';
+	import { InteractionEvent } from 'src/event/InteractionEvent';
+	import { TouchMouseEvent } from 'src/event/TouchMouseEvent';
+	import * as ComponentEvent from 'src/event/ComponentEvent';
+	import * as GroupController from 'src/interaction/GroupController';
+	export { ClickEvent, DragDropController, DragEvent, InputController, MouseScrollEvent, InteractionEvent, TouchMouseEvent, ComponentEvent, GroupController };
+
+}
+declare module 'src/layout/CSSSSystem' {
+	import { DisplayObject } from 'src/core/DisplayObject';
 	/** ===================== background  ===================== */
-	export function drawBackgroundColor(background: vf.Graphics, color: number, w: number, h: number): void;
-	export function backgroundColor(target: DisplayObject): void;
+	export function drawBackgroundColor(target: DisplayObject): void;
 	export function backgroundPositionSize(target: DisplayObject): void;
 	export function backgroundRepeat(target: DisplayObject): void;
 	export function backgroundImage(target: DisplayObject): void;
@@ -1925,12 +2085,12 @@ declare module 'src/layout/CSSStyle' {
 	     * 在容器里面的水平位置（左中右）
 	     */
 	    private _justifyContent?;
-	    justifyContent: "center" | "flex-start" | "flex-end" | undefined;
+	    justifyContent: "flex-start" | "flex-end" | "center" | undefined;
 	    /**
 	     * 在容器里面的垂直位置（上中下）
 	     */
 	    private _alignContent?;
-	    alignContent: "center" | "flex-start" | "flex-end" | undefined;
+	    alignContent: "flex-start" | "flex-end" | "center" | undefined;
 	    /**
 	     * 基于 网格列的维度，去定义网格线的名称和网格轨道的尺寸大小。
 	     *
@@ -2010,15 +2170,15 @@ declare module 'src/layout/CSSStyle' {
 	    /**
 	     * 设置元素水平拉伸扭曲（角度）。
 	     * */
-	    skewX: any;
+	    skewX: number;
 	    /**
 	     * 设置元素垂直拉伸扭曲（角度）。
 	     * */
-	    skewY: any;
+	    skewY: number;
 	    /**
 	     * 设置元素旋转 （角度）
 	    */
-	    rotate: any;
+	    rotate: number;
 	    /**
 	     * 设置元素旋转 （角度）
 	    */
@@ -2026,11 +2186,11 @@ declare module 'src/layout/CSSStyle' {
 	    /**
 	     * 轴点 像素值
 	     */
-	    pivotX: any;
+	    pivotX: number;
 	    /**
 	     * 轴点 像素值
 	     */
-	    pivotY: any;
+	    pivotY: number;
 	    /**
 	      * 调整元素的色调，取消设置0xFFFFFF
 	      */
@@ -2047,8 +2207,7 @@ declare module 'src/layout/CSSStyle' {
 	    /**
 	     * 设置元件的背景颜色。（16进制数字0xffffff
 	     * */
-	    private _backgroundColor?;
-	    backgroundColor: number | undefined;
+	    backgroundColor: any;
 	    /**
 	     * 设置元素的背景图像。backgroundImage = "./xxx.png"
 	     * */
@@ -2075,7 +2234,7 @@ declare module 'src/layout/CSSStyle' {
 	     * no-repeat不重复，
 	     */
 	    private _backgroundRepeat;
-	    backgroundRepeat: "no-repeat" | "repeat";
+	    backgroundRepeat: "repeat" | "no-repeat";
 	    /**
 	     * 遮罩图
 	     */
@@ -2146,7 +2305,7 @@ declare module 'src/layout/CSSStyle' {
 	    fontVariant: "normal" | "small-caps";
 	    /** 字体粗细 */
 	    private _fontWeight;
-	    fontWeight: "normal" | "bold" | "bolder" | "lighter" | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
+	    fontWeight: 500 | 100 | 300 | "normal" | "bold" | "bolder" | "lighter" | 200 | 400 | 600 | 700 | 800 | 900;
 	    /** 内部填充,只支持文字 */
 	    private _padding?;
 	    padding: number | undefined;
@@ -2179,63 +2338,6 @@ declare module 'src/layout/CSSStyle' {
 	    breakWords: boolean;
 	    private onResize;
 	}
-
-}
-declare module 'src/layout/CSSBasicLayout' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	export const $tempRectangle: vf.Rectangle;
-	/**
-	 * 布局尺寸>外部显式设置尺寸>测量尺寸 的优先级顺序返回尺寸
-	 */
-	export function formatRelative(value: number | string | undefined, total: number): number;
-	/**
-	 * @private
-	 * 一个工具方法，使用BasicLayout规则布局目标对象。
-	 */
-	export function updateBasicDisplayList(target: DisplayObject | undefined, unscaledWidth: number, unscaledHeight: number): void;
-
-}
-declare module 'src/layout/CSSGridLayout' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	/**
-	 *  更新网格布局
-	 *
-	 * 单位目前只支持数值或百分比：100 ，”100%“
-	 *
-	 *  网格布局中，子容器的位置与宽高可能失效
-	 *
-	 * 关于grid布局的词汇表
-	 *
-	 * 格网 https://developer.mozilla.org/zh-CN/docs/Glossary/Grid
-	 *
-	 * 网格行 gridTemplateRows https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-template-columns
-	 *
-	 * 网格列 gridTemplateColumns https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-template-rows
-	 *
-	 * 网格行间距 gridRowGap   https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-row-gap
-	 *
-	 * 网格列间距 gridColumnGap  https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-column-gap
-	 *
-	 * 网格轴 （未实现） 支持居中方式为：justifyContent，alignContent
-	 *
-	 * 网格线（未实现） https://developer.mozilla.org/en-US/docs/Glossary/Grid_Lines
-	 *
-	 * 网格面积（未实现）https://developer.mozilla.org/zh-CN/docs/Glossary/Grid_Areas
-	 */
-	export function updateGridLayout(target: DisplayObject): vf.Rectangle;
-
-}
-declare module 'src/layout/CSSLayout' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	export const $TempyAlignRectangle: vf.Rectangle;
-	export const $TempLayoutRectangle: vf.Rectangle;
-	/**
-	 * 调整目标的元素的大小并定位这些元素。
-	 */
-	export function updateDisplayLayout(target: DisplayObject, unscaledWidth: number, unscaledHeight: number): void;
 
 }
 declare module 'src/core/plugs/UIBaseDrag' {
@@ -2397,10 +2499,6 @@ declare module 'src/core/DisplayObject' {
 	     */
 	    constructor();
 	    /**
-	     * 背景(内部使用)
-	     */
-	    $background?: vf.Graphics;
-	    /**
 	     * 遮罩，设置遮罩后，组件内部的索引位置可能产生变化
 	     */
 	    $mask?: vf.Graphics | vf.Sprite | DisplayObject;
@@ -2513,6 +2611,7 @@ declare module 'src/utils/Utils' {
 	 */
 	export let $getUIDisplayObjectPath: Function;
 	export function setDisplayObjectPath(params: (cls?: any, target?: DisplayObject) => {}): void;
+	export function getSource(src: any): any;
 	export function getTexture(src: any): any;
 	export function getSheet(src: any): any;
 	export function getSound(src: any): any;
@@ -2745,9 +2844,9 @@ declare module 'src/display/Slider' {
 	    protected _decimals: number;
 	    protected _startValue: number;
 	    protected _maxPosition: number;
-	    protected _localMousePosition: vf.Point;
 	    protected _lastChange: number;
 	    protected _lastChanging: number;
+	    protected _localMousePosition: vf.Point;
 	    /** 状态展示 */
 	    readonly trackImg: VfuiImage;
 	    readonly thumbImg: VfuiImage;
@@ -2755,15 +2854,10 @@ declare module 'src/display/Slider' {
 	    protected _thumbDrag: DragEvent;
 	    protected _trackDrag: DragEvent;
 	    /**
-	     * 设置拖拽图，9切方式
-	     */
-	    trackScale9Grid: number[];
-	    protected _value: number;
-	    /**
 	     * 当前值
 	     */
 	    value: number;
-	    protected valueSystem(): void;
+	    protected valueSystem(value?: number): void;
 	    /**
 	     * 最小值
 	     */
@@ -2783,22 +2877,18 @@ declare module 'src/display/Slider' {
 	     * 背景
 	     */
 	    protected _track?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    track: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
+	    track: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
 	    /**
 	     * 手柄
 	     */
 	    protected _thumb?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    thumb: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
+	    thumb: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
 	    /**
 	     * 进度
 	     */
 	    protected _tracklight?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-	    tracklight: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
-	    protected isExcValueSystem: boolean;
-	    setActualSize(w: number, h: number): void;
-	    release(): void;
+	    tracklight: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
 	    protected onImgload(): void;
-	    protected updateLayout(): void;
 	    protected updatePosition(soft?: boolean): void;
 	    protected onPress(event: InteractionEvent, isPressed: boolean, dragEvent?: DragEvent): void;
 	    protected onDragStart(event: InteractionEvent): void;
@@ -2807,6 +2897,10 @@ declare module 'src/display/Slider' {
 	    protected updatePositionToMouse(mousePosition: vf.Point, soft: boolean): void;
 	    protected triggerValueChange(): void;
 	    protected triggerValueChanging(): void;
+	    updateLayout(): void;
+	    protected commitProperties(): void;
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    release(): void;
 	}
 
 }
@@ -3302,10 +3396,64 @@ declare module 'src/display/TextInput' {
 	}
 
 }
-declare module 'src/display/Rect' {
+declare module 'src/display/private/GraphBase' {
 	///   types="@vf.js/vf" />
 	import { DisplayObject } from 'src/core/DisplayObject';
 	import { MaskSprite } from 'src/core/MaskSprite';
+	/**
+	 * 绘制图形基类
+	 */
+	export class GraphBase extends DisplayObject implements MaskSprite {
+	    constructor();
+	    readonly graphics: vf.Graphics;
+	    /** 可以支持遮罩的组件 */
+	    maskSprite(): vf.Graphics;
+	    /**
+	     * 半径
+	     */
+	    protected _radius: number;
+	    radius: number;
+	    /**
+	     * 线条颜色
+	     */
+	    protected _lineColor: number;
+	    lineColor: number;
+	    /**
+	     * 线条粗细
+	     */
+	    protected _lineWidth: number;
+	    lineWidth: number;
+	    /**
+	     * 线条透明度
+	     */
+	    protected _lineAlpha: number;
+	    lineAlpha: number;
+	    /**
+	     * 颜色
+	     */
+	    protected _color?: number;
+	    color: number | undefined;
+	    /**
+	     * 锚点，调整位图的坐标中点 0-1
+	     */
+	    protected _anchorX?: number;
+	    anchorX: number | undefined;
+	    /**
+	     * 锚点，调整位图的坐标中点 0-1
+	     */
+	    protected _anchorY?: number;
+	    anchorY: number | undefined;
+	    /**
+	     * 子类重写
+	     */
+	    drawGraph(): void;
+	    release(): void;
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	}
+
+}
+declare module 'src/display/Rect' {
+	import { GraphBase } from 'src/display/private/GraphBase';
 	/**
 	 * 绘制矩形或圆角矩形
 	 *
@@ -3316,51 +3464,14 @@ declare module 'src/display/Rect' {
 	 *
 	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestRect
 	 */
-	export class Rect extends DisplayObject implements MaskSprite {
+	export class Rect extends GraphBase {
 	    constructor();
-	    readonly graphics: vf.Graphics;
-	    /** 可以支持遮罩的组件 */
-	    maskSprite(): vf.Graphics;
-	    /**
-	     * 圆角
-	     */
-	    private _radius;
-	    radius: number;
-	    /**
-	     * 线条颜色
-	     */
-	    private _lineColor;
-	    lineColor: number;
-	    /**
-	     * 线条粗细
-	     */
-	    private _lineWidth;
-	    lineWidth: number;
-	    /**
-	     * 颜色
-	     */
-	    private _color?;
-	    color: number | undefined;
-	    /**
-	     * 锚点，调整位图的坐标中点 0-1
-	     */
-	    private _anchorX?;
-	    anchorX: number | undefined;
-	    /**
-	     * 锚点，调整位图的坐标中点 0-1
-	     */
-	    private _anchorY?;
-	    anchorY: number | undefined;
-	    drawRoundedRect(): void;
-	    release(): void;
-	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    drawGraph(): void;
 	}
 
 }
 declare module 'src/display/Circle' {
-	///   types="@vf.js/vf" />
-	import { DisplayObject } from 'src/core/DisplayObject';
-	import { MaskSprite } from 'src/core/MaskSprite';
+	import { GraphBase } from 'src/display/private/GraphBase';
 	/**
 	 * 绘制圆形
 	 *
@@ -3372,44 +3483,24 @@ declare module 'src/display/Circle' {
 	 *
 	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestCircle
 	 */
-	export class Circle extends DisplayObject implements MaskSprite {
+	export class Circle extends GraphBase {
 	    constructor();
-	    readonly graphics: vf.Graphics;
-	    /** 可以支持遮罩的组件 */
-	    maskSprite(): vf.Graphics;
 	    /**
-	     * 半径
+	     * 开始绘制角度
 	     */
-	    private _radius;
-	    radius: number;
+	    protected _startAngle: number;
+	    startAngle: number;
 	    /**
-	     * 线条颜色
+	     * 结束角度
 	     */
-	    private _lineColor;
-	    lineColor: number;
+	    protected _endAngle: number;
+	    endAngle: number;
 	    /**
-	     * 线条粗细
+	     * 逆时针绘制
 	     */
-	    private _lineWidth;
-	    lineWidth: number;
-	    /**
-	     * 颜色
-	     */
-	    private _color?;
-	    color: number | undefined;
-	    /**
-	     * 锚点，调整位图的坐标中点 0-1
-	     */
-	    private _anchorX?;
-	    anchorX: number | undefined;
-	    /**
-	     * 锚点，调整位图的坐标中点 0-1
-	     */
-	    private _anchorY?;
-	    anchorY: number | undefined;
-	    drawCircle(): void;
-	    release(): void;
-	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    protected _anticlockwise: boolean;
+	    anticlockwise: boolean;
+	    drawGraph(): void;
 	}
 
 }
@@ -3562,6 +3653,71 @@ declare module 'src/display/FollowLine' {
 	}
 
 }
+declare module 'src/display/Video' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	/**
+	 * 播放器组件
+	 *
+	 */
+	export class Video extends DisplayObject {
+	    private _video;
+	    private _src;
+	    private _poster;
+	    protected _canvasBounds: {
+	        top: number;
+	        left: number;
+	        width: number;
+	        height: number;
+	    } | undefined;
+	    protected _lastRenderer: vf.Renderer | undefined;
+	    protected _resolution: number;
+	    private _canplayFun;
+	    private _canplaythroughFun;
+	    private _completeFun;
+	    private _endedFun;
+	    private _loadeddataFun;
+	    private _durationchangeFun;
+	    constructor();
+	    private canplayFun;
+	    private canplaythroughFun;
+	    private completeFun;
+	    private endedFun;
+	    private loadeddataFun;
+	    private durationchangeFun;
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    private updatePostion;
+	    private updateSystem;
+	    private _getCanvasBounds;
+	    private _vfMatrixToCSS;
+	    private _getDOMRelativeWorldTransform;
+	    /**
+	     * 支持的参数们~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	     */
+	    src: number | string;
+	    controls: boolean;
+	    width: number;
+	    height: number;
+	    loop: boolean;
+	    muted: boolean;
+	    volume: number;
+	    poster: number | string;
+	    currentTime: number;
+	    /**
+	     * 只读的属性们~~~~~~~~~~~~~~~~
+	     * */
+	    readonly duration: number;
+	    /**
+	    * 支持的方法们~~~··~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	    **/
+	    play(): void;
+	    pause(): void;
+	    requestFullScreen(): void;
+	    exitFullscreen(): void;
+	    release(): void;
+	}
+
+}
 declare module 'src/display/ConnectLine' {
 	import { DisplayObject } from 'src/core/DisplayObject'; type LinePostion = 'leftTop' | 'centerTop' | 'rightTop' | 'leftCenter' | 'center' | 'rightCenter' | 'leftBottom' | 'centerBottom' | 'rightBottom' | number[];
 	export const play: unique symbol;
@@ -3586,7 +3742,7 @@ declare module 'src/display/ConnectLine' {
 	     *  属性 play = 1 触发画线，线条从source->target.
 	     *  属性 play = 2 触发画线，线条从target->source.
 	     */
-	    play: 1 | 2;
+	    play: 2 | 1;
 	    private _autoPlay;
 	    /**
 	     *  默认 autoPlay = true
@@ -3686,12 +3842,12 @@ declare module 'src/display/Tracing' {
 	     * 文字轨迹图
 	     */
 	    private _traceSprite;
-	    traceSprite: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
+	    traceSprite: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
 	    /**
 	     * 背景图，mask模式用于画线后漏出来
 	     */
 	    private _renderBgSprite;
-	    renderBgSprite: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | undefined;
+	    renderBgSprite: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
 	    /**
 	     * 轨迹点,二维数组
 	     */
@@ -3749,6 +3905,7 @@ declare module 'src/display/Tracing' {
 	     * 自动绘制
 	     */
 	    private auto;
+	    private _posLength;
 	    private drawWithAnimation;
 	    private autoNextPoint;
 	    /**
@@ -3892,6 +4049,7 @@ declare module 'src/display/Audio' {
 	    * 释放
 	    */
 	    dispose(): void;
+	    release(): void;
 	    /**
 	    * 各种可取参数.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	    */
@@ -4022,29 +4180,21 @@ declare module 'src/core/Scheduler' {
 	 */
 	export class Scheduler extends vf.utils.EventEmitter {
 	    readonly id: number;
-	    static clock: () => number;
-	    static setInterval(time: number, listener: () => void): Scheduler;
-	    static setTimeout(time: number, listener: () => void): Scheduler;
-	    interval: number;
-	    timeout: number;
-	    protected start: number;
-	    protected lastTick: number;
-	    protected endHandler: () => void;
-	    protected elapsedTimeAtPause: number;
-	    protected lastVisited: number;
-	    protected tickHandler: () => void;
-	    private _running;
-	    private _lastExecuted;
+	    static setEnterFrame(listener: (data?: any) => void): Scheduler;
+	    static setInterval(time: number, listener: (data?: any) => void): Scheduler;
+	    static setTimeout(time: number, listener: (data?: any) => void): Scheduler;
+	    _interval: number;
+	    _timeout: number;
 	    private _id;
-	    private TIMEOUT;
-	    constructor(_timeout?: number, _interval?: number);
+	    private _running;
+	    private _pausing;
+	    private _totalDuration;
+	    private _intervalDuration;
+	    constructor(timeout?: number, interval?: number);
 	    restart(): void;
 	    stop(): void;
 	    pause(): void;
 	    resume(): void;
-	    seek(time: number): void;
-	    isTickable(num: number): boolean;
-	    protected noop(evt?: any): void;
 	    private run;
 	}
 
@@ -4188,6 +4338,7 @@ declare module 'src/UI' {
 	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
 	 */
 	import { FollowLine } from 'src/display/FollowLine';
+	import { Video } from 'src/display/Video';
 	/**
 	 * 连线组件
 	 *
@@ -4269,14 +4420,50 @@ declare module 'src/UI' {
 	 */
 	import * as Enum from 'src/enum/Index';
 	import { Scheduler } from 'src/core/Scheduler';
+	import { SyncManager } from 'src/interaction/SyncManager';
 	export type Application = vf.Application;
 	/** 请不要在编写UI组件内部使用本类 */
-	export { Audio, Filter, Utils, Stage, Container, ScrollingContainer, Slider, Label, TextInput, Button, CheckBox, Rect, Circle, Graphics, FollowLine, Tracing, ConnectLine, ScrollBar, Interaction, DisplayObject, TickerShared, Tween, Timeline, Easing, Image, SpriteAnimated, Event, Enum, Scheduler };
+	export { Audio, Filter, Utils, Stage, Container, ScrollingContainer, Slider, Label, TextInput, Button, Video, CheckBox, Rect, Circle, Graphics, FollowLine, Tracing, ConnectLine, ScrollBar, Interaction, DisplayObject, TickerShared, Tween, Timeline, Easing, Image, SpriteAnimated, Event, Enum, Scheduler, SyncManager };
 
 }
 declare module 'src/vf-gui' {
 	import * as gui from 'src/UI';
 	export { gui };
+
+}
+declare module 'src/Interaction/KeyboardEvent' {
+	import { DisplayObject } from 'src/core/DisplayObject'; class KeyboardSelectEvent {
+	    /**
+	     * document的键盘事件
+	    */
+	    constructor();
+	    private obj;
+	    private ctrlDown;
+	    private shiftDown;
+	    private shiftKey;
+	    private ctrlKey;
+	    private cmdKey;
+	    private isAddEvent;
+	    private keyDownEventBind;
+	    private keyUpEventBind;
+	    private pasteEventBind;
+	    private copyEventBind;
+	    private cutEventBind;
+	    private addEvent;
+	    private removeEvent;
+	    protected keyDownEvent(e: KeyboardEvent): void;
+	    protected keyUpEvent(e: KeyboardEvent): void;
+	    protected copyEvent(e: ClipboardEvent): void;
+	    protected cutEvent(e: ClipboardEvent): void;
+	    protected pasteEvent(e: ClipboardEvent): void;
+	    focus(obj: DisplayObject): void;
+	    blur(): void;
+	}
+	/**
+	 * KeyboardSelectEvent 的实例
+	 */
+	export const keyboardShared: KeyboardSelectEvent;
+	export {};
 
 }
 declare interface ObjectConstructor {
@@ -4457,41 +4644,6 @@ declare module 'src/enum/ComponentEvent' {
 	export const PLAY_AUDIO = "PLAY_AUDIO";
 
 }
-declare module 'src/interaction/KeyboardEvent' {
-	import { DisplayObject } from 'src/core/DisplayObject'; class KeyboardSelectEvent {
-	    /**
-	     * document的键盘事件
-	    */
-	    constructor();
-	    private obj;
-	    private ctrlDown;
-	    private shiftDown;
-	    private shiftKey;
-	    private ctrlKey;
-	    private cmdKey;
-	    private isAddEvent;
-	    private keyDownEventBind;
-	    private keyUpEventBind;
-	    private pasteEventBind;
-	    private copyEventBind;
-	    private cutEventBind;
-	    private addEvent;
-	    private removeEvent;
-	    protected keyDownEvent(e: KeyboardEvent): void;
-	    protected keyUpEvent(e: KeyboardEvent): void;
-	    protected copyEvent(e: ClipboardEvent): void;
-	    protected cutEvent(e: ClipboardEvent): void;
-	    protected pasteEvent(e: ClipboardEvent): void;
-	    focus(obj: DisplayObject): void;
-	    blur(): void;
-	}
-	/**
-	 * KeyboardSelectEvent 的实例
-	 */
-	export const keyboardShared: KeyboardSelectEvent;
-	export {};
-
-}
 declare module 'src/tween/private/PlaybackPosition' {
 	/**
 	 * 回放位置的相关操作函数
@@ -4592,6 +4744,7 @@ declare module 'test/TestDrag' {
 	///   path="../gui.d.ts" />
 	///   types="@vf.js/vf" />
 	export default class TestDrag {
+	    private id;
 	    constructor(app: vf.Application, uiStage: vf.gui.Stage);
 	    private onLoad;
 	    private getNewContainer;
@@ -4741,6 +4894,16 @@ declare module 'test/TestSpriteAnimated' {
 	 */ 
 
 }
+declare module 'test/TestSyncInteraction' {
+	///   path="../gui.d.ts" />
+	///   types="@vf.js/vf" />
+	export default class TestSyncInteraction {
+	    private id;
+	    constructor(app: vf.Application, uiStage: vf.gui.Stage);
+	    private onLoad;
+	}
+
+}
 declare module 'test/TestTextInput' {
 	///   path="../gui.d.ts" />
 	///   types="@vf.js/vf" />
@@ -4806,6 +4969,16 @@ declare module 'test/TestTween2' {
 	export default class TestTween2 {
 	    constructor(app: vf.Application, uiStage: vf.gui.Stage);
 	    private onLoad;
+	}
+
+}
+declare module 'test/TestVideo' {
+	///   path="../gui.d.ts" />
+	///   types="@vf.js/vf" />
+	export default class TestVideo {
+	    constructor(app: vf.Application, uiStage: vf.gui.Stage);
+	    private onLoad;
+	    private createBtn;
 	}
 
 }

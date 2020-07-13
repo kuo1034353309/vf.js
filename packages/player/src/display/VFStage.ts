@@ -35,6 +35,11 @@ export class VFStage extends vf.gui.Stage {
     public readonly soundManager: SoundManager;
     public readonly plugs = new Map<string, IPlug>(); // 插件列表
 
+    /**
+     * 延迟一帧显示，避免坐标0，0
+     */
+    private _delayedDisplayId: any = -1;
+
     private curScene?: VFScene;
     private curSceneId?: string;
     private curSceneTransition?: ITransitionData;
@@ -55,6 +60,10 @@ export class VFStage extends vf.gui.Stage {
         res.on(SceneEvent.LoadProgress, this.loadProgress, this);
     }
 
+    public getSystemEvent(): StateEvent{
+        return this.config.systemEvent;
+    }
+
     /**
      * 获取系统总线
      */
@@ -71,7 +80,7 @@ export class VFStage extends vf.gui.Stage {
      * 即使没有引用也不要删除这个接口，GUI在调用
      * @param msg
      */
-    public inputLog(msg: IEvent): void {
+    public sendToPlayer(msg: IEvent): void {
         if (msg.message === undefined) {
             msg.message = '';
         }
@@ -123,6 +132,7 @@ export class VFStage extends vf.gui.Stage {
             this.curScene = undefined;
         }
         this.variableManager.clear();
+        this.res.initGlobalVariable();
         this.soundManager.clear();
         this.start();
     }
@@ -208,6 +218,7 @@ export class VFStage extends vf.gui.Stage {
                 this.emit(SceneEvent.TransitionStart);
                 this.emit(SceneEvent.TransitionEnd);
             }
+
             this.status = STAGE_STATUS.PLAYING;
         }
     }
@@ -226,10 +237,18 @@ export class VFStage extends vf.gui.Stage {
                 this.switchToScene(scene, this.curSceneTransition);
             }
 
-            this.createPlugs();
-            this.systemEvent.emit(EventType.STATUS, {
-                code: SceneEvent.ScenComplete, level: EventLevel.STATUS, data: null,
-            });
+            this.visible = false;
+            clearTimeout(this._delayedDisplayId);
+            this._delayedDisplayId = setTimeout(() => {
+                this.visible = true;
+                if (this.syncManager) {
+                    this.syncManager.init();
+                }
+                this.createPlugs();
+                this.systemEvent.emit(EventType.STATUS, {
+                    code: SceneEvent.ScenComplete, level: EventLevel.STATUS, data: null,
+                });
+            }, 60);
         }
     }
 

@@ -2,6 +2,7 @@ import { Timeline } from './Timeline';
 import { TimelineType, IEventData } from '../model/IVFData';
 import { VFComponent } from '../../display/VFComponent';
 import { EventTimeline } from './EventTimeline';
+import { PathTimeline } from './PathTimeline';
 
 export class AnimationClip {
 
@@ -88,6 +89,11 @@ export class AnimationClip {
                                 (targetDisplay as VFComponent).emit(event.type, event.data);
                             }
                         }
+                        break;
+                    case TimelineType.PATH:
+                        let pos = (timeline as PathTimeline).curPos;
+                        targetDisplay.x = pos[0];
+                        targetDisplay.y = pos[1];
                         break;
                     default:
                         if (timeline.type.indexOf('filter') === 0) {

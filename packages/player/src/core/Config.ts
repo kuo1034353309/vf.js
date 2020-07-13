@@ -107,7 +107,7 @@ export default class Config extends BaseInfo {
         }
         this._language = options.language || vf.utils.getSystemInfo().language;
         this._i18n = new I18N(this._language);
-        this.realFPS = options.realFPS === false ? false : true;
+        this.realFPS = options.realFPS === true ? true : false;
     }
 
     public get container(): HTMLElement {

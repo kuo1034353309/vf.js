@@ -6,7 +6,7 @@
 import { IVFOptions, EngineAPI } from '@player/IVFEngine';
 import IEvent from '@player/event/IEvent';
 import { EventLevel } from '@player/event/EventLevel';
-import LoadingAsset from '../../../assets/loading2.svg';
+import { Loading } from './Loading';
 
 declare let VFBUILDDATE: any; // 编译时间
 
@@ -27,7 +27,7 @@ class VIPKIDLauncher {
     private readonly _config: IVFOptions;
 
     private _cdnsIndex = 0;
-    private _loading?: HTMLImageElement;
+    private _loading: Loading;
 
     private _errorLoadCount = 0;
     private _errorLoadMaxCount = 10;
@@ -47,6 +47,12 @@ class VIPKIDLauncher {
     public debugVFPath?: string;
     public debugGuiPath?: string;
     public debugPlayerPath?: string;
+
+    /**
+     * 排除加载的库
+     */
+    private _exclude: string[];
+
     /**
      * 对外接口 IVFEngineAPI
      */
@@ -55,6 +61,7 @@ class VIPKIDLauncher {
             // eslint-disable-next-line no-throw-literal
             throw 'completeCall === undefined';
         }
+        this._loading = new Loading(options.container);
 
         if ((window as any)['vf'] === undefined) {
             (window as any)['vf'] = {};
@@ -68,10 +75,18 @@ class VIPKIDLauncher {
         if (options.libs) {
             this._extendsLibsUrl = options.libs.concat();
         }
-
+        if (options.loading) {
+            if (options.loading.position) {
+                this._loading.position = options.loading.position;
+            }
+            if (options.loading.image) {
+                this._loading.image = options.loading.image;
+            }
+        }
         this._config = options;
         this.completeCall = completeCall;
         this.errorCall = errorCall;
+        this._exclude = options.exclude || [];
         this.loadJs();
     }
 
@@ -119,19 +134,22 @@ class VIPKIDLauncher {
             }
         }
 
-        switch(name){
-            case "vf":
-                if(this.debugVFPath)
+        switch (name) {
+            case 'vf':
+                if (this.debugVFPath) {
                     url = this.debugVFPath;
-            break;
-            case "gui":
-                if(this.debugGuiPath)
+                }
+                break;
+            case 'gui':
+                if (this.debugGuiPath) {
                     url = this.debugGuiPath;
-            break;
-            case "player":
-                if(this.debugPlayerPath)
+                }
+                break;
+            case 'player':
+                if (this.debugPlayerPath) {
                     url = this.debugPlayerPath;
-            break;
+                }
+                break;
         }
 
         return { url, version };
@@ -153,15 +171,21 @@ class VIPKIDLauncher {
             libs.push(this.getLibUrl(`https://s.vipkidstatic.com/vf/engine/debug/stats.min.js`));
         }
 
-        libs.push(this.getLibUrl(VFVERSION, cdn, 'vf'));
+        if (this._exclude.indexOf('vf') === -1) {
+            libs.push(this.getLibUrl(VFVERSION, cdn, 'vf'));
+        }
 
         extendsLibsUrl.forEach((value) => {
             libs.push(this.getLibUrl(value));
         });
 
-        libs.push(this.getLibUrl(GUIVERSION, cdn, 'gui'));
+        if (this._exclude.indexOf('gui') === -1) {
+            libs.push(this.getLibUrl(GUIVERSION, cdn, 'gui'));
+        }
 
-        libs.push(this.getLibUrl(`player-v${PLAYERRVERION}`, cdn, 'player'));
+        if (this._exclude.indexOf('player') === -1) {
+            libs.push(this.getLibUrl(`player-v${PLAYERRVERION}`, cdn, 'player'));
+        }
 
         libs.forEach((value) => {
             // eslint-disable-next-line eqeqeq
@@ -171,81 +195,6 @@ class VIPKIDLauncher {
         });
 
         return canLibs;
-    }
-
-    /**
-     * 关于Loading界面布局的可以提出去
-     */
-    private showLoading() {
-        const _container = this._config.container;
-
-        if (this._loading) {
-            return;
-        }
-        if (_container) {
-            const img = this._loading = new Image();
-
-            img.name = 'vf-loading';
-            img.id = Date.now().toString();
-            img.style.position = 'absolute';
-            img.src = LoadingAsset;
-            const bound = this.getInnerBound(_container);
-            const loadingPostion = this._config.loadingPostion || '';
-
-            img.onload = () => {
-                // 临时 默认右下
-                let left = (bound.w - img.width);
-                let top = (bound.h - img.height);
-
-                switch (loadingPostion) {
-                    case 'center':
-                        left = (bound.w - img.width) >> 1;
-                        top = (bound.h - img.height) >> 1;
-                        break;
-                }
-                if (Array.isArray(loadingPostion)) {
-                    left = loadingPostion[0];
-                    top = loadingPostion[1];
-                }
-                img.style.left = `${left}px`;
-                img.style.top = `${top}px`;
-                _container.appendChild(img);
-                img.onload = null;
-            };
-        }
-    }
-
-    /**
-     * 关于Loading界面布局的可以提出去
-     */
-    private hideLoading() {
-        const loading = this._loading;
-
-        if (loading && loading.parentNode) {
-            loading.onload = null;
-            loading.parentNode.removeChild(loading);
-            loading.remove();
-            // this._loading = undefined;
-        }
-    }
-
-    private getInnerBound(ele: HTMLElement) {
-        let parentElement = ele;
-        let w = ele.clientWidth;
-        let h = ele.clientHeight;
-
-        for (let i = 0; i < 5; i++) {
-            if (parentElement.clientWidth === 0 && parentElement.parentElement) {
-                parentElement = parentElement.parentElement;
-            }
-            else {
-                w = parentElement.clientWidth;
-                h = parentElement.clientHeight;
-                break;
-            }
-        }
-
-        return { w, h };
     }
 
     private loadJs() {
@@ -263,7 +212,7 @@ class VIPKIDLauncher {
             return;
         }
 
-        this.showLoading();
+        this._loading.show();
 
         this._loadcount++;
 
@@ -348,39 +297,26 @@ class VIPKIDLauncher {
 
                 requestAnimationFrame(animate);
             }
-                        
-            // eslint-disable-next-line no-undef
-            vf.utils.skipHello();
-            const player = new (window as any)['vf']['player']['Player'](this._config);
-            // eslint-disable-next-line no-undef
-            vf.utils.versionPrint(this.version);
-            this.completeCall(player);
+
+            if (this._exclude.indexOf('player') === -1) {
+                // eslint-disable-next-line no-undef
+                vf.utils.skipHello();
+                const player = new (window as any)['vf']['player']['Player'](this._config);
+                // eslint-disable-next-line no-undef
+
+                vf.utils.versionPrint(this.version);
+                this.completeCall(player);
+            }
+            else {
+                this.completeCall(null);
+            }
+
             this.completeCall = undefined;
             this.errorCall = undefined;
         }
-        this.hideLoading();
+        this._loading.hide();
+        this._loading.dispose();
     }
-}
-
-export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) => {}, errorCall?: (e: IEvent) => {}) {
-    const scripts = document.getElementsByName('vf-script');
-    const version = LAUNCHERVERION;
-
-    if (scripts.length > 0 && scripts[0].title !== version) {
-        scripts.forEach((value) => {
-            if (value.parentNode) {
-                value.parentNode.removeChild(value);
-            }
-        });
-        delete window.vf;
-    }
-
-    // eslint-disable-next-line no-new
-    const launcher = new VIPKIDLauncher(options, completeCall, errorCall);
-
-    launcher.debugVFPath = (options as any).debugVFPath;
-    launcher.debugGuiPath = (options as any).debugGuiPath;
-    launcher.debugPlayerPath = (options as any).debugPlayerPath;
 }
 
 export function deleteVF() {
@@ -391,10 +327,40 @@ export function deleteVF() {
     }
 
     const w = window as any;
-    if (w) {
-        delete w.vf;
-        delete w.gui;
-        delete w.PIXI;
-        delete w.VFConversion;
+
+    try {
+        if (w) {
+            if (w.vf) {
+                delete w.vf;
+            }
+            if (w.gui) {
+                delete w.gui;
+            }
+            if (w.VFConversion) {
+                delete w.VFConversion;
+            }
+        }
     }
+    catch (e) {
+        //
+    }
+}
+
+export function createVF(options: IVFOptions, completeCall: (player: EngineAPI) => {}, errorCall?: (e: IEvent) => {}) {
+    const scripts = document.getElementsByName('vf-script');
+    const version = LAUNCHERVERION;
+
+    for (let i = 0; i < scripts.length; i++) {
+        if (scripts[i].title !== version) {
+            deleteVF();
+            break;
+        }
+    }
+
+    // eslint-disable-next-line no-new
+    const launcher = new VIPKIDLauncher(options, completeCall, errorCall);
+
+    launcher.debugVFPath = (options as any).debugVFPath;
+    launcher.debugGuiPath = (options as any).debugGuiPath;
+    launcher.debugPlayerPath = (options as any).debugPlayerPath;
 }

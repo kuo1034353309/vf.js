@@ -131,14 +131,14 @@ export interface IVFOptions {
      */
     plugs?: any[];
     /**
-     * 外部库,由于
+     * 外部库,使用[url,url,url...]
      */
-    libs: string[];
+    libs?: string[];
     /**
      * loading动画位置
      */
     // eslint-disable-next-line max-len
-    loadingPostion?: 'leftTop' | 'centerTop' | 'rightTop' | 'leftCenter' | 'center' | 'rightCenter' | 'leftBottom' | 'centerBottom' | 'rightBottom' | number[];
+    loading?: {position: any ;image?: any} ;
     /**
      * 分辨率 devicePixelRatio
      */
@@ -146,9 +146,13 @@ export interface IVFOptions {
     /**
      * 强制使用Canvas 渲染
      */
-    forceCanvas: boolean;
+    forceCanvas?: boolean;
     /**
      * 开启错误面板
      */
     useCustomErrorPanel?: boolean;
+    /**
+     * 需要排除的类库文件: 'gui','player'
+     */
+    exclude?: string[];
 }
