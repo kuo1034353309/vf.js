@@ -1,6 +1,6 @@
 # v0.5.72 - debug
 
-1. 增加HtmlVideo组件，[使用说明](https://vipkid-edu.github.io/vf-docs/gui/image.html#%E5%B1%9E%E6%80%A7)
+1. 增加HtmlVideo组件，[使用说明](https://vipkid-edu.github.io/vf-docs/gui/video.html#%E5%B1%9E%E6%80%A7)
 
 1. 增加路径动画,[使用说明](https://vipkid-edu.github.io/vf-docs/handbook/animation.html#%E8%B7%AF%E5%BE%84%E5%8A%A8%E7%94%BB)
 
