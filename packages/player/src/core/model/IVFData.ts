@@ -259,7 +259,10 @@ export enum ExpressItemType {
     OBJECT_VALUE,  // 对象取值
     PARAM_VALUE,   // 参数取值
     ARRAY_FUNCTION, // 数组 pop push shift unshift concat splice
-    COMPONENT, // 组件，仅在trace中使用
+    COMPONENT, // 组件
+    STRING_FUNCTION, // 字符串操作，indexOf, replace, split substr， substring
+    PARSE_INT,
+    PARSE_FLOAT,
 }
 export enum SystemValueType {
     TIME,

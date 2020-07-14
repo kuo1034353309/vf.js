@@ -183,6 +183,9 @@ export class VariableManager {
                     case ExpressItemType.OBJECT_VALUE:
                     case ExpressItemType.PARAM_VALUE:
                     case ExpressItemType.ARRAY_FUNCTION:
+                    case ExpressItemType.STRING_FUNCTION:
+                    case ExpressItemType.PARSE_FLOAT:
+                    case ExpressItemType.PARSE_INT:
                     case ExpressItemType.COMPONENT:
                         stackOut.push(expressItem);
                         break;
@@ -444,6 +447,94 @@ export class VariableManager {
                             }
                         }
                         result = obj;
+                    }
+                    break;
+                case ExpressItemType.STRING_FUNCTION:
+                    const stringItem = this.getVariableByData(component, expressItem);
+                    if (stringItem) {
+                        if (typeof stringItem.value === 'string') {
+                            const targetString: string = stringItem.value;
+                            switch (expressItem[3]) {
+                                case 'indexOf': // [12, [], 'str', 'indexOf', [0, 4]]
+                                    if(expressItem.length >= 5) {
+                                        const indexOfTarget = this.getExpressItemValue(component, expressItem[4]);
+                                        
+                                        result = targetString.indexOf(indexOfTarget);
+                                    } else {
+                                        result = -1;
+                                    }
+                                    break;
+                                case 'replace': // [12, [], 'str', 'replace', [0, 4], [0, 4]]
+                                    if (expressItem.length >= 6) {
+                                        const replaceSource = this.getExpressItemValue(component, expressItem[4]);
+                                        const replaceTarget = this.getExpressItemValue(component, expressItem[5]);
+                                        result = targetString.replace(replaceSource, replaceTarget);
+                                    }
+                                    break;
+                                case 'split': // [12, [], 'str', 'split', [0, 4], [0,4]?]
+                                    if(expressItem.length >= 5) {
+                                        const splitTarget = this.getExpressItemValue(component, expressItem[4]);
+                                        if(expressItem.length === 5) {
+                                            result = targetString.split(splitTarget);
+                                        } else {
+                                            const limitTarget = this.getExpressItemValue(component, expressItem[5]);
+                                            result = targetString.split(splitTarget, limitTarget);
+                                        }
+                                    }
+                                    break;
+                                case 'substr': // [12, [], 'str', 'substr', [0, 4], [0,4]?]
+                                    if(expressItem.length >= 5) {
+                                        const fromIndex = this.getExpressItemValue(component, expressItem[4]);
+                                        if(expressItem.length === 5) {
+                                            result = targetString.substr(fromIndex);
+                                        } else {
+                                            const subLength = this.getExpressItemValue(component, expressItem[5]);
+                                            result = targetString.substr(fromIndex, subLength);
+                                        }
+                                    }
+                                    break;
+                                case 'substring': // [12, [], 'str', 'substring', [0, 4], [0,4]?]
+                                    if(expressItem.length >= 5) {
+                                        const fromIndex = this.getExpressItemValue(component, expressItem[4]);
+                                        if(expressItem.length === 5) {
+                                            result = targetString.substring(fromIndex);
+                                        } else {
+                                            const endIndex = this.getExpressItemValue(component, expressItem[5]);
+                                            result = targetString.substring(fromIndex, endIndex);
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    // string has not function: 
+                                    this.emitError(component, 'E1014', [expressItem[3]], EventLevel.WARNING);
+                                    break;
+                            }
+                        } else {
+                            // variable is not string: 
+                            this.emitError(component, 'E1015', [expressItem.join(',')], EventLevel.WARNING);
+                        }
+                    } else {
+                        this.emitError(component, 'E1002', [expressItem.join(',')], EventLevel.WARNING);
+                        // can not find variable:
+                    }
+                    break;
+                case ExpressItemType.PARSE_INT:
+                    // [13, [0, 4]]
+                    if(expressItem.length >= 2) {
+                        const firstParam = this.getExpressItemValue(component, expressItem[1]);
+                        if(expressItem.length === 2) {
+                            result = parseInt(firstParam);
+                        } else {
+                            const secondParam = this.getExpressItemValue(component, expressItem[2]);
+                            result = parseInt(firstParam, secondParam);
+                        }
+                    }
+                    break;
+                case ExpressItemType.PARSE_FLOAT:
+                    // [14, [0, 4]]
+                    if(expressItem.length >= 2) {
+                        const firstParam = this.getExpressItemValue(component, expressItem[1]);
+                        result = parseFloat(firstParam);
                     }
                     break;
                 default:

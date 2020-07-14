@@ -2072,6 +2072,9 @@ var VariableManager = /** @class */ (function () {
                 case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].OBJECT_VALUE:
                 case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARAM_VALUE:
                 case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_FUNCTION:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].STRING_FUNCTION:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARSE_FLOAT:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARSE_INT:
                 case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].COMPONENT:
                     stackOut.push(expressItem);
                     break;
@@ -2174,6 +2177,18 @@ var VariableManager = /** @class */ (function () {
                         break;
                     case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].DATE:
                         systemValue = curDate.getDate();
+                        break;
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].HOUR:
+                        systemValue = curDate.getHours();
+                        break;
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].MINUTE:
+                        systemValue = curDate.getMinutes();
+                        break;
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].SECOND:
+                        systemValue = curDate.getSeconds();
+                        break;
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].MILLISECOND:
+                        systemValue = curDate.getMilliseconds();
                         break;
                     default:
                         break;
@@ -2332,6 +2347,100 @@ var VariableManager = /** @class */ (function () {
                         }
                     }
                     result = obj;
+                }
+                break;
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].STRING_FUNCTION:
+                var stringItem = this.getVariableByData(component, expressItem);
+                if (stringItem) {
+                    if (typeof stringItem.value === 'string') {
+                        var targetString = stringItem.value;
+                        switch (expressItem[3]) {
+                            case 'indexOf': // [12, [], 'str', 'indexOf', [0, 4]]
+                                if (expressItem.length >= 5) {
+                                    var indexOfTarget = this.getExpressItemValue(component, expressItem[4]);
+                                    result = targetString.indexOf(indexOfTarget);
+                                }
+                                else {
+                                    result = -1;
+                                }
+                                break;
+                            case 'replace': // [12, [], 'str', 'replace', [0, 4], [0, 4]]
+                                if (expressItem.length >= 6) {
+                                    var replaceSource = this.getExpressItemValue(component, expressItem[4]);
+                                    var replaceTarget = this.getExpressItemValue(component, expressItem[5]);
+                                    result = targetString.replace(replaceSource, replaceTarget);
+                                }
+                                break;
+                            case 'split': // [12, [], 'str', 'split', [0, 4], [0,4]?]
+                                if (expressItem.length >= 5) {
+                                    var splitTarget = this.getExpressItemValue(component, expressItem[4]);
+                                    if (expressItem.length === 5) {
+                                        result = targetString.split(splitTarget);
+                                    }
+                                    else {
+                                        var limitTarget = this.getExpressItemValue(component, expressItem[5]);
+                                        result = targetString.split(splitTarget, limitTarget);
+                                    }
+                                }
+                                break;
+                            case 'substr': // [12, [], 'str', 'substr', [0, 4], [0,4]?]
+                                if (expressItem.length >= 5) {
+                                    var fromIndex = this.getExpressItemValue(component, expressItem[4]);
+                                    if (expressItem.length === 5) {
+                                        result = targetString.substr(fromIndex);
+                                    }
+                                    else {
+                                        var subLength = this.getExpressItemValue(component, expressItem[5]);
+                                        result = targetString.substr(fromIndex, subLength);
+                                    }
+                                }
+                                break;
+                            case 'substring': // [12, [], 'str', 'substring', [0, 4], [0,4]?]
+                                if (expressItem.length >= 5) {
+                                    var fromIndex = this.getExpressItemValue(component, expressItem[4]);
+                                    if (expressItem.length === 5) {
+                                        result = targetString.substring(fromIndex);
+                                    }
+                                    else {
+                                        var endIndex = this.getExpressItemValue(component, expressItem[5]);
+                                        result = targetString.substring(fromIndex, endIndex);
+                                    }
+                                }
+                                break;
+                            default:
+                                // string has not function: 
+                                this.emitError(component, 'E1014', [expressItem[3]], "warning" /* WARNING */);
+                                break;
+                        }
+                    }
+                    else {
+                        // variable is not string: 
+                        this.emitError(component, 'E1015', [expressItem.join(',')], "warning" /* WARNING */);
+                    }
+                }
+                else {
+                    this.emitError(component, 'E1002', [expressItem.join(',')], "warning" /* WARNING */);
+                    // can not find variable:
+                }
+                break;
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARSE_INT:
+                // [13, [0, 4]]
+                if (expressItem.length >= 2) {
+                    var firstParam = this.getExpressItemValue(component, expressItem[1]);
+                    if (expressItem.length === 2) {
+                        result = parseInt(firstParam);
+                    }
+                    else {
+                        var secondParam = this.getExpressItemValue(component, expressItem[2]);
+                        result = parseInt(firstParam, secondParam);
+                    }
+                }
+                break;
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARSE_FLOAT:
+                // [14, [0, 4]]
+                if (expressItem.length >= 2) {
+                    var firstParam = this.getExpressItemValue(component, expressItem[1]);
+                    result = parseFloat(firstParam);
                 }
                 break;
             default:
@@ -7469,6 +7578,9 @@ var ExpressItemType;
     ExpressItemType[ExpressItemType["PARAM_VALUE"] = 9] = "PARAM_VALUE";
     ExpressItemType[ExpressItemType["ARRAY_FUNCTION"] = 10] = "ARRAY_FUNCTION";
     ExpressItemType[ExpressItemType["COMPONENT"] = 11] = "COMPONENT";
+    ExpressItemType[ExpressItemType["STRING_FUNCTION"] = 12] = "STRING_FUNCTION";
+    ExpressItemType[ExpressItemType["PARSE_INT"] = 13] = "PARSE_INT";
+    ExpressItemType[ExpressItemType["PARSE_FLOAT"] = 14] = "PARSE_FLOAT";
 })(ExpressItemType || (ExpressItemType = {}));
 var SystemValueType;
 (function (SystemValueType) {
@@ -7477,6 +7589,10 @@ var SystemValueType;
     SystemValueType[SystemValueType["MONTH"] = 2] = "MONTH";
     SystemValueType[SystemValueType["DAY"] = 3] = "DAY";
     SystemValueType[SystemValueType["DATE"] = 4] = "DATE";
+    SystemValueType[SystemValueType["HOUR"] = 5] = "HOUR";
+    SystemValueType[SystemValueType["MINUTE"] = 6] = "MINUTE";
+    SystemValueType[SystemValueType["SECOND"] = 7] = "SECOND";
+    SystemValueType[SystemValueType["MILLISECOND"] = 8] = "MILLISECOND";
 })(SystemValueType || (SystemValueType = {}));
 
 
