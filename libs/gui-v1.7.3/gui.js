@@ -3484,9 +3484,9 @@ var UIClick = /** @class */ (function () {
         this._target = target;
         this._target.plugs.set(UIClick.key, this);
         this._clickEvent = new Index_1.ClickEvent(target, true);
-        ;
     }
     UIClick.prototype.load = function () {
+        //
     };
     UIClick.prototype.release = function () {
         this._clickEvent.remove();
@@ -8182,8 +8182,13 @@ var Video = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this._resolution = 1;
         var video = _this._video = document.createElement('video');
-        _this._video.id = _this.uuid.toString();
+        video.id = _this.uuid.toString();
         document.body.appendChild(_this._video);
+        //支持苹果可以非全屏播放
+        video.setAttribute("x5-playsinline", "");
+        video.setAttribute("playsinline", "");
+        video.setAttribute("webkit-playsinline", "");
+        video.setAttribute("x-webkit-airplay", "allow");
         // this.container.isEmitRender = true;
         // this.container.on("renderChange",this.updateSystem,this);
         _this._video.style.position = "absolute";
@@ -8973,7 +8978,6 @@ var InputBase = /** @class */ (function (_super) {
         _this.on(Index_1.TouchMouseEvent.onClick, _this.onClick, _this);
         return _this;
     }
-    ;
     Object.defineProperty(InputBase.prototype, "currentState", {
         get: function () {
             return this._currentState;
@@ -9472,13 +9476,6 @@ var SyncManager_1 = __webpack_require__(/*! ./SyncManager */ "./src/interaction/
  *  {InteractionEvent}.TouchEvent.onClick
  *  {InteractionEvent}.TouchEvent.onMove
  * ```
- *  可赋值方法:
- * ```
- *  onHover: ((e: InteractionEvent,thisOBj:DisplayObject,over: boolean) => void) | undefined
- *  onPress: ((e: InteractionEvent,thisOBj:DisplayObject, isPressed: boolean) => void) | undefined;
- *  onClick: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
- *  onMove: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
- * ```
  *
  * @example 可查看 `TestSliceSprite` 示例
  *
@@ -9488,15 +9485,12 @@ var ClickEvent = /** @class */ (function () {
     /**
      * ClickEvent 构造函数
      * @param obj 调用的显示对象
-     * @param isOpenEmitEvent 是否开启事件派发，默认false，开启后，父类可以监听InteractionEvent下的TouchEvent
      * @param includeHover 是否监听鼠标移上与移出，默认true
      * @param rightMouseButton 是否开启鼠标右键点击，默认false
      * @param doubleClick 是否开启鼠标双击,默认false
      */
-    function ClickEvent(obj, isOpenEmitEvent, includeHover, rightMouseButton, doubleClick) {
+    function ClickEvent(obj, includeHover, rightMouseButton, doubleClick) {
         this.id = 0;
-        /** 是否基于事件派发，开启后，可以侦听相关的事件 InteractionEvent.TouchEvent | vf.gui.Interaction.TouchEvent */
-        this.isOpenEmitEvent = false;
         /** 是否开启本地坐标转换，开启后，事件InteractionEvent中的localX localY为本地坐标，false情况下为0 */
         this.isOpenLocalPoint = false;
         this.localOffset = new vf.Point();
@@ -9516,15 +9510,13 @@ var ClickEvent = /** @class */ (function () {
         this.isStop = true;
         this.deviceType = vf.utils.getSystemInfo().device.type;
         this.lastMouseDownTime = 0;
+        this._tempMovePoint = new vf.Point();
         this.obj = obj;
-        if (isOpenEmitEvent !== undefined) {
-            this.isOpenEmitEvent = isOpenEmitEvent;
-        }
         if (includeHover !== undefined) {
-            this.right = includeHover;
+            this.hover = includeHover;
         }
         if (rightMouseButton !== undefined) {
-            this.hover = rightMouseButton;
+            this.right = rightMouseButton;
         }
         if (doubleClick !== undefined) {
             this.double = doubleClick;
@@ -9547,11 +9539,13 @@ var ClickEvent = /** @class */ (function () {
             if (!this.right) {
                 container.on("touchstart" /* touchstart */, this._onMouseDown, this);
                 if (this.hover) {
-                    container.on("mouseover" /* mouseover */, this._onMouseOver, this);
-                    container.on("mouseout" /* mouseout */, this._onMouseOut, this);
-                    if (this.deviceType !== 'pc') { // 用于解决移动端滑动触发问题，后期可以单独处理移动相关的
+                    if (this.deviceType === 'pc') { // 用于解决移动端滑动触发问题，后期可以单独处理移动相关的
+                        container.on("mouseover" /* mouseover */, this._onMouseOver, this);
+                        container.on("mouseout" /* mouseout */, this._onMouseOut, this);
+                    }
+                    else {
                         container.on("touchstart" /* touchstart */, this._onMouseOver, this);
-                        container.on("touchendoutside" /* touchendoutside */, this._onMouseOut, this);
+                        container.on("touchend" /* touchend */, this._onMouseOut, this);
                     }
                 }
             }
@@ -9589,9 +9583,7 @@ var ClickEvent = /** @class */ (function () {
         }
         this.lastMouseDownTime = performance.now() + 300;
         if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
-            (this.onClick ||
-                this.onPress ||
-                this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onPress) > 0 ||
+            (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onPress) > 0 ||
                 this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onDown) > 0 ||
                 this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onClick) > 0)) {
             SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
@@ -9599,7 +9591,6 @@ var ClickEvent = /** @class */ (function () {
         this.setLocalPoint(e);
         this.mouse.copyFrom(e.data.global);
         this.id = e.data.identifier;
-        this.onPress && this.onPress.call(this.obj, e, this.obj, true), this.obj;
         this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onPress, e, true);
         if (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onDown) > 0) {
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onDown, e, true);
@@ -9617,7 +9608,6 @@ var ClickEvent = /** @class */ (function () {
         if (this.double) {
             var now = performance.now();
             if (now - this.time < 210) {
-                this.onClick && this.onClick.call(this.obj, e, this.obj);
                 this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onClick, e);
             }
             else {
@@ -9644,10 +9634,8 @@ var ClickEvent = /** @class */ (function () {
                 });
             }
         }
-        if (this.isOpenEmitEvent) {
-            e.type = event.toString();
-            this.obj.emit(e.type, e, this.obj, args);
-        }
+        e.type = event.toString();
+        this.obj.emit(e.type, e, this.obj, args);
     };
     ClickEvent.prototype._mouseUpAll = function (e) {
         if (e.data.identifier !== this.id)
@@ -9662,7 +9650,6 @@ var ClickEvent = /** @class */ (function () {
             }
             this.bound = false;
         }
-        this.onPress && this.onPress.call(this.obj, e, this.obj, false);
         this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onUp, e, false);
         this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onPress, e, false);
     };
@@ -9670,9 +9657,7 @@ var ClickEvent = /** @class */ (function () {
         if (e.data.identifier !== this.id)
             return;
         if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
-            (this.onPress ||
-                this.onClick ||
-                this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onUp) > 0 ||
+            (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onUp) > 0 ||
                 this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onPress) > 0 ||
                 this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onClick) > 0)) {
             SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
@@ -9686,7 +9671,6 @@ var ClickEvent = /** @class */ (function () {
                 return;
         }
         if (!this.double) {
-            this.onClick && this.onClick.call(this.obj, e, this.obj);
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onClick, e, false);
         }
     };
@@ -9694,8 +9678,7 @@ var ClickEvent = /** @class */ (function () {
         if (e.data.identifier !== this.id)
             return;
         if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
-            (this.onPress ||
-                this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onUp) > 0 ||
+            (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onUp) > 0 ||
                 this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onPress) > 0)) {
             SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
         }
@@ -9703,35 +9686,36 @@ var ClickEvent = /** @class */ (function () {
     };
     ClickEvent.prototype._onMouseOver = function (e) {
         if (!this.ishover) {
-            if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.onHover || this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onHover) > 0)) {
+            if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onHover) > 0)) {
                 SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
             }
             this.ishover = true;
             this.obj.container.on("mousemove" /* mousemove */, this._onMouseMove, this);
             this.obj.container.on("touchmove" /* touchmove */, this._onMouseMove, this);
-            this.onHover && this.onHover.call(this.obj, e, this.obj, true);
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onHover, e, true);
         }
     };
     ClickEvent.prototype._onMouseOut = function (e) {
         if (this.ishover) {
-            if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.onHover || this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onHover) > 0)) {
+            if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onHover) > 0)) {
                 SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
             }
             this.ishover = false;
             this.obj.container.off("mousemove" /* mousemove */, this._onMouseMove, this);
             this.obj.container.off("touchmove" /* touchmove */, this._onMouseMove, this);
-            this.onHover && this.onHover.call(this.obj, e, this.obj, false);
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onHover, e, false);
         }
     };
     ClickEvent.prototype._onMouseMove = function (e) {
-        if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.onMove || this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onMove) > 0)) {
+        if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onMove) > 0)) {
             SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
         }
-        this.setLocalPoint(e);
-        this.onMove && this.onMove.call(this.obj, e, this.obj);
-        this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onMove, e);
+        var container = this.obj.container;
+        container.toLocal(e.data.global, undefined, this._tempMovePoint);
+        if (container.hitArea && container.hitArea.contains(this._tempMovePoint.x, this._tempMovePoint.y)) {
+            this.setLocalPoint(e);
+            this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onMove, e);
+        }
     };
     ClickEvent.prototype.setLocalPoint = function (e) {
         if (this.isOpenLocalPoint) {
@@ -9741,10 +9725,6 @@ var ClickEvent = /** @class */ (function () {
     };
     ClickEvent.prototype.remove = function () {
         this.stopEvent();
-        this.onPress = undefined;
-        this.onHover = undefined;
-        this.onClick = undefined;
-        this.onMove = undefined;
         this.obj.container.interactive = false;
     };
     return ClickEvent;
@@ -14704,13 +14684,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.7.2.1.7.2.1.7.2) ==1.7.2.1.7.2.1.7.2;
+//     return this.lastIndexOf(word, pos1.7.3.1.7.3.1.7.3) ==1.7.3.1.7.3.1.7.3;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.7.2";
+window.vf.gui.version = "1.7.3";
 
 
 /***/ })
