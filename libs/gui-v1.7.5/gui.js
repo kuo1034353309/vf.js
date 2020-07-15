@@ -8291,15 +8291,12 @@ var Video = /** @class */ (function (_super) {
         _this._hS = 1;
         var video = _this._video = document.createElement('video');
         video.id = _this.uuid.toString();
-        // document.body.appendChild(this._video);
         //支持苹果可以非全屏播放
         video.setAttribute("x5-playsinline", "");
         video.setAttribute("playsinline", "");
         video.setAttribute("webkit-playsinline", "");
         video.setAttribute("x-webkit-airplay", "allow");
         video.setAttribute("x5-video-player-type", "h5");
-        // this.container.isEmitRender = true;
-        // this.container.on("renderChange",this.updateSystem,this);
         _this._video.style.position = "absolute";
         _this._video.controls = true;
         /**
@@ -8360,15 +8357,6 @@ var Video = /** @class */ (function (_super) {
         if (cb) {
             this.updatePostion(cb.top * this._hS, cb.left * this._wS, transform, this.container.worldAlpha);
         }
-        //container 的全局左边的 x , y赋值给 this._video
-        // let stageContainer = this.container;
-        // if(this.stage){
-        //     stageContainer = this.stage.container;
-        // }
-        // let pos = stageContainer.toGlobal(new vf.Point(0,0));
-        // let videoStyle = this._video.style;
-        // videoStyle.left = pos.x + "px";
-        // videoStyle.top = pos.y + "px";
     };
     Video.prototype.updatePostion = function (top, left, transform, opacity) {
         this._video.style.top = top + 'px';
@@ -8376,7 +8364,6 @@ var Video = /** @class */ (function (_super) {
         this._video.style.transform = transform;
         if (opacity)
             this._video.style.opacity = opacity.toString();
-        console.warn("ssssssssssss", this);
     };
     Video.prototype.updateSystem = function () {
         if (this.stage) {
@@ -8402,13 +8389,7 @@ var Video = /** @class */ (function (_super) {
         if (this._lastRenderer) {
             var canvasBounds = this._lastRenderer.view.getBoundingClientRect();
             var matrix = this.container.worldTransform.clone();
-            // matrix.scale(this._resolution, this._resolution);
-            // matrix.scale(canvasBounds.width / this._lastRenderer.width,
-            //     canvasBounds.height / this._lastRenderer.height)
-            //     matrix.tx = matrix.tx * this._wS;
-            //     matrix.ty = matrix.ty * this._hS;
             matrix.scale(this._wS, this._hS);
-            console.log("mamamamam", matrix);
             return matrix;
         }
     };
@@ -8445,7 +8426,6 @@ var Video = /** @class */ (function (_super) {
         },
         set: function (boo) {
             this._video && (this._video.controls = boo);
-            console.log("controls is.....", this._video.controls);
         },
         enumerable: true,
         configurable: true
@@ -8642,7 +8622,11 @@ var Video = /** @class */ (function (_super) {
         this._endedFun = null;
         this._loadeddataFun = null;
         this._durationchangeFun = null;
-        document.body.removeChild(this._video);
+        this._wS = 1;
+        this._hS = 1;
+        if (this._video.parentElement) {
+            this._video.parentElement.removeChild(this._video);
+        }
     };
     return Video;
 }(DisplayObject_1.DisplayObject));
@@ -14811,13 +14795,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.7.4.1.7.4.1.7.4) ==1.7.4.1.7.4.1.7.4;
+//     return this.lastIndexOf(word, pos1.7.5.1.7.5.1.7.5) ==1.7.5.1.7.5.1.7.5;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.7.4";
+window.vf.gui.version = "1.7.5";
 
 
 /***/ })
