@@ -7307,6 +7307,7 @@ var Tracing = /** @class */ (function (_super) {
         _this._newLineFlag = true; //是否是新笔画
         _this._pointId = 0; //绘制的笔画的轨迹点id
         _this._messageCache = []; //需要处理的消息列表
+        _this._strictFlag = true; //严格模式是否检测通过
         /**
          * debug
          */
@@ -7363,6 +7364,10 @@ var Tracing = /** @class */ (function (_super) {
         set: function (value) {
             if (this._mode !== value) {
                 this._mode = value;
+                if (value == 3 /* Strict */) {
+                    this._renderMode = 0;
+                    this.removeRenderBgSprite();
+                }
                 this.clear();
             }
         },
@@ -7386,8 +7391,10 @@ var Tracing = /** @class */ (function (_super) {
         },
         set: function (value) {
             this._renderBgSprite = value;
-            this._renderMode = 1;
-            this.setRenderBgSprite();
+            if (this.mode !== 3 /* Strict */) {
+                this._renderMode = 1;
+                this.setRenderBgSprite();
+            }
         },
         enumerable: true,
         configurable: true
@@ -7517,6 +7524,14 @@ var Tracing = /** @class */ (function (_super) {
         }
         var graphic = this.getGraphics("mask", this._lineStyle);
         this._bgSprite.mask = graphic;
+    };
+    /**
+     * 移出mask背景图
+     */
+    Tracing.prototype.removeRenderBgSprite = function () {
+        if (this._bgSprite) {
+            this.container.removeChild(this._bgSprite);
+        }
     };
     /**
      * 开始，适用于audo和teach模式
@@ -7811,6 +7826,55 @@ var Tracing = /** @class */ (function (_super) {
             }
         }
     };
+    Tracing.prototype.checkStrictFirstPoint = function (point) {
+        //检测下笔处是否当前笔画的初始点位置
+        var index = this._groupStatusArr[this._lineId].points[0];
+        if (Utils_1.pointDistance(point, this._tracePointObjArr[index].point) <= this.precision) {
+            return true;
+        }
+        return false;
+    };
+    Tracing.prototype.checkStrict = function () {
+        var _this = this;
+        var flag = true;
+        if (this._lineId != 1) {
+            this._realTraceIndexArr.shift();
+        }
+        if (this._realTraceIndexArr.length != this._groupStatusArr[this._lineId - 1].points.length) {
+            flag = false;
+        }
+        else {
+            for (var i = 0; i < this._groupStatusArr[this._lineId - 1].points.length; ++i) {
+                if (this._realTraceIndexArr[i] != this._groupStatusArr[this._lineId - 1].points[i]) {
+                    flag = false;
+                    break;
+                }
+            }
+        }
+        if (!flag) {
+            this._lineId--;
+            this._realTraceIndexArr.forEach(function (item) {
+                _this._tracePointObjArr[item].flag = false;
+            });
+            //书写失败，清除当前线条
+            this.removeLine(this._lineId.toString());
+            setTimeout(function () {
+                _this.emitTracingMsg(2 /* Remove */, _this._lineId.toString(), _this.getDataStrByPosCache(), _this._lineStyle, _this._realTraceIndexArr, _this._tempTraceIndexArr, _this._result);
+            }, 300);
+        }
+        if (this._lineId < this._groupStatusArr.length) {
+            this._realTraceIndexArr = [];
+            if (this._lineId != 0) {
+                var firstIndex = this._groupStatusArr[this._lineId].points[0] - 1;
+                this._realTraceIndexArr.push(firstIndex);
+            }
+        }
+        else {
+            //书写完成
+            this.emit(Index_1.ComponentEvent.COMPLETE, this, { mode: this.mode, value: 3 /* Complete */ });
+        }
+        return flag;
+    };
     /**
      * 教学模式检查
      */
@@ -7860,6 +7924,7 @@ var Tracing = /** @class */ (function (_super) {
      * @param lineStyle
      */
     Tracing.prototype.drawLine = function (lineId, data, from, to, lineStyle) {
+        console.log('drawLine----', lineId);
         var graphics = this.getGraphics(lineId, lineStyle);
         var posList = getVecListFromStr(data, from, to);
         this.draw(graphics, posList);
@@ -7899,14 +7964,25 @@ var Tracing = /** @class */ (function (_super) {
      * @param graphics
      */
     Tracing.prototype.localDraw = function (graphics) {
-        this._posCache.forEach(function (item, index) {
-            if (index == 0) {
-                graphics.moveTo(item.x, item.y);
-            }
-            else {
-                graphics.lineTo(item.x, item.y);
-            }
-        });
+        //修改：仅拿最后的3个点绘制
+        var posCache = this._posCache;
+        var length = posCache.length;
+        if (length > 2) {
+            graphics.moveTo(posCache[length - 3].x, posCache[length - 3].y);
+            graphics.lineTo(posCache[length - 2].x, posCache[length - 2].y);
+            graphics.lineTo(posCache[length - 1].x, posCache[length - 1].y);
+        }
+        else {
+            graphics.moveTo(posCache[length - 2].x, posCache[length - 2].y);
+            graphics.lineTo(posCache[length - 1].x, posCache[length - 1].y);
+        }
+        // this._posCache.forEach((item, index) => {
+        //     if (index == 0) {
+        //         graphics.moveTo(item.x, item.y);
+        //     } else {
+        //         graphics.lineTo(item.x, item.y);
+        //     }
+        // });
     };
     Tracing.prototype.onPress = function (e, thisObj, isPress) {
         e.stopPropagation();
@@ -7916,7 +7992,15 @@ var Tracing = /** @class */ (function (_super) {
         }
         var curLocal = this.container.toLocal(e.local, thisObj.container);
         if (isPress) {
-            if (this.mode === 1 /* Teach */) {
+            if (this.mode === 3 /* Strict */) {
+                var result = this.checkStrictFirstPoint(curLocal);
+                if (!result) {
+                    this._strictFlag = false;
+                    return;
+                }
+                this._strictFlag = true;
+            }
+            else if (this.mode === 1 /* Teach */) {
                 this.clearGuide();
             }
             this._drawing = true;
@@ -7925,6 +8009,9 @@ var Tracing = /** @class */ (function (_super) {
             this.checkTrace(this._lastLocalPos);
         }
         else {
+            if (this.mode === 3 /* Strict */ && !this._strictFlag) {
+                return;
+            }
             if (this._posCache.length === 1) {
                 //仅有一个点
                 var newPoint = this._lastLocalPos.clone(); //在附近新建一个点，保证第一个触点也能画出来
@@ -7942,6 +8029,9 @@ var Tracing = /** @class */ (function (_super) {
             ++this._lineId;
             if (this.mode === 1 /* Teach */) {
                 this.checkTeach();
+            }
+            else if (this.mode === 3 /* Strict */) {
+                this.checkStrict();
             }
         }
     };
@@ -7968,6 +8058,7 @@ var Tracing = /** @class */ (function (_super) {
      * @param lineStyle
      */
     Tracing.prototype.getGraphics = function (lineId, lineStyle) {
+        if (lineStyle === void 0) { lineStyle = {}; }
         if (this._renderMode === 1) {
             lineId = "mask";
         }
@@ -8081,8 +8172,21 @@ var Tracing = /** @class */ (function (_super) {
                     case 1 /* Clear */:
                         this.clear();
                         break;
+                    case 2 /* Remove */:
+                        this.removeLine(lineId);
+                        break;
                 }
             }
+        }
+    };
+    Tracing.prototype.removeLine = function (lineId) {
+        console.log('removeLine----', lineId);
+        var graphics = this.getGraphics(lineId);
+        if (graphics.parent) {
+            graphics.parent.removeChild(graphics);
+            graphics.destroy();
+            var key = "line_" + lineId;
+            this._lines.delete(key);
         }
     };
     /**
@@ -8181,14 +8285,19 @@ var Video = /** @class */ (function (_super) {
     function Video() {
         var _this = _super.call(this) || this;
         _this._resolution = 1;
+        _this._x = 0;
+        _this._y = 0;
+        _this._wS = 1;
+        _this._hS = 1;
         var video = _this._video = document.createElement('video');
         video.id = _this.uuid.toString();
-        document.body.appendChild(_this._video);
+        // document.body.appendChild(this._video);
         //支持苹果可以非全屏播放
         video.setAttribute("x5-playsinline", "");
         video.setAttribute("playsinline", "");
         video.setAttribute("webkit-playsinline", "");
         video.setAttribute("x-webkit-airplay", "allow");
+        video.setAttribute("x5-video-player-type", "h5");
         // this.container.isEmitRender = true;
         // this.container.on("renderChange",this.updateSystem,this);
         _this._video.style.position = "absolute";
@@ -8236,12 +8345,20 @@ var Video = /** @class */ (function (_super) {
     };
     Video.prototype.updateDisplayList = function (unscaledWidth, unscaledHeight) {
         _super.prototype.updateDisplayList.call(this, unscaledWidth, unscaledHeight);
+        if (!this._video.parentElement && this.stage && this.stage.app) {
+            var canvas = this.stage.app.view;
+            if (canvas && canvas.parentElement) {
+                canvas.parentElement.appendChild(this._video);
+                this._wS = this.stage.scaleX;
+                this._hS = this.stage.scaleY;
+            }
+        }
         this.updateSystem();
         this._canvasBounds = this._getCanvasBounds();
         var cb = this._canvasBounds;
         var transform = this._vfMatrixToCSS(this._getDOMRelativeWorldTransform());
         if (cb) {
-            this.updatePostion(cb.top, cb.left, transform, this.container.worldAlpha);
+            this.updatePostion(cb.top * this._hS, cb.left * this._wS, transform, this.container.worldAlpha);
         }
         //container 的全局左边的 x , y赋值给 this._video
         // let stageContainer = this.container;
@@ -8259,6 +8376,7 @@ var Video = /** @class */ (function (_super) {
         this._video.style.transform = transform;
         if (opacity)
             this._video.style.opacity = opacity.toString();
+        console.warn("ssssssssssss", this);
     };
     Video.prototype.updateSystem = function () {
         if (this.stage) {
@@ -8278,14 +8396,19 @@ var Video = /** @class */ (function (_super) {
         return undefined;
     };
     Video.prototype._vfMatrixToCSS = function (m) {
-        return 'matrix(' + [m.a, m.b, m.c, m.d, m.tx, m.ty].join(',') + ')';
+        return 'matrix(' + [m.a, m.b, m.c, m.d, m.tx * this._wS, m.ty * this._hS].join(',') + ')';
     };
     Video.prototype._getDOMRelativeWorldTransform = function () {
         if (this._lastRenderer) {
             var canvasBounds = this._lastRenderer.view.getBoundingClientRect();
             var matrix = this.container.worldTransform.clone();
-            matrix.scale(this._resolution, this._resolution);
-            matrix.scale(canvasBounds.width / this._lastRenderer.width, canvasBounds.height / this._lastRenderer.height);
+            // matrix.scale(this._resolution, this._resolution);
+            // matrix.scale(canvasBounds.width / this._lastRenderer.width,
+            //     canvasBounds.height / this._lastRenderer.height)
+            //     matrix.tx = matrix.tx * this._wS;
+            //     matrix.ty = matrix.ty * this._hS;
+            matrix.scale(this._wS, this._hS);
+            console.log("mamamamam", matrix);
             return matrix;
         }
     };
@@ -8322,6 +8445,7 @@ var Video = /** @class */ (function (_super) {
         },
         set: function (boo) {
             this._video && (this._video.controls = boo);
+            console.log("controls is.....", this._video.controls);
         },
         enumerable: true,
         configurable: true
@@ -8447,7 +8571,10 @@ var Video = /** @class */ (function (_super) {
     **/
     Video.prototype.play = function () {
         if (this._video) {
-            this._video.play();
+            this._video.play().catch(function (error) {
+                console.log(error);
+            });
+            ;
             return;
         }
         throw new Error("Video is undefined!");
@@ -14684,13 +14811,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.7.3.1.7.3.1.7.3) ==1.7.3.1.7.3.1.7.3;
+//     return this.lastIndexOf(word, pos1.7.4.1.7.4.1.7.4) ==1.7.4.1.7.4.1.7.4;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.7.3";
+window.vf.gui.version = "1.7.4";
 
 
 /***/ })
