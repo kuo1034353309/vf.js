@@ -6,7 +6,7 @@
 import { IVFOptions, EngineAPI } from '@player/IVFEngine';
 import IEvent from '@player/event/IEvent';
 import { EventLevel } from '@player/event/EventLevel';
-import LoadingAsset from '../../../assets/loading2.svg';
+import { Loading } from './Loading';
 
 declare let VFBUILDDATE: any; // 编译时间
 
@@ -27,7 +27,7 @@ class VIPKIDLauncher {
     private readonly _config: IVFOptions;
 
     private _cdnsIndex = 0;
-    private _loading?: HTMLImageElement;
+    private _loading: Loading;
 
     private _errorLoadCount = 0;
     private _errorLoadMaxCount = 10;
@@ -61,6 +61,7 @@ class VIPKIDLauncher {
             // eslint-disable-next-line no-throw-literal
             throw 'completeCall === undefined';
         }
+        this._loading = new Loading(options.container);
 
         if ((window as any)['vf'] === undefined) {
             (window as any)['vf'] = {};
@@ -74,7 +75,14 @@ class VIPKIDLauncher {
         if (options.libs) {
             this._extendsLibsUrl = options.libs.concat();
         }
-
+        if (options.loading) {
+            if (options.loading.position) {
+                this._loading.position = options.loading.position;
+            }
+            if (options.loading.image) {
+                this._loading.image = options.loading.image;
+            }
+        }
         this._config = options;
         this.completeCall = completeCall;
         this.errorCall = errorCall;
@@ -189,81 +197,6 @@ class VIPKIDLauncher {
         return canLibs;
     }
 
-    /**
-     * 关于Loading界面布局的可以提出去
-     */
-    private showLoading() {
-        const _container = this._config.container;
-
-        if (this._loading) {
-            return;
-        }
-        if (_container) {
-            const img = this._loading = new Image();
-
-            img.name = 'vf-loading';
-            img.id = Date.now().toString();
-            img.style.position = 'absolute';
-            img.src = LoadingAsset;
-            const bound = this.getInnerBound(_container);
-            const loadingPostion = this._config.loadingPostion || '';
-
-            img.onload = () => {
-                // 临时 默认右下
-                let left = (bound.w - img.width);
-                let top = (bound.h - img.height);
-
-                switch (loadingPostion) {
-                    case 'center':
-                        left = (bound.w - img.width) >> 1;
-                        top = (bound.h - img.height) >> 1;
-                        break;
-                }
-                if (Array.isArray(loadingPostion)) {
-                    left = loadingPostion[0];
-                    top = loadingPostion[1];
-                }
-                img.style.left = `${left}px`;
-                img.style.top = `${top}px`;
-                _container.appendChild(img);
-                img.onload = null;
-            };
-        }
-    }
-
-    /**
-     * 关于Loading界面布局的可以提出去
-     */
-    private hideLoading() {
-        const loading = this._loading;
-
-        if (loading && loading.parentNode) {
-            loading.onload = null;
-            loading.parentNode.removeChild(loading);
-            loading.remove();
-            // this._loading = undefined;
-        }
-    }
-
-    private getInnerBound(ele: HTMLElement) {
-        let parentElement = ele;
-        let w = ele.clientWidth;
-        let h = ele.clientHeight;
-
-        for (let i = 0; i < 5; i++) {
-            if (parentElement.clientWidth === 0 && parentElement.parentElement) {
-                parentElement = parentElement.parentElement;
-            }
-            else {
-                w = parentElement.clientWidth;
-                h = parentElement.clientHeight;
-                break;
-            }
-        }
-
-        return { w, h };
-    }
-
     private loadJs() {
         if (this._loadcount >= this._loadMaxCount) {
             this.createEngine();
@@ -279,7 +212,7 @@ class VIPKIDLauncher {
             return;
         }
 
-        this.showLoading();
+        this._loading.show();
 
         this._loadcount++;
 
@@ -381,7 +314,8 @@ class VIPKIDLauncher {
             this.completeCall = undefined;
             this.errorCall = undefined;
         }
-        this.hideLoading();
+        this._loading.hide();
+        this._loading.dispose();
     }
 }
 

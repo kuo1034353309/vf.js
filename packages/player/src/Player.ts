@@ -148,6 +148,17 @@ export class Player implements EngineAPI {
         }
     }
 
+    /**
+     * 发消息到stage（实际上是uiStage）
+     * @param msg 
+     */
+    public sendToStage(msg: IEvent): void {
+        const stage = this.stage as any;
+        if(stage && stage.receiveFromPlayer){
+            stage.receiveFromPlayer(msg);
+        }
+    }
+
     public switchToNextScene(transition?: ITransitionData): void {
         if (this.stage) {
             this.stage.switchToNextScene(transition);
@@ -301,7 +312,9 @@ export class Player implements EngineAPI {
         if (config.scaleMode === undefined) {
             config.scaleMode = this._data.scaleMode || ScaleMode.NO_SCALE;
         }
-        config.output('Config Info：', config.info);
+        if (config.debug) {
+            config.output('Config Info：', config.info);
+        }
         // 2、初始化渲染引擎，并将渲染器的画布添加到容器（目前是PIXI）
         const view = this.app.view;
 

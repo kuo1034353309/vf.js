@@ -261,6 +261,8 @@ exports.Graphics = Graphics_1.Graphics;
  */
 var FollowLine_1 = __webpack_require__(/*! ./display/FollowLine */ "./src/display/FollowLine.ts");
 exports.FollowLine = FollowLine_1.FollowLine;
+var Video_1 = __webpack_require__(/*! ./display/Video */ "./src/display/Video.ts");
+exports.Video = Video_1.Video;
 /**
  * 连线组件
  *
@@ -353,6 +355,8 @@ var Enum = __webpack_require__(/*! ./enum/Index */ "./src/enum/Index.ts");
 exports.Enum = Enum;
 var Scheduler_1 = __webpack_require__(/*! ./core/Scheduler */ "./src/core/Scheduler.ts");
 exports.Scheduler = Scheduler_1.Scheduler;
+var SyncManager_1 = __webpack_require__(/*! ./interaction/SyncManager */ "./src/interaction/SyncManager.ts");
+exports.SyncManager = SyncManager_1.SyncManager;
 
 
 /***/ }),
@@ -752,7 +756,8 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
      * 设置组件的宽高。此方法不同于直接设置width,height属性，
      * 不会影响显式标记尺寸属性
      */
-    DisplayLayoutAbstract.prototype.setActualSize = function (w, h) {
+    DisplayLayoutAbstract.prototype.setActualSize = function (w, h, isInvalidate) {
+        if (isInvalidate === void 0) { isInvalidate = true; }
         var change = false;
         var values = this.$values;
         if (values[UIKeys.width] !== w) {
@@ -763,7 +768,7 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
             values[UIKeys.height] = h;
             change = true;
         }
-        if (change) {
+        if (change && isInvalidate) {
             this.invalidateDisplayList();
             this.emit(Index_1.ComponentEvent.RESIZE, this);
         }
@@ -776,7 +781,7 @@ var DisplayLayoutAbstract = /** @class */ (function (_super) {
         this.setActualSize(this.getPreferredUWidth(), this.getPreferredUHeight());
     };
     DisplayLayoutAbstract.prototype.updateTransform = function () {
-        this.container.setTransform(this.x + this.pivotX, this.y + this.pivotY, this.scaleX, this.scaleY, this.rotation * (Math.PI / 180), this.skewX, this.skewY, this.pivotX, this.pivotY);
+        this.container.setTransform(this.x, this.y, this.scaleX, this.scaleY, this.rotation * (Math.PI / 180), this.skewX, this.skewY, this.pivotX, this.pivotY);
     };
     /**
      * 更新显示列表,子类重写，实现布局
@@ -2622,7 +2627,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var UI_1 = __webpack_require__(/*! ../UI */ "./src/UI.ts");
+var Ticker_1 = __webpack_require__(/*! ./Ticker */ "./src/core/Ticker.ts");
 /**
  * Schedule anything
  *
@@ -2630,24 +2635,19 @@ var UI_1 = __webpack_require__(/*! ../UI */ "./src/UI.ts");
  */
 var Scheduler = /** @class */ (function (_super) {
     __extends(Scheduler, _super);
-    function Scheduler(_timeout, _interval) {
-        if (_timeout === void 0) { _timeout = Infinity; }
-        if (_interval === void 0) { _interval = 0; }
+    function Scheduler(timeout, interval) {
+        if (timeout === void 0) { timeout = Infinity; }
+        if (interval === void 0) { interval = 0; }
         var _this = _super.call(this) || this;
-        _this.interval = 0;
-        _this.timeout = Infinity;
-        _this.start = 0;
-        _this.lastTick = -1;
-        _this.elapsedTimeAtPause = 0;
-        _this.lastVisited = -1;
-        _this._running = false;
-        _this._lastExecuted = 0;
+        _this._interval = 0;
+        _this._timeout = Infinity;
         _this._id = Math.random();
-        _this.TIMEOUT = 1000;
-        _this.endHandler = _this.noop;
-        _this.tickHandler = _this.noop;
-        _this.timeout = _timeout;
-        _this.interval = _interval;
+        _this._running = false;
+        _this._pausing = false;
+        _this._totalDuration = 0;
+        _this._intervalDuration = 0;
+        _this._timeout = timeout;
+        _this._interval = interval;
         _this.restart();
         return _this;
     }
@@ -2658,6 +2658,11 @@ var Scheduler = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Scheduler.setEnterFrame = function (listener) {
+        var scheduler = new Scheduler(Infinity, 0);
+        scheduler.addListener("tick" /* TICK */, listener);
+        return scheduler;
+    };
     Scheduler.setInterval = function (time, listener) {
         var scheduler = new Scheduler(Infinity, time);
         scheduler.addListener("tick" /* TICK */, listener);
@@ -2669,79 +2674,59 @@ var Scheduler = /** @class */ (function (_super) {
         return scheduler;
     };
     Scheduler.prototype.restart = function () {
-        this.elapsedTimeAtPause = 0;
-        this.start = Scheduler.clock();
-        this._lastExecuted = this.start;
-        this._running = true;
-        UI_1.TickerShared.add(this.run, this);
+        this._totalDuration = 0;
+        this._intervalDuration = 0;
+        this._pausing = false;
+        if (!this._running) {
+            this._running = true;
+            Ticker_1.TickerShared.add(this.run, this);
+        }
     };
     Scheduler.prototype.stop = function () {
-        this.elapsedTimeAtPause = 0;
-        this._running = false;
-        UI_1.TickerShared.remove(this.run, this);
+        if (this._running) {
+            this._running = false;
+            Ticker_1.TickerShared.remove(this.run, this);
+        }
     };
     Scheduler.prototype.pause = function () {
-        if (this._running) {
-            this.stop();
-            this.elapsedTimeAtPause = Scheduler.clock() - this.start;
+        if (this._running && !this._pausing) {
+            this._pausing = true;
+            Ticker_1.TickerShared.remove(this.run, this);
         }
     };
     Scheduler.prototype.resume = function () {
-        var _t;
-        if (!this._running) {
-            _t = this.elapsedTimeAtPause;
-            this.restart();
-            this.start = this.start - _t;
+        if (this._pausing) {
+            this._pausing = false;
+            Ticker_1.TickerShared.add(this.run, this);
         }
     };
-    Scheduler.prototype.seek = function (time) {
-        this.elapsedTimeAtPause = time;
-    };
-    Scheduler.prototype.isTickable = function (num) {
-        return num - this.lastTick >= this.interval;
-    };
-    Scheduler.prototype.noop = function (evt) {
-        if (evt === void 0) { evt = null; }
-        return;
-    };
-    // Internals
-    //
-    Scheduler.prototype.run = function () {
-        var elapsed;
-        var t = Scheduler.clock();
-        var timeElapsed = t - this._lastExecuted;
-        this._lastExecuted = t;
-        if (timeElapsed >= this.TIMEOUT) {
-            return false; // init Scheduler
+    Scheduler.prototype.run = function (deltaTime) {
+        this._totalDuration += Ticker_1.TickerShared.deltaMS;
+        this._intervalDuration += Ticker_1.TickerShared.deltaMS;
+        if (this._intervalDuration >= this._interval) {
+            var info = {
+                code: "tick" /* TICK */,
+                level: "status" /* STATUS */,
+                target: this,
+                dt: this._intervalDuration,
+                elapsed: this._totalDuration,
+            };
+            this.emit("tick" /* TICK */, info);
+            this._intervalDuration = 0;
         }
-        if (this.lastVisited <= t) {
-            this.lastVisited = t;
-            elapsed = t - this.start;
-            if (this.isTickable(t)) {
-                this.lastTick = t;
-                var info = {
-                    code: "tick" /* TICK */,
-                    level: "status" /* STATUS */,
-                    target: this,
-                    elapsed: elapsed,
-                };
-                this.emit("tick" /* TICK */, info);
-            }
-            if (elapsed >= this.timeout) {
-                this.stop();
-                var info = {
-                    code: "end" /* END */,
-                    level: "status" /* STATUS */,
-                    target: this,
-                    elapsed: elapsed,
-                };
-                this.emit("end" /* END */, info);
-            }
-            // ..
+        if (this._totalDuration >= this._timeout) {
+            this.stop();
+            var info = {
+                code: "end" /* END */,
+                level: "status" /* STATUS */,
+                target: this,
+                dt: this._intervalDuration,
+                elapsed: this._totalDuration,
+            };
+            this.emit("end" /* END */, info);
         }
         return false;
     };
-    Scheduler.clock = Date.now;
     return Scheduler;
 }(vf.utils.EventEmitter));
 exports.Scheduler = Scheduler;
@@ -2776,6 +2761,7 @@ var tween = __webpack_require__(/*! ../tween/private/index */ "./src/tween/priva
 var Ticker_1 = __webpack_require__(/*! ./Ticker */ "./src/core/Ticker.ts");
 var DisplayLayoutAbstract_1 = __webpack_require__(/*! ./DisplayLayoutAbstract */ "./src/core/DisplayLayoutAbstract.ts");
 var DisplayLayoutValidator_1 = __webpack_require__(/*! ./DisplayLayoutValidator */ "./src/core/DisplayLayoutValidator.ts");
+var SyncManager_1 = __webpack_require__(/*! ../interaction/SyncManager */ "./src/interaction/SyncManager.ts");
 /**
  * UI的舞台对象，展示所有UI组件
  *
@@ -2791,6 +2777,10 @@ var Stage = /** @class */ (function (_super) {
          * 是否组织原始数据继续传递
          */
         _this.originalEventPreventDefault = false;
+        /**
+     * 是否同步交互事件
+     */
+        _this._syncInteractiveFlag = false; //TODO:默认false
         _this.width = width;
         _this.height = height;
         _this.setActualSize(width, height);
@@ -2851,12 +2841,34 @@ var Stage = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Stage.prototype, "syncInteractiveFlag", {
+        get: function () {
+            return this._syncInteractiveFlag;
+        },
+        set: function (value) {
+            this._syncInteractiveFlag = value;
+            if (!this.syncManager) {
+                this.syncManager = new SyncManager_1.SyncManager(this);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Stage.prototype.getSystemEvent = function () {
+        //
+        return this;
+    };
+    Stage.prototype.sendToPlayer = function (e) {
+        //
+    };
     Stage.prototype.release = function () {
         _super.prototype.release.call(this);
         Ticker_1.TickerShared.remove(tween.update, this);
+        this.syncManager && this.syncManager.release();
     };
     Stage.prototype.releaseAll = function () {
         Ticker_1.TickerShared.remove(tween.update, this);
+        this.syncManager && this.syncManager.release();
         for (var i = 0; i < this.uiChildren.length; i++) {
             var ui = this.uiChildren[i];
             ui.releaseAll();
@@ -2873,11 +2885,14 @@ var Stage = /** @class */ (function (_super) {
         //this.updateChildren();
     };
     /**
-     * 虚接口，子类可以扩充
+     * 接收来自player的消息
+     * @param msg
      */
-    Stage.prototype.inputLog = function (msg) {
-        //
-        //console.log(msg);
+    Stage.prototype.receiveFromPlayer = function (msg) {
+        if (msg.code == 'syncEvent') {
+            var data = msg.data; //{data: eventData, type: 'live/history'}
+            this.syncManager && this.syncManager.receiveEvent(data.data, data.type);
+        }
     };
     return Stage;
 }(DisplayLayoutAbstract_1.DisplayLayoutAbstract));
@@ -2895,8 +2910,47 @@ exports.Stage = Stage;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TickerShared = new vf.Ticker();
+var Ticker = /** @class */ (function (_super) {
+    __extends(Ticker, _super);
+    function Ticker() {
+        return _super.call(this) || this;
+    }
+    /**
+     * 时间穿越， 单位ms
+     * @param duration
+     */
+    Ticker.prototype.crossingTime = function (duration) {
+        var deltaTime = this._minElapsedMS; //帧间隔
+        while (duration > 0) {
+            duration -= deltaTime;
+            if (duration < 0) {
+                deltaTime += duration;
+            }
+            var head = this._head; //？？
+            var listener = head.next;
+            while (listener) {
+                this.deltaMS = deltaTime;
+                listener = listener.emit(deltaTime * vf.settings.TARGET_FPMS);
+            }
+        }
+    };
+    return Ticker;
+}(vf.Ticker));
+exports.TickerShared = new Ticker();
 exports.TickerShared.autoStart = false;
 exports.TickerShared.maxFPS = 30;
 
@@ -2916,6 +2970,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Index_1 = __webpack_require__(/*! ../../interaction/Index */ "./src/interaction/Index.ts");
 var DisplayObjectAbstract_1 = __webpack_require__(/*! ../DisplayObjectAbstract */ "./src/core/DisplayObjectAbstract.ts");
 var Utils_1 = __webpack_require__(/*! ../../utils/Utils */ "./src/utils/Utils.ts");
+var SyncManager_1 = __webpack_require__(/*! ../../interaction/SyncManager */ "./src/interaction/SyncManager.ts");
+var Ticker_1 = __webpack_require__(/*! ../Ticker */ "./src/core/Ticker.ts");
 /**
  *  组件的拖拽操作
  *
@@ -3175,7 +3231,7 @@ var UIBaseDrag = /** @class */ (function () {
                     if (Utils_1.debug) { //debug 模式下，日志信息
                         var stage = target.stage;
                         if (stage) {
-                            stage.inputLog({
+                            stage.sendToPlayer({
                                 code: Index_1.ComponentEvent.DRAG_START,
                                 level: 'info', target: target,
                                 data: [target.parent, containerStart_1.x - stageOffset_1.x, containerStart_1.y - stageOffset_1.y],
@@ -3219,7 +3275,7 @@ var UIBaseDrag = /** @class */ (function () {
                     if (Utils_1.debug) { //debug 模式下，日志信息
                         var stage = target.stage;
                         if (stage) {
-                            stage.inputLog({
+                            stage.sendToPlayer({
                                 code: Index_1.ComponentEvent.DRAG_MOVE,
                                 level: 'info',
                                 target: target,
@@ -3239,7 +3295,7 @@ var UIBaseDrag = /** @class */ (function () {
                 if (_this.dragging) {
                     _this.dragging = false;
                     //如果没有可被放置掉落的容器，0秒后返回原容器
-                    setTimeout(function () {
+                    Ticker_1.TickerShared.addOnce(function () {
                         if (_this.target == undefined) {
                             return;
                         }
@@ -3266,7 +3322,7 @@ var UIBaseDrag = /** @class */ (function () {
                         if (Utils_1.debug) { //debug 模式下，日志信息
                             var stage = target.stage;
                             if (stage) {
-                                stage.inputLog({
+                                stage.sendToPlayer({
                                     code: Index_1.ComponentEvent.DRAG_END,
                                     level: 'info',
                                     target: target,
@@ -3284,7 +3340,7 @@ var UIBaseDrag = /** @class */ (function () {
                         e.data.tiltY = dragPosition.y;
                         _this._actionData = { type: Index_1.ComponentEvent.DRAG_END, data: e.data };
                         target.emit(Index_1.ComponentEvent.DRAG_END, target, e);
-                    }, 0);
+                    }, _this);
                 }
             };
         }
@@ -3318,6 +3374,9 @@ var UIBaseDrag = /** @class */ (function () {
         if (this.target == undefined) {
             return;
         }
+        if (this.target.stage && this.target.stage.syncInteractiveFlag) {
+            SyncManager_1.SyncManager.getInstance(this.target.stage).collectEvent(e, this.target);
+        }
         var target = this.target;
         var item = Index_1.DragDropController.getEventItem(e, this.dropGroup);
         if (item && item.dragOption.dragging) {
@@ -3338,7 +3397,7 @@ var UIBaseDrag = /** @class */ (function () {
             if (Utils_1.debug) { //debug 模式下，日志信息
                 var stage = target.stage;
                 if (stage) {
-                    stage.inputLog({
+                    stage.sendToPlayer({
                         code: Index_1.ComponentEvent.DRAG_TARGET,
                         level: 'info',
                         target: item,
@@ -3425,9 +3484,9 @@ var UIClick = /** @class */ (function () {
         this._target = target;
         this._target.plugs.set(UIClick.key, this);
         this._clickEvent = new Index_1.ClickEvent(target, true);
-        ;
     }
     UIClick.prototype.load = function () {
+        //
     };
     UIClick.prototype.release = function () {
         this._clickEvent.remove();
@@ -3690,6 +3749,10 @@ var Audio = /** @class */ (function (_super) {
             this.audio.dispose();
             this.audio = undefined;
         }
+    };
+    Audio.prototype.release = function () {
+        _super.prototype.release.call(this);
+        this.dispose();
     };
     Object.defineProperty(Audio.prototype, "isPlaying", {
         /**
@@ -4050,7 +4113,12 @@ var Circle = /** @class */ (function (_super) {
         if (this._color !== undefined)
             graphics.beginFill(this._color);
         var diam = this._radius * 2;
-        graphics.arc(this._anchorX ? this._anchorX * diam : 0, this._anchorY ? diam * this._anchorY : 0, this._radius, this._startAngle * Math.PI / 180, this._endAngle * Math.PI / 180, this._anticlockwise);
+        if ((this._startAngle === 0 && this._endAngle === 360) || (this._startAngle === 360 && this._endAngle === 0)) {
+            graphics.drawCircle(this._anchorX ? this._anchorX * diam : 0, this._anchorY ? diam * this._anchorY : 0, this._radius);
+        }
+        else {
+            graphics.arc(this._anchorX ? this._anchorX * diam : 0, this._anchorY ? diam * this._anchorY : 0, this._radius, this._startAngle * Math.PI / 180, this._endAngle * Math.PI / 180, this._anticlockwise);
+        }
         graphics.endFill();
     };
     return Circle;
@@ -4505,7 +4573,7 @@ var MAX_ARC = 0.09; // 5度
 /** 点数字转换成字符的数位 */
 var DIGIT = 90;
 /** 字符列表 ascii */
-var NUMBER_TO_STR = "$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}";
+var NUMBER_TO_STR = "$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}";
 /** 压缩比例，有损压缩 */
 var COMPRESS_RATE = 2;
 /** 最大宽度 */
@@ -5122,6 +5190,16 @@ var Image = /** @class */ (function (_super) {
             this.anchorSystem();
         }
     };
+    Image.prototype.setSpeiteSize = function (unscaledWidth, unscaledHeight) {
+        var sprite = this._sprite;
+        if (sprite) {
+            if (unscaledWidth)
+                sprite.width = unscaledWidth;
+            if (unscaledHeight)
+                sprite.height = unscaledHeight;
+            this.setActualSize(sprite.width, sprite.height, false);
+        }
+    };
     Image.prototype.measure = function () {
         if (this._sprite) {
             var texture = this._sprite.texture;
@@ -5643,6 +5721,7 @@ var ScrollBar = /** @class */ (function (_super) {
             if (val > maxheight) {
                 val = maxheight;
             }
+            thumbImg.x = this.width / 2;
             thumbImg.y = val;
         }
         else {
@@ -5655,6 +5734,7 @@ var ScrollBar = /** @class */ (function (_super) {
             if (val > maxwidth) {
                 val = maxwidth;
             }
+            thumbImg.y = this.height / 2;
             thumbImg.x = val;
         }
     };
@@ -6096,16 +6176,15 @@ var Slider = /** @class */ (function (_super) {
         _this._decimals = 0;
         _this._startValue = 0;
         _this._maxPosition = 0;
-        _this._localMousePosition = new vf.Point();
         _this._lastChange = 0;
         _this._lastChanging = 0;
+        _this._localMousePosition = new vf.Point();
         /** 状态展示 */
         _this.trackImg = new Image_1.Image();
         _this.thumbImg = new Image_1.Image();
         _this.tracklightImg = new Image_1.Image();
         _this._thumbDrag = new Index_1.DragEvent(_this.thumbImg);
         _this._trackDrag = new Index_1.DragEvent(_this.trackImg);
-        _this._value = 0;
         /**
          * 最小值
          */
@@ -6118,15 +6197,6 @@ var Slider = /** @class */ (function (_super) {
          * 是否垂直,滑块方向
          */
         _this._vertical = false;
-        _this.isExcValueSystem = false;
-        _this._thumbDrag.onDragPress = _this.onPress.bind(_this);
-        _this._thumbDrag.onDragStart = _this.onDragStart.bind(_this);
-        _this._thumbDrag.onDragMove = _this.onDragMove.bind(_this);
-        _this._thumbDrag.onDragEnd = _this.onDragEnd.bind(_this);
-        _this._trackDrag.onDragPress = _this.onPress.bind(_this);
-        // this._trackDrag.onDragStart = this.onDragStart;
-        // this._trackDrag.onDragMove = this.onDragMove;
-        // this._trackDrag.onDragEnd = this.onDragEnd;
         _this.thumbImg.container.name = "thumbImg";
         _this.thumbImg.fillMode = "scale";
         _this.thumbImg.scale9Grid = [0, 0, 0, 0];
@@ -6142,21 +6212,17 @@ var Slider = /** @class */ (function (_super) {
         _this.tracklightImg.container.name = "tracklightImg";
         _this.tracklightImg.fillMode = "scale";
         _this.tracklightImg.scale9Grid = [2, 2, 2, 2];
+        //this.tracklightImg.on(ComponentEvent.COMPLETE,this.onImgload, this);
         _this.addChild(_this.trackImg);
         _this.addChild(_this.tracklightImg);
         _this.addChild(_this.thumbImg);
+        _this._thumbDrag.onDragPress = _this.onPress.bind(_this);
+        _this._thumbDrag.onDragStart = _this.onDragStart.bind(_this);
+        _this._thumbDrag.onDragMove = _this.onDragMove.bind(_this);
+        _this._thumbDrag.onDragEnd = _this.onDragEnd.bind(_this);
+        _this._trackDrag.onDragPress = _this.onPress.bind(_this);
         return _this;
     }
-    Object.defineProperty(Slider.prototype, "trackScale9Grid", {
-        /**
-         * 设置拖拽图，9切方式
-         */
-        set: function (value) {
-            this.thumbImg.scale9Grid = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(Slider.prototype, "value", {
         /**
          * 当前值
@@ -6165,24 +6231,26 @@ var Slider = /** @class */ (function (_super) {
             return Utils.Round(Utils.Lerp(this.minValue, this.maxValue, this._amt), this._decimals);
         },
         set: function (value) {
-            this._value = value;
-            this.valueSystem();
+            this.valueSystem(value);
         },
         enumerable: true,
         configurable: true
     });
-    Slider.prototype.valueSystem = function () {
-        this._amt = (Math.max(this.minValue, Math.min(this.maxValue, this._value)) - this.minValue) / (this.maxValue - this.minValue);
-        this.updatePosition();
-        this.triggerValueChange();
-        this.triggerValueChanging();
+    Slider.prototype.valueSystem = function (value) {
+        if (value === void 0) { value = 0; }
+        this._amt = (Math.max(this.minValue, Math.min(this.maxValue, value)) - this.minValue) / (this.maxValue - this.minValue);
+        this.invalidateDisplayList();
     };
     Object.defineProperty(Slider.prototype, "minValue", {
         get: function () {
             return this._minValue;
         },
         set: function (value) {
+            if (this._minValue === value) {
+                return;
+            }
             this._minValue = value;
+            this.invalidateDisplayList();
         },
         enumerable: true,
         configurable: true
@@ -6192,7 +6260,11 @@ var Slider = /** @class */ (function (_super) {
             return this._maxValue;
         },
         set: function (value) {
+            if (this._maxValue === value) {
+                return;
+            }
             this._maxValue = value;
+            this.invalidateDisplayList();
         },
         enumerable: true,
         configurable: true
@@ -6202,8 +6274,10 @@ var Slider = /** @class */ (function (_super) {
             return this._vertical;
         },
         set: function (value) {
+            if (this._vertical === value) {
+                return;
+            }
             this._vertical = value;
-            this.updateLayout();
             this.invalidateProperties();
         },
         enumerable: true,
@@ -6248,46 +6322,10 @@ var Slider = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Slider.prototype.setActualSize = function (w, h) {
-        _super.prototype.setActualSize.call(this, w, h);
-        if (this.trackImg.width !== w) {
-            this.trackImg.width = w;
-        }
-        if (this.trackImg.height !== w) {
-            this.trackImg.height = h;
-        }
-        if (!this.isExcValueSystem) {
-            this.valueSystem();
-            this.isExcValueSystem = true;
-        }
-    };
-    Slider.prototype.release = function () {
-        _super.prototype.release.call(this);
-        this.trackImg.release();
-        this.thumbImg.release();
-        this.tracklightImg.release();
-    };
     Slider.prototype.onImgload = function () {
-        this.updateLayout();
-    };
-    Slider.prototype.updateLayout = function () {
-        var thumbImg = this.thumbImg;
-        var tracklightImg = this.tracklightImg;
-        if (this.vertical) {
-            //thumbImg.style.top =this._amt; 
-            thumbImg.x = this.explicitWidth >> 1;
-            tracklightImg.width = this.explicitWidth;
-            //tracklightImg.style.height = this._amt * this.height;
-        }
-        else {
-            thumbImg.y = this.explicitHeight >> 1;
-            //thumbImg.style.left = this._amt; 
-            tracklightImg.height = this.explicitHeight;
-            //tracklightImg.style.width =  this._amt * this.width;
-        }
+        this.invalidateProperties();
     };
     Slider.prototype.updatePosition = function (soft) {
-        this.updateLayout();
         var val = 0;
         var thumbImg = this.thumbImg;
         var tracklightImg = this.tracklightImg;
@@ -6297,7 +6335,8 @@ var Slider = /** @class */ (function (_super) {
                 Tween_1.Tween.to({ y: thumbImg.y, height: tracklightImg.height }, { y: val, height: val }, 300).easing(Easing_1.Easing.Linear.None)
                     .on(Tween_1.Tween.Event.update, function (obj) {
                     thumbImg.y = obj.y;
-                    tracklightImg.height = obj.height;
+                    //tracklightImg.height = obj.height;
+                    tracklightImg.setSpeiteSize(undefined, obj.height);
                 }).start();
             }
             else {
@@ -6311,7 +6350,8 @@ var Slider = /** @class */ (function (_super) {
                 Tween_1.Tween.to({ x: thumbImg.x, width: tracklightImg.width }, { x: val, width: val }, 300).easing(Easing_1.Easing.Linear.None)
                     .on(Tween_1.Tween.Event.update, function (obj) {
                     thumbImg.x = obj.x;
-                    tracklightImg.width = obj.width;
+                    //tracklightImg.width = obj.width;
+                    tracklightImg.setSpeiteSize(obj.width);
                 }).start();
             }
             else {
@@ -6374,6 +6414,36 @@ var Slider = /** @class */ (function (_super) {
         if (this._lastChanging != value) {
             this._lastChanging = value;
         }
+    };
+    Slider.prototype.updateLayout = function () {
+        this.invalidateProperties();
+    };
+    Slider.prototype.commitProperties = function () {
+        var thumbImg = this.thumbImg;
+        var tracklightImg = this.tracklightImg;
+        if (this.vertical) {
+            thumbImg.y = this._amt;
+            thumbImg.x = this.explicitWidth >> 1;
+            tracklightImg.width = this.width;
+            tracklightImg.height = this._amt * this.height;
+        }
+        else {
+            thumbImg.x = this._amt;
+            thumbImg.y = this.explicitHeight >> 1;
+            tracklightImg.height = this.height;
+            tracklightImg.width = this._amt * this.width;
+        }
+    };
+    Slider.prototype.updateDisplayList = function (unscaledWidth, unscaledHeight) {
+        this.commitProperties();
+        this.updatePosition();
+        _super.prototype.updateDisplayList.call(this, unscaledWidth, unscaledHeight);
+    };
+    Slider.prototype.release = function () {
+        _super.prototype.release.call(this);
+        this.trackImg.release();
+        this.thumbImg.release();
+        this.tracklightImg.release();
     };
     return Slider;
 }(DisplayObject_1.DisplayObject));
@@ -7237,6 +7307,7 @@ var Tracing = /** @class */ (function (_super) {
         _this._newLineFlag = true; //是否是新笔画
         _this._pointId = 0; //绘制的笔画的轨迹点id
         _this._messageCache = []; //需要处理的消息列表
+        _this._strictFlag = true; //严格模式是否检测通过
         /**
          * debug
          */
@@ -7261,6 +7332,7 @@ var Tracing = /** @class */ (function (_super) {
          * 检测精度
          */
         _this._precision = 20;
+        _this._posLength = 2;
         _this._lines = new Map();
         _this.clickEvent = new Index_1.ClickEvent(_this, true);
         _this.clickEvent.isOpenLocalPoint = true;
@@ -7292,6 +7364,10 @@ var Tracing = /** @class */ (function (_super) {
         set: function (value) {
             if (this._mode !== value) {
                 this._mode = value;
+                if (value == 3 /* Strict */) {
+                    this._renderMode = 0;
+                    this.removeRenderBgSprite();
+                }
                 this.clear();
             }
         },
@@ -7315,8 +7391,10 @@ var Tracing = /** @class */ (function (_super) {
         },
         set: function (value) {
             this._renderBgSprite = value;
-            this._renderMode = 1;
-            this.setRenderBgSprite();
+            if (this.mode !== 3 /* Strict */) {
+                this._renderMode = 1;
+                this.setRenderBgSprite();
+            }
         },
         enumerable: true,
         configurable: true
@@ -7446,6 +7524,14 @@ var Tracing = /** @class */ (function (_super) {
         }
         var graphic = this.getGraphics("mask", this._lineStyle);
         this._bgSprite.mask = graphic;
+    };
+    /**
+     * 移出mask背景图
+     */
+    Tracing.prototype.removeRenderBgSprite = function () {
+        if (this._bgSprite) {
+            this.container.removeChild(this._bgSprite);
+        }
     };
     /**
      * 开始，适用于audo和teach模式
@@ -7578,6 +7664,10 @@ var Tracing = /** @class */ (function (_super) {
             .once(Tween_1.Tween.Event.complete, function (obj) {
             _this._tween.removeAllListeners();
             _this._tween.release();
+            var length = _this._posCache.length;
+            if (length > _this._posLength) {
+                _this._posCache = _this._posCache.slice(length - _this._posLength, length - 1); //容错处理   没有全部清掉 因为最后节点可能没有画完
+            }
             _this.auto();
         })
             .start();
@@ -7736,6 +7826,55 @@ var Tracing = /** @class */ (function (_super) {
             }
         }
     };
+    Tracing.prototype.checkStrictFirstPoint = function (point) {
+        //检测下笔处是否当前笔画的初始点位置
+        var index = this._groupStatusArr[this._lineId].points[0];
+        if (Utils_1.pointDistance(point, this._tracePointObjArr[index].point) <= this.precision) {
+            return true;
+        }
+        return false;
+    };
+    Tracing.prototype.checkStrict = function () {
+        var _this = this;
+        var flag = true;
+        if (this._lineId != 1) {
+            this._realTraceIndexArr.shift();
+        }
+        if (this._realTraceIndexArr.length != this._groupStatusArr[this._lineId - 1].points.length) {
+            flag = false;
+        }
+        else {
+            for (var i = 0; i < this._groupStatusArr[this._lineId - 1].points.length; ++i) {
+                if (this._realTraceIndexArr[i] != this._groupStatusArr[this._lineId - 1].points[i]) {
+                    flag = false;
+                    break;
+                }
+            }
+        }
+        if (!flag) {
+            this._lineId--;
+            this._realTraceIndexArr.forEach(function (item) {
+                _this._tracePointObjArr[item].flag = false;
+            });
+            //书写失败，清除当前线条
+            this.removeLine(this._lineId.toString());
+            setTimeout(function () {
+                _this.emitTracingMsg(2 /* Remove */, _this._lineId.toString(), _this.getDataStrByPosCache(), _this._lineStyle, _this._realTraceIndexArr, _this._tempTraceIndexArr, _this._result);
+            }, 300);
+        }
+        if (this._lineId < this._groupStatusArr.length) {
+            this._realTraceIndexArr = [];
+            if (this._lineId != 0) {
+                var firstIndex = this._groupStatusArr[this._lineId].points[0] - 1;
+                this._realTraceIndexArr.push(firstIndex);
+            }
+        }
+        else {
+            //书写完成
+            this.emit(Index_1.ComponentEvent.COMPLETE, this, { mode: this.mode, value: 3 /* Complete */ });
+        }
+        return flag;
+    };
     /**
      * 教学模式检查
      */
@@ -7785,6 +7924,7 @@ var Tracing = /** @class */ (function (_super) {
      * @param lineStyle
      */
     Tracing.prototype.drawLine = function (lineId, data, from, to, lineStyle) {
+        console.log('drawLine----', lineId);
         var graphics = this.getGraphics(lineId, lineStyle);
         var posList = getVecListFromStr(data, from, to);
         this.draw(graphics, posList);
@@ -7824,14 +7964,25 @@ var Tracing = /** @class */ (function (_super) {
      * @param graphics
      */
     Tracing.prototype.localDraw = function (graphics) {
-        this._posCache.forEach(function (item, index) {
-            if (index == 0) {
-                graphics.moveTo(item.x, item.y);
-            }
-            else {
-                graphics.lineTo(item.x, item.y);
-            }
-        });
+        //修改：仅拿最后的3个点绘制
+        var posCache = this._posCache;
+        var length = posCache.length;
+        if (length > 2) {
+            graphics.moveTo(posCache[length - 3].x, posCache[length - 3].y);
+            graphics.lineTo(posCache[length - 2].x, posCache[length - 2].y);
+            graphics.lineTo(posCache[length - 1].x, posCache[length - 1].y);
+        }
+        else {
+            graphics.moveTo(posCache[length - 2].x, posCache[length - 2].y);
+            graphics.lineTo(posCache[length - 1].x, posCache[length - 1].y);
+        }
+        // this._posCache.forEach((item, index) => {
+        //     if (index == 0) {
+        //         graphics.moveTo(item.x, item.y);
+        //     } else {
+        //         graphics.lineTo(item.x, item.y);
+        //     }
+        // });
     };
     Tracing.prototype.onPress = function (e, thisObj, isPress) {
         e.stopPropagation();
@@ -7841,7 +7992,15 @@ var Tracing = /** @class */ (function (_super) {
         }
         var curLocal = this.container.toLocal(e.local, thisObj.container);
         if (isPress) {
-            if (this.mode === 1 /* Teach */) {
+            if (this.mode === 3 /* Strict */) {
+                var result = this.checkStrictFirstPoint(curLocal);
+                if (!result) {
+                    this._strictFlag = false;
+                    return;
+                }
+                this._strictFlag = true;
+            }
+            else if (this.mode === 1 /* Teach */) {
                 this.clearGuide();
             }
             this._drawing = true;
@@ -7850,6 +8009,9 @@ var Tracing = /** @class */ (function (_super) {
             this.checkTrace(this._lastLocalPos);
         }
         else {
+            if (this.mode === 3 /* Strict */ && !this._strictFlag) {
+                return;
+            }
             if (this._posCache.length === 1) {
                 //仅有一个点
                 var newPoint = this._lastLocalPos.clone(); //在附近新建一个点，保证第一个触点也能画出来
@@ -7867,6 +8029,9 @@ var Tracing = /** @class */ (function (_super) {
             ++this._lineId;
             if (this.mode === 1 /* Teach */) {
                 this.checkTeach();
+            }
+            else if (this.mode === 3 /* Strict */) {
+                this.checkStrict();
             }
         }
     };
@@ -7893,6 +8058,7 @@ var Tracing = /** @class */ (function (_super) {
      * @param lineStyle
      */
     Tracing.prototype.getGraphics = function (lineId, lineStyle) {
+        if (lineStyle === void 0) { lineStyle = {}; }
         if (this._renderMode === 1) {
             lineId = "mask";
         }
@@ -8006,8 +8172,21 @@ var Tracing = /** @class */ (function (_super) {
                     case 1 /* Clear */:
                         this.clear();
                         break;
+                    case 2 /* Remove */:
+                        this.removeLine(lineId);
+                        break;
                 }
             }
+        }
+    };
+    Tracing.prototype.removeLine = function (lineId) {
+        console.log('removeLine----', lineId);
+        var graphics = this.getGraphics(lineId);
+        if (graphics.parent) {
+            graphics.parent.removeChild(graphics);
+            graphics.destroy();
+            var key = "line_" + lineId;
+            this._lines.delete(key);
         }
     };
     /**
@@ -8068,6 +8247,390 @@ var Tracing = /** @class */ (function (_super) {
     return Tracing;
 }(DisplayObject_1.DisplayObject));
 exports.Tracing = Tracing;
+
+
+/***/ }),
+
+/***/ "./src/display/Video.ts":
+/*!******************************!*\
+  !*** ./src/display/Video.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/core/DisplayObject.ts");
+var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
+/**
+ * 播放器组件
+ *
+ */
+var Video = /** @class */ (function (_super) {
+    __extends(Video, _super);
+    function Video() {
+        var _this = _super.call(this) || this;
+        _this._resolution = 1;
+        _this._x = 0;
+        _this._y = 0;
+        _this._wS = 1;
+        _this._hS = 1;
+        var video = _this._video = document.createElement('video');
+        video.id = _this.uuid.toString();
+        //支持苹果可以非全屏播放
+        video.setAttribute("x5-playsinline", "");
+        video.setAttribute("playsinline", "");
+        video.setAttribute("webkit-playsinline", "");
+        video.setAttribute("x-webkit-airplay", "allow");
+        video.setAttribute("x5-video-player-type", "h5");
+        _this._video.style.position = "absolute";
+        _this._video.controls = true;
+        /**
+        * 需要上报的事件
+        */
+        _this._canplayFun = _this.canplayFun.bind(_this);
+        _this._canplaythroughFun = _this.canplaythroughFun.bind(_this);
+        _this._completeFun = _this.completeFun.bind(_this);
+        _this._endedFun = _this.endedFun.bind(_this);
+        _this._loadeddataFun = _this.loadeddataFun.bind(_this);
+        _this._durationchangeFun = _this.durationchangeFun.bind(_this);
+        //浏览器可以播放媒体文件了，但估计没有足够的数据来支撑播放到结束，不需要停止缓存更多的内容
+        video.addEventListener('canplay', _this._canplayFun);
+        //浏览器估算可以播放到结束，不需要停止缓存更多的内容。
+        video.addEventListener('canplaythrough', _this._canplaythroughFun);
+        //渲染完成
+        video.addEventListener('complete', _this._completeFun);
+        //视频已经到达结束点
+        video.addEventListener('ended', _this._endedFun);
+        //首帧已经加载
+        video.addEventListener('loadeddata', _this._loadeddataFun);
+        //duration 属性的值改变时触发
+        video.addEventListener('durationchange', _this._durationchangeFun);
+        return _this;
+    }
+    Video.prototype.canplayFun = function (e) {
+        this.emit('canplay', e);
+    };
+    Video.prototype.canplaythroughFun = function (e) {
+        this.emit('canplaythrough', e);
+    };
+    Video.prototype.completeFun = function (e) {
+        this.emit('complete', e);
+    };
+    Video.prototype.endedFun = function (e) {
+        this.emit('ended', e);
+    };
+    Video.prototype.loadeddataFun = function (e) {
+        this.emit('loadeddata', e);
+    };
+    Video.prototype.durationchangeFun = function (e) {
+        this.emit('durationchange', e);
+    };
+    Video.prototype.updateDisplayList = function (unscaledWidth, unscaledHeight) {
+        _super.prototype.updateDisplayList.call(this, unscaledWidth, unscaledHeight);
+        if (!this._video.parentElement && this.stage && this.stage.app) {
+            var canvas = this.stage.app.view;
+            if (canvas && canvas.parentElement) {
+                canvas.parentElement.appendChild(this._video);
+                this._wS = this.stage.scaleX;
+                this._hS = this.stage.scaleY;
+            }
+        }
+        this.updateSystem();
+        this._canvasBounds = this._getCanvasBounds();
+        var cb = this._canvasBounds;
+        var transform = this._vfMatrixToCSS(this._getDOMRelativeWorldTransform());
+        if (cb) {
+            this.updatePostion(cb.top * this._hS, cb.left * this._wS, transform, this.container.worldAlpha);
+        }
+    };
+    Video.prototype.updatePostion = function (top, left, transform, opacity) {
+        this._video.style.top = top + 'px';
+        this._video.style.left = left + 'px';
+        this._video.style.transform = transform;
+        if (opacity)
+            this._video.style.opacity = opacity.toString();
+    };
+    Video.prototype.updateSystem = function () {
+        if (this.stage) {
+            var renderer = this.stage.app.renderer;
+            this._resolution = renderer.resolution;
+            this._lastRenderer = renderer;
+        }
+    };
+    Video.prototype._getCanvasBounds = function () {
+        if (this._lastRenderer) {
+            var rect = this._lastRenderer.view.getBoundingClientRect();
+            var bounds = { top: rect.top, left: rect.left, width: rect.width, height: rect.height };
+            bounds.left += window.scrollX;
+            bounds.top += window.scrollY;
+            return bounds;
+        }
+        return undefined;
+    };
+    Video.prototype._vfMatrixToCSS = function (m) {
+        return 'matrix(' + [m.a, m.b, m.c, m.d, m.tx * this._wS, m.ty * this._hS].join(',') + ')';
+    };
+    Video.prototype._getDOMRelativeWorldTransform = function () {
+        if (this._lastRenderer) {
+            var canvasBounds = this._lastRenderer.view.getBoundingClientRect();
+            var matrix = this.container.worldTransform.clone();
+            matrix.scale(this._wS, this._hS);
+            return matrix;
+        }
+    };
+    Object.defineProperty(Video.prototype, "src", {
+        /**
+         * 支持的参数们~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         */
+        //设置src
+        get: function () {
+            return this._src;
+        },
+        set: function (value) {
+            if (!this._video) {
+                return;
+            }
+            if (typeof (value) === "number") {
+                var source = Utils_1.getSource(value);
+                this._src = source.url;
+            }
+            else {
+                this._src = value;
+            }
+            this._video && (this._video.src = this._src);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "controls", {
+        get: function () {
+            if (this._video) {
+                return this._video.controls;
+            }
+            throw new Error("Video is undefined!");
+        },
+        set: function (boo) {
+            this._video && (this._video.controls = boo);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "width", {
+        get: function () {
+            if (this._video) {
+                return this._video.width;
+            }
+            return 0;
+        },
+        set: function (value) {
+            this._video && (this._video.width = value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "height", {
+        get: function () {
+            if (this._video) {
+                return this._video.height;
+            }
+            return 0;
+        },
+        set: function (value) {
+            this._video && (this._video.height = value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "loop", {
+        get: function () {
+            if (this._video) {
+                return this._video.loop;
+            }
+            return false;
+        },
+        set: function (value) {
+            this._video && (this._video.loop = value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "muted", {
+        //静音
+        get: function () {
+            if (this._video) {
+                return this._video.muted;
+            }
+            throw new Error("Video is undefined!");
+        },
+        set: function (boo) {
+            this._video && (this._video.muted = boo);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "volume", {
+        get: function () {
+            if (this._video) {
+                return this._video.volume;
+            }
+            return 0;
+        },
+        set: function (value) {
+            value = value > 1 ? 1 : value;
+            value = value < 0 ? 0 : value;
+            this._video && (this._video.volume = value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "poster", {
+        get: function () {
+            return this._poster;
+            throw new Error("Video is undefined!");
+        },
+        set: function (value) {
+            if (!this._video) {
+                return;
+            }
+            if (typeof (value) === "number") {
+                var source = Utils_1.getSource(value);
+                this.poster = source ? source.textureCacheIds[1] : "";
+            }
+            else {
+                this._poster = value;
+            }
+            this._video && (this._video.poster = this._poster);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "currentTime", {
+        //播放位置
+        get: function () {
+            if (this._video) {
+                return this._video.currentTime;
+            }
+            return 0;
+        },
+        set: function (value) {
+            this._video && (this._video.currentTime = value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Video.prototype, "duration", {
+        /**
+         * 只读的属性们~~~~~~~~~~~~~~~~
+         * */
+        get: function () {
+            if (this._video) {
+                return this._video.duration;
+            }
+            return 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+    * 支持的方法们~~~··~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    **/
+    Video.prototype.play = function () {
+        if (this._video) {
+            this._video.play().catch(function (error) {
+                console.log(error);
+            });
+            ;
+            return;
+        }
+        throw new Error("Video is undefined!");
+    };
+    Video.prototype.pause = function () {
+        this._video && this._video.pause();
+    };
+    //进入全屏
+    Video.prototype.requestFullScreen = function () {
+        var de = this._video;
+        if (de.requestFullscreen) {
+            de.requestFullscreen();
+        }
+        else if (de.mozRequestFullScreen) {
+            de.mozRequestFullScreen();
+        }
+        else if (de.webkitRequestFullScreen) {
+            de.webkitRequestFullScreen();
+        }
+        else if (de.webkitEnterFullScreen) {
+            de.webkitEnterFullScreen();
+        }
+    };
+    //退出全屏
+    Video.prototype.exitFullscreen = function () {
+        var de = this._video;
+        if (de.exitFullscreen) {
+            de.exitFullscreen();
+        }
+        else if (de.mozCancelFullScreen) {
+            de.mozCancelFullScreen();
+        }
+        else if (de.webkitCancelFullScreen) {
+            de.webkitCancelFullScreen();
+        }
+        else if (de.webkitExitFullScreen) {
+            de.webkitExitFullScreen();
+        }
+    };
+    Video.prototype.release = function () {
+        _super.prototype.release.call(this);
+        this._src = null;
+        this._poster = null;
+        this._canvasBounds = undefined;
+        this._lastRenderer = undefined;
+        this._resolution = 1;
+        if (!this._video) {
+            return;
+        }
+        var video = this._video;
+        video.removeEventListener('canplay', this._canplayFun);
+        //浏览器估算可以播放到结束，不需要停止缓存更多的内容。
+        video.removeEventListener('canplaythrough', this._canplaythroughFun);
+        //渲染完成
+        video.removeEventListener('complete', this._completeFun);
+        //视频已经到达结束点
+        video.removeEventListener('ended', this._endedFun);
+        //首帧已经加载
+        video.removeEventListener('loadeddata', this._loadeddataFun);
+        //duration 属性的值改变时触发
+        video.removeEventListener('durationchange', this._durationchangeFun);
+        this._canplayFun = null;
+        this._canplaythroughFun = null;
+        this._completeFun = null;
+        this._endedFun = null;
+        this._loadeddataFun = null;
+        this._durationchangeFun = null;
+        this._wS = 1;
+        this._hS = 1;
+        if (this._video.parentElement) {
+            this._video.parentElement.removeChild(this._video);
+        }
+    };
+    return Video;
+}(DisplayObject_1.DisplayObject));
+exports.Video = Video;
 
 
 /***/ }),
@@ -8526,7 +9089,6 @@ var InputBase = /** @class */ (function (_super) {
         _this.on(Index_1.TouchMouseEvent.onClick, _this.onClick, _this);
         return _this;
     }
-    ;
     Object.defineProperty(InputBase.prototype, "currentState", {
         get: function () {
             return this._currentState;
@@ -9014,6 +9576,7 @@ exports.TweenEvent = {
 Object.defineProperty(exports, "__esModule", { value: true });
 var TouchMouseEvent_1 = __webpack_require__(/*! ../event/TouchMouseEvent */ "./src/event/TouchMouseEvent.ts");
 var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
+var SyncManager_1 = __webpack_require__(/*! ./SyncManager */ "./src/interaction/SyncManager.ts");
 /**
  * 点击触摸相关的事件处理订阅类,UI组件内部可以创建此类实现点击相关操作
  *
@@ -9024,13 +9587,6 @@ var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
  *  {InteractionEvent}.TouchEvent.onClick
  *  {InteractionEvent}.TouchEvent.onMove
  * ```
- *  可赋值方法:
- * ```
- *  onHover: ((e: InteractionEvent,thisOBj:DisplayObject,over: boolean) => void) | undefined
- *  onPress: ((e: InteractionEvent,thisOBj:DisplayObject, isPressed: boolean) => void) | undefined;
- *  onClick: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
- *  onMove: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
- * ```
  *
  * @example 可查看 `TestSliceSprite` 示例
  *
@@ -9040,15 +9596,12 @@ var ClickEvent = /** @class */ (function () {
     /**
      * ClickEvent 构造函数
      * @param obj 调用的显示对象
-     * @param isOpenEmitEvent 是否开启事件派发，默认false，开启后，父类可以监听InteractionEvent下的TouchEvent
      * @param includeHover 是否监听鼠标移上与移出，默认true
      * @param rightMouseButton 是否开启鼠标右键点击，默认false
      * @param doubleClick 是否开启鼠标双击,默认false
      */
-    function ClickEvent(obj, isOpenEmitEvent, includeHover, rightMouseButton, doubleClick) {
+    function ClickEvent(obj, includeHover, rightMouseButton, doubleClick) {
         this.id = 0;
-        /** 是否基于事件派发，开启后，可以侦听相关的事件 InteractionEvent.TouchEvent | vf.gui.Interaction.TouchEvent */
-        this.isOpenEmitEvent = false;
         /** 是否开启本地坐标转换，开启后，事件InteractionEvent中的localX localY为本地坐标，false情况下为0 */
         this.isOpenLocalPoint = false;
         this.localOffset = new vf.Point();
@@ -9066,15 +9619,15 @@ var ClickEvent = /** @class */ (function () {
         this.eventnameMouseup = "mouseup" /* mouseup */;
         this.eventnameMouseupoutside = "mouseupoutside" /* mouseupoutside */;
         this.isStop = true;
+        this.deviceType = vf.utils.getSystemInfo().device.type;
+        this.lastMouseDownTime = 0;
+        this._tempMovePoint = new vf.Point();
         this.obj = obj;
-        if (isOpenEmitEvent !== undefined) {
-            this.isOpenEmitEvent = isOpenEmitEvent;
-        }
         if (includeHover !== undefined) {
-            this.right = includeHover;
+            this.hover = includeHover;
         }
         if (rightMouseButton !== undefined) {
-            this.hover = rightMouseButton;
+            this.right = rightMouseButton;
         }
         if (doubleClick !== undefined) {
             this.double = doubleClick;
@@ -9092,87 +9645,108 @@ var ClickEvent = /** @class */ (function () {
     };
     ClickEvent.prototype.startEvent = function () {
         if (this.isStop) {
-            this.obj.container.on(this.eventnameMousedown, this._onMouseDown, this);
-            if (!this.right)
-                this.obj.container.on("touchstart" /* touchstart */, this._onMouseDown, this);
-            if (this.hover) {
-                this.obj.container.on("mouseover" /* mouseover */, this._onMouseOver, this);
-                this.obj.container.on("mouseout" /* mouseout */, this._onMouseOut, this);
+            var container = this.obj.container;
+            container.on(this.eventnameMousedown, this._onMouseDown, this);
+            if (!this.right) {
+                container.on("touchstart" /* touchstart */, this._onMouseDown, this);
+                if (this.hover) {
+                    if (this.deviceType === 'pc') { // 用于解决移动端滑动触发问题，后期可以单独处理移动相关的
+                        container.on("mouseover" /* mouseover */, this._onMouseOver, this);
+                        container.on("mouseout" /* mouseout */, this._onMouseOut, this);
+                    }
+                    else {
+                        container.on("touchstart" /* touchstart */, this._onMouseOver, this);
+                        container.on("touchend" /* touchend */, this._onMouseOut, this);
+                    }
+                }
             }
             this.isStop = false;
         }
     };
     /** 清除拖动 */
     ClickEvent.prototype.stopEvent = function () {
+        var container = this.obj.container;
         if (this.bound) {
-            this.obj.container.off(this.eventnameMouseup, this._onMouseUp, this);
-            this.obj.container.off(this.eventnameMouseupoutside, this._onMouseUpOutside, this);
+            container.off(this.eventnameMouseup, this._onMouseUp, this);
+            container.off(this.eventnameMouseupoutside, this._onMouseUpOutside, this);
             if (!this.right) {
-                this.obj.container.off("touchend" /* touchend */, this._onMouseUp, this);
-                this.obj.container.off("touchendoutside" /* touchendoutside */, this._onMouseUpOutside, this);
+                container.off("touchend" /* touchend */, this._onMouseUp, this);
+                container.off("touchendoutside" /* touchendoutside */, this._onMouseUpOutside, this);
             }
             this.bound = false;
         }
-        this.obj.container.off(this.eventnameMousedown, this._onMouseDown, this);
+        container.off(this.eventnameMousedown, this._onMouseDown, this);
         if (!this.right)
-            this.obj.container.off("touchstart" /* touchstart */, this._onMouseDown, this);
+            container.off("touchstart" /* touchstart */, this._onMouseDown, this);
         if (this.hover) {
-            this.obj.container.off("mouseover" /* mouseover */, this._onMouseOver, this);
-            this.obj.container.off("mouseout" /* mouseout */, this._onMouseOut, this);
-            this.obj.container.off("mousemove" /* mousemove */, this._onMouseMove, this);
-            this.obj.container.off("touchmove" /* touchmove */, this._onMouseMove, this);
+            container.off("mouseover" /* mouseover */, this._onMouseOver, this);
+            container.off("mouseout" /* mouseout */, this._onMouseOut, this);
+            container.off("mousemove" /* mousemove */, this._onMouseMove, this);
+            container.off("touchmove" /* touchmove */, this._onMouseMove, this);
+            container.off("touchstart" /* touchstart */, this._onMouseOver, this);
+            container.off("touchendoutside" /* touchendoutside */, this._onMouseOut, this);
         }
         this.isStop = true;
     };
     ClickEvent.prototype._onMouseDown = function (e) {
+        if (this.lastMouseDownTime > performance.now() && !e.signalling) {
+            return;
+        }
+        this.lastMouseDownTime = performance.now() + 300;
+        if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
+            (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onPress) > 0 ||
+                this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onDown) > 0 ||
+                this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onClick) > 0)) {
+            SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
+        }
         this.setLocalPoint(e);
         this.mouse.copyFrom(e.data.global);
         this.id = e.data.identifier;
-        this.onPress && this.onPress.call(this.obj, e, this.obj, true), this.obj;
         this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onPress, e, true);
         if (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onDown) > 0) {
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onDown, e, true);
         }
+        var container = this.obj.container;
         if (!this.bound) {
-            this.obj.container.on(this.eventnameMouseup, this._onMouseUp, this);
-            this.obj.container.on(this.eventnameMouseupoutside, this._onMouseUpOutside, this);
+            container.on(this.eventnameMouseup, this._onMouseUp, this);
+            container.on(this.eventnameMouseupoutside, this._onMouseUpOutside, this);
             if (!this.right) {
-                this.obj.container.on("touchend" /* touchend */, this._onMouseUp, this);
-                this.obj.container.on("touchendoutside" /* touchendoutside */, this._onMouseUpOutside, this);
+                container.on("touchend" /* touchend */, this._onMouseUp, this);
+                container.on("touchendoutside" /* touchendoutside */, this._onMouseUpOutside, this);
             }
             this.bound = true;
         }
         if (this.double) {
             var now = performance.now();
             if (now - this.time < 210) {
-                this.onClick && this.onClick.call(this.obj, e, this.obj);
                 this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onClick, e);
             }
             else {
                 this.time = now;
             }
         }
-        if (this.obj.stage && this.obj.stage.originalEventPreventDefault) {
+        if (this.obj.stage && this.obj.stage.originalEventPreventDefault && e.data.originalEvent) {
             e.data.originalEvent.preventDefault();
         }
     };
     ClickEvent.prototype.emitTouchEvent = function (event, e, args) {
+        if (this.obj.listenerCount(event) <= 0) {
+            return;
+        }
         if (Utils_1.debug) {
             var stage = this.obj.stage;
             if (stage && event !== TouchMouseEvent_1.TouchMouseEvent.onMove) {
-                stage.inputLog({
+                stage.sendToPlayer({
                     code: event,
-                    level: 'info',
+                    level: "info",
                     target: this.obj,
                     data: [args],
-                    action: e.type
+                    action: e.type,
                 });
             }
         }
-        if (this.isOpenEmitEvent) {
-            e.type = event.toString();
-            this.obj.emit(e.type, e, this.obj, args);
-        }
+        e.type = event.toString();
+        this.obj.emit(e.type, e, this.obj, args);
     };
     ClickEvent.prototype._mouseUpAll = function (e) {
         if (e.data.identifier !== this.id)
@@ -9187,15 +9761,18 @@ var ClickEvent = /** @class */ (function () {
             }
             this.bound = false;
         }
-        this.onPress && this.onPress.call(this.obj, e, this.obj, false);
-        if (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onUp) > 0) {
-            this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onUp, e, false);
-        }
+        this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onUp, e, false);
         this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onPress, e, false);
     };
     ClickEvent.prototype._onMouseUp = function (e) {
         if (e.data.identifier !== this.id)
             return;
+        if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
+            (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onUp) > 0 ||
+                this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onPress) > 0 ||
+                this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onClick) > 0)) {
+            SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
+        }
         this._mouseUpAll(e);
         //prevent clicks with scrolling/dragging objects
         if (this.obj.dragThreshold) {
@@ -9205,37 +9782,51 @@ var ClickEvent = /** @class */ (function () {
                 return;
         }
         if (!this.double) {
-            this.onClick && this.onClick.call(this.obj, e, this.obj);
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onClick, e, false);
         }
     };
     ClickEvent.prototype._onMouseUpOutside = function (e) {
         if (e.data.identifier !== this.id)
             return;
+        if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
+            (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onUp) > 0 ||
+                this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onPress) > 0)) {
+            SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
+        }
         this._mouseUpAll(e);
     };
     ClickEvent.prototype._onMouseOver = function (e) {
         if (!this.ishover) {
+            if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onHover) > 0)) {
+                SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
+            }
             this.ishover = true;
             this.obj.container.on("mousemove" /* mousemove */, this._onMouseMove, this);
             this.obj.container.on("touchmove" /* touchmove */, this._onMouseMove, this);
-            this.onHover && this.onHover.call(this.obj, e, this.obj, true);
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onHover, e, true);
         }
     };
     ClickEvent.prototype._onMouseOut = function (e) {
         if (this.ishover) {
+            if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onHover) > 0)) {
+                SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
+            }
             this.ishover = false;
             this.obj.container.off("mousemove" /* mousemove */, this._onMouseMove, this);
             this.obj.container.off("touchmove" /* touchmove */, this._onMouseMove, this);
-            this.onHover && this.onHover.call(this.obj, e, this.obj, false);
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onHover, e, false);
         }
     };
     ClickEvent.prototype._onMouseMove = function (e) {
-        this.setLocalPoint(e);
-        this.onMove && this.onMove.call(this.obj, e, this.obj);
-        this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onMove, e);
+        if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onMove) > 0)) {
+            SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
+        }
+        var container = this.obj.container;
+        container.toLocal(e.data.global, undefined, this._tempMovePoint);
+        if (container.hitArea && container.hitArea.contains(this._tempMovePoint.x, this._tempMovePoint.y)) {
+            this.setLocalPoint(e);
+            this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onMove, e);
+        }
     };
     ClickEvent.prototype.setLocalPoint = function (e) {
         if (this.isOpenLocalPoint) {
@@ -9245,10 +9836,6 @@ var ClickEvent = /** @class */ (function () {
     };
     ClickEvent.prototype.remove = function () {
         this.stopEvent();
-        this.onPress = undefined;
-        this.onHover = undefined;
-        this.onClick = undefined;
-        this.onMove = undefined;
         this.obj.container.interactive = false;
     };
     return ClickEvent;
@@ -9353,6 +9940,7 @@ exports.getEventItem = getEventItem;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var Index_1 = __webpack_require__(/*! ./Index */ "./src/interaction/Index.ts");
+var SyncManager_1 = __webpack_require__(/*! ./SyncManager */ "./src/interaction/SyncManager.ts");
 /**
  * 多拽相关的事件处理类
  *
@@ -9412,11 +10000,16 @@ var DragEvent = /** @class */ (function () {
         }
     };
     DragEvent.prototype._onDragStart = function (e) {
-        if (this.obj.dragStopPropagation && e.data.originalEvent.stopPropagation) {
+        if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (e.type == "mousedown" /* mousedown */ || e.type == "touchstart" /* touchstart */)) {
+            SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
+        }
+        if (this.obj.dragStopPropagation && e.data.originalEvent && e.data.originalEvent.stopPropagation) {
             e.data.originalEvent.stopPropagation();
         }
         this.id = e.data.identifier;
-        this.onDragPress && this.onDragPress.call(this.obj, e, true, this);
+        if (e.type == "mousedown" /* mousedown */ || e.type == "touchstart" /* touchstart */) {
+            this.onDragPress && this.onDragPress.call(this.obj, e, true, this);
+        }
         if (!this.bound && this.obj.parent && this.obj.stage) {
             var stage = this.obj.stage.container;
             this.start.copyFrom(e.data.global);
@@ -9429,22 +10022,29 @@ var DragEvent = /** @class */ (function () {
             stage.on("touchcancel" /* touchcancel */, this._onDragEnd, this);
             this.bound = true;
         }
-        if (this.obj.stage && this.obj.stage.originalEventPreventDefault && e.data.originalEvent.preventDefault) {
+        if (this.obj.stage &&
+            this.obj.stage.originalEventPreventDefault &&
+            e.data.originalEvent &&
+            e.data.originalEvent.preventDefault) {
             e.data.originalEvent.preventDefault();
         }
     };
     DragEvent.prototype._onDragMove = function (e) {
-        if (this.obj.dragStopPropagation && e.data.originalEvent.stopPropagation) {
+        if (this.obj.dragStopPropagation && e.data.originalEvent && e.data.originalEvent.stopPropagation) {
             e.data.originalEvent.stopPropagation();
         }
         if (e.data.identifier !== this.id)
             return;
+        if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (e.type == "mousemove" /* mousemove */ || e.type == "touchmove" /* touchmove */)) {
+            SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj.stage);
+        }
         this.mouse.copyFrom(e.data.global);
         this.offset.set(this.mouse.x - this.start.x, this.mouse.y - this.start.y);
         if (!this.dragging) {
             this.movementX = Math.abs(this.offset.x);
             this.movementY = Math.abs(this.offset.y);
-            if (this.movementX === 0 && this.movementY === 0 || Math.max(this.movementX, this.movementY) < this.obj.dragThreshold)
+            if ((this.movementX === 0 && this.movementY === 0) ||
+                Math.max(this.movementX, this.movementY) < this.obj.dragThreshold)
                 return; //thresshold
             if (this.dragRestrictAxis !== undefined) {
                 this.cancel = false;
@@ -9467,6 +10067,14 @@ var DragEvent = /** @class */ (function () {
             e.stopPropagation();
         if (e.data.identifier !== this.id)
             return;
+        if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
+            (e.type == "mouseup" /* mouseup */ ||
+                e.type == "mouseupoutside" /* mouseupoutside */ ||
+                e.type == "touchend" /* touchend */ ||
+                e.type == "touchendoutside" /* touchendoutside */ ||
+                e.type == "touchcancel" /* touchcancel */)) {
+            SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj.stage);
+        }
         if (this.bound && this.obj.stage) {
             var stage = this.obj.stage.container;
             stage.off("mousemove" /* mousemove */, this._onDragMove, this);
@@ -9892,6 +10500,330 @@ var MouseScrollEvent = /** @class */ (function () {
     return MouseScrollEvent;
 }());
 exports.MouseScrollEvent = MouseScrollEvent;
+
+
+/***/ }),
+
+/***/ "./src/interaction/SyncManager.ts":
+/*!****************************************!*\
+  !*** ./src/interaction/SyncManager.ts ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * 用于同步输入事件
+ * by ziye
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var InteractionEvent_1 = __webpack_require__(/*! ../event/InteractionEvent */ "./src/event/InteractionEvent.ts");
+var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
+var Ticker_1 = __webpack_require__(/*! ../core/Ticker */ "./src/core/Ticker.ts");
+var SyncManager = /** @class */ (function () {
+    function SyncManager(stage) {
+        this.resumeStatusFlag = false; //是否正在恢复状态
+        this.offsetTime = 0; //本地Date.now()与中心服务器的差值
+        this._resetTimeFlag = false; //是否对齐过时间
+        this._crossTime = 0; //穿越的时间
+        this._initTime = 0; //初始化成功时的时间
+        this._lostEvent = []; //节流中的event
+        this._throttleFlag = false; //节流状态
+        this._throttleTimer = null; //节流时间函数
+        this._evtDataList = []; //历史信令整理后的数组
+        this._lastMoveEvent = []; //上一个move事件，用于稀疏，如果是连续的move操作，则使用相同的code，这样信令服务器会merge掉之前的move操作，在恢复时会拿到更少的数据量
+        this._readystate = 1;
+        this._interactionEvent = new InteractionEvent_1.InteractionEvent();
+        if (!this._interactionEvent.data) {
+            this._interactionEvent.data = new vf.interaction.InteractionData();
+        }
+        this._stage = stage;
+        if (stage.syncInteractiveFlag) {
+            var systemEvent = stage.getSystemEvent();
+            if (systemEvent) {
+                this.sendCustomEvent = this.sendCustomEvent.bind(this);
+                systemEvent.on('sendCustomEvent', this.sendCustomEvent);
+            }
+        }
+        Ticker_1.TickerShared.addOnce(this.init, this);
+    }
+    /**
+     * 对应一个stage有一个syncManager的实例
+     */
+    SyncManager.getInstance = function (stage) {
+        if (stage) {
+            return stage.syncManager;
+        }
+    };
+    /**
+     * 开始同步
+     */
+    SyncManager.prototype.init = function () {
+        this._initTime = performance.now();
+    };
+    SyncManager.prototype.release = function () {
+        this._readystate = 0;
+        var stage = this._stage;
+        if (stage.syncInteractiveFlag) {
+            var systemEvent = stage.getSystemEvent();
+            if (systemEvent) {
+                systemEvent.off('sendCustomEvent', this.sendCustomEvent);
+            }
+        }
+    };
+    /**
+     * 收集交互事件
+     */
+    SyncManager.prototype.collectEvent = function (e, obj) {
+        if (!this._stage.syncInteractiveFlag || e.signalling)
+            return; //不需要同步，或者已经是信令同步过来的，不再做处理
+        var eventData = this.createEventData(e, obj);
+        if (e.type === "mousemove" /* mousemove */ || e.type === "touchmove" /* touchmove */) {
+            this.throttle(eventData);
+        }
+        else {
+            //首先把之前未发送的move补发出去
+            if (this._lostEvent.length > 0) {
+                clearTimeout(this._throttleTimer);
+                this.sendEvent(this._lostEvent[0]);
+                this._lostEvent = [];
+                this._throttleFlag = false;
+            }
+            this.sendEvent(eventData);
+        }
+    };
+    /**
+     * 收集自定义事件
+     * data
+     */
+    SyncManager.prototype.sendCustomEvent = function (customData) {
+        var eventData = {};
+        var time = this.currentTime();
+        eventData.code = "syncCustomEvent_" + vf.utils.uid() + time;
+        eventData.time = time;
+        eventData.data = JSON.stringify(customData);
+        this.sendEvent(eventData);
+    };
+    /**
+     * 接收操作
+     * @signalType 信令类型  live-实时信令   history-历史信令
+     */
+    SyncManager.prototype.receiveEvent = function (eventData, signalType) {
+        if (signalType === void 0) { signalType = "live"; }
+        if (signalType == "history") {
+            this.dealHistoryEvent(eventData);
+        }
+        else {
+            if (!this._resetTimeFlag) {
+                this._resetTimeFlag = true;
+                //判断是否需要穿越到过去,忽略500ms的网络延时
+                if (eventData.time < this.currentTime() - 500) {
+                    //将本条信令插入历史信令数组后面，重新跑一次状态恢复
+                    this._evtDataList.push(eventData);
+                    this.resumeStatus();
+                    return;
+                }
+            }
+            this.parseEventData(eventData);
+        }
+    };
+    /**
+     * 获取当前时间
+     */
+    SyncManager.prototype.currentTime = function () {
+        var time = performance.now() - this._initTime - this.offsetTime + this._crossTime;
+        return Math.floor(time);
+    };
+    /**
+     * 构造一个新的e，用于同步，数据要尽量精简
+     */
+    SyncManager.prototype.createEventData = function (e, obj) {
+        var event = {};
+        event.type = e.type;
+        event.path = Utils_1.getDisplayPathById(obj);
+        var data = {};
+        event.data = data;
+        data.identifier = e.data.identifier;
+        data.global = { x: Math.floor(e.data.global.x), y: Math.floor(e.data.global.y) };
+        //!!!important: e.data.originalEvent  不支持事件继续传递
+        var time = this.currentTime();
+        var eventData = {
+            code: "syncInteraction_" + vf.utils.uid() + time,
+            time: time,
+            data: JSON.stringify(event),
+        };
+        //稀疏move，将相同的一组move使用相同的code
+        if (e.type === "mousemove" /* mousemove */ || e.type === "touchmove" /* touchmove */) {
+            if (this._lastMoveEvent.length > 0) {
+                var lastEvent = this._lastMoveEvent[0];
+                if (lastEvent.type == event.type && lastEvent.obj == obj) {
+                    //使用相同的code
+                    eventData.code = lastEvent.code;
+                }
+            }
+            this._lastMoveEvent[0] = {
+                type: e.type,
+                obj: obj,
+                code: eventData.code
+            };
+        }
+        else {
+            this._lastMoveEvent = [];
+        }
+        return eventData;
+    };
+    /**
+     * 发送操作
+     */
+    SyncManager.prototype.sendEvent = function (eventData) {
+        var stage = this._stage;
+        //派发至uistage
+        stage.emit("sendSyncEvent", eventData);
+        //派发至player
+        var msg = {
+            level: 'command',
+            code: 'syncEvent',
+            data: eventData
+        };
+        stage.sendToPlayer(msg);
+    };
+    /**
+     * 更新节流状态
+     */
+    SyncManager.prototype.throttleUpdate = function () {
+        this._throttleFlag = false;
+        if (this._lostEvent.length > 0) {
+            this.throttle(this._lostEvent[0]);
+            this._lostEvent = [];
+        }
+    };
+    /**
+     * 节流，每100ms发送一次
+     * @param eventData
+     */
+    SyncManager.prototype.throttle = function (eventData) {
+        var _this = this;
+        if (!this._throttleFlag) {
+            this._throttleFlag = true;
+            this.sendEvent(eventData);
+            this._throttleTimer = setTimeout(function () {
+                _this.throttleUpdate();
+            }, 100);
+        }
+        else {
+            this._lostEvent = [];
+            this._lostEvent.push(eventData);
+        }
+    };
+    SyncManager.prototype.resetStage = function () {
+        var stage = this._stage;
+        if (stage.reset) {
+            stage.reset();
+        }
+        else {
+            console.error("当前stage没有reset方法，使用输入同步需要自定义reset方法用于场景重置!!!");
+        }
+        this._initTime = performance.now();
+    };
+    /**
+     * 解析收到的event
+     */
+    SyncManager.prototype.parseEventData = function (eventData) {
+        var stage = this._stage;
+        var time = eventData.time;
+        //判断信令时间，是否需要向后穿越
+        var currentTime = this.currentTime();
+        if (currentTime < time) {
+            var druation = time - currentTime;
+            this.crossTime(druation);
+        }
+        if (eventData.code.indexOf("syncInteraction_") == 0) {
+            var event_1 = JSON.parse(eventData.data);
+            this._interactionEvent.signalling = true;
+            this._interactionEvent.type = event_1.type;
+            var data = event_1.data;
+            this._interactionEvent.data.identifier = data.identifier;
+            this._interactionEvent.data.global.set(data.global.x, data.global.y);
+            this._obj = stage.getChildByPath(event_1.path);
+            this._obj.container.emit(this._interactionEvent.type, this._interactionEvent);
+        }
+        else if (eventData.code.indexOf("syncCustomEvent_") == 0) {
+            //自定义事件
+            var data = JSON.parse(eventData.data);
+            var systemEvent = stage.getSystemEvent();
+            if (systemEvent) {
+                systemEvent.emit('receiveCustomEvent', data);
+            }
+            else {
+                stage.emit("receiveCustomEvent", data);
+            }
+        }
+    };
+    /**
+     * 时间未到，需要穿越到未来
+     */
+    SyncManager.prototype.crossTime = function (druation) {
+        var resetRenderFlag = false;
+        if (this._stage.renderable) {
+            this._stage.renderable = false;
+            resetRenderFlag = true;
+        }
+        Ticker_1.TickerShared.crossingTime(druation);
+        if (resetRenderFlag) {
+            this._stage.renderable = true;
+        }
+        this._crossTime += druation;
+    };
+    /**
+     * 处理历史信令，将历史输入事件按时间顺序放置到一个数组
+     * @param eventData
+     */
+    SyncManager.prototype.dealHistoryEvent = function (eventData) {
+        this._evtDataList = [];
+        if (!eventData)
+            return;
+        for (var key in eventData) {
+            if (key.indexOf('syncInteraction_') == 0 || key.indexOf('syncCustomEvent_') == 0) {
+                this._evtDataList.push(eventData[key]);
+            }
+        }
+        this._evtDataList.sort(function (a, b) {
+            return a.time - b.time;
+        });
+        this.resumeStatus();
+    };
+    /**
+     * 恢复状态
+     */
+    SyncManager.prototype.resumeStatus = function () {
+        var _this = this;
+        //恢复过程只需要计算状态，不需要渲染
+        if (this._evtDataList.length == 0)
+            return;
+        var start = performance.now();
+        this.resetStage();
+        setTimeout(function () {
+            if (_this._readystate === 0)
+                return;
+            var resetTime = performance.now();
+            _this.resumeStatusFlag = true;
+            _this._stage.renderable = false;
+            for (var i = 0; i < _this._evtDataList.length; ++i) {
+                //执行操作
+                _this.parseEventData(_this._evtDataList[i]);
+            }
+            _this._stage.renderable = true;
+            _this.resumeStatusFlag = false;
+            var now = performance.now();
+            if (Utils_1.debug) {
+                console.log("\u6062\u590D\u603B\u8017\u65F6\uFF1A" + (now - start) + ", reset\u8017\u65F6: " + (resetTime - start) + ", \u6267\u884C\u64CD\u4F5C\u8017\u65F6\uFF1A" + (now - resetTime) + "}");
+            }
+        }, 120);
+    };
+    return SyncManager;
+}());
+exports.SyncManager = SyncManager;
 
 
 /***/ }),
@@ -13485,6 +14417,13 @@ function setDisplayObjectPath(params) {
     exports.$getUIDisplayObjectPath = params;
 }
 exports.setDisplayObjectPath = setDisplayObjectPath;
+function getSource(src) {
+    if (exports.$getSourcePath) {
+        src = exports.$getSourcePath(src);
+    }
+    return src;
+}
+exports.getSource = getSource;
 function getTexture(src) {
     if (exports.$getSourcePath) {
         src = exports.$getSourcePath(src);
@@ -13595,7 +14534,7 @@ exports.now = now;
  * @param source 对象元
  */
 function deepCopy(source, target) {
-    if (source === undefined || typeof source !== 'object') {
+    if (source === null || source === undefined || typeof source !== 'object') {
         return source;
     }
     else if (Array.isArray(source)) {
@@ -13856,13 +14795,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.6.6.1.6.6.1.6.6) ==1.6.6.1.6.6.1.6.6;
+//     return this.lastIndexOf(word, pos1.7.5.1.7.5.1.7.5) ==1.7.5.1.7.5.1.7.5;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.6.6";
+window.vf.gui.version = "1.7.5";
 
 
 /***/ })
