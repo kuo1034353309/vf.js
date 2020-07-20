@@ -1,19 +1,20 @@
-# v0.5.72 - debug
+# v0.6.1 - debug
 
-1. 增加HtmlVideo组件，[使用说明](https://vipkid-edu.github.io/vf-docs/gui/video.html#%E5%B1%9E%E6%80%A7)
+1. 增加粒子组件，增加示例
+    1. [使用说明](https://vipkid-edu.github.io/vf-docs/gui/particles.html#%E6%8F%92%E4%BB%B6%E5%9C%B0%E5%9D%80)
+    2. [编辑器](https://vipkid-edu.github.io/vf-docs/particle/)
 
-1. 增加路径动画,[使用说明](https://vipkid-edu.github.io/vf-docs/handbook/animation.html#%E8%B7%AF%E5%BE%84%E5%8A%A8%E7%94%BB)
+1. 文本样式增加下划线设置
+    1. textDecoration 划线类型，下划线，中划线，上划线 
+    2. textDecorationColor 下划线颜色
+    3. 更新[文本文档、示例](https://vipkid-edu.github.io/vf-docs/gui/label.html#%E4%BA%8B%E4%BB%B6)
 
-1. 增加动画模版,[使用说明](https://vipkid-edu.github.io/vf-docs/handbook/animation.html#%E5%8A%A8%E7%94%BB%E6%A8%A1%E6%9D%BF)
+1. VFX增加新的语法
+    1. 时间处理函数
+    2. 字符串处理函数
+    3. parseInt,parseFloat类型转换函数
+    4. 多动画播放 playAnimation(['name1','name2'])
 
-1. 增加调整loading位置与样式，[使用说明](https://vipkid-edu.github.io/vf-docs/handbook/option.html#loading)
-
-1. 增加自动同步功能，内部使用，参见Wiki中ID为144690481。
-
-1. 调整示例的显示比例，移动为先。
-
-1. 修复移动端无法画线。
-
-1. 修改初始化参数 realFPS 默认值为 `false`。
-
-1. 修改系统音频播放，支持不同音频使用同一音轨播放。
+1. 
+1. 修复系统音频暂停后，无法重开始播放。
+1. 修复VFX方法中参数不同时造成的传值错误。

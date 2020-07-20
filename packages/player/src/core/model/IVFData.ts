@@ -412,6 +412,7 @@ export interface IActionSound extends IAction {
         offset?: number;
         length?: number;
         mode?: 'sound' | 'effect';
+        signalling: boolean;
     }
 export interface IActionGoto extends IAction {
         name: string | ExpressItem;

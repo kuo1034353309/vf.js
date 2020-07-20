@@ -1,7 +1,7 @@
 {
   "name": "@vf.js/launcher",
-  "version": "0.5.74",
-  "status": "beta",
+  "version": "0.6.1-debug",
+  "status": "debug",
   "description": "",
   "main": "dist/launcher.min.js",
   "types": "launcher.d.ts",

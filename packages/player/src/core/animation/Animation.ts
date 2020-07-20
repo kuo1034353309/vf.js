@@ -11,6 +11,7 @@ import { EventTimeline } from './EventTimeline';
 import { EventFrame } from './EventFrame';
 import { PathTimeline } from './PathTimeline';
 
+
 export class Animation {
 
         private animationMap: {[name: string]: AnimationClip[]} = {};
@@ -25,6 +26,7 @@ export class Animation {
          */
         private realFPS: boolean = false;
         private curTime: number = 0;
+        private lastTime: number = 0;
         private curPlayTime: number = 0;
         private startTime: number = 0;
         private passedTime: number = 0;
