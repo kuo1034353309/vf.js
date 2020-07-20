@@ -1,7 +1,7 @@
 import { BaseTask } from './core/BaseTask';
 import { VFComponent } from '../../display/VFComponent';
 import { FunctionTask } from './FunctionTask';
-import { IAction } from '../model/IVFData';
+import { IAction, IActionFunction } from '../model/IVFData';
 import { getTargetComponent } from '../../utils/VFUtil';
 
 export class DefineFunctionTask extends BaseTask {
@@ -12,11 +12,12 @@ export class DefineFunctionTask extends BaseTask {
         protected data: IAction;
         protected funId: string = '';
 
-        constructor(compontent: VFComponent, funName: string, data: IAction, fun: FunctionTask) {
+        constructor(compontent: VFComponent, funName: string, data: IActionFunction, fun: FunctionTask) {
             super();
             this.component = compontent;
             this.funName = funName;
             this.fun = fun;
+            this.fun.formalParams = data.formalParams;
             this.data = data;
         }
 

@@ -22,7 +22,11 @@ export class PlayAnimationTask extends BaseTask {
             const name = this.getValue();
             const times = this.getTimes();
             if (this._component && this._component.vfStage) {
-                this._component.play(name, times);
+                if(Array.isArray(name)) {
+                    this._component.playMulit(name, times);
+                } else {
+                    this._component.play(name, times);
+                }
             }
             
             this.complete();

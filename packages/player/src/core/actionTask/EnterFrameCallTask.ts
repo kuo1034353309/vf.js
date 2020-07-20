@@ -12,8 +12,9 @@ export class EnterFrameCallTask extends ContainerTask {
         private loopTaskComplete: boolean = true;
         protected callfun?: CallFunctionTask;
         protected callfunData?: IActionCallFunction;
+        private curTime: number = 0;
+        private lastTime: number = 0;
         private funName?: string;
-        private tickHandler?: vf.gui.Scheduler;
 
         constructor(component: VFComponent, data: IActionEnterFrame) {
             super();
@@ -43,13 +44,9 @@ export class EnterFrameCallTask extends ContainerTask {
                     if (this.loopTask) {
                         this.loopTask.addListener(TaskEvent.EVENT_COMPLETE, this.onLoopComplete, this);
                     }
-                    
-                    if(!this.tickHandler) {
-                        this.tickHandler = vf.gui.Scheduler.setEnterFrame(this.tick.bind(this));
-                    } else {
-                        this.tickHandler.restart();
-                    }
-
+                    this.curTime = new Date().getTime();
+                    this.lastTime = this.curTime;
+                    vfStage.app.ticker.add(this.tick, this);
                 } else {
                     this.complete();
                 }
@@ -63,8 +60,11 @@ export class EnterFrameCallTask extends ContainerTask {
             if (this.loopTask) {
                 this.loopTask.removeListener(TaskEvent.EVENT_COMPLETE, this.onLoopComplete, this);
             }
-            if(this.tickHandler) {
-                this.tickHandler.stop();
+            if (this.component) {
+                const vfStage = this.component.vfStage;
+                if (vfStage && vfStage.app) {
+                    vfStage.app.ticker.remove(this.tick, this);
+                }
             }
         }
         public stop(): void {
@@ -74,15 +74,21 @@ export class EnterFrameCallTask extends ContainerTask {
 
         public pause(): void {
             super.pause();
-            if(this.tickHandler) {
-                this.tickHandler.pause();
+            if (this.component) {
+                const vfStage = this.component.vfStage;
+                if (vfStage && vfStage.app) {
+                    vfStage.app.ticker.remove(this.tick, this);
+                }
             }
         }
 
         public resume(): void {
             if (this._isPaused) {
-                if(this.tickHandler) {
-                    this.tickHandler.resume();
+                if (this.component) {
+                    const vfStage = this.component.vfStage;
+                    if (vfStage && vfStage.app) {
+                        vfStage.app.ticker.add(this.tick, this);
+                    }
                 }
             }
             super.resume();
@@ -91,15 +97,18 @@ export class EnterFrameCallTask extends ContainerTask {
         private onLoopComplete(): void {
             this.loopTaskComplete = true;
         }
-        private tick(e: any): void {
+        private tick(): void {
             if (this.loopTaskComplete) {
                 if (this.loopTask) {
-                    const dt:any = e;
+                    this.curTime = new Date().getTime();
+                    const dt:any = this.curTime - this.lastTime;
                     if (this.callfunData) {
                         this.callfunData.params = [dt];
                     }
                     this.loopTaskComplete = false;
                     this.loopTask.run();
+
+                    this.lastTime = this.curTime;
                 }
             }
         }

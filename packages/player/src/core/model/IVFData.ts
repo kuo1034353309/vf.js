@@ -259,7 +259,10 @@ export enum ExpressItemType {
     OBJECT_VALUE,  // 对象取值
     PARAM_VALUE,   // 参数取值
     ARRAY_FUNCTION, // 数组 pop push shift unshift concat splice
-    COMPONENT, // 组件，仅在trace中使用
+    COMPONENT, // 组件
+    STRING_FUNCTION, // 字符串操作，indexOf, replace, split substr， substring
+    PARSE_INT,
+    PARSE_FLOAT,
 }
 export enum SystemValueType {
     TIME,
@@ -267,6 +270,10 @@ export enum SystemValueType {
     MONTH,
     DAY,
     DATE,
+    HOUR,
+    MINUTE,
+    SECOND,
+    MILLISECOND,
 }
 export type ExpressItem = any[];   // 表达式的项
 export type ExpressType = ExpressItem[]; // 表达式
@@ -326,6 +333,7 @@ export const enum ActionType {
         SetInterval,
         EnterFrame,
         EnterFrameCall,
+        StopAnimation,
     }
 export const enum ComponentEvent {
     Add = 'Add',
@@ -400,7 +408,6 @@ export interface IActionCallFunction extends IAction {
 export interface IActionSound extends IAction {
         assetId: number | string | any[];
         trackId: string;
-        signalling?: boolean;  //信令触发的播放声音
         time?: number;
         offset?: number;
         length?: number;
@@ -444,6 +451,7 @@ export interface IActionIFPart extends IAction {
 }
 export interface IActionFunction extends IAction {
     name: string;
+    formalParams?: ExpressType[];
 }
 export interface IActionAddEventListener extends IAction {
     event: string;
