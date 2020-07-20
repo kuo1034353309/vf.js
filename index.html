@@ -57,29 +57,30 @@
     </div>
     <script src='./packages/launcher/dist/launcher.js'></script>
     <script>
+        var v = "";
         var demos = [
             '选择示例',
             'test/vf_ppt/index.json',
-            './vf_demo/image.json',
-            './vf_demo/label.json',
-            './vf_demo/rect.json',
-            './vf_demo/button.json',
-            './vf_demo/checkbox.json',
-            './vf_demo/circle.json',
-            './vf_demo/slider.json',
-            './vf_demo/videoExample.json',
-            './vf_demo/textinput.json',
-            './vf_demo/soundTest.json',
-            './vf_demo/spriteanimated.json',
-            './vf_demo/pathAnimation.json',
-            './vf_demo/connectline.json',
-            './vf_demo/dragExample.json',
-            './vf_demo/scrollbar.json',
-            './vf_demo/textChoiceExample.json',
-            './vf_demo/textFillBlanksExample.json',
-            './vf_demo/tracingExample.json',
-            'https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN01/index.json',
-            './vf_demo/ic037.json',
+            './vf_demo/image.json?v='+v,
+            './vf_demo/label.json?v='+v,
+            './vf_demo/rect.json?v='+v,
+            './vf_demo/button.json?v='+v,
+            './vf_demo/checkbox.json?v='+v,
+            './vf_demo/circle.json?v='+v,
+            './vf_demo/slider.json?v='+v,
+            './vf_demo/textinput.json?v='+v,
+            './vf_demo/soundTest.json?v='+v,
+            './vf_demo/videoExample.json?v='+v,
+            './vf_demo/spriteanimated.json?v='+v,
+            './vf_demo/pathAnimation.json?v='+v,
+            './vf_demo/particles.json?v='+v,
+            './vf_demo/connectline.json?v=1?v='+v,
+            './vf_demo/dragExample.json?v='+v,
+            './vf_demo/scrollbar.json?v='+v,
+            './vf_demo/tracingExample.json?v='+v,
+            './vf_demo/textChoiceExample.json?v='+v,
+            './vf_demo/textFillBlanksExample.json?v='+v,
+            './vf_demo/ic037.json?v='+v
         ];
         for(var i =0;i<demos.length;i++){
             var option = new Option(demos[i],demos[i]);
