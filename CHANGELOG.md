@@ -15,6 +15,5 @@
     3. parseInt,parseFloat类型转换函数
     4. 多动画播放 playAnimation(['name1','name2'])
 
-1. 
 1. 修复系统音频暂停后，无法重开始播放。
 1. 修复VFX方法中参数不同时造成的传值错误。
