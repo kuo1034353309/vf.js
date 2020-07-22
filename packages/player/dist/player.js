@@ -1760,7 +1760,7 @@ var RES = /** @class */ (function (_super) {
         }
         if (customData.animations) {
             var realFPS = this.stage.config.realFPS;
-            var animation = new _animation_Animation__WEBPACK_IMPORTED_MODULE_5__["Animation"](vfComponent, customData.animations, this.data.fps, realFPS);
+            var animation = new _animation_Animation__WEBPACK_IMPORTED_MODULE_5__["Animation"](vfComponent, customData.animations, this.data.fps, realFPS, this.data.animationTemplate);
             vfComponent.animation = animation;
         }
         return vfComponent;
@@ -5910,6 +5910,23 @@ function modiyExpressItemParamValue(expressItem, paramIds) {
             modiyExpressItemParamValue(expressItem[3], paramIds);
         }
     }
+    else if (expressItem[0] === _model_IVFData__WEBPACK_IMPORTED_MODULE_7__["ExpressItemType"].ARRAY_FUNCTION) {
+        if (expressItem[3] == 'push' ||
+            expressItem[3] == 'unshift' ||
+            expressItem[3] == 'concat') {
+            if (Array.isArray(expressItem[4])) {
+                modiyExpressItemParamValue(expressItem[4], paramIds);
+            }
+        }
+        else if (expressItem[3] == 'splice') {
+            if (Array.isArray(expressItem[4])) {
+                modiyExpressItemParamValue(expressItem[4], paramIds);
+            }
+            if (Array.isArray(expressItem[5])) {
+                modiyExpressItemParamValue(expressItem[5], paramIds);
+            }
+        }
+    }
 }
 
 
@@ -6296,9 +6313,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var Animation = /** @class */ (function () {
-    function Animation(component, data, fps, realFPS) {
+    function Animation(component, data, fps, realFPS, animationTemplate) {
         if (fps === void 0) { fps = 30; }
         if (realFPS === void 0) { realFPS = true; }
+        if (animationTemplate === void 0) { animationTemplate = {}; }
         this.animationMap = {};
         this.animationConfig = {};
         this.status = 0 /* STOP */;
@@ -6329,6 +6347,7 @@ var Animation = /** @class */ (function () {
         }
         this.minDeltaT = Math.ceil(1000 / this.fps);
         this.deltaT = 0;
+        this._animationTemplate = animationTemplate;
         this.parseData();
     }
     Animation.prototype.addAnimationClip = function (clip) {
@@ -6518,10 +6537,20 @@ var Animation = /** @class */ (function () {
         this.animationConfig[name] = config;
         var duration = 0;
         for (var key in anim.children) {
-            if (anim.children[key]) {
-                var ac = this.parseAnimationClip(key, name, anim.children[key]);
-                if (ac && ac.totalTime > duration) {
-                    duration = ac.totalTime;
+            var subAnim = anim.children[key];
+            if (subAnim) {
+                var subAnimation = void 0;
+                if (typeof subAnim === 'string') {
+                    subAnimation = this._animationTemplate[subAnim];
+                }
+                else {
+                    subAnimation = subAnim;
+                }
+                if (subAnimation) {
+                    var ac = this.parseAnimationClip(key, name, subAnimation);
+                    if (ac && ac.totalTime > duration) {
+                        duration = ac.totalTime;
+                    }
                 }
             }
         }
@@ -8799,9 +8828,11 @@ var VFStage = /** @class */ (function (_super) {
             clearTimeout(this._delayedDisplayId);
             this._delayedDisplayId = setTimeout(function () {
                 _this.visible = true;
+                _this.syncInteractiveFlag = _this.config.vfvars.syncInteractiveFlag; //开启同步
                 if (_this.syncManager) {
-                    _this.syncManager.init();
+                    _this.syncManager.role = _this.config.vfvars.role; //角色
                 }
+                console.log('player----loadAssetCompleted')
                 _this.createPlugs();
                 _this.systemEvent.emit("status" /* STATUS */, {
                     code: "ScenComplete" /* ScenComplete */, level: "status" /* STATUS */, data: null,
@@ -9096,7 +9127,6 @@ var SliderEditorPlug = /** @class */ (function (_super) {
     function SliderEditorPlug(className, parent) {
         var _this = _super.call(this, className, parent) || this;
         parent.originalEventPreventDefault = true;
-        parent.syncInteractiveFlag = true; //开启同步
         var element = document.getElementById('drawCanvas');
         // eslint-disable-next-line no-eq-null
         if (element == null) {
