@@ -95,3 +95,5 @@ jspm_packages/
 
 test/VF*
 vf_demo
+packages/launcher/dist/
+packages/player/dist/

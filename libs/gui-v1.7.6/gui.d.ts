@@ -1002,7 +1002,7 @@ declare module 'src/core/DisplayLayoutAbstract' {
 	     * 设置组件的宽高。此方法不同于直接设置width,height属性，
 	     * 不会影响显式标记尺寸属性
 	     */
-	    setActualSize(w: number, h: number): void;
+	    setActualSize(w: number, h: number, isInvalidate?: boolean): void;
 	    /**
 	     * @private
 	     * 更新最终的组件宽高
@@ -1368,7 +1368,6 @@ declare module 'src/interaction/SyncManager' {
 }
 declare module 'src/interaction/ClickEvent' {
 	import { DisplayObject } from 'src/core/DisplayObject';
-	import { InteractionEvent } from 'src/event/InteractionEvent';
 	/**
 	 * 点击触摸相关的事件处理订阅类,UI组件内部可以创建此类实现点击相关操作
 	 *
@@ -1379,13 +1378,6 @@ declare module 'src/interaction/ClickEvent' {
 	 *  {InteractionEvent}.TouchEvent.onClick
 	 *  {InteractionEvent}.TouchEvent.onMove
 	 * ```
-	 *  可赋值方法:
-	 * ```
-	 *  onHover: ((e: InteractionEvent,thisOBj:DisplayObject,over: boolean) => void) | undefined
-	 *  onPress: ((e: InteractionEvent,thisOBj:DisplayObject, isPressed: boolean) => void) | undefined;
-	 *  onClick: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
-	 *  onMove: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
-	 * ```
 	 *
 	 * @example 可查看 `TestSliceSprite` 示例
 	 *
@@ -1395,16 +1387,13 @@ declare module 'src/interaction/ClickEvent' {
 	    /**
 	     * ClickEvent 构造函数
 	     * @param obj 调用的显示对象
-	     * @param isOpenEmitEvent 是否开启事件派发，默认false，开启后，父类可以监听InteractionEvent下的TouchEvent
 	     * @param includeHover 是否监听鼠标移上与移出，默认true
 	     * @param rightMouseButton 是否开启鼠标右键点击，默认false
 	     * @param doubleClick 是否开启鼠标双击,默认false
 	     */
-	    constructor(obj: DisplayObject, isOpenEmitEvent?: boolean, includeHover?: boolean, rightMouseButton?: boolean, doubleClick?: boolean);
+	    constructor(obj: DisplayObject, includeHover?: boolean, rightMouseButton?: boolean, doubleClick?: boolean);
 	    private obj;
 	    id: number;
-	    /** 是否基于事件派发，开启后，可以侦听相关的事件 InteractionEvent.TouchEvent | vf.gui.Interaction.TouchEvent */
-	    isOpenEmitEvent: boolean;
 	    /** 是否开启本地坐标转换，开启后，事件InteractionEvent中的localX localY为本地坐标，false情况下为0 */
 	    isOpenLocalPoint: boolean;
 	    private localOffset;
@@ -1422,6 +1411,7 @@ declare module 'src/interaction/ClickEvent' {
 	    private eventnameMouseup;
 	    private eventnameMouseupoutside;
 	    private isStop;
+	    private deviceType;
 	    getTarget(): DisplayObject;
 	    startEvent(): void;
 	    /** 清除拖动 */
@@ -1434,13 +1424,10 @@ declare module 'src/interaction/ClickEvent' {
 	    private _onMouseUpOutside;
 	    private _onMouseOver;
 	    private _onMouseOut;
+	    private _tempMovePoint;
 	    private _onMouseMove;
 	    private setLocalPoint;
 	    remove(): void;
-	    onHover: ((e: InteractionEvent, thisOBj: DisplayObject, over: boolean) => void) | undefined;
-	    onPress: ((e: InteractionEvent, thisOBj: DisplayObject, isPressed: boolean) => void) | undefined;
-	    onClick: ((e: InteractionEvent, thisOBj: DisplayObject) => void) | undefined;
-	    onMove: ((e: InteractionEvent, thisOBj: DisplayObject) => void) | undefined;
 	}
 
 }
@@ -1552,16 +1539,42 @@ declare module 'src/display/Label' {
 	export class Label extends DisplayObject {
 	    constructor(text?: string);
 	    readonly sprite: vf.Text;
+	    private _textDecoration;
+	    private _textDecorationOld;
+	    private _lineGraphics;
+	    private _textDecorationColor;
+	    private _textDecorationColorOld;
+	    private _textDecorationWidth;
+	    private _textDecorationWidthOld;
+	    private _textDecorationStyle;
+	    private _textDecorationStyleOld;
 	    /**
 	     * 设置分辨力比例
 	     */
 	    resolution: number;
 	    /**
+	     * 设置下划线
+	     */
+	    textDecoration: "None" | "Overline" | "LineThrough" | "UnderLine";
+	    textDecorationStyle: "Solid" | "Double";
+	    /**
+	     * 设置下划线颜色
+	     */
+	    textDecorationColor: number;
+	    /**
 	     * 文本内容
 	     */
 	    text: string;
 	    fontCssStyle: any;
+	    private setLine;
+	    private showUnderLine;
+	    private autoDrawLine;
+	    private getStartPosX;
+	    private getStartPosY;
+	    private drawLine;
 	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    private ckeckDrawLine;
+	    private clearLineGraphics;
 	    release(): void;
 	}
 
@@ -1625,6 +1638,7 @@ declare module 'src/display/Image' {
 	    anchorY: number | undefined;
 	    release(): void;
 	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    setSpeiteSize(unscaledWidth?: number, unscaledHeight?: number): void;
 	    protected measure(): void;
 	    protected srcSystem(): void;
 	    protected scale9GridSystem(): void;
@@ -2275,6 +2289,16 @@ declare module 'src/layout/CSSStyle' {
 	    private _wordWrapWidth?;
 	    wordWrapWidth: number | undefined;
 	    /**
+	     * 下划线类型
+	     * */
+	    private _textDecoration;
+	    textDecoration: "None" | "Overline" | "LineThrough" | "UnderLine";
+	    /**
+	    * 下划线颜色
+	    * */
+	    private _textDecorationColor;
+	    textDecorationColor: number;
+	    /**
 	     * 多行文本(wordWrap = true) - 对齐方式
 	     * */
 	    private _textAlign;
@@ -2303,7 +2327,7 @@ declare module 'src/layout/CSSStyle' {
 	    fontVariant: "normal" | "small-caps";
 	    /** 字体粗细 */
 	    private _fontWeight;
-	    fontWeight: 500 | 100 | 600 | "normal" | "bold" | "bolder" | "lighter" | 200 | 300 | 400 | 700 | 800 | 900;
+	    fontWeight: 500 | 100 | 300 | "normal" | "bold" | "bolder" | "lighter" | 200 | 400 | 600 | 700 | 800 | 900;
 	    /** 内部填充,只支持文字 */
 	    private _padding?;
 	    padding: number | undefined;
@@ -2609,6 +2633,7 @@ declare module 'src/utils/Utils' {
 	 */
 	export let $getUIDisplayObjectPath: Function;
 	export function setDisplayObjectPath(params: (cls?: any, target?: DisplayObject) => {}): void;
+	export function getSource(src: any): any;
 	export function getTexture(src: any): any;
 	export function getSheet(src: any): any;
 	export function getSound(src: any): any;
@@ -2841,9 +2866,9 @@ declare module 'src/display/Slider' {
 	    protected _decimals: number;
 	    protected _startValue: number;
 	    protected _maxPosition: number;
-	    protected _localMousePosition: vf.Point;
 	    protected _lastChange: number;
 	    protected _lastChanging: number;
+	    protected _localMousePosition: vf.Point;
 	    /** 状态展示 */
 	    readonly trackImg: VfuiImage;
 	    readonly thumbImg: VfuiImage;
@@ -2851,15 +2876,10 @@ declare module 'src/display/Slider' {
 	    protected _thumbDrag: DragEvent;
 	    protected _trackDrag: DragEvent;
 	    /**
-	     * 设置拖拽图，9切方式
-	     */
-	    trackScale9Grid: number[];
-	    protected _value: number;
-	    /**
 	     * 当前值
 	     */
 	    value: number;
-	    protected valueSystem(): void;
+	    protected valueSystem(value?: number): void;
 	    /**
 	     * 最小值
 	     */
@@ -2890,11 +2910,7 @@ declare module 'src/display/Slider' {
 	     */
 	    protected _tracklight?: string | number | vf.Texture | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
 	    tracklight: string | number | HTMLCanvasElement | vf.Texture | HTMLImageElement | HTMLVideoElement | undefined;
-	    protected isExcValueSystem: boolean;
-	    setActualSize(w: number, h: number): void;
-	    release(): void;
 	    protected onImgload(): void;
-	    protected updateLayout(): void;
 	    protected updatePosition(soft?: boolean): void;
 	    protected onPress(event: InteractionEvent, isPressed: boolean, dragEvent?: DragEvent): void;
 	    protected onDragStart(event: InteractionEvent): void;
@@ -2903,6 +2919,10 @@ declare module 'src/display/Slider' {
 	    protected updatePositionToMouse(mousePosition: vf.Point, soft: boolean): void;
 	    protected triggerValueChange(): void;
 	    protected triggerValueChanging(): void;
+	    updateLayout(): void;
+	    protected commitProperties(): void;
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    release(): void;
 	}
 
 }
@@ -3540,12 +3560,14 @@ declare module 'src/enum/FollowLineEnum' {
 declare module 'src/enum/TracingEnum' {
 	export const enum Operate {
 	    Add = 0,
-	    Clear = 1
+	    Clear = 1,
+	    Remove = 2
 	}
 	export const enum Mode {
 	    Check = 0,
 	    Teach = 1,
-	    Auto = 2
+	    Auto = 2,
+	    Strict = 3
 	}
 	export const enum Result {
 	    Uncomplete = 0,
@@ -3652,6 +3674,76 @@ declare module 'src/display/FollowLine' {
 	    setData(data: string | string[]): void;
 	    source: string | string[];
 	    reset(): any;
+	}
+
+}
+declare module 'src/display/Video' {
+	///   types="@vf.js/vf" />
+	import { DisplayObject } from 'src/core/DisplayObject';
+	/**
+	 * 播放器组件
+	 *
+	 */
+	export class Video extends DisplayObject {
+	    private _video;
+	    private _src;
+	    private _poster;
+	    protected _canvasBounds: {
+	        top: number;
+	        left: number;
+	        width: number;
+	        height: number;
+	    } | undefined;
+	    protected _lastRenderer: vf.Renderer | undefined;
+	    protected _resolution: number;
+	    private _canplayFun;
+	    private _canplaythroughFun;
+	    private _completeFun;
+	    private _endedFun;
+	    private _loadeddataFun;
+	    private _durationchangeFun;
+	    private _canPlayTypelist;
+	    constructor();
+	    private playTypeCheck;
+	    private canplayFun;
+	    private canplaythroughFun;
+	    private completeFun;
+	    private endedFun;
+	    private loadeddataFun;
+	    private durationchangeFun;
+	    private _wS;
+	    private _hS;
+	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    private updatePostion;
+	    private updateSystem;
+	    private _getCanvasBounds;
+	    private _vfMatrixToCSS;
+	    private _getDOMRelativeWorldTransform;
+	    private checkSrcLegal;
+	    /**
+	     * 支持的参数们~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	     */
+	    src: number | string;
+	    controls: boolean;
+	    width: number;
+	    height: number;
+	    loop: boolean;
+	    muted: boolean;
+	    volume: number;
+	    poster: number | string;
+	    currentTime: number;
+	    /**
+	     * 只读的属性们~~~~~~~~~~~~~~~~
+	     * */
+	    readonly duration: number;
+	    /**
+	    * 支持的方法们~~~··~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	    **/
+	    play(): void;
+	    pause(): void;
+	    requestFullScreen(): void;
+	    exitFullscreen(): void;
+	    release(): void;
 	}
 
 }
@@ -3765,6 +3857,7 @@ declare module 'src/display/Tracing' {
 	    private _messageCache;
 	    private _tween;
 	    private _guideTime;
+	    private _strictFlag;
 	    /**
 	     * debug
 	     */
@@ -3826,6 +3919,10 @@ declare module 'src/display/Tracing' {
 	     */
 	    private setRenderBgSprite;
 	    /**
+	     * 移出mask背景图
+	     */
+	    private removeRenderBgSprite;
+	    /**
 	     * 开始，适用于audo和teach模式
 	     */
 	    private start;
@@ -3842,6 +3939,7 @@ declare module 'src/display/Tracing' {
 	     * 自动绘制
 	     */
 	    private auto;
+	    private _posLength;
 	    private drawWithAnimation;
 	    private autoNextPoint;
 	    /**
@@ -3863,6 +3961,8 @@ declare module 'src/display/Tracing' {
 	     * 检查group
 	     */
 	    private checkResult;
+	    private checkStrictFirstPoint;
+	    private checkStrict;
 	    /**
 	     * 教学模式检查
 	     */
@@ -3903,6 +4003,7 @@ declare module 'src/display/Tracing' {
 	     */
 	    private emitTracingMsg;
 	    private onMessage;
+	    removeLine(lineId: string): void;
 	    /**
 	     * clear
 	     */
@@ -3985,6 +4086,7 @@ declare module 'src/display/Audio' {
 	    * 释放
 	    */
 	    dispose(): void;
+	    release(): void;
 	    /**
 	    * 各种可取参数.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	    */
@@ -4273,6 +4375,7 @@ declare module 'src/UI' {
 	 * @link https://vipkid-edu.github.io/vf-gui/play/#example/TestTimeLine
 	 */
 	import { FollowLine } from 'src/display/FollowLine';
+	import { Video } from 'src/display/Video';
 	/**
 	 * 连线组件
 	 *
@@ -4357,12 +4460,47 @@ declare module 'src/UI' {
 	import { SyncManager } from 'src/interaction/SyncManager';
 	export type Application = vf.Application;
 	/** 请不要在编写UI组件内部使用本类 */
-	export { Audio, Filter, Utils, Stage, Container, ScrollingContainer, Slider, Label, TextInput, Button, CheckBox, Rect, Circle, Graphics, FollowLine, Tracing, ConnectLine, ScrollBar, Interaction, DisplayObject, TickerShared, Tween, Timeline, Easing, Image, SpriteAnimated, Event, Enum, Scheduler, SyncManager };
+	export { Audio, Filter, Utils, Stage, Container, ScrollingContainer, Slider, Label, TextInput, Button, Video, CheckBox, Rect, Circle, Graphics, FollowLine, Tracing, ConnectLine, ScrollBar, Interaction, DisplayObject, TickerShared, Tween, Timeline, Easing, Image, SpriteAnimated, Event, Enum, Scheduler, SyncManager };
 
 }
 declare module 'src/vf-gui' {
 	import * as gui from 'src/UI';
 	export { gui };
+
+}
+declare module 'src/Interaction/KeyboardEvent' {
+	import { DisplayObject } from 'src/core/DisplayObject'; class KeyboardSelectEvent {
+	    /**
+	     * document的键盘事件
+	    */
+	    constructor();
+	    private obj;
+	    private ctrlDown;
+	    private shiftDown;
+	    private shiftKey;
+	    private ctrlKey;
+	    private cmdKey;
+	    private isAddEvent;
+	    private keyDownEventBind;
+	    private keyUpEventBind;
+	    private pasteEventBind;
+	    private copyEventBind;
+	    private cutEventBind;
+	    private addEvent;
+	    private removeEvent;
+	    protected keyDownEvent(e: KeyboardEvent): void;
+	    protected keyUpEvent(e: KeyboardEvent): void;
+	    protected copyEvent(e: ClipboardEvent): void;
+	    protected cutEvent(e: ClipboardEvent): void;
+	    protected pasteEvent(e: ClipboardEvent): void;
+	    focus(obj: DisplayObject): void;
+	    blur(): void;
+	}
+	/**
+	 * KeyboardSelectEvent 的实例
+	 */
+	export const keyboardShared: KeyboardSelectEvent;
+	export {};
 
 }
 declare interface ObjectConstructor {
@@ -4541,41 +4679,6 @@ declare module 'src/enum/ComponentEvent' {
 	 * 播放音效 {name,mode}
 	 */
 	export const PLAY_AUDIO = "PLAY_AUDIO";
-
-}
-declare module 'src/interaction/KeyboardEvent' {
-	import { DisplayObject } from 'src/core/DisplayObject'; class KeyboardSelectEvent {
-	    /**
-	     * document的键盘事件
-	    */
-	    constructor();
-	    private obj;
-	    private ctrlDown;
-	    private shiftDown;
-	    private shiftKey;
-	    private ctrlKey;
-	    private cmdKey;
-	    private isAddEvent;
-	    private keyDownEventBind;
-	    private keyUpEventBind;
-	    private pasteEventBind;
-	    private copyEventBind;
-	    private cutEventBind;
-	    private addEvent;
-	    private removeEvent;
-	    protected keyDownEvent(e: KeyboardEvent): void;
-	    protected keyUpEvent(e: KeyboardEvent): void;
-	    protected copyEvent(e: ClipboardEvent): void;
-	    protected cutEvent(e: ClipboardEvent): void;
-	    protected pasteEvent(e: ClipboardEvent): void;
-	    focus(obj: DisplayObject): void;
-	    blur(): void;
-	}
-	/**
-	 * KeyboardSelectEvent 的实例
-	 */
-	export const keyboardShared: KeyboardSelectEvent;
-	export {};
 
 }
 declare module 'src/tween/private/PlaybackPosition' {
@@ -4903,6 +5006,16 @@ declare module 'test/TestTween2' {
 	export default class TestTween2 {
 	    constructor(app: vf.Application, uiStage: vf.gui.Stage);
 	    private onLoad;
+	}
+
+}
+declare module 'test/TestVideo' {
+	///   path="../gui.d.ts" />
+	///   types="@vf.js/vf" />
+	export default class TestVideo {
+	    constructor(app: vf.Application, uiStage: vf.gui.Stage);
+	    private onLoad;
+	    private createBtn;
 	}
 
 }

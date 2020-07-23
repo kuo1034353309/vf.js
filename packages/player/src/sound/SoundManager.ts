@@ -197,7 +197,7 @@ export class SoundManager {
                     type: typeTag,
                     id: data.trackId || 0,
                     src: url,
-                    mode: data.mode || "sound",
+                    mode: data.mode || 'sound',
                     signalling: data.signalling || false,
                 },
             });

@@ -301,7 +301,7 @@ var Player = /** @class */ (function () {
             this._readyState = value;
             this.config.systemEvent.emit("status" /* STATUS */, { code: value, level: "status" /* STATUS */, data: value });
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Player.prototype.createApp = function () {
@@ -466,7 +466,9 @@ var Player = /** @class */ (function () {
                 if (config.scaleMode === undefined) {
                     config.scaleMode = this._data.scaleMode || "noScale" /* NO_SCALE */;
                 }
-                config.output('Config Info：', config.info);
+                if (config.debug) {
+                    config.output('Config Info：', config.info);
+                }
                 view = this.app.view;
                 view.width = config.width;
                 view.height = config.height;
@@ -703,7 +705,7 @@ var BaseInfo = /** @class */ (function () {
         get: function () {
             return {};
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     BaseInfo.prototype.output = function (ttl, obj) {
@@ -833,7 +835,7 @@ var Config = /** @class */ (function (_super) {
             this._container = value;
             this.propertyChange('container');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "id", {
@@ -847,7 +849,7 @@ var Config = /** @class */ (function (_super) {
             this._id = value;
             this.propertyChange('id');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "src", {
@@ -861,7 +863,7 @@ var Config = /** @class */ (function (_super) {
             this._src = value;
             this.propertyChange('src');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "play", {
@@ -875,7 +877,7 @@ var Config = /** @class */ (function (_super) {
             this._play = value;
             this.propertyChange('play');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "loop", {
@@ -889,7 +891,7 @@ var Config = /** @class */ (function (_super) {
             this._loop = value;
             this.propertyChange('loop');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "menu", {
@@ -903,7 +905,7 @@ var Config = /** @class */ (function (_super) {
             this._menu = value;
             this.propertyChange('menu');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "scaleMode", {
@@ -917,7 +919,7 @@ var Config = /** @class */ (function (_super) {
             this._scaleMode = value;
             this.propertyChange('scaleMode');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "align", {
@@ -931,7 +933,7 @@ var Config = /** @class */ (function (_super) {
             this._align = value;
             this.propertyChange('align');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "wmode", {
@@ -945,7 +947,7 @@ var Config = /** @class */ (function (_super) {
             this._wmode = value;
             this.propertyChange('wmode');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "bgcolor", {
@@ -959,7 +961,7 @@ var Config = /** @class */ (function (_super) {
             this._bgcolor = value;
             this.propertyChange('bgcolor');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "vfvars", {
@@ -979,7 +981,7 @@ var Config = /** @class */ (function (_super) {
             this._vfvars = value;
             this.propertyChange('vfvars');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "plugs", {
@@ -989,7 +991,7 @@ var Config = /** @class */ (function (_super) {
         set: function (value) {
             this._plugs = value;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "frameRate", {
@@ -1003,7 +1005,7 @@ var Config = /** @class */ (function (_super) {
             this._frameRate = value;
             this.propertyChange('frameRate');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "width", {
@@ -1017,7 +1019,7 @@ var Config = /** @class */ (function (_super) {
             this._width = value;
             this.propertyChange('width');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "height", {
@@ -1031,7 +1033,7 @@ var Config = /** @class */ (function (_super) {
             this._height = value;
             this.propertyChange('height');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "orientation", {
@@ -1045,7 +1047,7 @@ var Config = /** @class */ (function (_super) {
             this._orientation = value;
             this.propertyChange('orientation');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "maxTouches", {
@@ -1059,7 +1061,7 @@ var Config = /** @class */ (function (_super) {
             this._maxTouches = value;
             this.propertyChange('maxTouches');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "showFPS", {
@@ -1073,7 +1075,7 @@ var Config = /** @class */ (function (_super) {
             this._showFPS = value;
             this.propertyChange('showFPS');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "showLog", {
@@ -1087,7 +1089,7 @@ var Config = /** @class */ (function (_super) {
             this._showLog = value;
             this.propertyChange('showLog');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "conversionData", {
@@ -1101,7 +1103,7 @@ var Config = /** @class */ (function (_super) {
             this._conversionData = value;
             this.propertyChange('conversionData');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "debug", {
@@ -1115,7 +1117,7 @@ var Config = /** @class */ (function (_super) {
             this._debug = value;
             this.propertyChange('debug');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "logAdvancedTrace", {
@@ -1129,7 +1131,7 @@ var Config = /** @class */ (function (_super) {
             this._logAdvancedTrace = value;
             this.propertyChange('logAdvancedTrace');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "language", {
@@ -1143,14 +1145,14 @@ var Config = /** @class */ (function (_super) {
             this._language = value;
             this.propertyChange('language');
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "i18n", {
         get: function () {
             return this._i18n;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Config.prototype, "info", {
@@ -1182,7 +1184,7 @@ var Config = /** @class */ (function (_super) {
                 i18n: this.i18n.info,
             };
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     return Config;
@@ -1286,14 +1288,14 @@ var I18N = /** @class */ (function (_super) {
         set: function (value) {
             this._readyState = value;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(I18N.prototype, "info", {
         get: function () {
             return ['zh-CN', 'en-US'];
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     I18N.prototype.t = function (key, param) {
@@ -1439,7 +1441,7 @@ var RES = /** @class */ (function (_super) {
         get: function () {
             return this.stage.data;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     RES.prototype.destroy = function () {
@@ -2082,6 +2084,9 @@ var VariableManager = /** @class */ (function () {
                 case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].OBJECT_VALUE:
                 case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARAM_VALUE:
                 case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].ARRAY_FUNCTION:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].STRING_FUNCTION:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARSE_FLOAT:
+                case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARSE_INT:
                 case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].COMPONENT:
                     stackOut.push(expressItem);
                     break;
@@ -2184,6 +2189,18 @@ var VariableManager = /** @class */ (function () {
                         break;
                     case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].DATE:
                         systemValue = curDate.getDate();
+                        break;
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].HOUR:
+                        systemValue = curDate.getHours();
+                        break;
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].MINUTE:
+                        systemValue = curDate.getMinutes();
+                        break;
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].SECOND:
+                        systemValue = curDate.getSeconds();
+                        break;
+                    case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["SystemValueType"].MILLISECOND:
+                        systemValue = curDate.getMilliseconds();
                         break;
                     default:
                         break;
@@ -2342,6 +2359,100 @@ var VariableManager = /** @class */ (function () {
                         }
                     }
                     result = obj;
+                }
+                break;
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].STRING_FUNCTION:
+                var stringItem = this.getVariableByData(component, expressItem);
+                if (stringItem) {
+                    if (typeof stringItem.value === 'string') {
+                        var targetString = stringItem.value;
+                        switch (expressItem[3]) {
+                            case 'indexOf': // [12, [], 'str', 'indexOf', [0, 4]]
+                                if (expressItem.length >= 5) {
+                                    var indexOfTarget = this.getExpressItemValue(component, expressItem[4]);
+                                    result = targetString.indexOf(indexOfTarget);
+                                }
+                                else {
+                                    result = -1;
+                                }
+                                break;
+                            case 'replace': // [12, [], 'str', 'replace', [0, 4], [0, 4]]
+                                if (expressItem.length >= 6) {
+                                    var replaceSource = this.getExpressItemValue(component, expressItem[4]);
+                                    var replaceTarget = this.getExpressItemValue(component, expressItem[5]);
+                                    result = targetString.replace(replaceSource, replaceTarget);
+                                }
+                                break;
+                            case 'split': // [12, [], 'str', 'split', [0, 4], [0,4]?]
+                                if (expressItem.length >= 5) {
+                                    var splitTarget = this.getExpressItemValue(component, expressItem[4]);
+                                    if (expressItem.length === 5) {
+                                        result = targetString.split(splitTarget);
+                                    }
+                                    else {
+                                        var limitTarget = this.getExpressItemValue(component, expressItem[5]);
+                                        result = targetString.split(splitTarget, limitTarget);
+                                    }
+                                }
+                                break;
+                            case 'substr': // [12, [], 'str', 'substr', [0, 4], [0,4]?]
+                                if (expressItem.length >= 5) {
+                                    var fromIndex = this.getExpressItemValue(component, expressItem[4]);
+                                    if (expressItem.length === 5) {
+                                        result = targetString.substr(fromIndex);
+                                    }
+                                    else {
+                                        var subLength = this.getExpressItemValue(component, expressItem[5]);
+                                        result = targetString.substr(fromIndex, subLength);
+                                    }
+                                }
+                                break;
+                            case 'substring': // [12, [], 'str', 'substring', [0, 4], [0,4]?]
+                                if (expressItem.length >= 5) {
+                                    var fromIndex = this.getExpressItemValue(component, expressItem[4]);
+                                    if (expressItem.length === 5) {
+                                        result = targetString.substring(fromIndex);
+                                    }
+                                    else {
+                                        var endIndex = this.getExpressItemValue(component, expressItem[5]);
+                                        result = targetString.substring(fromIndex, endIndex);
+                                    }
+                                }
+                                break;
+                            default:
+                                // string has not function: 
+                                this.emitError(component, 'E1014', [expressItem[3]], "warning" /* WARNING */);
+                                break;
+                        }
+                    }
+                    else {
+                        // variable is not string: 
+                        this.emitError(component, 'E1015', [expressItem.join(',')], "warning" /* WARNING */);
+                    }
+                }
+                else {
+                    this.emitError(component, 'E1002', [expressItem.join(',')], "warning" /* WARNING */);
+                    // can not find variable:
+                }
+                break;
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARSE_INT:
+                // [13, [0, 4]]
+                if (expressItem.length >= 2) {
+                    var firstParam = this.getExpressItemValue(component, expressItem[1]);
+                    if (expressItem.length === 2) {
+                        result = parseInt(firstParam);
+                    }
+                    else {
+                        var secondParam = this.getExpressItemValue(component, expressItem[2]);
+                        result = parseInt(firstParam, secondParam);
+                    }
+                }
+                break;
+            case _model_IVFData__WEBPACK_IMPORTED_MODULE_0__["ExpressItemType"].PARSE_FLOAT:
+                // [14, [0, 4]]
+                if (expressItem.length >= 2) {
+                    var firstParam = this.getExpressItemValue(component, expressItem[1]);
+                    result = parseFloat(firstParam);
                 }
                 break;
             default:
@@ -2628,12 +2739,13 @@ var VariableManager = /** @class */ (function () {
     };
     VariableManager.prototype.emitError = function (component, code, params, level) {
         if (level === void 0) { level = "error" /* ERROR */; }
+        var _a;
         if (component && component.vfStage) {
             var vfStage = component.vfStage;
             vfStage.systemEvent.emitError(code, params, level);
         }
         else {
-            throw new Error(code + ': ' + (params === null || params === void 0 ? void 0 : params.join(' ')));
+            throw new Error(code + ': ' + ((_a = params) === null || _a === void 0 ? void 0 : _a.join(' ')));
         }
     };
     VariableManager.GLOBAL_ID = 'global';
@@ -3868,8 +3980,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CallFunctionTask", function() { return CallFunctionTask; });
 /* harmony import */ var _core_BaseTask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/BaseTask */ "./packages/player/src/core/actionTask/core/BaseTask.ts");
 /* harmony import */ var _display_VFComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../display/VFComponent */ "./packages/player/src/display/VFComponent.ts");
-/* harmony import */ var _VariableManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../VariableManager */ "./packages/player/src/core/VariableManager.ts");
-/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
+/* harmony import */ var _model_IVFData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../model/IVFData */ "./packages/player/src/core/model/IVFData.ts");
+/* harmony import */ var _VariableManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../VariableManager */ "./packages/player/src/core/VariableManager.ts");
+/* harmony import */ var _utils_VFUtil__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/VFUtil */ "./packages/player/src/utils/VFUtil.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -3887,6 +4000,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var CallFunctionTask = /** @class */ (function (_super) {
     __extends(CallFunctionTask, _super);
     function CallFunctionTask(compontent, funName, data) {
@@ -3900,40 +4014,60 @@ var CallFunctionTask = /** @class */ (function (_super) {
     }
     CallFunctionTask.prototype.run = function () {
         _super.prototype.run.call(this);
-        this._component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_3__["getTargetComponent"])(this.component, this.data.target);
+        this._component = Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_4__["getTargetComponent"])(this.component, this.data.target);
         if (this._component instanceof _display_VFComponent__WEBPACK_IMPORTED_MODULE_1__["VFComponent"] && this._component && this._component.vfStage) {
             var variableManager = this._component.vfStage.variableManager;
             var funId = this.funName;
             this.runId = variableManager.getFunctionId();
             funId = this._component.hashCode + this.funName;
-            // 注入参数
-            this.paramIds.length = 0;
-            if (this.data.params) {
-                var paramValues = [];
-                for (var i = 0, len = this.data.params.length; i < len; i++) {
-                    var param = this.data.params[i];
-                    var paramValue = param;
-                    if (Array.isArray(param)) {
-                        var paramVar = variableManager.getExpressItemValue(this.component, param);
-                        paramValue = paramVar;
-                    }
-                    paramValues.push(paramValue);
-                }
-                for (var i = 0, len = paramValues.length; i < len; i++) {
-                    var paramId = funId + this.runId + 'param_' + i;
-                    this.paramIds.push(paramId);
-                    if (!variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID]) {
-                        variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID] = {};
-                    }
-                    variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID][paramId] = {
-                        id: paramId,
-                        type: "object" /* OBJECT */,
-                        value: paramValues[i],
-                    };
-                }
-            }
             this.fun = variableManager.getFunctionTask(funId);
             if (this.fun) {
+                // 注入参数
+                this.paramIds.length = 0;
+                if (this.fun.formalParams) {
+                    console.log('vvv');
+                    var formalParamLength = this.fun.formalParams ? this.fun.formalParams.length : 0;
+                    var realParamLength = this.data.params ? this.data.params.length : 0;
+                    if (formalParamLength != realParamLength) {
+                        if (realParamLength > formalParamLength) {
+                            if (this.data.params) {
+                                this.data.params.length = formalParamLength;
+                            }
+                        }
+                        else {
+                            if (!this.data.params) {
+                                this.data.params = [];
+                            }
+                            for (var i = realParamLength; i < formalParamLength; i++) {
+                                this.data.params.push([_model_IVFData__WEBPACK_IMPORTED_MODULE_2__["ExpressItemType"].CONST, undefined]);
+                            }
+                        }
+                    }
+                }
+                if (this.data.params) {
+                    var paramValues = [];
+                    for (var i = 0, len = this.data.params.length; i < len; i++) {
+                        var param = this.data.params[i];
+                        var paramValue = param;
+                        if (Array.isArray(param)) {
+                            var paramVar = variableManager.getExpressItemValue(this.component, param);
+                            paramValue = paramVar;
+                        }
+                        paramValues.push(paramValue);
+                    }
+                    for (var i = 0, len = paramValues.length; i < len; i++) {
+                        var paramId = funId + this.runId + 'param_' + i;
+                        this.paramIds.push(paramId);
+                        if (!variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_3__["VariableManager"].GLOBAL_ID]) {
+                            variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_3__["VariableManager"].GLOBAL_ID] = {};
+                        }
+                        variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_3__["VariableManager"].GLOBAL_ID][paramId] = {
+                            id: paramId,
+                            type: "object" /* OBJECT */,
+                            value: paramValues[i],
+                        };
+                    }
+                }
                 // 替换表达式中的参数
                 if (this.paramIds.length) {
                     this.fun.injectParams(this.paramIds);
@@ -3993,7 +4127,7 @@ var CallFunctionTask = /** @class */ (function (_super) {
                 var variableManager = this.component.vfStage.variableManager;
                 for (var i = 0, len = this.paramIds.length; i < len; i++) {
                     var paramId = this.paramIds[i];
-                    delete variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_2__["VariableManager"].GLOBAL_ID][paramId];
+                    delete variableManager.variableMap[_VariableManager__WEBPACK_IMPORTED_MODULE_3__["VariableManager"].GLOBAL_ID][paramId];
                 }
             }
         }
@@ -4050,7 +4184,7 @@ var CallProtoFunctionTask = /** @class */ (function (_super) {
         get: function () {
             return Object(_utils_VFUtil__WEBPACK_IMPORTED_MODULE_1__["getTargetComponent"])(this.component, this.data.target);
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     CallProtoFunctionTask.prototype.run = function () {
@@ -4118,6 +4252,7 @@ var DefineFunctionTask = /** @class */ (function (_super) {
         _this.component = compontent;
         _this.funName = funName;
         _this.fun = fun;
+        _this.fun.formalParams = data.formalParams;
         _this.data = data;
         return _this;
     }
@@ -4338,6 +4473,8 @@ var EnterFrameCallTask = /** @class */ (function (_super) {
     function EnterFrameCallTask(component, data) {
         var _this = _super.call(this) || this;
         _this.loopTaskComplete = true;
+        _this.curTime = 0;
+        _this.lastTime = 0;
         _this.component = component;
         _this.data = data;
         _this.funName = data.funName;
@@ -4361,12 +4498,9 @@ var EnterFrameCallTask = /** @class */ (function (_super) {
                 if (this.loopTask) {
                     this.loopTask.addListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
                 }
-                if (!this.tickHandler) {
-                    this.tickHandler = vf.gui.Scheduler.setEnterFrame(this.tick.bind(this));
-                }
-                else {
-                    this.tickHandler.restart();
-                }
+                this.curTime = new Date().getTime();
+                this.lastTime = this.curTime;
+                vfStage.app.ticker.add(this.tick, this);
             }
             else {
                 this.complete();
@@ -4381,8 +4515,11 @@ var EnterFrameCallTask = /** @class */ (function (_super) {
         if (this.loopTask) {
             this.loopTask.removeListener(_core_BaseTask__WEBPACK_IMPORTED_MODULE_0__["TaskEvent"].EVENT_COMPLETE, this.onLoopComplete, this);
         }
-        if (this.tickHandler) {
-            this.tickHandler.stop();
+        if (this.component) {
+            var vfStage = this.component.vfStage;
+            if (vfStage && vfStage.app) {
+                vfStage.app.ticker.remove(this.tick, this);
+            }
         }
     };
     EnterFrameCallTask.prototype.stop = function () {
@@ -4391,14 +4528,20 @@ var EnterFrameCallTask = /** @class */ (function (_super) {
     };
     EnterFrameCallTask.prototype.pause = function () {
         _super.prototype.pause.call(this);
-        if (this.tickHandler) {
-            this.tickHandler.pause();
+        if (this.component) {
+            var vfStage = this.component.vfStage;
+            if (vfStage && vfStage.app) {
+                vfStage.app.ticker.remove(this.tick, this);
+            }
         }
     };
     EnterFrameCallTask.prototype.resume = function () {
         if (this._isPaused) {
-            if (this.tickHandler) {
-                this.tickHandler.resume();
+            if (this.component) {
+                var vfStage = this.component.vfStage;
+                if (vfStage && vfStage.app) {
+                    vfStage.app.ticker.add(this.tick, this);
+                }
             }
         }
         _super.prototype.resume.call(this);
@@ -4406,15 +4549,17 @@ var EnterFrameCallTask = /** @class */ (function (_super) {
     EnterFrameCallTask.prototype.onLoopComplete = function () {
         this.loopTaskComplete = true;
     };
-    EnterFrameCallTask.prototype.tick = function (e) {
+    EnterFrameCallTask.prototype.tick = function () {
         if (this.loopTaskComplete) {
             if (this.loopTask) {
-                var dt = e;
+                this.curTime = new Date().getTime();
+                var dt = this.curTime - this.lastTime;
                 if (this.callfunData) {
                     this.callfunData.params = [dt];
                 }
                 this.loopTaskComplete = false;
                 this.loopTask.run();
+                this.lastTime = this.curTime;
             }
         }
     };
@@ -5131,7 +5276,12 @@ var PlayAnimationTask = /** @class */ (function (_super) {
         var name = this.getValue();
         var times = this.getTimes();
         if (this._component && this._component.vfStage) {
-            this._component.play(name, times);
+            if (Array.isArray(name)) {
+                this._component.playMulit(name, times);
+            }
+            else {
+                this._component.play(name, times);
+            }
         }
         this.complete();
     };
@@ -5347,7 +5497,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(SetIntervalTask.prototype, "times", {
@@ -5372,7 +5522,7 @@ var SetIntervalTask = /** @class */ (function (_super) {
             }
             return times;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     SetIntervalTask.prototype.run = function () {
@@ -5580,7 +5730,7 @@ var SetTimeoutTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     SetTimeoutTask.prototype.run = function () {
@@ -5754,7 +5904,7 @@ var WaitTask = /** @class */ (function (_super) {
             }
             return time;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     WaitTask.prototype.run = function () {
@@ -6007,35 +6157,35 @@ var BaseTask = /** @class */ (function (_super) {
         get: function () {
             return this._asynchronous;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isRunning", {
         get: function () {
             return this._isRunning;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isCompleted", {
         get: function () {
             return this._isCompleted;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isFailed", {
         get: function () {
             return this._isFailed;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(BaseTask.prototype, "isPaused", {
         get: function () {
             return this._isPaused;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     return BaseTask;
@@ -6162,7 +6312,7 @@ var QueueTask = /** @class */ (function (_super) {
         get: function () {
             return this._tasks;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     QueueTask.prototype.run = function () {
@@ -6327,6 +6477,7 @@ var Animation = /** @class */ (function () {
          */
         this.realFPS = false;
         this.curTime = 0;
+        this.lastTime = 0;
         this.curPlayTime = 0;
         this.startTime = 0;
         this.passedTime = 0;
@@ -6384,6 +6535,71 @@ var Animation = /** @class */ (function () {
                 }
             }
         }
+    };
+    Animation.prototype.gotoPlayMulit = function (names, frameIndex, times) {
+        if (frameIndex === void 0) { frameIndex = 0; }
+        if (times === void 0) { times = 1; }
+        if (this.status === 1 /* PLAYING */) {
+            this.stop();
+        }
+        this.curAnimatinDuration = -1;
+        for (var i = 0, len = names.length; i < len; i++) {
+            var name_2 = names[i];
+            var config = this.animationConfig[name_2];
+            if (config) {
+                if (this.curAnimatinDuration < config.totalTime) {
+                    this.curAnimatinDuration = config.totalTime;
+                }
+            }
+            else {
+                // tslint:disable-next-line: no-console
+                console.warn('can not find animation:', name_2);
+            }
+        }
+        if (this.curAnimatinDuration < 0) {
+            return;
+        }
+        this.curAnimatinName = names.join(',');
+        this.curAnimationClips = [];
+        for (var i = 0, len = names.length; i < len; i++) {
+            var name_3 = names[i];
+            this.curAnimationClips = this.curAnimationClips.concat(this.animationMap[name_3]);
+        }
+        this.curAnimationTimes = times;
+        this.curAnimationTotalTime = Math.round(this.curAnimatinDuration *
+            this.curAnimationTimes * (1000 / this.fps));
+        this.curAnimatinDurationTime = Math.round(this.curAnimatinDuration * 1000 / this.fps);
+        this.curPlayTime = frameIndex * (1000 / this.fps);
+        this.deltaT = 0;
+        this.setCurTime(this.curPlayTime);
+        this.status = 1 /* PLAYING */;
+        this.startTime = new Date().getTime();
+        this.curTime = this.startTime;
+        this.lastTime = this.startTime;
+        this.startTime -= this.curPlayTime;
+        this._curPlayTimes = 0;
+        vf.gui.TickerShared.add(this.tick, this);
+    };
+    Animation.prototype.gotoStopMulit = function (names, frameIndex) {
+        if (this.status === 1 /* PLAYING */) {
+            this.stop();
+        }
+        this.curAnimatinName = names.join(',');
+        this.curAnimationClips = [];
+        for (var i = 0, len = names.length; i < len; i++) {
+            var name_4 = names[i];
+            this.curAnimationClips = this.curAnimationClips.concat(this.animationMap[name_4]);
+        }
+        this.curPlayTime = frameIndex * (1000 / this.fps);
+        this.deltaT = 0;
+        this.setCurTime(this.curPlayTime);
+        this.status = 0 /* STOP */;
+        this.startTime = new Date().getTime();
+        this.curTime = this.startTime;
+        this.lastTime = this.startTime;
+        this.startTime -= this.curPlayTime;
+        this._curPlayTimes = 0;
+        this.tick();
     };
     Animation.prototype.gotoPlay = function (name, frameIndex, times) {
         if (times === void 0) { times = 1; }
@@ -6447,6 +6663,10 @@ var Animation = /** @class */ (function () {
         if (times === void 0) { times = 1; }
         this.gotoPlay(name, 0, times);
     };
+    Animation.prototype.playMulit = function (names, times) {
+        if (times === void 0) { times = 1; }
+        this.gotoPlayMulit(names, 0, times);
+    };
     Animation.prototype.stop = function () {
         vf.gui.TickerShared.remove(this.tick, this);
         this.status = 0 /* STOP */;
@@ -6464,7 +6684,7 @@ var Animation = /** @class */ (function () {
                 }
             }
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Animation.prototype.tick = function () {
@@ -6496,6 +6716,7 @@ var Animation = /** @class */ (function () {
         this.passedTime = this.curTime - this.startTime;
         if (this.curAnimationTimes > 0 &&
             this.passedTime > this.curAnimationTotalTime) {
+            this.setCurTime(this.curAnimationTotalTime);
             this.stop();
         }
         this.curPlayTimes = Math.floor(this.passedTime / this.curAnimatinDurationTime);
@@ -6696,7 +6917,7 @@ var AnimationClip = /** @class */ (function () {
         get: function () {
             return this.target;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(AnimationClip.prototype, "curTime", {
@@ -6711,7 +6932,7 @@ var AnimationClip = /** @class */ (function () {
             }
             this.applyTimeline();
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     AnimationClip.prototype.skipNextEvent = function () {
@@ -7156,7 +7377,7 @@ var PathTimeline = /** @class */ (function (_super) {
             }
             return [0, 0];
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(PathTimeline.prototype, "angle", {
@@ -7165,7 +7386,7 @@ var PathTimeline = /** @class */ (function (_super) {
             var p1 = this.path.getPointAtLength(this._curValue * this.length + 1);
             return Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     return PathTimeline;
@@ -7250,14 +7471,14 @@ var Timeline = /** @class */ (function () {
             this._defaultValue = value;
             this._curValue = value;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Timeline.prototype, "curValue", {
         get: function () {
             return this._curValue;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Object.defineProperty(Timeline.prototype, "globalTime", {
@@ -7266,7 +7487,7 @@ var Timeline = /** @class */ (function () {
             this.tick();
             this._lastGlobalTime = v;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     Timeline.prototype.getProgress = function (cur, min, max, curve) {
@@ -7361,6 +7582,9 @@ var ExpressItemType;
     ExpressItemType[ExpressItemType["PARAM_VALUE"] = 9] = "PARAM_VALUE";
     ExpressItemType[ExpressItemType["ARRAY_FUNCTION"] = 10] = "ARRAY_FUNCTION";
     ExpressItemType[ExpressItemType["COMPONENT"] = 11] = "COMPONENT";
+    ExpressItemType[ExpressItemType["STRING_FUNCTION"] = 12] = "STRING_FUNCTION";
+    ExpressItemType[ExpressItemType["PARSE_INT"] = 13] = "PARSE_INT";
+    ExpressItemType[ExpressItemType["PARSE_FLOAT"] = 14] = "PARSE_FLOAT";
 })(ExpressItemType || (ExpressItemType = {}));
 var SystemValueType;
 (function (SystemValueType) {
@@ -7369,6 +7593,10 @@ var SystemValueType;
     SystemValueType[SystemValueType["MONTH"] = 2] = "MONTH";
     SystemValueType[SystemValueType["DAY"] = 3] = "DAY";
     SystemValueType[SystemValueType["DATE"] = 4] = "DATE";
+    SystemValueType[SystemValueType["HOUR"] = 5] = "HOUR";
+    SystemValueType[SystemValueType["MINUTE"] = 6] = "MINUTE";
+    SystemValueType[SystemValueType["SECOND"] = 7] = "SECOND";
+    SystemValueType[SystemValueType["MILLISECOND"] = 8] = "MILLISECOND";
 })(SystemValueType || (SystemValueType = {}));
 
 
@@ -7525,7 +7753,7 @@ var AbstractFilter = /** @class */ (function (_super) {
             value = Math.max(0, value);
             this.uniforms.progress = value;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     AbstractFilter.prototype.applyTranisition = function (target) {
@@ -7742,7 +7970,7 @@ var DoomScreenFilter = /** @class */ (function (_super) {
             value = Math.max(0, value);
             this.uniforms.progress = value;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     DoomScreenFilter.prototype.applyTranisition = function (target) {
@@ -8101,7 +8329,7 @@ var FadeoutTran = /** @class */ (function () {
                 this.prevSprite.alpha = (1 - this._progress);
             }
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     FadeoutTran.prototype.setPreviousTexture = function (value) {
@@ -8156,12 +8384,13 @@ __webpack_require__.r(__webpack_exports__);
  * @param id 不传id,获取第一个场景数据
  */
 function getSceneData(data, id) {
+    var _a;
     var scenes = data.scenes;
     if (scenes) {
         if ((id === undefined || id === '') && scenes[0]) {
             return scenes[0];
         }
-        id = id === null || id === void 0 ? void 0 : id.toString();
+        id = (_a = id) === null || _a === void 0 ? void 0 : _a.toString();
         for (var i = 0, len = scenes.length; i < len; i++) {
             if (scenes[i].id.toString() === id) {
                 return scenes[i];
@@ -8326,7 +8555,7 @@ var VFComponent = /** @class */ (function (_super) {
                 }
             }
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     VFComponent.prototype.pause = function () {
@@ -8385,6 +8614,12 @@ var VFComponent = /** @class */ (function (_super) {
         if (times === void 0) { times = 1; }
         if (this.animation) {
             this.animation.play(name, times);
+        }
+    };
+    VFComponent.prototype.playMulit = function (names, times) {
+        if (times === void 0) { times = 1; }
+        if (this.animation) {
+            this.animation.playMulit(names, times);
         }
     };
     VFComponent.prototype.stop = function () {
@@ -8679,7 +8914,7 @@ var VFStage = /** @class */ (function (_super) {
         get: function () {
             return this.config.systemEvent;
         },
-        enumerable: false,
+        enumerable: true,
         configurable: true
     });
     /** 获取当前的场景 */
@@ -9523,7 +9758,7 @@ var SoundManager = /** @class */ (function () {
                     type: typeTag,
                     id: data.trackId || 0,
                     src: url,
-                    mode: data.mode || "sound",
+                    mode: data.mode || 'sound',
                     signalling: data.signalling || false,
                 },
             });
