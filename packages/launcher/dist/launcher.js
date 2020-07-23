@@ -136,7 +136,11 @@ var VIPKIDLauncher = /** @class */ (function () {
         this._errorLoadMaxCount = 10;
         this.version = "0.6.1-debug";
         // eslint-disable-next-line no-undef
+<<<<<<< HEAD
+        this.buildInfo = "2020/7/22 下午4:20:06";
+=======
         this.buildInfo = "7/20/2020, 4:48:12 PM";
+>>>>>>> 97c82cc53612807dbab2e8088ffcc2ef350a138c
         this._extendsLibsUrl = [];
         this._loadcount = 0;
         this._loadMaxCount = 40;

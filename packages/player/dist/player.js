@@ -9063,9 +9063,11 @@ var VFStage = /** @class */ (function (_super) {
             clearTimeout(this._delayedDisplayId);
             this._delayedDisplayId = setTimeout(function () {
                 _this.visible = true;
+                _this.syncInteractiveFlag = _this.config.vfvars.syncInteractiveFlag; //开启同步
                 if (_this.syncManager) {
-                    _this.syncManager.init();
+                    _this.syncManager.role = _this.config.vfvars.role; //角色
                 }
+                console.log('player----loadAssetCompleted')
                 _this.createPlugs();
                 _this.systemEvent.emit("status" /* STATUS */, {
                     code: "ScenComplete" /* ScenComplete */, level: "status" /* STATUS */, data: null,
@@ -9360,7 +9362,6 @@ var SliderEditorPlug = /** @class */ (function (_super) {
     function SliderEditorPlug(className, parent) {
         var _this = _super.call(this, className, parent) || this;
         parent.originalEventPreventDefault = true;
-        parent.syncInteractiveFlag = true; //开启同步
         var element = document.getElementById('drawCanvas');
         // eslint-disable-next-line no-eq-null
         if (element == null) {
