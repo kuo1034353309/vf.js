@@ -1285,15 +1285,16 @@ declare module 'src/interaction/SyncManager' {
 	import { InteractionEvent } from 'src/event/InteractionEvent';
 	import { Stage } from 'src/UI';
 	import { DisplayObjectAbstract } from 'src/core/DisplayObjectAbstract';
+	import { Role } from 'src/enum/FollowLineEnum';
 	export class SyncManager {
 	    constructor(stage: Stage);
 	    /**
 	     * 对应一个stage有一个syncManager的实例
 	     */
 	    static getInstance(stage: Stage | undefined): SyncManager | undefined;
+	    role: Role;
 	    resumeStatusFlag: boolean;
 	    offsetTime: number;
-	    private _resetTimeFlag;
 	    private _crossTime;
 	    private _initTime;
 	    private _interactionEvent;
@@ -1305,6 +1306,15 @@ declare module 'src/interaction/SyncManager' {
 	    private _evtDataList;
 	    private _lastMoveEvent;
 	    private _readystate;
+	    private _sendId;
+	    private _lastSId;
+	    private _lastTId;
+	    private _waitingEventList;
+	    private _waitTimer;
+	    /**
+	     * log
+	     */
+	    private log;
 	    /**
 	     * 开始同步
 	     */
@@ -1319,11 +1329,20 @@ declare module 'src/interaction/SyncManager' {
 	     * data
 	     */
 	    sendCustomEvent(customData: any): void;
+	    private sendSyncTimeEvent;
 	    /**
 	     * 接收操作
 	     * @signalType 信令类型  live-实时信令   history-历史信令
 	     */
 	    receiveEvent(eventData: any, signalType?: string): void;
+	    /**
+	     * 检查eventId是否正确
+	     */
+	    private checkEventId;
+	    /**
+	     * 检查是否有暂存的event需要执行
+	     */
+	    private checkWaitingEvent;
 	    /**
 	     * 获取当前时间
 	     */
@@ -1548,6 +1567,8 @@ declare module 'src/display/Label' {
 	    private _textDecorationWidthOld;
 	    private _textDecorationStyle;
 	    private _textDecorationStyleOld;
+	    private _linearGradientType;
+	    private _linearGradientStops;
 	    /**
 	     * 设置分辨力比例
 	     */
@@ -1565,6 +1586,8 @@ declare module 'src/display/Label' {
 	     * 文本内容
 	     */
 	    text: string;
+	    linearGradientType: "vertical" | "horizontal";
+	    linearGradientStops: number[];
 	    fontCssStyle: any;
 	    private setLine;
 	    private showUnderLine;
@@ -2327,7 +2350,7 @@ declare module 'src/layout/CSSStyle' {
 	    fontVariant: "normal" | "small-caps";
 	    /** 字体粗细 */
 	    private _fontWeight;
-	    fontWeight: 500 | 100 | 300 | "normal" | "bold" | "bolder" | "lighter" | 200 | 400 | 600 | 700 | 800 | 900;
+	    fontWeight: 300 | 100 | "normal" | "bold" | "bolder" | "lighter" | 200 | 400 | 500 | 600 | 700 | 800 | 900;
 	    /** 内部填充,只支持文字 */
 	    private _padding?;
 	    padding: number | undefined;
@@ -2355,6 +2378,12 @@ declare module 'src/layout/CSSStyle' {
 	    /** 投影深度 */
 	    private _dropShadowDistance;
 	    dropShadowDistance: number;
+	    /** 渐变类型 */
+	    private _linearGradientType;
+	    linearGradientType: "vertical" | "horizontal";
+	    /** 渐变区间 */
+	    private _linearGradientStops;
+	    linearGradientStops: number[];
 	    /** 中文换行 */
 	    private _breakWords;
 	    breakWords: boolean;
@@ -3702,12 +3731,26 @@ declare module 'src/display/Video' {
 	    private _endedFun;
 	    private _loadeddataFun;
 	    private _durationchangeFun;
+	    private _pauseFun;
+	    private _autoplay;
 	    private _canPlayTypelist;
+	    private _videoSource;
+	    private _videoTextrue;
+	    private _sprite;
+	    private _frameBg;
+	    private _fullScreen;
 	    constructor();
+	    /**
+	     *  目前 设置src才会添加sprite到舞台
+	     *  需要src 获取纹理
+	     *  纹理添加到sprite
+	     */
+	    private createVideoSource;
 	    private playTypeCheck;
 	    private canplayFun;
 	    private canplaythroughFun;
 	    private completeFun;
+	    private pauseFun;
 	    private endedFun;
 	    private loadeddataFun;
 	    private durationchangeFun;
@@ -3723,26 +3766,29 @@ declare module 'src/display/Video' {
 	    /**
 	     * 支持的参数们~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	     */
-	    src: number | string;
-	    controls: boolean;
-	    width: number;
-	    height: number;
+	    src: any;
+	    autoplay: boolean;
 	    loop: boolean;
 	    muted: boolean;
-	    volume: number;
+	    volume: any;
 	    poster: number | string;
 	    currentTime: number;
 	    /**
 	     * 只读的属性们~~~~~~~~~~~~~~~~
 	     * */
-	    readonly duration: number;
+	    readonly duration: any;
 	    /**
 	    * 支持的方法们~~~··~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	    **/
 	    play(): void;
 	    pause(): void;
+	    private _oldX;
+	    private _oldY;
+	    private _oldWidth;
+	    private _oldheight;
 	    requestFullScreen(): void;
 	    exitFullscreen(): void;
+	    private clearSource;
 	    release(): void;
 	}
 

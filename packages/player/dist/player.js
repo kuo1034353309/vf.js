@@ -9063,11 +9063,12 @@ var VFStage = /** @class */ (function (_super) {
             clearTimeout(this._delayedDisplayId);
             this._delayedDisplayId = setTimeout(function () {
                 _this.visible = true;
-                _this.syncInteractiveFlag = _this.config.vfvars.syncInteractiveFlag; //开启同步
-                if (_this.syncManager) {
+                if (_this.config.vfvars.syncInteractiveFlag) {
+                    _this.syncInteractiveFlag = true; //开启同步
+                }
+                if (_this.syncManager && _this.config.vfvars.role) {
                     _this.syncManager.role = _this.config.vfvars.role; //角色
                 }
-                console.log('player----loadAssetCompleted')
                 _this.createPlugs();
                 _this.systemEvent.emit("status" /* STATUS */, {
                     code: "ScenComplete" /* ScenComplete */, level: "status" /* STATUS */, data: null,
