@@ -22420,6 +22420,12 @@ declare namespace vf {
          */
         resolution: number;
         /**
+         * 获取文字宽高对象,只读，必须文本已经完成绘制后获取,也可调用updateText
+         * @member {object}
+         * @default null
+         */
+        vfMeasured: any;
+        /**
          * Cached tinted texture.
          * @memberof vf.Sprite#
          * @member {HTMLCanvasElement} _tintedCanvas
@@ -25111,6 +25117,15 @@ declare namespace vf {
          * @return {vf.utils.DecomposedDataUri|undefined} The decomposed data uri or undefined
          */
         function decomposeDataUri(dataUri: string): vf.utils.DecomposedDataUri | undefined;
+        /**
+         * 读取文件
+         *
+         * @memberof vf.utils
+         * @function download
+         * @param {string} name - 文件名
+         * @param {object} data - 文件数据，字符串
+         */
+        function download(name: string, data: any): void;
         /**
          * get the resolution / device pixel ratio of an asset by looking for the prefix
          * used by spritesheets and image urls

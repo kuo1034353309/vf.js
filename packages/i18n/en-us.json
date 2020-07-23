@@ -76,5 +76,11 @@
   },
   "E1012": {
     "message": "vfx -> no task"
+  },
+  "E1014": {
+    "message": "vfx -> string has not this function: (${0})"
+  },
+  "E1015": {
+    "message": "vfx -> variable is not string : (${0})"
   }
 }
