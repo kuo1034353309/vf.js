@@ -1,0 +1,142 @@
+{
+  "assets": {
+    "1": {
+      "type": "image",
+      "url": "https://vipkid-edu.github.io/vf-gui/play/assets/dino.png",
+      "name": "1"
+    }
+  },
+  "global": {},
+  "scenes": [
+    {
+      "id": 0,
+      "libId": "0"
+    }
+  ],
+  "components": {
+    "0": {
+      "type": "custom",
+      "interactabled": false,
+      "children": [
+        {
+          "id": 1,
+          "libId": 1,
+          "style": {
+            "top": 0
+          }
+        },
+        {
+          "id": 2,
+          "libId": 2,
+          "text": "文本标签接口示例",
+          "style": {
+            "top": 160
+          }
+        },
+        {
+          "id": "label2",
+          "libId": 2,
+          "text": "手动换行，\n文本！",
+          "style": {
+            "top": 200,
+            "color": [
+              16777215,
+              16763904
+            ],
+            "fontSize": 32
+          }
+        },
+        {
+          "id": "label3",
+          "libId": 2,
+          "text": "自动换行文本设置 wordWrap = true , wordWrapWidth = width 开启自动换行。",
+          "style": {
+            "top": 290,
+            "color": [
+              16777215,
+              65433
+            ],
+            "fontSize": 32,
+            "wordWrap": true,
+            "wordWrapWidth": 500
+          }
+        },
+        {
+          "id": "label4",
+          "libId": 2,
+          "text": "我是有滤镜的文字",
+          "style": {
+            "top": 400,
+            "color": [
+              16777215,
+              65433
+            ],
+            "stroke": 4855888,
+            "strokeThickness": 5,
+            "dropShadow": true,
+            "dropShadowColor": "#000000",
+            "dropShadowBlur": 1,
+            "dropShadowAngle": 0.5235987755982988,
+            "dropShadowDistance": 1
+          }
+        },
+        {
+          "id": "label5",
+          "libId": 2,
+          "text": "我设定了textAlign与verticalAlign",
+          "style": {
+            "top": 440,
+            "left": 80,
+            "color": 16777215,
+            "width": 450,
+            "height": 50,
+            "verticalAlign": "middle",
+            "textAlign": "center",
+            "backgroundColor": 4095
+          }
+        },
+        {
+          "id": "label6",
+          "libId": 2,
+          "text": "我设定了textAlign与verticalAlign 换行换行、、、、。，，",
+          "textDecoration": "UnderLine",
+          "textDecorationColor": 16711850,
+          "style": {
+            "top": 500,
+            "left": 10,
+            "width": 300,
+            "color": 16777215,
+            "textAlign": "center",
+            "wordWrap": true,
+            "wordWrapWidth": 200,
+            "backgroundColor": 4095
+          }
+        }
+      ]
+    },
+    "1": {
+      "type": "Image",
+      "width": 83,
+      "height": 138,
+      "src": 1,
+      "style": {
+        "justifyContent": "center"
+      }
+    },
+    "2": {
+      "type": "Label",
+      "width": 100,
+      "style": {
+        "justifyContent": "center"
+      }
+    }
+  },
+  "name": "VFT2J",
+  "width": 405,
+  "height": 720,
+  "version": "0.0.1",
+  "baseUrl": "",
+  "loadMode": "all",
+  "conversion": "",
+  "scaleMode": "showAll"
+}

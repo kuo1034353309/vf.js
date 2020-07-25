@@ -36686,7 +36686,16 @@ var PIXI = (function (exports) {
 	         * @member {Function}
 	         * @private
 	         */
-	        this._styleListener = null;
+			this._styleListener = null;
+
+			this._vfmeasured = null;
+			       /**
+         * 获取文本宽高详细数据
+         *
+         * @member {object}
+         * @private
+         */
+        this._vfmeasured = null;
 
 	        /**
 	         * Private tracker for the current font.
@@ -36706,7 +36715,7 @@ var PIXI = (function (exports) {
 	    Text.prototype = Object.create( Sprite && Sprite.prototype );
 	    Text.prototype.constructor = Text;
 
-	    var prototypeAccessors = { width: { configurable: true },height: { configurable: true },style: { configurable: true },text: { configurable: true },resolution: { configurable: true } };
+	    var prototypeAccessors = { width: { configurable: true },height: { configurable: true },style: { configurable: true },text: { configurable: true },resolution: { configurable: true } ,vfMeasured: { configurable: true } };
 
 	    /**
 	     * Renders text and updates it when needed.
@@ -36740,7 +36749,8 @@ var PIXI = (function (exports) {
 	        var lineHeight = measured.lineHeight;
 	        var lineWidths = measured.lineWidths;
 	        var maxLineWidth = measured.maxLineWidth;
-	        var fontProperties = measured.fontProperties;
+			var fontProperties = measured.fontProperties;
+			this._vfmeasured = measured;
 
 	        this.canvas.width = Math.ceil((Math.max(1, width) + (style.padding * 2)) * this._resolution);
 	        this.canvas.height = Math.ceil((Math.max(1, height) + (style.padding * 2)) * this._resolution);
@@ -37174,7 +37184,8 @@ var PIXI = (function (exports) {
 	        this.context = null;
 	        this.canvas = null;
 
-	        this._style = null;
+			this._style = null;
+			his._vfmeasured = null;
 	    };
 
 	    /**
@@ -37295,6 +37306,10 @@ var PIXI = (function (exports) {
 	        this.dirty = true;
 	    };
 
+		prototypeAccessors.vfMeasured.get = function ()
+		{
+			return this._vfmeasured;
+		};
 	    Object.defineProperties( Text.prototype, prototypeAccessors );
 
 	    return Text;
