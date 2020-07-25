@@ -18,6 +18,7 @@ import { AssetsType } from '../../../assets/IAssets';
 import { getUrl } from '../utils/getUrl';
 import { compatible } from '../utils/base64toBlob';
 import { getSceneData } from '../display/SceneDataUtils';
+import { FontLoaderPlug } from "../display/plugs/FontLoaderPlug";
 
 export class RES extends vf.utils.EventEmitter {
     public vfResources: { [id: string]: vf.LoaderResource } = {};
@@ -31,6 +32,8 @@ export class RES extends vf.utils.EventEmitter {
     private _loader?: vf.Loader;
     private _assetFails = new Map<string, IAssetFail>();
 
+    private _fontFamlilyList: any[] = [];
+
     private _isLoadScript = false;
     private _isLoadResource = false;
 
@@ -39,6 +42,7 @@ export class RES extends vf.utils.EventEmitter {
         vf.gui.Utils.setSourcePath(this.getImageAsset.bind(this) as any);
         vf.gui.Utils.setDisplayObjectPath(this.getDisplayObject.bind(this) as any);
         this.stage = stage;
+        vf.Loader.registerPlugin(FontLoaderPlug);
         this.initGlobalVariable();
     }
 
@@ -436,7 +440,7 @@ export class RES extends vf.utils.EventEmitter {
         }
     }
 
-    private loadResourceComplete(): void{
+    private loadResourceComplete(): void {
         if (this._isLoadResource && this._isLoadScript) {
             this.emit(SceneEvent.LoadComplete, [this._loader, this._resources]);
         }
@@ -446,6 +450,7 @@ export class RES extends vf.utils.EventEmitter {
         if (this._loader === undefined) {
             this._loader = new vf.Loader();
         }
+
         const loader = this._loader;
         const urls: any = {};
         const resources = this._resources;
@@ -509,9 +514,11 @@ export class RES extends vf.utils.EventEmitter {
                 assetFail.count++;
             }
             else {
-                this._assetFails.set(loaderResource.name, { id: loaderResource.name,
+                this._assetFails.set(loaderResource.name, {
+                    id: loaderResource.name,
                     url: loaderResource.url,
-                    extension: loaderResource.extension, count: 1 });
+                    extension: loaderResource.extension, count: 1
+                });
             }
         });
         loader.load();
