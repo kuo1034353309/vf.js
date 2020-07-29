@@ -99,6 +99,11 @@ export class VFComponent extends vf.gui.ScrollingContainer {
                 this.animation.play(name, times);
             }
         }
+        public playMulit(names: string[], times: number = 1): void {
+            if (this.animation) {
+                this.animation.playMulit(names, times);
+            }
+        }
 
         public stop(): void {
             if (this.animation) {

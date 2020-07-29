@@ -42,35 +42,56 @@
         <button>switchToNextScene</button>
         <button>switchToPrevScene</button>
     </div>
-    <div style="position: absolute; right: 0px; width: 150px;">
+    <div style="position: absolute; right: 0px; width: 150px;bottom:80px">
         <select id="select" style="height: 23px;width: 100%;">
         </select>
         <button id='demoBtn' style="height: 23px;width: 100%; margin-top: 15px;">下一个示例</button>
     </div>
-
     <script>
+        function getQueryVariable(variable)
+        {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&"); 
+            for (var i=0;i<vars.length;i++) {
+                    var pair = vars[i].split("=");
+                    if(pair[0] == variable){return pair[1];}
+            }
+            return(false);
+        }
+        if(getQueryVariable('oscarKey')){
+            var oscarscript = document.createElement('script');
+            oscarscript.onload = function() {
+                window.oscar.initSlave(getQueryVariable('oscarKey'), "23554");
+            }
+            oscarscript.src = "http://stage-film.vipkid-qa.com.cn/oscar.umd.js?_" + new Date().getTime();
+            document.body.appendChild(oscarscript);
+        }
+
+    </script>
+    <script>
+        var v = '0.6.1';
         var demoIndex = 0;
         var demos = [
-            './vf_demo/image.json?v=1',
-            './vf_demo/label.json?v=1',
-            './vf_demo/rect.json',
-            './vf_demo/button.json',
-            './vf_demo/checkbox.json',
-            './vf_demo/circle.json',
-            './vf_demo/slider.json',
-            './vf_demo/textinput.json',
-            './vf_demo/soundTest.json',
-            './vf_demo/spriteanimated.json',
-            './vf_demo/pathAnimation.json',
-            './vf_demo/connectline.json?v=1',
-            './vf_demo/dragExample.json',
-            './vf_demo/scrollbar.json',
-            './vf_demo/tracingExample.json',
-            './vf_demo/textChoiceExample.json',
-            './vf_demo/textFillBlanksExample.json',
-            './vf_demo/tracingExample.json',
-            'https://stage-edu.vipkid-qa.com.cn/learning-stages/static/assets/CDNFiles/VF_STN01/index.json',
-            './vf_demo/ic037.json',
+            './vf_demo/image.json?v='+v,
+            './vf_demo/label.json?v='+v,
+            './vf_demo/rect.json?v='+v,
+            './vf_demo/button.json?v='+v,
+            './vf_demo/checkbox.json?v='+v,
+            './vf_demo/circle.json?v='+v,
+            './vf_demo/slider.json?v='+v,
+            './vf_demo/textinput.json?v='+v,
+            './vf_demo/soundTest.json?v='+v,
+            './vf_demo/videoExample.json?v='+v,
+            './vf_demo/spriteanimated.json?v='+v,
+            './vf_demo/pathAnimation.json?v='+v,
+            './vf_demo/particles.json?v='+v,
+            './vf_demo/connectline.json?v=1?v='+v,
+            './vf_demo/dragExample.json?v='+v,
+            './vf_demo/scrollbar.json?v='+v,
+            './vf_demo/tracingExample.json?v='+v,
+            './vf_demo/textChoiceExample.json?v='+v,
+            './vf_demo/textFillBlanksExample.json?v='+v,
+            './vf_demo/ic037.json?v='+v
         ];
         var $player = null;
         var version = '';
@@ -127,12 +148,15 @@
         });
 
         function onLauncher(){
-
+            var devicePixelRatio = window.devicePixelRatio;
+            if(devicePixelRatio){
+                devicePixelRatio = Math.min(2,devicePixelRatio);
+            }
             createVF({
                 container: document.getElementById("vf-container"),
                 debug: true,
                 showFPS: true,
-                resolution: window.devicePixelRatio || 1,
+                resolution: devicePixelRatio || 1,
             }, function (player) {
 
                 $player = player;

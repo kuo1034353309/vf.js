@@ -241,8 +241,11 @@ export class VFStage extends vf.gui.Stage {
             clearTimeout(this._delayedDisplayId);
             this._delayedDisplayId = setTimeout(() => {
                 this.visible = true;
-                if (this.syncManager) {
-                    this.syncManager.init();
+                if(this.config.vfvars.syncInteractiveFlag){
+                    this.syncInteractiveFlag = true;  //开启同步
+                }
+                if (this.syncManager && this.config.vfvars.role) {
+                    (this.syncManager as any).role = this.config.vfvars.role;  //角色
                 }
                 this.createPlugs();
                 this.systemEvent.emit(EventType.STATUS, {

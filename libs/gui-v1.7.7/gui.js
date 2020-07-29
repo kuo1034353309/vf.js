@@ -2847,8 +2847,16 @@ var Stage = /** @class */ (function (_super) {
         },
         set: function (value) {
             this._syncInteractiveFlag = value;
-            if (!this.syncManager) {
-                this.syncManager = new SyncManager_1.SyncManager(this);
+            if (value) {
+                if (!this.syncManager) {
+                    this.syncManager = new SyncManager_1.SyncManager(this);
+                }
+            }
+            else {
+                if (this.syncManager) {
+                    this.syncManager.release();
+                    this.syncManager = undefined;
+                }
             }
         },
         enumerable: true,
@@ -3484,9 +3492,9 @@ var UIClick = /** @class */ (function () {
         this._target = target;
         this._target.plugs.set(UIClick.key, this);
         this._clickEvent = new Index_1.ClickEvent(target, true);
-        ;
     }
     UIClick.prototype.load = function () {
+        //
     };
     UIClick.prototype.release = function () {
         this._clickEvent.remove();
@@ -5367,6 +5375,16 @@ var Label = /** @class */ (function (_super) {
     function Label(text) {
         if (text === void 0) { text = ""; }
         var _this = _super.call(this) || this;
+        _this._textDecoration = "None";
+        _this._textDecorationOld = "";
+        _this._textDecorationColor = NaN; //线条颜色
+        _this._textDecorationColorOld = NaN;
+        _this._textDecorationWidth = 3; //线条宽度 
+        _this._textDecorationWidthOld = NaN;
+        _this._textDecorationStyle = "Solid"; //线条样式
+        _this._textDecorationStyleOld = "";
+        _this._linearGradientType = "vertical";
+        _this._linearGradientStops = [];
         _this.sprite = new vf.Text(text, { breakWords: true, fill: "#ffffff" });
         _this.container.addChild(_this.sprite);
         return _this;
@@ -5384,6 +5402,54 @@ var Label = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Label.prototype, "textDecoration", {
+        /**
+         * 设置下划线
+         */
+        get: function () {
+            return this._textDecoration;
+        },
+        set: function (value) {
+            if (this._textDecoration === value) {
+                return;
+            }
+            this._textDecoration = value;
+            this.invalidateDisplayList();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Label.prototype, "textDecorationStyle", {
+        get: function () {
+            return this._textDecorationStyle;
+        },
+        set: function (value) {
+            if (this._textDecorationStyle === value) {
+                return;
+            }
+            this._textDecorationStyle = value;
+            this.invalidateDisplayList();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Label.prototype, "textDecorationColor", {
+        /**
+         * 设置下划线颜色
+         */
+        get: function () {
+            return this._textDecorationColor;
+        },
+        set: function (value) {
+            if (this._textDecorationColor === value) {
+                return;
+            }
+            this._textDecorationColor = value;
+            this.invalidateDisplayList();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Label.prototype, "text", {
         /**
          * 文本内容
@@ -5392,10 +5458,54 @@ var Label = /** @class */ (function (_super) {
             return this.sprite.text;
         },
         set: function (value) {
+            if (this.sprite.text === value) {
+                return;
+            }
             this.sprite.text = value;
             this.setActualSize(this.sprite.width, this.sprite.height);
             this.invalidateSize();
+            this.invalidateDisplayList();
             this.emit(Index_1.ComponentEvent.CHANGE, this);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Label.prototype, "linearGradientType", {
+        get: function () {
+            return this._linearGradientType;
+        },
+        set: function (value) {
+            if (this._linearGradientType === value) {
+                return;
+            }
+            var style = this.sprite.style;
+            var type = vf.TEXT_GRADIENT.LINEAR_HORIZONTAL;
+            switch (value) {
+                case "vertical":
+                    type = vf.TEXT_GRADIENT.LINEAR_VERTICAL;
+                    break;
+                case "horizontal":
+                    type = vf.TEXT_GRADIENT.LINEAR_HORIZONTAL;
+                    break;
+            }
+            style.fillGradientType = type;
+            this.invalidateDisplayList();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Label.prototype, "linearGradientStops", {
+        get: function () {
+            return this._linearGradientStops;
+        },
+        set: function (value) {
+            if (this._linearGradientStops === value) {
+                return;
+            }
+            this._linearGradientStops = value;
+            var style = this.sprite.style;
+            style.fillGradientStops = value;
+            this.invalidateDisplayList();
         },
         enumerable: true,
         configurable: true
@@ -5409,10 +5519,107 @@ var Label = /** @class */ (function (_super) {
             this.sprite.style = value;
             this.setActualSize(this.sprite.width, this.sprite.height);
             this.invalidateSize();
+            this.invalidateDisplayList();
         },
         enumerable: true,
         configurable: true
     });
+    Label.prototype.setLine = function () {
+        var type = this._textDecoration;
+        this.clearLineGraphics();
+        if (type == "None" || !this.sprite || !this.sprite.text || this.sprite.text == "") {
+            return;
+        }
+        else {
+            this.showUnderLine();
+        }
+    };
+    Label.prototype.showUnderLine = function () {
+        if (!this._lineGraphics) {
+            this._lineGraphics = new vf.Graphics();
+        }
+        if (!this._lineGraphics.parent) {
+            this.container.addChild(this._lineGraphics);
+        }
+        //画线
+        this.autoDrawLine();
+    };
+    Label.prototype.autoDrawLine = function () {
+        var vfMeasured = this.sprite.vfMeasured; //vf.TextMetrics.measureText(this.text, this.sprite.style, this.style.wordWrap);
+        if (vfMeasured == null) {
+            console.log("文本渲染参数未初始化");
+            return;
+        }
+        var lineOffsetY = 1;
+        this._textDecorationWidth = this.style.fontSize / 10 + 1;
+        var leftX = Number.MAX_VALUE;
+        // let rightX:number = Number.MIN_VALUE;
+        var lineInfo = []; //线条的信息  
+        for (var i = 0; i < vfMeasured.lines.length; i++) {
+            var x = this.getStartPosX(vfMeasured.lineWidths[i]);
+            var liney = this.getStartPosY(vfMeasured.lineHeight, i);
+            leftX = leftX < x ? leftX : x;
+            // rightX = rightX > x ? rightX:x;
+            lineInfo.push({ leftX: x, lineY: liney, lineWidths: vfMeasured.lineWidths[i] });
+        }
+        for (var i = 0; i < lineInfo.length; i++) {
+            var infoItem = lineInfo[i];
+            this.drawLine(infoItem.leftX, infoItem.lineY, infoItem.lineWidths);
+        }
+    };
+    Label.prototype.getStartPosX = function (width) {
+        var textAlign = this.style.textAlign;
+        var startPosX = 0;
+        switch (textAlign) {
+            case "left":
+                startPosX = 0;
+                break;
+            case "right":
+                startPosX = this.width - width;
+                break;
+            case "center":
+                startPosX = (this.width - width) * 0.5;
+                break;
+        }
+        return startPosX;
+    };
+    Label.prototype.getStartPosY = function (height, lineIndex) {
+        var startPosY = 0;
+        var type = this._textDecoration;
+        var lineOffsetY = 1;
+        switch (type) {
+            case "None":
+                break;
+            case "UnderLine":
+                startPosY = (lineIndex + 1) * height + lineOffsetY;
+                break;
+            case "LineThrough":
+                startPosY = (lineIndex + 1) * height - height * 0.5;
+                break;
+            case "Overline":
+                startPosY = lineIndex * height;
+                break;
+        }
+        return startPosY;
+    };
+    Label.prototype.drawLine = function (startPosX, startPosY, lineWidth) {
+        var lineG = this._lineGraphics;
+        var style = this._textDecorationStyle;
+        switch (style) {
+            case "Solid":
+                lineG.lineStyle(this._textDecorationWidth, this._textDecorationColor);
+                lineG.moveTo(startPosX, startPosY);
+                lineG.lineTo(startPosX + lineWidth, startPosY);
+                break;
+            case "Double":
+                lineG.lineStyle(this._textDecorationWidth * 0.5, this._textDecorationColor);
+                lineG.moveTo(startPosX, startPosY);
+                lineG.lineTo(startPosX + lineWidth, startPosY);
+                lineG.moveTo(startPosX, startPosY + this._textDecorationWidth * 1);
+                lineG.lineTo(startPosX + lineWidth, startPosY + this._textDecorationWidth * 1);
+                break;
+        }
+    };
     Label.prototype.updateDisplayList = function (unscaledWidth, unscaledHeight) {
         _super.prototype.updateDisplayList.call(this, unscaledWidth, unscaledHeight);
         var values = this.$values;
@@ -5442,6 +5649,45 @@ var Label = /** @class */ (function (_super) {
                     break;
             }
         }
+        this.ckeckDrawLine();
+    };
+    Label.prototype.ckeckDrawLine = function () {
+        if (this.text === this.sprite.text && this._textDecoration === this._textDecorationOld &&
+            this._textDecorationWidth === this._textDecorationWidthOld &&
+            this._textDecorationStyle === this._textDecorationStyleOld &&
+            (this._textDecorationColor === this._textDecorationColorOld ||
+                (isNaN(this._textDecorationColor) && isNaN(this._textDecorationColorOld)))) {
+            //没变化 不用重新画线
+            return;
+        }
+        this._textDecorationOld = this._textDecoration;
+        if (isNaN(this._textDecorationColor)) {
+            var color = 0x000000;
+            if (this.style.color) {
+                if (typeof (this.style.color) === "number") {
+                    color = this.style.color;
+                }
+                else {
+                    var color_1 = this.style.color[0].toString();
+                    color_1 = vf.gui.Utils.hexToInt(color_1, color_1);
+                }
+                this._textDecorationColor = color;
+            }
+            this._textDecorationColor = color;
+        }
+        this._textDecorationColorOld = this._textDecorationColor;
+        this._textDecorationStyleOld = this._textDecorationStyle;
+        this._textDecorationWidthOld = this._textDecorationWidth;
+        this.setLine();
+    };
+    Label.prototype.clearLineGraphics = function () {
+        var graphics = this._lineGraphics;
+        if (graphics) {
+            if (graphics.parent) {
+                graphics.parent.removeChild(this._lineGraphics);
+            }
+            graphics.clear();
+        }
     };
     Label.prototype.release = function () {
         _super.prototype.release.call(this);
@@ -5450,6 +5696,15 @@ var Label = /** @class */ (function (_super) {
             sprite.parent.removeChild(sprite).destroy();
         }
         this.offAll(Index_1.ComponentEvent.CHANGE);
+        this.clearLineGraphics();
+        this._textDecorationOld = "";
+        this._textDecoration = "None";
+        this._textDecorationStyleOld = "";
+        this._textDecorationStyle = "Solid";
+        this._textDecorationColorOld = NaN;
+        this._textDecorationColor = NaN;
+        this._textDecorationWidthOld = NaN;
+        this._textDecorationWidth = 3;
     };
     return Label;
 }(DisplayObject_1.DisplayObject));
@@ -7307,6 +7562,7 @@ var Tracing = /** @class */ (function (_super) {
         _this._newLineFlag = true; //是否是新笔画
         _this._pointId = 0; //绘制的笔画的轨迹点id
         _this._messageCache = []; //需要处理的消息列表
+        _this._strictFlag = true; //严格模式是否检测通过
         /**
          * debug
          */
@@ -7363,6 +7619,10 @@ var Tracing = /** @class */ (function (_super) {
         set: function (value) {
             if (this._mode !== value) {
                 this._mode = value;
+                if (value == 3 /* Strict */ || value == 1 /* Teach */) {
+                    this._renderMode = 0;
+                    this.removeRenderBgSprite();
+                }
                 this.clear();
             }
         },
@@ -7386,8 +7646,10 @@ var Tracing = /** @class */ (function (_super) {
         },
         set: function (value) {
             this._renderBgSprite = value;
-            this._renderMode = 1;
-            this.setRenderBgSprite();
+            if (this.mode !== 3 /* Strict */ && this.mode !== 1 /* Teach */) {
+                this._renderMode = 1;
+                this.setRenderBgSprite();
+            }
         },
         enumerable: true,
         configurable: true
@@ -7517,6 +7779,14 @@ var Tracing = /** @class */ (function (_super) {
         }
         var graphic = this.getGraphics("mask", this._lineStyle);
         this._bgSprite.mask = graphic;
+    };
+    /**
+     * 移出mask背景图
+     */
+    Tracing.prototype.removeRenderBgSprite = function () {
+        if (this._bgSprite) {
+            this.container.removeChild(this._bgSprite);
+        }
     };
     /**
      * 开始，适用于audo和teach模式
@@ -7811,6 +8081,63 @@ var Tracing = /** @class */ (function (_super) {
             }
         }
     };
+    Tracing.prototype.checkStrictFirstPoint = function (point) {
+        //检测下笔处是否当前笔画的初始点位置
+        var index = this._groupStatusArr[this._lineId].points[0];
+        if (Utils_1.pointDistance(point, this._tracePointObjArr[index].point) <= this.precision) {
+            return true;
+        }
+        return false;
+    };
+    Tracing.prototype.checkStrict = function () {
+        var _this = this;
+        var flag = true;
+        if (this._lineId != 1) {
+            this._realTraceIndexArr.shift();
+        }
+        if (this._realTraceIndexArr.length != this._groupStatusArr[this._lineId - 1].points.length) {
+            flag = false;
+        }
+        else {
+            for (var i = 0; i < this._groupStatusArr[this._lineId - 1].points.length; ++i) {
+                if (this._realTraceIndexArr[i] != this._groupStatusArr[this._lineId - 1].points[i]) {
+                    flag = false;
+                    break;
+                }
+            }
+        }
+        if (!flag) {
+            this._lineId--;
+            this._realTraceIndexArr.forEach(function (item) {
+                _this._tracePointObjArr[item].flag = false;
+            });
+            //书写失败，清除当前线条
+            this.removeLine(this._lineId.toString());
+            // setTimeout(() => {
+            //     this.emitTracingMsg(
+            //         TracingEnum.Operate.Remove,
+            //         this._lineId.toString(),
+            //         this.getDataStrByPosCache(),
+            //         this._lineStyle,
+            //         this._realTraceIndexArr,
+            //         this._tempTraceIndexArr,
+            //         this._result
+            //     );
+            // }, 300);
+        }
+        if (this._lineId < this._groupStatusArr.length) {
+            this._realTraceIndexArr = [];
+            if (this._lineId != 0) {
+                var firstIndex = this._groupStatusArr[this._lineId].points[0] - 1;
+                this._realTraceIndexArr.push(firstIndex);
+            }
+        }
+        else {
+            //书写完成
+            this.emit(Index_1.ComponentEvent.COMPLETE, this, { mode: this.mode, value: 3 /* Complete */ });
+        }
+        return flag;
+    };
     /**
      * 教学模式检查
      */
@@ -7836,6 +8163,19 @@ var Tracing = /** @class */ (function (_super) {
             this._realTraceIndexArr.forEach(function (item) {
                 _this._tracePointObjArr[item].flag = false;
             });
+            //书写失败，清除当前线条
+            this.removeLine(this._lineId.toString());
+            // setTimeout(() => {
+            //     this.emitTracingMsg(
+            //         TracingEnum.Operate.Remove,
+            //         this._lineId.toString(),
+            //         this.getDataStrByPosCache(),
+            //         this._lineStyle,
+            //         this._realTraceIndexArr,
+            //         this._tempTraceIndexArr,
+            //         this._result
+            //     );
+            // }, 300);
         }
         if (this._lineId < this._groupStatusArr.length) {
             this._realTraceIndexArr = [];
@@ -7860,6 +8200,7 @@ var Tracing = /** @class */ (function (_super) {
      * @param lineStyle
      */
     Tracing.prototype.drawLine = function (lineId, data, from, to, lineStyle) {
+        console.log("drawLine----", lineId);
         var graphics = this.getGraphics(lineId, lineStyle);
         var posList = getVecListFromStr(data, from, to);
         this.draw(graphics, posList);
@@ -7899,14 +8240,25 @@ var Tracing = /** @class */ (function (_super) {
      * @param graphics
      */
     Tracing.prototype.localDraw = function (graphics) {
-        this._posCache.forEach(function (item, index) {
-            if (index == 0) {
-                graphics.moveTo(item.x, item.y);
-            }
-            else {
-                graphics.lineTo(item.x, item.y);
-            }
-        });
+        //修改：仅拿最后的3个点绘制
+        var posCache = this._posCache;
+        var length = posCache.length;
+        if (length > 2) {
+            graphics.moveTo(posCache[length - 3].x, posCache[length - 3].y);
+            graphics.lineTo(posCache[length - 2].x, posCache[length - 2].y);
+            graphics.lineTo(posCache[length - 1].x, posCache[length - 1].y);
+        }
+        else {
+            graphics.moveTo(posCache[length - 2].x, posCache[length - 2].y);
+            graphics.lineTo(posCache[length - 1].x, posCache[length - 1].y);
+        }
+        // this._posCache.forEach((item, index) => {
+        //     if (index == 0) {
+        //         graphics.moveTo(item.x, item.y);
+        //     } else {
+        //         graphics.lineTo(item.x, item.y);
+        //     }
+        // });
     };
     Tracing.prototype.onPress = function (e, thisObj, isPress) {
         e.stopPropagation();
@@ -7916,7 +8268,15 @@ var Tracing = /** @class */ (function (_super) {
         }
         var curLocal = this.container.toLocal(e.local, thisObj.container);
         if (isPress) {
-            if (this.mode === 1 /* Teach */) {
+            if (this.mode === 3 /* Strict */) {
+                var result = this.checkStrictFirstPoint(curLocal);
+                if (!result) {
+                    this._strictFlag = false;
+                    return;
+                }
+                this._strictFlag = true;
+            }
+            else if (this.mode === 1 /* Teach */) {
                 this.clearGuide();
             }
             this._drawing = true;
@@ -7925,6 +8285,9 @@ var Tracing = /** @class */ (function (_super) {
             this.checkTrace(this._lastLocalPos);
         }
         else {
+            if (this.mode === 3 /* Strict */ && !this._strictFlag) {
+                return;
+            }
             if (this._posCache.length === 1) {
                 //仅有一个点
                 var newPoint = this._lastLocalPos.clone(); //在附近新建一个点，保证第一个触点也能画出来
@@ -7942,6 +8305,9 @@ var Tracing = /** @class */ (function (_super) {
             ++this._lineId;
             if (this.mode === 1 /* Teach */) {
                 this.checkTeach();
+            }
+            else if (this.mode === 3 /* Strict */) {
+                this.checkStrict();
             }
         }
     };
@@ -7968,6 +8334,7 @@ var Tracing = /** @class */ (function (_super) {
      * @param lineStyle
      */
     Tracing.prototype.getGraphics = function (lineId, lineStyle) {
+        if (lineStyle === void 0) { lineStyle = {}; }
         if (this._renderMode === 1) {
             lineId = "mask";
         }
@@ -8069,8 +8436,17 @@ var Tracing = /** @class */ (function (_super) {
                 var _a = JSON.parse(message), operate = _a.operate, lineId = _a.lineId, data = _a.data, lineStyle = _a.lineStyle, realTraceIndexArr = _a.realTraceIndexArr, tempTraceIndexArr = _a.tempTraceIndexArr, result = _a.result;
                 this._realTraceIndexArr = realTraceIndexArr;
                 this._tempTraceIndexArr = tempTraceIndexArr;
+                this._lineId = parseInt(lineId);
                 this._result = result;
-                if (this._result != 0 /* Uncomplete */) {
+                ++this._lineId;
+                if (this.mode == 1 /* Teach */) {
+                    this.clearGuide();
+                    this.checkTeach();
+                }
+                else if (this.mode == 3 /* Strict */) {
+                    this.checkStrict();
+                }
+                else if (this._result != 0 /* Uncomplete */) {
                     //临摹完成，返回结果
                     this.emit(Index_1.ComponentEvent.COMPLETE, this, { mode: this.mode, value: this._result });
                 }
@@ -8081,8 +8457,21 @@ var Tracing = /** @class */ (function (_super) {
                     case 1 /* Clear */:
                         this.clear();
                         break;
+                    case 2 /* Remove */:
+                        this.removeLine(lineId);
+                        break;
                 }
             }
+        }
+    };
+    Tracing.prototype.removeLine = function (lineId) {
+        console.log("removeLine----", lineId);
+        var graphics = this.getGraphics(lineId);
+        if (graphics.parent) {
+            graphics.parent.removeChild(graphics);
+            graphics.destroy();
+            var key = "line_" + lineId;
+            this._lines.delete(key);
         }
     };
     /**
@@ -8172,6 +8561,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var DisplayObject_1 = __webpack_require__(/*! ../core/DisplayObject */ "./src/core/DisplayObject.ts");
 var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
+var Utils_2 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
 /**
  * 播放器组件
  *
@@ -8181,36 +8571,78 @@ var Video = /** @class */ (function (_super) {
     function Video() {
         var _this = _super.call(this) || this;
         _this._resolution = 1;
-        var video = _this._video = document.createElement('video');
-        _this._video.id = _this.uuid.toString();
-        document.body.appendChild(_this._video);
-        // this.container.isEmitRender = true;
-        // this.container.on("renderChange",this.updateSystem,this);
-        _this._video.style.position = "absolute";
-        _this._video.controls = true;
+        _this._autoplay = false;
+        _this._fullScreen = false;
+        _this._wS = 1;
+        _this._hS = 1;
+        _this._oldX = 0;
+        _this._oldY = 0;
+        _this._oldWidth = 0;
+        _this._oldheight = 0;
+        _this._frameBg = new vf.Sprite();
+        var texture = Utils_2.getTexture('assets/black.png');
+        _this._frameBg.texture = texture;
+        _this._frameBg.width = 0;
+        _this._frameBg.height = 0;
+        _this.container.addChild(_this._frameBg);
+        _this._sprite = new vf.Sprite();
+        _this.container.addChild(_this._sprite);
+        _this._video = document.createElement("video");
+        _this._canPlayTypelist = [];
+        return _this;
+    }
+    /**
+     *  目前 设置src才会添加sprite到舞台
+     *  需要src 获取纹理
+     *  纹理添加到sprite
+     */
+    Video.prototype.createVideoSource = function () {
+        this.clearSource();
+        this._videoSource = new vf.resources.VideoResource(this._src, { autoPlay: this._autoplay, autoLoad: true });
+        var video = this._video = this._videoSource.source;
+        this._videoTextrue = vf.Texture.from(video);
+        this._sprite.texture = this._videoTextrue;
         /**
         * 需要上报的事件
         */
-        _this._canplayFun = _this.canplayFun.bind(_this);
-        _this._canplaythroughFun = _this.canplaythroughFun.bind(_this);
-        _this._completeFun = _this.completeFun.bind(_this);
-        _this._endedFun = _this.endedFun.bind(_this);
-        _this._loadeddataFun = _this.loadeddataFun.bind(_this);
-        _this._durationchangeFun = _this.durationchangeFun.bind(_this);
+        this._canplayFun = this.canplayFun.bind(this);
+        this._canplaythroughFun = this.canplaythroughFun.bind(this);
+        this._completeFun = this.completeFun.bind(this);
+        this._endedFun = this.endedFun.bind(this);
+        this._loadeddataFun = this.loadeddataFun.bind(this);
+        this._durationchangeFun = this.durationchangeFun.bind(this);
+        this._pauseFun = this.pauseFun.bind(this);
         //浏览器可以播放媒体文件了，但估计没有足够的数据来支撑播放到结束，不需要停止缓存更多的内容
-        video.addEventListener('canplay', _this._canplayFun);
+        video.addEventListener('canplay', this._canplayFun);
         //浏览器估算可以播放到结束，不需要停止缓存更多的内容。
-        video.addEventListener('canplaythrough', _this._canplaythroughFun);
+        video.addEventListener('canplaythrough', this._canplaythroughFun);
         //渲染完成
-        video.addEventListener('complete', _this._completeFun);
+        video.addEventListener('complete', this._completeFun);
+        //暂停
+        video.addEventListener('pause', this._pauseFun);
         //视频已经到达结束点
-        video.addEventListener('ended', _this._endedFun);
+        video.addEventListener('ended', this._endedFun);
         //首帧已经加载
-        video.addEventListener('loadeddata', _this._loadeddataFun);
+        video.addEventListener('loadeddata', this._loadeddataFun);
         //duration 属性的值改变时触发
-        video.addEventListener('durationchange', _this._durationchangeFun);
-        return _this;
-    }
+        video.addEventListener('durationchange', this._durationchangeFun);
+        this.playTypeCheck();
+    };
+    Video.prototype.playTypeCheck = function () {
+        var video = this._video;
+        if (video.canPlayType) {
+            if (video.canPlayType("video/ogg")) {
+                this._canPlayTypelist.push("ogg");
+                this._canPlayTypelist.push("ogv");
+            }
+            if (video.canPlayType("video/mp4")) {
+                this._canPlayTypelist.push("mp4");
+            }
+            if (video.canPlayType("video/webm")) {
+                this._canPlayTypelist.push("webm");
+            }
+        }
+    };
     Video.prototype.canplayFun = function (e) {
         this.emit('canplay', e);
     };
@@ -8219,6 +8651,9 @@ var Video = /** @class */ (function (_super) {
     };
     Video.prototype.completeFun = function (e) {
         this.emit('complete', e);
+    };
+    Video.prototype.pauseFun = function (e) {
+        this.emit("paused", e);
     };
     Video.prototype.endedFun = function (e) {
         this.emit('ended', e);
@@ -8231,22 +8666,31 @@ var Video = /** @class */ (function (_super) {
     };
     Video.prototype.updateDisplayList = function (unscaledWidth, unscaledHeight) {
         _super.prototype.updateDisplayList.call(this, unscaledWidth, unscaledHeight);
-        this.updateSystem();
-        this._canvasBounds = this._getCanvasBounds();
-        var cb = this._canvasBounds;
-        var transform = this._vfMatrixToCSS(this._getDOMRelativeWorldTransform());
-        if (cb) {
-            this.updatePostion(cb.top, cb.left, transform, this.container.worldAlpha);
+        this.createVideoSource();
+        if (unscaledWidth === 0 && unscaledHeight === 0) {
+            return;
         }
-        //container 的全局左边的 x , y赋值给 this._video
-        // let stageContainer = this.container;
-        // if(this.stage){
-        //     stageContainer = this.stage.container;
+        if (this._sprite) {
+            _super.prototype.updateDisplayList.call(this, unscaledWidth, unscaledHeight);
+            this._sprite.width = unscaledWidth;
+            this._sprite.height = unscaledHeight;
+        }
+        // if(!this._video.parentElement && this.stage && this.stage.app){
+        //     let canvas:HTMLCanvasElement = this.stage.app.view;
+        //     if(canvas && canvas.parentElement){
+        //         canvas.parentElement.appendChild(this._video);
+        //         this._wS = this.stage.scaleX;
+        //         this._hS = this.stage.scaleY;
+        //     }
         // }
-        // let pos = stageContainer.toGlobal(new vf.Point(0,0));
-        // let videoStyle = this._video.style;
-        // videoStyle.left = pos.x + "px";
-        // videoStyle.top = pos.y + "px";
+        // this.updateSystem();
+        // this._canvasBounds = this._getCanvasBounds();
+        // const cb = this._canvasBounds;
+        // const transform = this._vfMatrixToCSS(this._getDOMRelativeWorldTransform());
+        // if (cb) {
+        //     this.updatePostion(cb.top*this._hS, cb.left*this._wS, transform, this.container.worldAlpha);
+        // }
+        //this._video.style.zIndex  = this.zIndex.toString();
     };
     Video.prototype.updatePostion = function (top, left, transform, opacity) {
         this._video.style.top = top + 'px';
@@ -8273,15 +8717,26 @@ var Video = /** @class */ (function (_super) {
         return undefined;
     };
     Video.prototype._vfMatrixToCSS = function (m) {
-        return 'matrix(' + [m.a, m.b, m.c, m.d, m.tx, m.ty].join(',') + ')';
+        return 'matrix(' + [m.a, m.b, m.c, m.d, m.tx * this._wS, m.ty * this._hS].join(',') + ')';
     };
     Video.prototype._getDOMRelativeWorldTransform = function () {
         if (this._lastRenderer) {
             var canvasBounds = this._lastRenderer.view.getBoundingClientRect();
             var matrix = this.container.worldTransform.clone();
-            matrix.scale(this._resolution, this._resolution);
-            matrix.scale(canvasBounds.width / this._lastRenderer.width, canvasBounds.height / this._lastRenderer.height);
+            matrix.scale(this._wS, this._hS);
             return matrix;
+        }
+    };
+    Video.prototype.checkSrcLegal = function () {
+        try {
+            var srcL = this._src.split(".");
+            var srcSufix = srcL[srcL.length - 1];
+            if (this._canPlayTypelist.indexOf(srcSufix) < 0) {
+                console.log("当前设备不支持格式", srcSufix);
+            }
+        }
+        catch (e) {
+            console.warn("src合法性检测错误", this._src);
         }
     };
     Object.defineProperty(Video.prototype, "src", {
@@ -8296,53 +8751,25 @@ var Video = /** @class */ (function (_super) {
             if (!this._video) {
                 return;
             }
-            if (typeof (value) === "number") {
-                var source = Utils_1.getSource(value);
-                this._src = source.url;
+            var o = Utils_1.getSource(value);
+            if (typeof (o) === "object" && o.url) {
+                this._src = o.url;
             }
             else {
                 this._src = value;
             }
-            this._video && (this._video.src = this._src);
+            this.checkSrcLegal();
+            this.invalidateProperties();
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Video.prototype, "controls", {
+    Object.defineProperty(Video.prototype, "autoplay", {
         get: function () {
-            if (this._video) {
-                return this._video.controls;
-            }
-            throw new Error("Video is undefined!");
-        },
-        set: function (boo) {
-            this._video && (this._video.controls = boo);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Video.prototype, "width", {
-        get: function () {
-            if (this._video) {
-                return this._video.width;
-            }
-            return 0;
+            return this._autoplay;
         },
         set: function (value) {
-            this._video && (this._video.width = value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Video.prototype, "height", {
-        get: function () {
-            if (this._video) {
-                return this._video.height;
-            }
-            return 0;
-        },
-        set: function (value) {
-            this._video && (this._video.height = value);
+            this._autoplay = value;
         },
         enumerable: true,
         configurable: true
@@ -8391,7 +8818,9 @@ var Video = /** @class */ (function (_super) {
     });
     Object.defineProperty(Video.prototype, "poster", {
         get: function () {
-            return this._poster;
+            if (this._video) {
+                return this._poster;
+            }
             throw new Error("Video is undefined!");
         },
         set: function (value) {
@@ -8442,7 +8871,10 @@ var Video = /** @class */ (function (_super) {
     **/
     Video.prototype.play = function () {
         if (this._video) {
-            this._video.play();
+            this._video.play().catch(function (error) {
+                console.log(error);
+            });
+            ;
             return;
         }
         throw new Error("Video is undefined!");
@@ -8452,34 +8884,54 @@ var Video = /** @class */ (function (_super) {
     };
     //进入全屏
     Video.prototype.requestFullScreen = function () {
-        var de = this._video;
-        if (de.requestFullscreen) {
-            de.requestFullscreen();
+        if (this._fullScreen == true) {
+            return;
         }
-        else if (de.mozRequestFullScreen) {
-            de.mozRequestFullScreen();
+        this._fullScreen = true;
+        this._oldX = this.x;
+        this._oldY = this.y;
+        this._oldWidth = this._sprite.width;
+        this._oldheight = this._sprite.height;
+        var stage = this.stage;
+        if (!stage) {
+            console.log("视频尚未初始化完成");
+            return;
         }
-        else if (de.webkitRequestFullScreen) {
-            de.webkitRequestFullScreen();
-        }
-        else if (de.webkitEnterFullScreen) {
-            de.webkitEnterFullScreen();
-        }
+        var stageWidth = stage.width;
+        var stageHeight = stage.height;
+        var scale = Math.min(stageWidth / this._oldWidth, stageHeight / this._oldheight);
+        this._sprite.width = this._oldWidth * scale;
+        this._sprite.height = this._oldheight * scale;
+        this.x = (stageWidth - this._sprite.width) * 0.5;
+        this.y = (stageHeight - this._sprite.height) >> 1;
+        this._frameBg.width = stageWidth;
+        this._frameBg.height = stageHeight;
+        var pos = this.container.toLocal(new vf.Point(0, 0));
+        this._frameBg.x = pos.x;
+        this._frameBg.y = pos.y;
     };
     //退出全屏
     Video.prototype.exitFullscreen = function () {
-        var de = this._video;
-        if (de.exitFullscreen) {
-            de.exitFullscreen();
+        if (this._fullScreen == false) {
+            return;
         }
-        else if (de.mozCancelFullScreen) {
-            de.mozCancelFullScreen();
+        this._fullScreen = false;
+        this._frameBg.width = 0;
+        this._frameBg.height = 0;
+        this._frameBg.x = 0;
+        this._frameBg.y = 0;
+        this._sprite.width = this._oldWidth;
+        this._sprite.height = this._oldheight;
+        this.x = this._oldX;
+        this.y = this._oldY;
+    };
+    Video.prototype.clearSource = function () {
+        if (this._videoSource) {
+            this._videoSource.destroy();
+            this._videoSource = null;
         }
-        else if (de.webkitCancelFullScreen) {
-            de.webkitCancelFullScreen();
-        }
-        else if (de.webkitExitFullScreen) {
-            de.webkitExitFullScreen();
+        if (this._videoTextrue) {
+            this._videoTextrue.destroy();
         }
     };
     Video.prototype.release = function () {
@@ -8504,13 +8956,27 @@ var Video = /** @class */ (function (_super) {
         video.removeEventListener('loadeddata', this._loadeddataFun);
         //duration 属性的值改变时触发
         video.removeEventListener('durationchange', this._durationchangeFun);
+        //暂停
+        video.removeEventListener('pause', this._pauseFun);
         this._canplayFun = null;
+        this.clearSource();
+        if (this._sprite) {
+            this._sprite.parent && this._sprite.parent.removeChild(this._sprite);
+            this._sprite.destroy();
+        }
+        if (this._frameBg) {
+            this._frameBg.parent && this._frameBg.parent.removeChild(this._frameBg);
+            this._frameBg.destroy();
+        }
         this._canplaythroughFun = null;
         this._completeFun = null;
         this._endedFun = null;
         this._loadeddataFun = null;
         this._durationchangeFun = null;
-        document.body.removeChild(this._video);
+        this._fullScreen = false;
+        this._wS = 1;
+        this._hS = 1;
+        this._canPlayTypelist = [];
     };
     return Video;
 }(DisplayObject_1.DisplayObject));
@@ -8973,7 +9439,6 @@ var InputBase = /** @class */ (function (_super) {
         _this.on(Index_1.TouchMouseEvent.onClick, _this.onClick, _this);
         return _this;
     }
-    ;
     Object.defineProperty(InputBase.prototype, "currentState", {
         get: function () {
             return this._currentState;
@@ -9472,13 +9937,6 @@ var SyncManager_1 = __webpack_require__(/*! ./SyncManager */ "./src/interaction/
  *  {InteractionEvent}.TouchEvent.onClick
  *  {InteractionEvent}.TouchEvent.onMove
  * ```
- *  可赋值方法:
- * ```
- *  onHover: ((e: InteractionEvent,thisOBj:DisplayObject,over: boolean) => void) | undefined
- *  onPress: ((e: InteractionEvent,thisOBj:DisplayObject, isPressed: boolean) => void) | undefined;
- *  onClick: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
- *  onMove: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
- * ```
  *
  * @example 可查看 `TestSliceSprite` 示例
  *
@@ -9488,15 +9946,12 @@ var ClickEvent = /** @class */ (function () {
     /**
      * ClickEvent 构造函数
      * @param obj 调用的显示对象
-     * @param isOpenEmitEvent 是否开启事件派发，默认false，开启后，父类可以监听InteractionEvent下的TouchEvent
      * @param includeHover 是否监听鼠标移上与移出，默认true
      * @param rightMouseButton 是否开启鼠标右键点击，默认false
      * @param doubleClick 是否开启鼠标双击,默认false
      */
-    function ClickEvent(obj, isOpenEmitEvent, includeHover, rightMouseButton, doubleClick) {
+    function ClickEvent(obj, includeHover, rightMouseButton, doubleClick) {
         this.id = 0;
-        /** 是否基于事件派发，开启后，可以侦听相关的事件 InteractionEvent.TouchEvent | vf.gui.Interaction.TouchEvent */
-        this.isOpenEmitEvent = false;
         /** 是否开启本地坐标转换，开启后，事件InteractionEvent中的localX localY为本地坐标，false情况下为0 */
         this.isOpenLocalPoint = false;
         this.localOffset = new vf.Point();
@@ -9516,15 +9971,13 @@ var ClickEvent = /** @class */ (function () {
         this.isStop = true;
         this.deviceType = vf.utils.getSystemInfo().device.type;
         this.lastMouseDownTime = 0;
+        this._tempMovePoint = new vf.Point();
         this.obj = obj;
-        if (isOpenEmitEvent !== undefined) {
-            this.isOpenEmitEvent = isOpenEmitEvent;
-        }
         if (includeHover !== undefined) {
-            this.right = includeHover;
+            this.hover = includeHover;
         }
         if (rightMouseButton !== undefined) {
-            this.hover = rightMouseButton;
+            this.right = rightMouseButton;
         }
         if (doubleClick !== undefined) {
             this.double = doubleClick;
@@ -9547,11 +10000,13 @@ var ClickEvent = /** @class */ (function () {
             if (!this.right) {
                 container.on("touchstart" /* touchstart */, this._onMouseDown, this);
                 if (this.hover) {
-                    container.on("mouseover" /* mouseover */, this._onMouseOver, this);
-                    container.on("mouseout" /* mouseout */, this._onMouseOut, this);
-                    if (this.deviceType !== 'pc') { // 用于解决移动端滑动触发问题，后期可以单独处理移动相关的
+                    if (this.deviceType === 'pc') { // 用于解决移动端滑动触发问题，后期可以单独处理移动相关的
+                        container.on("mouseover" /* mouseover */, this._onMouseOver, this);
+                        container.on("mouseout" /* mouseout */, this._onMouseOut, this);
+                    }
+                    else {
                         container.on("touchstart" /* touchstart */, this._onMouseOver, this);
-                        container.on("touchendoutside" /* touchendoutside */, this._onMouseOut, this);
+                        container.on("touchend" /* touchend */, this._onMouseOut, this);
                     }
                 }
             }
@@ -9584,14 +10039,14 @@ var ClickEvent = /** @class */ (function () {
         this.isStop = true;
     };
     ClickEvent.prototype._onMouseDown = function (e) {
-        if (this.lastMouseDownTime > performance.now() && !e.signalling) {
+        /*  ziye+ 暂时去掉点击间隔
+        if(this.lastMouseDownTime > performance.now() && !e.signalling){
             return;
         }
         this.lastMouseDownTime = performance.now() + 300;
+        */
         if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
-            (this.onClick ||
-                this.onPress ||
-                this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onPress) > 0 ||
+            (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onPress) > 0 ||
                 this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onDown) > 0 ||
                 this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onClick) > 0)) {
             SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
@@ -9599,7 +10054,6 @@ var ClickEvent = /** @class */ (function () {
         this.setLocalPoint(e);
         this.mouse.copyFrom(e.data.global);
         this.id = e.data.identifier;
-        this.onPress && this.onPress.call(this.obj, e, this.obj, true), this.obj;
         this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onPress, e, true);
         if (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onDown) > 0) {
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onDown, e, true);
@@ -9617,7 +10071,6 @@ var ClickEvent = /** @class */ (function () {
         if (this.double) {
             var now = performance.now();
             if (now - this.time < 210) {
-                this.onClick && this.onClick.call(this.obj, e, this.obj);
                 this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onClick, e);
             }
             else {
@@ -9644,10 +10097,8 @@ var ClickEvent = /** @class */ (function () {
                 });
             }
         }
-        if (this.isOpenEmitEvent) {
-            e.type = event.toString();
-            this.obj.emit(e.type, e, this.obj, args);
-        }
+        e.type = event.toString();
+        this.obj.emit(e.type, e, this.obj, args);
     };
     ClickEvent.prototype._mouseUpAll = function (e) {
         if (e.data.identifier !== this.id)
@@ -9662,7 +10113,6 @@ var ClickEvent = /** @class */ (function () {
             }
             this.bound = false;
         }
-        this.onPress && this.onPress.call(this.obj, e, this.obj, false);
         this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onUp, e, false);
         this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onPress, e, false);
     };
@@ -9670,9 +10120,7 @@ var ClickEvent = /** @class */ (function () {
         if (e.data.identifier !== this.id)
             return;
         if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
-            (this.onPress ||
-                this.onClick ||
-                this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onUp) > 0 ||
+            (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onUp) > 0 ||
                 this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onPress) > 0 ||
                 this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onClick) > 0)) {
             SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
@@ -9686,7 +10134,6 @@ var ClickEvent = /** @class */ (function () {
                 return;
         }
         if (!this.double) {
-            this.onClick && this.onClick.call(this.obj, e, this.obj);
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onClick, e, false);
         }
     };
@@ -9694,8 +10141,7 @@ var ClickEvent = /** @class */ (function () {
         if (e.data.identifier !== this.id)
             return;
         if (this.obj.stage && this.obj.stage.syncInteractiveFlag &&
-            (this.onPress ||
-                this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onUp) > 0 ||
+            (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onUp) > 0 ||
                 this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onPress) > 0)) {
             SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
         }
@@ -9703,35 +10149,36 @@ var ClickEvent = /** @class */ (function () {
     };
     ClickEvent.prototype._onMouseOver = function (e) {
         if (!this.ishover) {
-            if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.onHover || this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onHover) > 0)) {
+            if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onHover) > 0)) {
                 SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
             }
             this.ishover = true;
             this.obj.container.on("mousemove" /* mousemove */, this._onMouseMove, this);
             this.obj.container.on("touchmove" /* touchmove */, this._onMouseMove, this);
-            this.onHover && this.onHover.call(this.obj, e, this.obj, true);
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onHover, e, true);
         }
     };
     ClickEvent.prototype._onMouseOut = function (e) {
         if (this.ishover) {
-            if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.onHover || this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onHover) > 0)) {
+            if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onHover) > 0)) {
                 SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
             }
             this.ishover = false;
             this.obj.container.off("mousemove" /* mousemove */, this._onMouseMove, this);
             this.obj.container.off("touchmove" /* touchmove */, this._onMouseMove, this);
-            this.onHover && this.onHover.call(this.obj, e, this.obj, false);
             this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onHover, e, false);
         }
     };
     ClickEvent.prototype._onMouseMove = function (e) {
-        if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.onMove || this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onMove) > 0)) {
+        if (this.obj.stage && this.obj.stage.syncInteractiveFlag && (this.obj.listenerCount(TouchMouseEvent_1.TouchMouseEvent.onMove) > 0)) {
             SyncManager_1.SyncManager.getInstance(this.obj.stage).collectEvent(e, this.obj);
         }
-        this.setLocalPoint(e);
-        this.onMove && this.onMove.call(this.obj, e, this.obj);
-        this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onMove, e);
+        var container = this.obj.container;
+        container.toLocal(e.data.global, undefined, this._tempMovePoint);
+        if (container.hitArea && container.hitArea.contains(this._tempMovePoint.x, this._tempMovePoint.y)) {
+            this.setLocalPoint(e);
+            this.emitTouchEvent(TouchMouseEvent_1.TouchMouseEvent.onMove, e);
+        }
     };
     ClickEvent.prototype.setLocalPoint = function (e) {
         if (this.isOpenLocalPoint) {
@@ -9741,10 +10188,6 @@ var ClickEvent = /** @class */ (function () {
     };
     ClickEvent.prototype.remove = function () {
         this.stopEvent();
-        this.onPress = undefined;
-        this.onHover = undefined;
-        this.onClick = undefined;
-        this.onMove = undefined;
         this.obj.container.interactive = false;
     };
     return ClickEvent;
@@ -10432,9 +10875,9 @@ var Utils_1 = __webpack_require__(/*! ../utils/Utils */ "./src/utils/Utils.ts");
 var Ticker_1 = __webpack_require__(/*! ../core/Ticker */ "./src/core/Ticker.ts");
 var SyncManager = /** @class */ (function () {
     function SyncManager(stage) {
+        this.role = "T" /* teacher */; //角色
         this.resumeStatusFlag = false; //是否正在恢复状态
         this.offsetTime = 0; //本地Date.now()与中心服务器的差值
-        this._resetTimeFlag = false; //是否对齐过时间
         this._crossTime = 0; //穿越的时间
         this._initTime = 0; //初始化成功时的时间
         this._lostEvent = []; //节流中的event
@@ -10443,17 +10886,20 @@ var SyncManager = /** @class */ (function () {
         this._evtDataList = []; //历史信令整理后的数组
         this._lastMoveEvent = []; //上一个move事件，用于稀疏，如果是连续的move操作，则使用相同的code，这样信令服务器会merge掉之前的move操作，在恢复时会拿到更少的数据量
         this._readystate = 1;
+        this._sendId = 0; //发送的eventId
+        this._lastSId = 0; //上一个学生的eventId
+        this._lastTId = 0; //上一个老师的eventId
+        this._waitingEventList = []; //暂时寄存起来的event
+        this._waitTimer = -1;
         this._interactionEvent = new InteractionEvent_1.InteractionEvent();
         if (!this._interactionEvent.data) {
             this._interactionEvent.data = new vf.interaction.InteractionData();
         }
         this._stage = stage;
-        if (stage.syncInteractiveFlag) {
-            var systemEvent = stage.getSystemEvent();
-            if (systemEvent) {
-                this.sendCustomEvent = this.sendCustomEvent.bind(this);
-                systemEvent.on('sendCustomEvent', this.sendCustomEvent);
-            }
+        var systemEvent = stage.getSystemEvent();
+        if (systemEvent) {
+            this.sendCustomEvent = this.sendCustomEvent.bind(this);
+            systemEvent.on("sendCustomEvent", this.sendCustomEvent);
         }
         Ticker_1.TickerShared.addOnce(this.init, this);
     }
@@ -10466,26 +10912,38 @@ var SyncManager = /** @class */ (function () {
         }
     };
     /**
+     * log
+     */
+    SyncManager.prototype.log = function () {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
+        if (window.syncManagerLog) {
+            console.log.apply(console, data);
+        }
+    };
+    /**
      * 开始同步
      */
     SyncManager.prototype.init = function () {
         this._initTime = performance.now();
+        this.log('syncManager------init');
+        this.sendSyncTimeEvent();
     };
     SyncManager.prototype.release = function () {
         this._readystate = 0;
         var stage = this._stage;
-        if (stage.syncInteractiveFlag) {
-            var systemEvent = stage.getSystemEvent();
-            if (systemEvent) {
-                systemEvent.off('sendCustomEvent', this.sendCustomEvent);
-            }
+        var systemEvent = stage.getSystemEvent();
+        if (systemEvent) {
+            systemEvent.off("sendCustomEvent", this.sendCustomEvent);
         }
     };
     /**
      * 收集交互事件
      */
     SyncManager.prototype.collectEvent = function (e, obj) {
-        if (!this._stage.syncInteractiveFlag || e.signalling)
+        if (e.signalling)
             return; //不需要同步，或者已经是信令同步过来的，不再做处理
         var eventData = this.createEventData(e, obj);
         if (e.type === "mousemove" /* mousemove */ || e.type === "touchmove" /* touchmove */) {
@@ -10514,27 +10972,107 @@ var SyncManager = /** @class */ (function () {
         eventData.data = JSON.stringify(customData);
         this.sendEvent(eventData);
     };
+    SyncManager.prototype.sendSyncTimeEvent = function () {
+        var eventData = {};
+        eventData.code = "syncTimeEvent";
+        eventData.time = this.currentTime();
+        this.sendEvent(eventData);
+    };
     /**
      * 接收操作
      * @signalType 信令类型  live-实时信令   history-历史信令
      */
     SyncManager.prototype.receiveEvent = function (eventData, signalType) {
+        var _this = this;
         if (signalType === void 0) { signalType = "live"; }
         if (signalType == "history") {
             this.dealHistoryEvent(eventData);
         }
         else {
-            if (!this._resetTimeFlag) {
-                this._resetTimeFlag = true;
-                //判断是否需要穿越到过去,忽略500ms的网络延时
-                if (eventData.time < this.currentTime() - 500) {
-                    //将本条信令插入历史信令数组后面，重新跑一次状态恢复
-                    this._evtDataList.push(eventData);
-                    this.resumeStatus();
-                    return;
+            this.log('syncManager----receiveSyncEvent：', eventData.id, eventData.time, eventData.code);
+            if (eventData.code === 'syncTimeEvent') {
+                //同步时间，如果正在恢复状态，就不处理了
+                if (!this.resumeStatusFlag) {
+                    if (this.currentTime() > eventData.time + 300) {
+                        //当前端时间靠后，通知另一端向未来穿越
+                        this.sendSyncTimeEvent();
+                    }
+                    else {
+                        //穿越到未来
+                        var duration = eventData.time - this.currentTime();
+                        this.crossTime(duration);
+                    }
+                }
+                return;
+            }
+            if (this.resumeStatusFlag) {
+                this._evtDataList.push(eventData);
+                if (eventData.role == "T" /* teacher */) {
+                    this._lastTId = eventData.id;
+                }
+                else {
+                    this._lastSId = eventData.id;
+                }
+                return;
+            }
+            if (this.checkEventId(eventData)) {
+                this.parseEventData(eventData);
+                this.checkWaitingEvent();
+            }
+            else {
+                if (this._waitingEventList.length == 1) {
+                    //启动一个定时器，等待1s，1s后如果还没有到等到正确的id，则执行wait中的event
+                    this._waitTimer = setTimeout(function () {
+                        _this.checkWaitingEvent();
+                    }, 1000);
                 }
             }
-            this.parseEventData(eventData);
+        }
+    };
+    /**
+     * 检查eventId是否正确
+     */
+    SyncManager.prototype.checkEventId = function (eventData) {
+        if (eventData.role == "T" /* teacher */) {
+            if (this._lastTId != 0 && this._lastTId != eventData.id - 1) {
+                //不相等，暂时寄存起来
+                this._waitingEventList.push(eventData);
+                return false;
+            }
+            this._lastTId = eventData.id;
+        }
+        else {
+            if (this._lastSId != 0 && this._lastSId != eventData.id - 1) {
+                //不相等，暂时寄存起来
+                this._waitingEventList.push(eventData);
+                return false;
+            }
+            this._lastSId = eventData.id;
+        }
+        return true;
+    };
+    /**
+     * 检查是否有暂存的event需要执行
+     */
+    SyncManager.prototype.checkWaitingEvent = function () {
+        clearTimeout(this._waitTimer);
+        if (this._waitingEventList.length > 0) {
+            this.log('syncManager----checkWaitingEvent', this._waitingEventList);
+            this._waitingEventList.sort(function (a, b) {
+                return a.time - b.time;
+            });
+            for (var i = 0; i < this._waitingEventList.length; ++i) {
+                //执行操作
+                var eventData = this._waitingEventList[i];
+                this.parseEventData(eventData);
+                if (eventData.role == "T" /* teacher */) {
+                    this._lastTId = eventData.id;
+                }
+                else {
+                    this._lastSId = eventData.id;
+                }
+            }
+            this._waitingEventList = [];
         }
     };
     /**
@@ -10574,7 +11112,7 @@ var SyncManager = /** @class */ (function () {
             this._lastMoveEvent[0] = {
                 type: e.type,
                 obj: obj,
-                code: eventData.code
+                code: eventData.code,
             };
         }
         else {
@@ -10586,16 +11124,20 @@ var SyncManager = /** @class */ (function () {
      * 发送操作
      */
     SyncManager.prototype.sendEvent = function (eventData) {
+        //添加eventId
+        eventData.role = this.role;
+        eventData.id = ++this._sendId;
         var stage = this._stage;
         //派发至uistage
         stage.emit("sendSyncEvent", eventData);
         //派发至player
         var msg = {
-            level: 'command',
-            code: 'syncEvent',
-            data: eventData
+            level: "command",
+            code: "syncEvent",
+            data: eventData,
         };
         stage.sendToPlayer(msg);
+        this.log('syncManager----sendSyncEvent：', eventData.id, eventData.time, eventData.code);
     };
     /**
      * 更新节流状态
@@ -10633,7 +11175,6 @@ var SyncManager = /** @class */ (function () {
         else {
             console.error("当前stage没有reset方法，使用输入同步需要自定义reset方法用于场景重置!!!");
         }
-        this._initTime = performance.now();
     };
     /**
      * 解析收到的event
@@ -10655,6 +11196,7 @@ var SyncManager = /** @class */ (function () {
             this._interactionEvent.data.identifier = data.identifier;
             this._interactionEvent.data.global.set(data.global.x, data.global.y);
             this._obj = stage.getChildByPath(event_1.path);
+            //this.log('syncManager----parseEventData', eventData.id, this._interactionEvent.type, time, this.currentTime(), this._obj.container);
             this._obj.container.emit(this._interactionEvent.type, this._interactionEvent);
         }
         else if (eventData.code.indexOf("syncCustomEvent_") == 0) {
@@ -10662,7 +11204,7 @@ var SyncManager = /** @class */ (function () {
             var data = JSON.parse(eventData.data);
             var systemEvent = stage.getSystemEvent();
             if (systemEvent) {
-                systemEvent.emit('receiveCustomEvent', data);
+                systemEvent.emit("receiveCustomEvent", data);
             }
             else {
                 stage.emit("receiveCustomEvent", data);
@@ -10693,13 +11235,10 @@ var SyncManager = /** @class */ (function () {
         if (!eventData)
             return;
         for (var key in eventData) {
-            if (key.indexOf('syncInteraction_') == 0 || key.indexOf('syncCustomEvent_') == 0) {
+            if (key.indexOf("syncInteraction_") == 0 || key.indexOf("syncCustomEvent_") == 0) {
                 this._evtDataList.push(eventData[key]);
             }
         }
-        this._evtDataList.sort(function (a, b) {
-            return a.time - b.time;
-        });
         this.resumeStatus();
     };
     /**
@@ -10712,12 +11251,16 @@ var SyncManager = /** @class */ (function () {
             return;
         var start = performance.now();
         this.resetStage();
+        this.resumeStatusFlag = true;
         setTimeout(function () {
             if (_this._readystate === 0)
                 return;
+            _this._initTime = performance.now();
             var resetTime = performance.now();
-            _this.resumeStatusFlag = true;
             _this._stage.renderable = false;
+            _this._evtDataList.sort(function (a, b) {
+                return a.time - b.time;
+            });
             for (var i = 0; i < _this._evtDataList.length; ++i) {
                 //执行操作
                 _this.parseEventData(_this._evtDataList[i]);
@@ -10728,6 +11271,8 @@ var SyncManager = /** @class */ (function () {
             if (Utils_1.debug) {
                 console.log("\u6062\u590D\u603B\u8017\u65F6\uFF1A" + (now - start) + ", reset\u8017\u65F6: " + (resetTime - start) + ", \u6267\u884C\u64CD\u4F5C\u8017\u65F6\uFF1A" + (now - resetTime) + "}");
             }
+            //恢复完历史后，发一条同步指令，对齐时间
+            _this.sendSyncTimeEvent();
         }, 120);
     };
     return SyncManager;
@@ -11312,7 +11857,12 @@ function updateFontStyle(target, key, value) {
         target.setInputStyle(key, value);
     }
     else {
-        target.sprite.style[key] = value;
+        if (["textDecoration", "textDecorationColor", "linearGradientStops", "linearGradientType"].indexOf(key) >= 0) {
+            target[key] = value;
+        }
+        else {
+            target.sprite.style[key] = value;
+        }
     }
 }
 exports.updateFontStyle = updateFontStyle;
@@ -11374,6 +11924,14 @@ var CSSStyle = /** @class */ (function () {
          * */
         this._wordWrap = false;
         /**
+         * 下划线类型
+         * */
+        this._textDecoration = "None";
+        /**
+        * 下划线颜色
+        * */
+        this._textDecorationColor = 0x000000;
+        /**
          * 多行文本(wordWrap = true) - 对齐方式
          * */
         this._textAlign = "center";
@@ -11403,6 +11961,10 @@ var CSSStyle = /** @class */ (function () {
         this._dropShadowColor = 0x000000;
         /** 投影深度 */
         this._dropShadowDistance = 5;
+        /** 渐变类型 */
+        this._linearGradientType = "vertical";
+        /** 渐变区间 */
+        this._linearGradientStops = [];
         /** 中文换行 */
         this._breakWords = true;
         this.parent = target;
@@ -11975,6 +12537,28 @@ var CSSStyle = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(CSSStyle.prototype, "textDecoration", {
+        get: function () {
+            return this._textDecoration;
+        },
+        set: function (value) {
+            this._textDecoration = value;
+            CSSFunction.updateFontStyle(this.parent, "textDecoration", value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CSSStyle.prototype, "textDecorationColor", {
+        get: function () {
+            return this._textDecorationColor;
+        },
+        set: function (value) {
+            this._textDecorationColor = value;
+            CSSFunction.updateFontStyle(this.parent, "textDecorationColor", value);
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(CSSStyle.prototype, "textAlign", {
         get: function () {
             return this._textAlign;
@@ -11994,7 +12578,7 @@ var CSSStyle = /** @class */ (function () {
         set: function (value) {
             this._verticalAlign = value;
             CSSFunction.updateFontStyle(this.parent, "verticalAlign", value);
-            CSSFunction.updateFontStyle(this.parent, "align", value);
+            // CSSFunction.updateFontStyle(this.parent, "align", value);
         },
         enumerable: true,
         configurable: true
@@ -12161,6 +12745,28 @@ var CSSStyle = /** @class */ (function () {
         set: function (value) {
             this._dropShadowDistance = value;
             CSSFunction.updateFontStyle(this.parent, "dropShadowDistance", value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CSSStyle.prototype, "linearGradientType", {
+        get: function () {
+            return this._linearGradientType;
+        },
+        set: function (value) {
+            this._linearGradientType = value;
+            CSSFunction.updateFontStyle(this.parent, "fillGradientType", value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CSSStyle.prototype, "linearGradientStops", {
+        get: function () {
+            return this._linearGradientStops;
+        },
+        set: function (value) {
+            this._linearGradientStops = value;
+            CSSFunction.updateFontStyle(this.parent, "linearGradientStops", value);
         },
         enumerable: true,
         configurable: true
@@ -14704,13 +15310,13 @@ exports.gui = gui;
 //     }
 // }
 // String.prototype.startsWith || (String.prototype.startsWith = function(word,pos?: number) {
-//     return this.lastIndexOf(word, pos1.7.2.1.7.2.1.7.2) ==1.7.2.1.7.2.1.7.2;
+//     return this.lastIndexOf(word, pos1.7.7.1.7.7.1.7.7) ==1.7.7.1.7.7.1.7.7;
 // });
 if (window.vf === undefined) {
     window.vf = {};
 }
 window.vf.gui = gui;
-window.vf.gui.version = "1.7.2";
+window.vf.gui.version = "1.7.7";
 
 
 /***/ })

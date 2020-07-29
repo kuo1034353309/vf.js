@@ -14,7 +14,8 @@ import { injectParamsToQueueTask } from './core/ActionListUtils';
 
 export class FunctionTask extends ContainerTask {
         public funName: string;
-
+        public formalParams?: ExpressType[];
+        
         protected _component: vf.gui.DisplayObject;
         protected _loopComplete: boolean;
         protected callTargets: number[] = [];

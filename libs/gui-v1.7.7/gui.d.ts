@@ -1285,15 +1285,16 @@ declare module 'src/interaction/SyncManager' {
 	import { InteractionEvent } from 'src/event/InteractionEvent';
 	import { Stage } from 'src/UI';
 	import { DisplayObjectAbstract } from 'src/core/DisplayObjectAbstract';
+	import { Role } from 'src/enum/FollowLineEnum';
 	export class SyncManager {
 	    constructor(stage: Stage);
 	    /**
 	     * 对应一个stage有一个syncManager的实例
 	     */
 	    static getInstance(stage: Stage | undefined): SyncManager | undefined;
+	    role: Role;
 	    resumeStatusFlag: boolean;
 	    offsetTime: number;
-	    private _resetTimeFlag;
 	    private _crossTime;
 	    private _initTime;
 	    private _interactionEvent;
@@ -1305,6 +1306,15 @@ declare module 'src/interaction/SyncManager' {
 	    private _evtDataList;
 	    private _lastMoveEvent;
 	    private _readystate;
+	    private _sendId;
+	    private _lastSId;
+	    private _lastTId;
+	    private _waitingEventList;
+	    private _waitTimer;
+	    /**
+	     * log
+	     */
+	    private log;
 	    /**
 	     * 开始同步
 	     */
@@ -1319,11 +1329,20 @@ declare module 'src/interaction/SyncManager' {
 	     * data
 	     */
 	    sendCustomEvent(customData: any): void;
+	    private sendSyncTimeEvent;
 	    /**
 	     * 接收操作
 	     * @signalType 信令类型  live-实时信令   history-历史信令
 	     */
 	    receiveEvent(eventData: any, signalType?: string): void;
+	    /**
+	     * 检查eventId是否正确
+	     */
+	    private checkEventId;
+	    /**
+	     * 检查是否有暂存的event需要执行
+	     */
+	    private checkWaitingEvent;
 	    /**
 	     * 获取当前时间
 	     */
@@ -1368,7 +1387,6 @@ declare module 'src/interaction/SyncManager' {
 }
 declare module 'src/interaction/ClickEvent' {
 	import { DisplayObject } from 'src/core/DisplayObject';
-	import { InteractionEvent } from 'src/event/InteractionEvent';
 	/**
 	 * 点击触摸相关的事件处理订阅类,UI组件内部可以创建此类实现点击相关操作
 	 *
@@ -1379,13 +1397,6 @@ declare module 'src/interaction/ClickEvent' {
 	 *  {InteractionEvent}.TouchEvent.onClick
 	 *  {InteractionEvent}.TouchEvent.onMove
 	 * ```
-	 *  可赋值方法:
-	 * ```
-	 *  onHover: ((e: InteractionEvent,thisOBj:DisplayObject,over: boolean) => void) | undefined
-	 *  onPress: ((e: InteractionEvent,thisOBj:DisplayObject, isPressed: boolean) => void) | undefined;
-	 *  onClick: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
-	 *  onMove: ((e: InteractionEvent,thisOBj:DisplayObject) => void) | undefined
-	 * ```
 	 *
 	 * @example 可查看 `TestSliceSprite` 示例
 	 *
@@ -1395,16 +1406,13 @@ declare module 'src/interaction/ClickEvent' {
 	    /**
 	     * ClickEvent 构造函数
 	     * @param obj 调用的显示对象
-	     * @param isOpenEmitEvent 是否开启事件派发，默认false，开启后，父类可以监听InteractionEvent下的TouchEvent
 	     * @param includeHover 是否监听鼠标移上与移出，默认true
 	     * @param rightMouseButton 是否开启鼠标右键点击，默认false
 	     * @param doubleClick 是否开启鼠标双击,默认false
 	     */
-	    constructor(obj: DisplayObject, isOpenEmitEvent?: boolean, includeHover?: boolean, rightMouseButton?: boolean, doubleClick?: boolean);
+	    constructor(obj: DisplayObject, includeHover?: boolean, rightMouseButton?: boolean, doubleClick?: boolean);
 	    private obj;
 	    id: number;
-	    /** 是否基于事件派发，开启后，可以侦听相关的事件 InteractionEvent.TouchEvent | vf.gui.Interaction.TouchEvent */
-	    isOpenEmitEvent: boolean;
 	    /** 是否开启本地坐标转换，开启后，事件InteractionEvent中的localX localY为本地坐标，false情况下为0 */
 	    isOpenLocalPoint: boolean;
 	    private localOffset;
@@ -1435,13 +1443,10 @@ declare module 'src/interaction/ClickEvent' {
 	    private _onMouseUpOutside;
 	    private _onMouseOver;
 	    private _onMouseOut;
+	    private _tempMovePoint;
 	    private _onMouseMove;
 	    private setLocalPoint;
 	    remove(): void;
-	    onHover: ((e: InteractionEvent, thisOBj: DisplayObject, over: boolean) => void) | undefined;
-	    onPress: ((e: InteractionEvent, thisOBj: DisplayObject, isPressed: boolean) => void) | undefined;
-	    onClick: ((e: InteractionEvent, thisOBj: DisplayObject) => void) | undefined;
-	    onMove: ((e: InteractionEvent, thisOBj: DisplayObject) => void) | undefined;
 	}
 
 }
@@ -1553,16 +1558,46 @@ declare module 'src/display/Label' {
 	export class Label extends DisplayObject {
 	    constructor(text?: string);
 	    readonly sprite: vf.Text;
+	    private _textDecoration;
+	    private _textDecorationOld;
+	    private _lineGraphics;
+	    private _textDecorationColor;
+	    private _textDecorationColorOld;
+	    private _textDecorationWidth;
+	    private _textDecorationWidthOld;
+	    private _textDecorationStyle;
+	    private _textDecorationStyleOld;
+	    private _linearGradientType;
+	    private _linearGradientStops;
 	    /**
 	     * 设置分辨力比例
 	     */
 	    resolution: number;
 	    /**
+	     * 设置下划线
+	     */
+	    textDecoration: "None" | "Overline" | "LineThrough" | "UnderLine";
+	    textDecorationStyle: "Solid" | "Double";
+	    /**
+	     * 设置下划线颜色
+	     */
+	    textDecorationColor: number;
+	    /**
 	     * 文本内容
 	     */
 	    text: string;
+	    linearGradientType: "vertical" | "horizontal";
+	    linearGradientStops: number[];
 	    fontCssStyle: any;
+	    private setLine;
+	    private showUnderLine;
+	    private autoDrawLine;
+	    private getStartPosX;
+	    private getStartPosY;
+	    private drawLine;
 	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
+	    private ckeckDrawLine;
+	    private clearLineGraphics;
 	    release(): void;
 	}
 
@@ -2277,6 +2312,16 @@ declare module 'src/layout/CSSStyle' {
 	    private _wordWrapWidth?;
 	    wordWrapWidth: number | undefined;
 	    /**
+	     * 下划线类型
+	     * */
+	    private _textDecoration;
+	    textDecoration: "None" | "Overline" | "LineThrough" | "UnderLine";
+	    /**
+	    * 下划线颜色
+	    * */
+	    private _textDecorationColor;
+	    textDecorationColor: number;
+	    /**
 	     * 多行文本(wordWrap = true) - 对齐方式
 	     * */
 	    private _textAlign;
@@ -2305,7 +2350,7 @@ declare module 'src/layout/CSSStyle' {
 	    fontVariant: "normal" | "small-caps";
 	    /** 字体粗细 */
 	    private _fontWeight;
-	    fontWeight: 500 | 100 | 300 | "normal" | "bold" | "bolder" | "lighter" | 200 | 400 | 600 | 700 | 800 | 900;
+	    fontWeight: 300 | 100 | "normal" | "bold" | "bolder" | "lighter" | 200 | 400 | 500 | 600 | 700 | 800 | 900;
 	    /** 内部填充,只支持文字 */
 	    private _padding?;
 	    padding: number | undefined;
@@ -2333,6 +2378,12 @@ declare module 'src/layout/CSSStyle' {
 	    /** 投影深度 */
 	    private _dropShadowDistance;
 	    dropShadowDistance: number;
+	    /** 渐变类型 */
+	    private _linearGradientType;
+	    linearGradientType: "vertical" | "horizontal";
+	    /** 渐变区间 */
+	    private _linearGradientStops;
+	    linearGradientStops: number[];
 	    /** 中文换行 */
 	    private _breakWords;
 	    breakWords: boolean;
@@ -3538,12 +3589,14 @@ declare module 'src/enum/FollowLineEnum' {
 declare module 'src/enum/TracingEnum' {
 	export const enum Operate {
 	    Add = 0,
-	    Clear = 1
+	    Clear = 1,
+	    Remove = 2
 	}
 	export const enum Mode {
 	    Check = 0,
 	    Teach = 1,
-	    Auto = 2
+	    Auto = 2,
+	    Strict = 3
 	}
 	export const enum Result {
 	    Uncomplete = 0,
@@ -3678,42 +3731,64 @@ declare module 'src/display/Video' {
 	    private _endedFun;
 	    private _loadeddataFun;
 	    private _durationchangeFun;
+	    private _pauseFun;
+	    private _autoplay;
+	    private _canPlayTypelist;
+	    private _videoSource;
+	    private _videoTextrue;
+	    private _sprite;
+	    private _frameBg;
+	    private _fullScreen;
 	    constructor();
+	    /**
+	     *  目前 设置src才会添加sprite到舞台
+	     *  需要src 获取纹理
+	     *  纹理添加到sprite
+	     */
+	    private createVideoSource;
+	    private playTypeCheck;
 	    private canplayFun;
 	    private canplaythroughFun;
 	    private completeFun;
+	    private pauseFun;
 	    private endedFun;
 	    private loadeddataFun;
 	    private durationchangeFun;
+	    private _wS;
+	    private _hS;
 	    protected updateDisplayList(unscaledWidth: number, unscaledHeight: number): void;
 	    private updatePostion;
 	    private updateSystem;
 	    private _getCanvasBounds;
 	    private _vfMatrixToCSS;
 	    private _getDOMRelativeWorldTransform;
+	    private checkSrcLegal;
 	    /**
 	     * 支持的参数们~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	     */
-	    src: number | string;
-	    controls: boolean;
-	    width: number;
-	    height: number;
+	    src: any;
+	    autoplay: boolean;
 	    loop: boolean;
 	    muted: boolean;
-	    volume: number;
+	    volume: any;
 	    poster: number | string;
 	    currentTime: number;
 	    /**
 	     * 只读的属性们~~~~~~~~~~~~~~~~
 	     * */
-	    readonly duration: number;
+	    readonly duration: any;
 	    /**
 	    * 支持的方法们~~~··~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	    **/
 	    play(): void;
 	    pause(): void;
+	    private _oldX;
+	    private _oldY;
+	    private _oldWidth;
+	    private _oldheight;
 	    requestFullScreen(): void;
 	    exitFullscreen(): void;
+	    private clearSource;
 	    release(): void;
 	}
 
@@ -3828,6 +3903,7 @@ declare module 'src/display/Tracing' {
 	    private _messageCache;
 	    private _tween;
 	    private _guideTime;
+	    private _strictFlag;
 	    /**
 	     * debug
 	     */
@@ -3889,6 +3965,10 @@ declare module 'src/display/Tracing' {
 	     */
 	    private setRenderBgSprite;
 	    /**
+	     * 移出mask背景图
+	     */
+	    private removeRenderBgSprite;
+	    /**
 	     * 开始，适用于audo和teach模式
 	     */
 	    private start;
@@ -3927,6 +4007,8 @@ declare module 'src/display/Tracing' {
 	     * 检查group
 	     */
 	    private checkResult;
+	    private checkStrictFirstPoint;
+	    private checkStrict;
 	    /**
 	     * 教学模式检查
 	     */
@@ -3967,6 +4049,7 @@ declare module 'src/display/Tracing' {
 	     */
 	    private emitTracingMsg;
 	    private onMessage;
+	    removeLine(lineId: string): void;
 	    /**
 	     * clear
 	     */
